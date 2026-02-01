@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
+import { Providers } from "@/components/providers";
 import { LocalBusinessSchema } from "@/components/schema/local-business";
 import { siteConfig } from "@/lib/config";
 
@@ -53,9 +52,6 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  verification: {
-    google: "your-google-verification-code",
-  },
 };
 
 export default function RootLayout({
@@ -64,15 +60,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
-        <LocalBusinessSchema />
-      </head>
-      <body className={`${inter.variable} font-sans antialiased`}>
-        <Header />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
-      </body>
-    </html>
+    <Providers>
+      <html lang="en">
+        <head>
+          <LocalBusinessSchema />
+        </head>
+        <body className={`${inter.variable} font-sans antialiased`}>
+          {children}
+        </body>
+      </html>
+    </Providers>
   );
 }
