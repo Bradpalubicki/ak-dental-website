@@ -1,14 +1,13 @@
 -- ONE ENGINE: AI Operations Platform for AK Ultimate Dental
 -- Complete database schema
 
--- Enable required extensions
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- gen_random_uuid() is built into PostgreSQL 13+, no extension needed
 
 -- ============================================================================
 -- PATIENTS
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS oe_patients (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   first_name TEXT NOT NULL,
@@ -41,7 +40,7 @@ CREATE INDEX idx_oe_patients_pms_id ON oe_patients(pms_patient_id);
 -- LEADS (Speed-to-Lead)
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS oe_leads (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   first_name TEXT NOT NULL,
@@ -71,7 +70,7 @@ CREATE INDEX idx_oe_leads_urgency ON oe_leads(urgency);
 -- APPOINTMENTS
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS oe_appointments (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   patient_id UUID NOT NULL REFERENCES oe_patients(id),
@@ -98,7 +97,7 @@ CREATE INDEX idx_oe_appointments_status ON oe_appointments(status);
 -- INSURANCE VERIFICATIONS
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS oe_insurance_verifications (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   patient_id UUID NOT NULL REFERENCES oe_patients(id),
@@ -132,7 +131,7 @@ CREATE INDEX idx_oe_insurance_appointment ON oe_insurance_verifications(appointm
 -- TREATMENT PLANS
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS oe_treatment_plans (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   patient_id UUID NOT NULL REFERENCES oe_patients(id),
@@ -160,7 +159,7 @@ CREATE INDEX idx_oe_treatments_status ON oe_treatment_plans(status);
 -- CALLS (Call Intelligence)
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS oe_calls (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   caller_phone TEXT,
   caller_name TEXT,
@@ -189,7 +188,7 @@ CREATE INDEX idx_oe_calls_status ON oe_calls(status);
 -- BILLING / CLAIMS
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS oe_billing_claims (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   patient_id UUID NOT NULL REFERENCES oe_patients(id),
@@ -217,7 +216,7 @@ CREATE INDEX idx_oe_claims_aging ON oe_billing_claims(aging_days);
 -- OUTREACH WORKFLOWS
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS oe_outreach_workflows (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   name TEXT NOT NULL,
@@ -234,7 +233,7 @@ CREATE TABLE IF NOT EXISTS oe_outreach_workflows (
 -- OUTREACH MESSAGES
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS oe_outreach_messages (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   workflow_id UUID REFERENCES oe_outreach_workflows(id),
   patient_id UUID NOT NULL REFERENCES oe_patients(id),
@@ -255,7 +254,7 @@ CREATE INDEX idx_oe_messages_status ON oe_outreach_messages(status);
 -- AI ACTIONS LOG (Audit Trail)
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS oe_ai_actions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   action_type TEXT NOT NULL,
   module TEXT NOT NULL,
@@ -278,7 +277,7 @@ CREATE INDEX idx_oe_ai_actions_created ON oe_ai_actions(created_at DESC);
 -- DAILY METRICS (Analytics)
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS oe_daily_metrics (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   date DATE NOT NULL UNIQUE,
   new_leads INTEGER DEFAULT 0,
   leads_converted INTEGER DEFAULT 0,
@@ -304,7 +303,7 @@ CREATE INDEX idx_oe_metrics_date ON oe_daily_metrics(date DESC);
 -- PRACTICE SETTINGS
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS oe_practice_settings (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   key TEXT NOT NULL UNIQUE,
   value JSONB NOT NULL,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
