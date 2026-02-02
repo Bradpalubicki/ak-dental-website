@@ -4,10 +4,10 @@
 export const images = {
   // Hero and main images
   hero: {
-    main: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1200&h=800&fit=crop&q=80",
+    main: "/office-modern.png",
     dentist: "/dr-alex-headshot.jpg",
-    office: "https://images.unsplash.com/photo-1629909615184-74f495363b67?w=1200&h=800&fit=crop&q=80",
-    reception: "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=1200&h=800&fit=crop&q=80",
+    office: "/office-modern.png",
+    reception: "/office-modern.png",
   },
 
   // Team and doctor images
@@ -44,10 +44,10 @@ export const images = {
 
   // Technology and equipment
   technology: {
-    equipment: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&h=600&fit=crop&q=80",
+    equipment: "/office-modern.png",
     xray: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&h=600&fit=crop&q=80",
-    modern: "https://images.unsplash.com/photo-1629909615184-74f495363b67?w=800&h=600&fit=crop&q=80",
-    chair: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&h=600&fit=crop&q=80",
+    modern: "/office-modern.png",
+    chair: "/office-modern.png",
   },
 
   // Las Vegas specific
@@ -61,9 +61,9 @@ export const images = {
 
   // Backgrounds and patterns
   backgrounds: {
-    dental: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1920&h=1080&fit=crop&q=80",
+    dental: "/office-modern.png",
     abstract: "https://images.unsplash.com/photo-1557683316-973673baf926?w=1920&h=1080&fit=crop&q=80",
-    clean: "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=1920&h=1080&fit=crop&q=80",
+    clean: "/office-modern.png",
   },
 };
 
