@@ -23,11 +23,11 @@ export default function HomePage() {
             priority
             quality={90}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/50 to-black/70" />
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-2xl text-white">
+          <div className="max-w-2xl text-white ml-auto">
             {/* Trust Badge */}
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-4">
               <div className="flex -space-x-1">
@@ -82,7 +82,7 @@ export default function HomePage() {
         </div>
 
         {/* Floating Card */}
-        <div className="absolute bottom-8 right-8 hidden lg:block">
+        <div className="absolute bottom-8 left-8 hidden lg:block">
           <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-xs">
             <div className="flex items-center gap-4 mb-4">
               <div className="relative w-16 h-16 rounded-full overflow-hidden">
