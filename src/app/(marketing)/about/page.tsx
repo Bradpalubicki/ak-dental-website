@@ -107,8 +107,8 @@ export default function AboutPage() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="relative">
               <Image
-                src={images.team.dentistWorking}
-                alt="Dental care at AK Ultimate Dental"
+                src={images.team.graduation}
+                alt="Dr. Alex - UNLV School of Dental Medicine graduation"
                 width={600}
                 height={450}
                 className="rounded-2xl shadow-xl"

@@ -1,21 +1,23 @@
-// Curated Unsplash images for AK Ultimate Dental
-// Using direct Unsplash URLs with optimization parameters
+// Images for AK Ultimate Dental
+// Local images for doctor/team, Unsplash for generic dental scenes
 
 export const images = {
   // Hero and main images
   hero: {
     main: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1200&h=800&fit=crop&q=80",
-    dentist: "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=800&h=600&fit=crop&q=80",
+    dentist: "/dr-alex-headshot.jpg",
     office: "https://images.unsplash.com/photo-1629909615184-74f495363b67?w=1200&h=800&fit=crop&q=80",
     reception: "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=1200&h=800&fit=crop&q=80",
   },
 
   // Team and doctor images
   team: {
-    doctor: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=600&h=800&fit=crop&q=80",
-    dentistWorking: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&h=600&fit=crop&q=80",
-    teamGroup: "https://images.unsplash.com/photo-1629909615184-74f495363b67?w=1000&h=600&fit=crop&q=80",
+    doctor: "/dr-alex-headshot.jpg",
+    dentistWorking: "/dr-alex-family.jpg",
+    teamGroup: "/dr-alex-family.jpg",
     consultation: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&h=600&fit=crop&q=80",
+    graduation: "/dr-alex-graduation.jpg",
+    family: "/dr-alex-family.jpg",
   },
 
   // Patient experience

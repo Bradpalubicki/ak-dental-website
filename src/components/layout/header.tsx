@@ -34,14 +34,14 @@ export function Header() {
 
       {/* Main navigation */}
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
+        <div className="flex h-20 items-center justify-between">
+          <Link href="/" className="flex items-center">
             <Image
               src="/ak-logo.png"
               alt={siteConfig.name}
-              width={200}
-              height={48}
-              className="h-10 w-auto"
+              width={280}
+              height={64}
+              className="h-14 w-auto"
               priority
             />
           </Link>
