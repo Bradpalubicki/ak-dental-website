@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS oe_appointments (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   patient_id UUID NOT NULL REFERENCES oe_patients(id),
-  provider_name TEXT NOT NULL DEFAULT 'Dr. Alexandru Chireu',
+  provider_name TEXT NOT NULL DEFAULT 'AK Ultimate Dental',
   appointment_date DATE NOT NULL,
   appointment_time TIME NOT NULL,
   duration_minutes INTEGER NOT NULL DEFAULT 60,
@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS oe_treatment_plans (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   patient_id UUID NOT NULL REFERENCES oe_patients(id),
-  provider_name TEXT NOT NULL DEFAULT 'Dr. Alexandru Chireu',
+  provider_name TEXT NOT NULL DEFAULT 'AK Ultimate Dental',
   title TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'presented', 'accepted', 'partially_accepted', 'declined', 'completed')),
   procedures JSONB NOT NULL DEFAULT '[]',
@@ -311,7 +311,7 @@ CREATE TABLE IF NOT EXISTS oe_practice_settings (
 
 -- Insert default settings
 INSERT INTO oe_practice_settings (key, value) VALUES
-  ('practice_info', '{"name": "AK Ultimate Dental", "phone": "(702) 935-4395", "email": "dentalremind@yahoo.com", "address": "7480 West Sahara Avenue, Las Vegas, NV 89117", "doctor": "Dr. Alexandru Chireu, DDS"}'),
+  ('practice_info', '{"name": "AK Ultimate Dental", "phone": "(702) 935-4395", "email": "dentalremind@yahoo.com", "address": "7480 West Sahara Avenue, Las Vegas, NV 89117", "doctor": "AK Ultimate Dental"}'),
   ('business_hours', '{"monday": "8:00 AM - 5:00 PM", "tuesday": "8:00 AM - 5:00 PM", "wednesday": "8:00 AM - 5:00 PM", "thursday": "8:00 AM - 5:00 PM", "friday": "Closed", "saturday": "Closed", "sunday": "Closed"}'),
   ('ai_settings', '{"auto_respond_leads": false, "auto_send_confirmations": true, "auto_send_reminders": true, "lead_response_mode": "draft_and_approve", "confidence_threshold": 0.85}'),
   ('notification_settings', '{"daily_briefing_time": "07:00", "daily_briefing_email": true, "alert_new_leads": true, "alert_no_shows": true, "alert_insurance_issues": true}'),

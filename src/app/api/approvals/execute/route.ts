@@ -110,6 +110,129 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // For lead nurture messages
+    if (action.action_type === "lead_nurture") {
+      const input = action.input_data as Record<string, unknown> | null;
+      const output = action.output_data as Record<string, unknown> | null;
+      const leadId = input?.lead_id as string | null;
+      const channel = (input?.channel as string) || "sms";
+      const smsContent = edited_content || (output?.sms_content as string) || finalContent;
+      const emailContent = edited_content || (output?.email_content as string) || finalContent;
+      const subjectLine = (input?.subject_line as string) || "Message from AK Ultimate Dental";
+
+      if (leadId) {
+        const { data: lead } = await supabase
+          .from("oe_leads")
+          .select("*")
+          .eq("id", leadId)
+          .single();
+
+        if (lead) {
+          if ((channel === "email" || channel === "both") && lead.email) {
+            const emailResult = await sendEmail({
+              to: lead.email,
+              subject: subjectLine,
+              html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                  <div style="background: #0891b2; color: white; padding: 20px; border-radius: 8px 8px 0 0;">
+                    <h1 style="margin: 0; font-size: 24px;">AK Ultimate Dental</h1>
+                  </div>
+                  <div style="padding: 24px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px;">
+                    <p>Hi ${lead.first_name},</p>
+                    ${emailContent.split("\n").map((line: string) => `<p>${line}</p>`).join("")}
+                    <p style="color: #64748b; font-size: 12px; margin-top: 24px;">
+                      AK Ultimate Dental | (702) 935-4395 | akultimatedental.com<br/>
+                      Reply STOP to unsubscribe from messages.
+                    </p>
+                  </div>
+                </div>
+              `,
+            });
+            results.email = emailResult;
+          }
+          if ((channel === "sms" || channel === "both") && lead.phone) {
+            const smsResult = await sendSms({ to: lead.phone, body: smsContent });
+            results.sms = smsResult;
+          }
+        }
+      }
+
+      // Update sequence step if sequence_id is present
+      const sequenceId = input?.sequence_id as string | null;
+      if (sequenceId) {
+        await supabase
+          .from("oe_lead_nurture_sequences")
+          .update({ last_sent_at: new Date().toISOString() })
+          .eq("id", sequenceId);
+      }
+    }
+
+    // For patient reactivation messages
+    if (action.action_type === "patient_reactivation") {
+      const input = action.input_data as Record<string, unknown> | null;
+      const output = action.output_data as Record<string, unknown> | null;
+      const channel = (input?.channel as string) || "sms";
+      const smsContent = edited_content || (output?.sms_content as string) || finalContent;
+      const emailContent = edited_content || (output?.email_content as string) || finalContent;
+      const subjectLine = (input?.subject_line as string) || "We Miss You at AK Ultimate Dental!";
+
+      if (action.patient_id) {
+        const { data: patient } = await supabase
+          .from("oe_patients")
+          .select("*")
+          .eq("id", action.patient_id)
+          .single();
+
+        if (patient) {
+          if ((channel === "email" || channel === "both") && patient.email) {
+            const emailResult = await sendEmail({
+              to: patient.email,
+              subject: subjectLine,
+              html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                  <div style="background: #0891b2; color: white; padding: 20px; border-radius: 8px 8px 0 0;">
+                    <h1 style="margin: 0; font-size: 24px;">AK Ultimate Dental</h1>
+                  </div>
+                  <div style="padding: 24px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px;">
+                    <p>Hi ${patient.first_name},</p>
+                    ${emailContent.split("\n").map((line: string) => `<p>${line}</p>`).join("")}
+                    <p style="color: #64748b; font-size: 12px; margin-top: 24px;">
+                      AK Ultimate Dental | (702) 935-4395 | akultimatedental.com<br/>
+                      Reply STOP to unsubscribe from messages.
+                    </p>
+                  </div>
+                </div>
+              `,
+            });
+            results.email = emailResult;
+          }
+          if ((channel === "sms" || channel === "both") && patient.phone) {
+            const smsResult = await sendSms({ to: patient.phone, body: smsContent });
+            results.sms = smsResult;
+          }
+
+          // Log outreach message
+          await supabase.from("oe_outreach_messages").insert({
+            patient_id: patient.id,
+            channel: channel === "both" ? "email" : channel,
+            direction: "outbound",
+            status: "sent",
+            content: smsContent,
+            metadata: { ...results, reactivation_type: input?.reactivation_type },
+          });
+        }
+      }
+
+      // Update sequence step
+      const sequenceId = input?.sequence_id as string | null;
+      if (sequenceId) {
+        await supabase
+          .from("oe_patient_reactivation_sequences")
+          .update({ last_sent_at: new Date().toISOString() })
+          .eq("id", sequenceId);
+      }
+    }
+
     // For outreach/recall messages
     if (
       action.action_type === "recall_message" ||

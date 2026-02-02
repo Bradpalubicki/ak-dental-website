@@ -9,13 +9,13 @@ import { siteConfig } from "@/lib/config";
 import { images } from "@/lib/images";
 
 export const metadata: Metadata = {
-  title: "About Dr. Alexandru Chireu | Las Vegas Dentist",
+  title: "About Our Team | Las Vegas Dentist",
   description:
-    "Meet Dr. Alexandru Chireu, DDS - your trusted Las Vegas dentist with over a decade of dental education and experience. Learn about our patient-centered approach to dental care.",
+    "Meet the team at AK Ultimate Dental - your trusted Las Vegas dentist with over a decade of dental education and experience. Learn about our patient-centered approach to dental care.",
   openGraph: {
-    title: "About Dr. Alexandru Chireu | AK Ultimate Dental Las Vegas",
+    title: "About Our Team | AK Ultimate Dental Las Vegas",
     description:
-      "Meet Dr. Alexandru Chireu, DDS - your trusted Las Vegas dentist with comprehensive training in European and American dental methodologies.",
+      "Meet the team at AK Ultimate Dental - your trusted Las Vegas dentist with comprehensive training in European and American dental methodologies.",
   },
 };
 
@@ -46,17 +46,17 @@ export default function AboutPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-white">
               <span className="inline-block text-cyan-400 font-semibold text-sm uppercase tracking-wider mb-4">
-                Meet Your Dentist
+                Meet Our Team
               </span>
               <h1 className="text-5xl md:text-6xl font-bold mb-6">
-                {siteConfig.doctor.name}
+                Our Dental Team
               </h1>
               <p className="text-2xl text-cyan-400 font-medium mb-6">
                 Doctor of Dental Surgery
               </p>
               <p className="text-xl text-gray-200 mb-8 leading-relaxed">
                 With over a decade of comprehensive dental education spanning both
-                European and American methodologies, Dr. Chireu brings a unique
+                European and American methodologies, our dental team brings a unique
                 perspective to modern dentistry—combining precision, artistry, and
                 genuine compassion for every patient.
               </p>
@@ -79,7 +79,7 @@ export default function AboutPage() {
               <div className="relative">
                 <Image
                   src={images.team.doctor}
-                  alt="Dr. Alexandru Chireu"
+                  alt="AK Ultimate Dental team"
                   width={500}
                   height={600}
                   className="rounded-2xl shadow-2xl"
@@ -108,7 +108,7 @@ export default function AboutPage() {
             <div className="relative">
               <Image
                 src={images.team.dentistWorking}
-                alt="Dr. Chireu with patient"
+                alt="Dental care at AK Ultimate Dental"
                 width={600}
                 height={450}
                 className="rounded-2xl shadow-xl"
@@ -125,9 +125,9 @@ export default function AboutPage() {
               </h2>
               <div className="space-y-6 text-lg text-gray-600">
                 <p>
-                  Dr. Alexandru Chireu&apos;s journey in dentistry began with three years of
-                  rigorous dental education in Romania, where he developed a strong
-                  foundation in dental science and patient care.
+                  Our practice&apos;s journey in dentistry began with three years of
+                  rigorous dental education in Romania, where a strong
+                  foundation in dental science and patient care was developed.
                 </p>
                 <p>
                   He then advanced his studies in the United States, earning his Doctor
@@ -135,8 +135,8 @@ export default function AboutPage() {
                   American dental techniques and technologies.
                 </p>
                 <p>
-                  This unique combination gives Dr. Chireu a comprehensive understanding
-                  of various treatment approaches, allowing him to provide truly
+                  This unique combination gives our team a comprehensive understanding
+                  of various treatment approaches, allowing us to provide truly
                   personalized care to every patient.
                 </p>
               </div>
@@ -170,8 +170,8 @@ export default function AboutPage() {
               Continuing a 20+ Year Tradition
             </h2>
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-              When Dr. Chireu acquired AK Ultimate Dental from the retiring Dr. Scott
-              L. Miller, he made a commitment to honor the practice&apos;s two-decade legacy
+              When our new leadership acquired AK Ultimate Dental from the retiring Dr. Scott
+              L. Miller, a commitment was made to honor the practice&apos;s two-decade legacy
               of exceptional patient care while introducing new technologies and
               treatment options to better serve the Las Vegas community.
             </p>
@@ -364,7 +364,7 @@ export default function AboutPage() {
             Experience the Difference
           </h2>
           <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-            Schedule your appointment with Dr. Chireu and discover personalized
+            Schedule your appointment with our team and discover personalized
             dental care backed by advanced technology and genuine compassion.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

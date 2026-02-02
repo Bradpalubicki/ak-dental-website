@@ -40,9 +40,68 @@ export async function POST(req: NextRequest) {
       // Classify the inbound message intent
       const normalizedBody = messageBody.trim().toLowerCase();
 
+      // Check for opt-out keywords FIRST
+      const optOutKeywords = ["stop", "unsubscribe", "optout", "opt out", "cancel messages", "quit"];
+      if (optOutKeywords.some((kw) => normalizedBody === kw || normalizedBody === kw.replace(" ", ""))) {
+        // Set opt-out flag on patient and/or lead
+        if (patient) {
+          await supabase
+            .from("oe_patients")
+            .update({ sms_opt_out: true })
+            .eq("id", patient.id);
+        }
+
+        // Also check leads by phone
+        await supabase
+          .from("oe_leads")
+          .update({ sms_opt_out: true })
+          .eq("phone", from);
+
+        // Pause any active nurture/reactivation sequences
+        if (patient) {
+          await supabase
+            .from("oe_patient_reactivation_sequences")
+            .update({ status: "opted_out", completed_at: new Date().toISOString() })
+            .eq("patient_id", patient.id)
+            .eq("status", "active");
+        }
+
+        // Pause lead nurture sequences for this phone
+        const { data: leads } = await supabase
+          .from("oe_leads")
+          .select("id")
+          .eq("phone", from);
+
+        if (leads) {
+          for (const lead of leads) {
+            await supabase
+              .from("oe_lead_nurture_sequences")
+              .update({ status: "opted_out", completed_at: new Date().toISOString() })
+              .eq("lead_id", lead.id)
+              .eq("status", "active");
+          }
+        }
+
+        // Log the opt-out
+        await supabase.from("oe_ai_actions").insert({
+          action_type: "sms_opt_out",
+          module: "compliance",
+          description: `${patient ? `${patient.first_name} ${patient.last_name}` : from} opted out of SMS messages`,
+          input_data: { phone: from, message: messageBody },
+          status: "executed",
+          patient_id: patient?.id || null,
+        });
+
+        // Return TwiML - Twilio handles STOP automatically, but we track it too
+        return new NextResponse(
+          '<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
+          { status: 200, headers: { "Content-Type": "text/xml" } }
+        );
+      }
+
       // Check for confirmation replies
       const confirmationReplies = ["c", "confirm", "yes", "y", "confirmed", "ok"];
-      const cancelReplies = ["cancel", "no", "n", "stop", "reschedule"];
+      const cancelReplies = ["cancel", "no", "n", "reschedule"];
 
       if (confirmationReplies.includes(normalizedBody)) {
         // Confirmation reply - update next appointment

@@ -56,7 +56,7 @@ export default function SettingsPage() {
           </div>
           <div>
             <label className="text-sm font-medium text-slate-700">Primary Doctor</label>
-            <input type="text" defaultValue="Dr. Alexandru Chireu, DDS" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+            <input type="text" defaultValue="" placeholder="Enter doctor name" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
           </div>
           <div>
             <label className="text-sm font-medium text-slate-700">Phone</label>

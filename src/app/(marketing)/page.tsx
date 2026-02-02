@@ -88,14 +88,14 @@ export default function HomePage() {
               <div className="relative w-16 h-16 rounded-full overflow-hidden">
                 <Image
                   src={images.team.doctor}
-                  alt="Dr. Alexandru Chireu"
+                  alt="AK Ultimate Dental team"
                   fill
                   className="object-cover"
                 />
               </div>
               <div>
-                <p className="font-semibold text-gray-900">Dr. Alexandru Chireu</p>
-                <p className="text-sm text-gray-500">Lead Dentist, DDS</p>
+                <p className="font-semibold text-gray-900">AK Ultimate Dental</p>
+                <p className="text-sm text-gray-500">Your Dental Team</p>
               </div>
             </div>
             <p className="text-sm text-gray-600 italic">
@@ -196,7 +196,7 @@ export default function HomePage() {
               <div className="relative z-10">
                 <Image
                   src={images.team.dentistWorking}
-                  alt="Dr. Chireu with patient"
+                  alt="Dental care at AK Ultimate Dental"
                   width={600}
                   height={700}
                   className="rounded-2xl shadow-2xl"
@@ -287,18 +287,18 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-white">
               <span className="inline-block text-cyan-400 font-semibold text-sm uppercase tracking-wider mb-4">
-                Meet Your Dentist
+                Meet Your Dental Team
               </span>
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                {siteConfig.doctor.name}
+                Our Dental Team
               </h2>
               <p className="text-xl text-gray-300 mb-6">
                 Doctor of Dental Surgery
               </p>
               <p className="text-lg text-gray-300 mb-8 leading-relaxed">
                 With over a decade of advanced dental training spanning European and
-                American methodologies, Dr. Chireu brings a unique blend of precision,
-                artistry, and compassion to every patient interaction. His commitment
+                American methodologies, our team brings a unique blend of precision,
+                artistry, and compassion to every patient interaction. Our commitment
                 to continued education ensures you receive the most current,
                 effective treatments available.
               </p>
@@ -311,7 +311,7 @@ export default function HomePage() {
               </div>
               <Button asChild size="lg" className="h-14 px-8 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 border-0">
                 <Link href="/about">
-                  Learn More About Dr. Chireu
+                  Learn More About Us
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -321,7 +321,7 @@ export default function HomePage() {
               <div className="relative">
                 <Image
                   src={images.team.doctor}
-                  alt="Dr. Alexandru Chireu"
+                  alt="AK Ultimate Dental team"
                   width={500}
                   height={600}
                   className="rounded-2xl shadow-2xl"
@@ -331,7 +331,7 @@ export default function HomePage() {
                   <p className="text-gray-600 italic mb-3">
                     &ldquo;Every patient deserves a smile they&apos;re proud to share with the world.&rdquo;
                   </p>
-                  <p className="text-sm font-semibold text-gray-900">— Dr. Alexandru Chireu</p>
+                  <p className="text-sm font-semibold text-gray-900">— AK Ultimate Dental</p>
                 </div>
               </div>
             </div>

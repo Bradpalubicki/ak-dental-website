@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { Menu, Phone, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -35,7 +36,14 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="text-xl font-bold text-primary">{siteConfig.name}</span>
+            <Image
+              src="/ak-logo.png"
+              alt={siteConfig.name}
+              width={200}
+              height={48}
+              className="h-10 w-auto"
+              priority
+            />
           </Link>
 
           {/* Desktop navigation */}

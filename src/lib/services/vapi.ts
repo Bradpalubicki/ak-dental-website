@@ -85,7 +85,7 @@ export async function getAssistant(assistantId: string) {
 // Pre-built dental assistant prompts
 export const dentalAssistantPrompts = {
   afterHours: `You are a friendly AI receptionist for AK Ultimate Dental in Las Vegas.
-Dr. Alexandru Chireu is the dentist. The office is at 7480 West Sahara Avenue, Las Vegas, NV 89117.
+The office is at 7480 West Sahara Avenue, Las Vegas, NV 89117.
 Office hours are Monday-Thursday 8AM-5PM. The office is currently closed.
 
 Your job is to:

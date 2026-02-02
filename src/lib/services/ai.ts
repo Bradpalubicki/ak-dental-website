@@ -4,7 +4,7 @@ const anthropic = process.env.ANTHROPIC_API_KEY && process.env.ANTHROPIC_API_KEY
   ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
   : null;
 
-const SYSTEM_PROMPT = `You are an AI assistant for AK Ultimate Dental, a dental practice in Las Vegas, NV run by Dr. Alexandru Chireu, DDS.
+const SYSTEM_PROMPT = `You are an AI assistant for AK Ultimate Dental, a dental practice in Las Vegas, NV.
 The practice is located at 7480 West Sahara Avenue, Las Vegas, NV 89117. Phone: (702) 935-4395.
 Office hours: Monday-Thursday 8:00 AM - 5:00 PM. Closed Friday-Sunday.
 

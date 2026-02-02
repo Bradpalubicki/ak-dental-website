@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
         appointment_time,
         duration_minutes: duration_minutes || 60,
         type,
-        provider_name: provider_name || "Dr. Alexandru Chireu",
+        provider_name: provider_name || "AK Ultimate Dental",
         notes: notes || null,
         status: "scheduled",
       })

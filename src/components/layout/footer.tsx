@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Phone, Mail, MapPin, Facebook } from "lucide-react";
 import { siteConfig, navigation, services } from "@/lib/config";
 
@@ -9,7 +10,13 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Contact Info */}
           <div>
-            <h3 className="text-white text-lg font-semibold mb-4">{siteConfig.name}</h3>
+            <Image
+              src="/ak-logo.png"
+              alt={siteConfig.name}
+              width={180}
+              height={44}
+              className="h-9 w-auto mb-4 brightness-0 invert"
+            />
             <ul className="space-y-3">
               <li>
                 <a href={siteConfig.phoneHref} className="flex items-center gap-2 hover:text-white transition-colors">

@@ -9,7 +9,7 @@ import { services, siteConfig } from "@/lib/config";
 export const metadata: Metadata = {
   title: "Dental Services in Las Vegas, NV",
   description:
-    "Comprehensive dental services in Las Vegas including cleanings, cosmetic dentistry, dental implants, crowns, root canals, and more. Dr. Alexandru Chireu provides expert care.",
+    "Comprehensive dental services in Las Vegas including cleanings, cosmetic dentistry, dental implants, crowns, root canals, and more. Our dental team provides expert care.",
   keywords: [
     "dental services Las Vegas",
     "Las Vegas dentist services",
@@ -51,8 +51,8 @@ export default function ServicesPage() {
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
               From routine cleanings to advanced restorations, AK Ultimate Dental
-              provides complete dental care for your entire family. Dr. Alexandru
-              Chireu combines expertise with the latest technology to deliver
+              provides complete dental care for your entire family. Our team
+              combines expertise with the latest technology to deliver
               exceptional results.
             </p>
             <Button asChild size="lg">
@@ -120,7 +120,7 @@ export default function ServicesPage() {
               {
                 title: "Experienced Care",
                 description:
-                  "Dr. Chireu brings over a decade of dental education combining European and American methodologies.",
+                  "Our dentist brings over a decade of dental education combining European and American methodologies.",
               },
               {
                 title: "Patient Comfort",

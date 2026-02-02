@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 // UserButton conditionally imported when Clerk is configured
 const CLERK_KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
@@ -63,13 +64,13 @@ export function Sidebar() {
       <div className="flex h-16 items-center justify-between border-b border-slate-200 px-4">
         {!collapsed && (
           <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-600 text-white">
-              <Zap className="h-5 w-5" />
-            </div>
-            <div>
-              <span className="text-sm font-bold text-slate-900">ONE ENGINE</span>
-              <span className="block text-[10px] text-slate-500">AI Operations</span>
-            </div>
+            <Image
+              src="/ak-logo.png"
+              alt="AK Ultimate Dental"
+              width={140}
+              height={32}
+              className="h-8 w-auto"
+            />
           </Link>
         )}
         {collapsed && (

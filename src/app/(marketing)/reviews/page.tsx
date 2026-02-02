@@ -9,11 +9,11 @@ import { testimonials, siteConfig } from "@/lib/config";
 export const metadata: Metadata = {
   title: "Patient Reviews & Testimonials | Las Vegas Dentist",
   description:
-    "Read reviews from our satisfied patients at AK Ultimate Dental in Las Vegas. See why patients trust Dr. Alexandru Chireu for their dental care.",
+    "Read reviews from our satisfied patients at AK Ultimate Dental in Las Vegas. See why patients trust our team for their dental care.",
   keywords: [
     "AK Ultimate Dental reviews",
     "Las Vegas dentist reviews",
-    "Dr. Chireu reviews",
+    "AK Ultimate Dental dentist reviews",
     "dental reviews Las Vegas",
     "best dentist Las Vegas reviews",
   ],

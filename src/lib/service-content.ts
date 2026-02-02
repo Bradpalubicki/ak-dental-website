@@ -22,7 +22,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
     heroDescription:
       "Maintain optimal oral health with comprehensive preventive dental care at AK Ultimate Dental. Our thorough cleanings and examinations help prevent costly dental problems.",
     content: [
-      "Regular dental cleanings and preventive care are the foundation of a healthy smile. At AK Ultimate Dental in Las Vegas, Dr. Alexandru Chireu and our skilled hygiene team provide thorough, comfortable cleanings that go beyond what you can achieve at home. We recommend professional cleanings every six months to remove plaque and tartar buildup, preventing cavities, gum disease, and other oral health issues.",
+      "Regular dental cleanings and preventive care are the foundation of a healthy smile. At AK Ultimate Dental in Las Vegas, our skilled dental team provides thorough, comfortable cleanings that go beyond what you can achieve at home. We recommend professional cleanings every six months to remove plaque and tartar buildup, preventing cavities, gum disease, and other oral health issues.",
       "During your preventive care visit, we perform a comprehensive examination of your teeth, gums, and overall oral health. Using advanced diagnostic tools including digital X-rays, intraoral cameras, and Diagnodent cavity detection technology, we can identify potential problems early—often before they cause pain or require extensive treatment. Early detection means simpler, less expensive solutions.",
       "Our preventive services include professional teeth cleaning (prophylaxis), comprehensive dental examinations, digital radiographs with reduced radiation exposure, oral cancer screenings, fluoride treatments, and dental sealants for cavity-prone teeth. We also provide personalized guidance on brushing and flossing techniques, helping you maintain excellent oral health between visits.",
       "Prevention is always better than treatment. Many dental problems, including cavities and gum disease, develop silently without obvious symptoms. By the time you feel pain, the problem has often progressed significantly. Regular preventive visits allow us to catch and address issues early, saving you time, discomfort, and money in the long run.",
@@ -50,7 +50,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
       {
         question: "How often should I get my teeth cleaned?",
         answer:
-          "Most patients benefit from professional cleanings every six months. However, patients with gum disease or other conditions may need more frequent visits. Dr. Chireu will recommend a schedule based on your individual needs.",
+          "Most patients benefit from professional cleanings every six months. However, patients with gum disease or other conditions may need more frequent visits. Our dentist will recommend a schedule based on your individual needs.",
       },
       {
         question: "Do dental cleanings hurt?",
@@ -79,14 +79,14 @@ export const serviceContent: Record<string, ServicePageContent> = {
       "Transform your smile with cosmetic dentistry in Las Vegas. Teeth whitening, porcelain veneers, CEREC same-day restorations. Free consultation. Call (702) 935-4395.",
     heroTitle: "Cosmetic Dentistry in Las Vegas: Transform Your Smile",
     heroDescription:
-      "Achieve the beautiful, confident smile you deserve with advanced cosmetic dentistry at AK Ultimate Dental. Dr. Alexandru Chireu combines artistry with technology for stunning results.",
+      "Achieve the beautiful, confident smile you deserve with advanced cosmetic dentistry at AK Ultimate Dental. Our team combines artistry with technology for stunning results.",
     content: [
-      "Your smile is one of the first things people notice about you. At AK Ultimate Dental in Las Vegas, we offer comprehensive cosmetic dentistry services to help you achieve the beautiful, confident smile you've always wanted. Dr. Alexandru Chireu combines artistic skill with advanced dental technology to create natural-looking results that enhance your unique features.",
+      "Your smile is one of the first things people notice about you. At AK Ultimate Dental in Las Vegas, we offer comprehensive cosmetic dentistry services to help you achieve the beautiful, confident smile you've always wanted. Our team combines artistic skill with advanced dental technology to create natural-looking results that enhance your unique features.",
       "Our cosmetic dentistry services include professional teeth whitening, porcelain veneers, composite bonding, CEREC same-day restorations, and smile makeovers. Whether you're dealing with stained, chipped, misshapen, or gapped teeth, we have solutions to address your concerns and help you smile with confidence.",
       "Professional teeth whitening is one of the most popular cosmetic treatments we offer. Unlike over-the-counter products, our professional whitening treatments use stronger, more effective formulas that can dramatically brighten your smile in just one visit. We also offer take-home whitening kits for convenient touch-ups and maintenance.",
       "Porcelain veneers are thin shells of dental ceramic that cover the front surface of your teeth, instantly transforming their appearance. Veneers can correct multiple issues at once—staining, chips, gaps, and minor misalignment—creating a stunning, natural-looking smile. Each veneer is custom-crafted to match your desired shape, size, and shade.",
       "With our CEREC technology, we can create beautiful, custom ceramic restorations in a single visit. No temporary crowns, no second appointments, no waiting. The CEREC system uses digital impressions and computer-aided design to mill your restoration right in our office, perfectly matched to your natural teeth.",
-      "Every smile makeover begins with a comprehensive consultation. Dr. Chireu takes time to understand your goals, evaluate your oral health, and discuss all available options. We use digital imaging to show you potential results before treatment begins, ensuring you're completely confident in your treatment plan.",
+      "Every smile makeover begins with a comprehensive consultation. Our dentist takes time to understand your goals, evaluate your oral health, and discuss all available options. We use digital imaging to show you potential results before treatment begins, ensuring you're completely confident in your treatment plan.",
     ],
     benefits: [
       {
@@ -136,15 +136,15 @@ export const serviceContent: Record<string, ServicePageContent> = {
     title: "Dental Implants",
     metaTitle: "Dental Implants Las Vegas | Permanent Tooth Replacement | AK Ultimate Dental",
     metaDescription:
-      "Dental implants in Las Vegas with Dr. Alexandru Chireu. Permanent tooth replacement that looks and functions like natural teeth. 3D imaging for precise placement. Call (702) 935-4395.",
+      "Dental implants in Las Vegas at AK Ultimate Dental. Permanent tooth replacement that looks and functions like natural teeth. 3D imaging for precise placement. Call (702) 935-4395.",
     heroTitle: "Dental Implants in Las Vegas: Permanent Tooth Replacement",
     heroDescription:
-      "Restore your smile permanently with dental implants at AK Ultimate Dental. Dr. Alexandru Chireu uses advanced 3D imaging for precise, long-lasting results.",
+      "Restore your smile permanently with dental implants at AK Ultimate Dental. We use advanced 3D imaging for precise, long-lasting results.",
     content: [
-      "Dental implants are the gold standard for replacing missing teeth. Unlike dentures or bridges, implants replace both the root and crown of missing teeth, providing a permanent solution that looks, feels, and functions like natural teeth. At AK Ultimate Dental in Las Vegas, Dr. Alexandru Chireu uses advanced technology including i-CAT 3D imaging to plan and place dental implants with precision.",
+      "Dental implants are the gold standard for replacing missing teeth. Unlike dentures or bridges, implants replace both the root and crown of missing teeth, providing a permanent solution that looks, feels, and functions like natural teeth. At AK Ultimate Dental in Las Vegas, we use advanced technology including i-CAT 3D imaging to plan and place dental implants with precision.",
       "A dental implant consists of three parts: a titanium post that serves as an artificial tooth root, an abutment that connects the post to the crown, and a custom-crafted crown that matches your natural teeth. The titanium post fuses with your jawbone through a process called osseointegration, creating a stable, permanent foundation for your new tooth.",
       "One of the most significant advantages of dental implants is that they help preserve your jawbone. When you lose a tooth, the bone that supported it begins to deteriorate. Implants stimulate the jawbone just like natural tooth roots, preventing bone loss and maintaining your facial structure. This makes implants not just a cosmetic solution, but a health-preserving one.",
-      "Our implant process begins with a thorough evaluation using 3D imaging technology. This allows Dr. Chireu to assess your bone density, identify the optimal implant position, and plan the procedure with exceptional accuracy. This precision planning results in better outcomes and faster healing times.",
+      "Our implant process begins with a thorough evaluation using 3D imaging technology. This allows our dentist to assess your bone density, identify the optimal implant position, and plan the procedure with exceptional accuracy. This precision planning results in better outcomes and faster healing times.",
       "Dental implants can replace a single tooth, multiple teeth, or support a full arch of teeth. Options include single implants, implant-supported bridges, and implant-retained dentures. During your consultation, we'll discuss which option best addresses your needs and goals.",
       "The implant process typically occurs in phases. After the implant post is placed, a healing period of several months allows the implant to fuse with your bone. Once healed, the abutment and crown are attached. While this takes time, the result is a restoration that can last a lifetime with proper care.",
     ],
@@ -201,7 +201,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
     heroDescription:
       "Restore your smile with custom crowns and bridges at AK Ultimate Dental. Same-day CEREC crowns available for your convenience.",
     content: [
-      "Dental crowns and bridges are tried-and-true restorations for damaged or missing teeth. At AK Ultimate Dental in Las Vegas, Dr. Alexandru Chireu provides custom-crafted crowns and bridges that restore both function and aesthetics. With our CEREC technology, many patients can receive beautiful, permanent crowns in just one visit.",
+      "Dental crowns and bridges are tried-and-true restorations for damaged or missing teeth. At AK Ultimate Dental in Las Vegas, we provide custom-crafted crowns and bridges that restore both function and aesthetics. With our CEREC technology, many patients can receive beautiful, permanent crowns in just one visit.",
       "A dental crown, sometimes called a cap, covers and protects a damaged tooth. Crowns are recommended for teeth that are cracked, severely decayed, weakened after root canal treatment, or significantly worn. They restore the tooth's strength, shape, and appearance while protecting it from further damage.",
       "Our CEREC same-day crown technology revolutionizes the crown process. Traditional crowns require two appointments and temporary crowns while your permanent crown is made at an outside lab. With CEREC, we take digital impressions, design your crown on a computer, and mill it from a solid block of ceramic—all while you wait. You leave with your permanent, perfectly-fitted crown in a single visit.",
       "A dental bridge replaces one or more missing teeth by anchoring to adjacent teeth or implants. The bridge spans the gap left by missing teeth, restoring your ability to chew properly and preventing remaining teeth from shifting out of position. Bridges also help maintain your facial structure and smile aesthetics.",
@@ -261,7 +261,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
     heroDescription:
       "Save your natural tooth with gentle, effective root canal treatment at AK Ultimate Dental. Modern techniques make the procedure comfortable and successful.",
     content: [
-      "Root canal therapy has an undeserved reputation for being painful, but modern techniques have made it a comfortable procedure that relieves pain rather than causing it. At AK Ultimate Dental in Las Vegas, Dr. Alexandru Chireu performs gentle root canal treatments that save natural teeth and eliminate the severe pain of infected tooth pulp.",
+      "Root canal therapy has an undeserved reputation for being painful, but modern techniques have made it a comfortable procedure that relieves pain rather than causing it. At AK Ultimate Dental in Las Vegas, we perform gentle root canal treatments that save natural teeth and eliminate the severe pain of infected tooth pulp.",
       "The inside of each tooth contains soft tissue called pulp, which includes nerves, blood vessels, and connective tissue. When the pulp becomes infected due to deep decay, cracks, or trauma, it can cause severe pain and lead to abscess formation. Root canal therapy removes the infected pulp, cleans and seals the inside of the tooth, and allows you to keep your natural tooth.",
       "Symptoms that may indicate you need a root canal include severe tooth pain, prolonged sensitivity to hot or cold, darkening of the tooth, swelling or tenderness in nearby gums, and a persistent pimple on the gums. However, some infected teeth cause no symptoms at all, which is why regular dental exams are important for detecting problems early.",
       "During root canal treatment, we first numb the area completely so you won't feel pain during the procedure. We then create a small opening in the tooth to access the pulp chamber, remove the infected tissue, clean and shape the root canals, and seal them with a biocompatible material. Most root canals are completed in one or two visits.",
@@ -321,7 +321,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
     heroDescription:
       "Expert oral surgery at AK Ultimate Dental. From simple extractions to bone grafting, we provide comfortable surgical care with precision and compassion.",
     content: [
-      "Sometimes oral surgery is necessary to address dental issues that can't be resolved with other treatments. At AK Ultimate Dental in Las Vegas, Dr. Alexandru Chireu provides a range of oral surgery services in a comfortable, caring environment. We use advanced imaging technology and gentle techniques to ensure optimal outcomes and patient comfort.",
+      "Sometimes oral surgery is necessary to address dental issues that can't be resolved with other treatments. At AK Ultimate Dental in Las Vegas, we provide a range of oral surgery services in a comfortable, caring environment. We use advanced imaging technology and gentle techniques to ensure optimal outcomes and patient comfort.",
       "Tooth extraction is the most common oral surgery procedure. While we always try to save natural teeth when possible, extraction may be necessary for teeth that are severely damaged, infected, or impacted. We also perform extractions for orthodontic treatment and wisdom teeth that are causing problems or at risk of doing so.",
       "Bone grafting is a procedure that rebuilds bone in the jaw, often performed in preparation for dental implants. When teeth are lost, the surrounding bone begins to deteriorate. Bone grafts restore bone volume, creating a solid foundation for implant placement. We use various grafting materials and techniques based on each patient's needs.",
       "TMJ (temporomandibular joint) disorders can cause jaw pain, headaches, clicking sounds, and difficulty opening your mouth. We offer comprehensive TMJ evaluation and treatment, including oral appliances, physical therapy recommendations, and in some cases, surgical interventions.",
@@ -441,7 +441,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
     heroDescription:
       "Achieve a straighter, healthier smile with orthodontic treatment at AK Ultimate Dental. We offer SureSmile clear aligners and traditional braces for all ages.",
     content: [
-      "A straight smile is more than cosmetic—properly aligned teeth are easier to clean, function better, and are less prone to wear and damage. At AK Ultimate Dental in Las Vegas, we offer orthodontic solutions for patients of all ages, including SureSmile clear aligners and traditional braces. Dr. Alexandru Chireu will help you find the best option for your smile goals and lifestyle.",
+      "A straight smile is more than cosmetic—properly aligned teeth are easier to clean, function better, and are less prone to wear and damage. At AK Ultimate Dental in Las Vegas, we offer orthodontic solutions for patients of all ages, including SureSmile clear aligners and traditional braces. Our team will help you find the best option for your smile goals and lifestyle.",
       "SureSmile is an advanced clear aligner system that straightens teeth using a series of custom-made, virtually invisible trays. The trays are removable, allowing you to eat, brush, and floss normally. SureSmile is an excellent option for adults and teens who want to straighten their teeth discreetly.",
       "Traditional braces remain an effective option for complex orthodontic cases. Modern braces are smaller and more comfortable than ever, with options including metal braces and clear ceramic braces. Braces work by applying continuous pressure to gradually move teeth into proper alignment.",
       "Orthodontic treatment can address a variety of issues including crooked teeth, overcrowding, gaps between teeth, overbite, underbite, crossbite, and open bite. Beyond aesthetics, correcting these issues can improve your ability to chew, reduce jaw strain, and make teeth easier to clean—reducing your risk of cavities and gum disease.",

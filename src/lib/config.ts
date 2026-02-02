@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: "AK Ultimate Dental",
-  description: "Comprehensive general and cosmetic dentistry in Las Vegas, NV. Dr. Alexandru Chireu provides personalized dental care using advanced technology.",
+  description: "Comprehensive general and cosmetic dentistry in Las Vegas, NV. Our team provides personalized dental care using advanced technology.",
   url: "https://www.akultimatedental.com",
   phone: "(702) 935-4395",
   phoneHref: "tel:+17029354395",
@@ -28,10 +28,10 @@ export const siteConfig = {
     google: "https://maps.google.com/?cid=YOUR_CID",
   },
   doctor: {
-    name: "Dr. Alexandru Chireu",
-    title: "DDS",
-    credentials: "Doctor of Dental Surgery",
-    experience: "Over a decade of dental education and hands-on experience",
+    name: "Our Dental Team",
+    title: "",
+    credentials: "",
+    experience: "Years of dental education and hands-on experience",
   },
 };
 

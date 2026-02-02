@@ -59,7 +59,7 @@ const localFaqs = [
   {
     question: "What makes AK Ultimate Dental different from other Las Vegas dentists?",
     answer:
-      "With over 20 years serving Las Vegas, we combine advanced technology (3D imaging, CEREC same-day crowns, laser dentistry) with personalized care. Dr. Chireu's unique training in European and American methodologies brings world-class expertise to our Las Vegas community.",
+      "With over 20 years serving Las Vegas, we combine advanced technology (3D imaging, CEREC same-day crowns, laser dentistry) with personalized care. Our team's unique training in European and American methodologies brings world-class expertise to our Las Vegas community.",
   },
   {
     question: "What insurance plans do you accept?",

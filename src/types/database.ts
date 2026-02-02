@@ -200,6 +200,70 @@ export interface AiAction {
   confidence_score: number | null;
 }
 
+export interface SmsTemplate {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  name: string;
+  category: "nurture" | "reactivation" | "recall" | "appointment" | "general";
+  subcategory: string | null;
+  body: string;
+  variables: string[];
+  active: boolean;
+}
+
+export interface LeadNurtureDefinition {
+  id: string;
+  created_at: string;
+  inquiry_type: string;
+  step_number: number;
+  delay_hours: number;
+  channel: "sms" | "email" | "both";
+  template_key: string;
+  subject_line: string | null;
+  active: boolean;
+}
+
+export interface LeadNurtureSequence {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  lead_id: string;
+  inquiry_type: string;
+  current_step: number;
+  status: "active" | "paused" | "completed" | "converted" | "opted_out";
+  next_send_at: string;
+  last_sent_at: string | null;
+  completed_at: string | null;
+  metadata: Json;
+}
+
+export interface ReactivationDefinition {
+  id: string;
+  created_at: string;
+  reactivation_type: "recall" | "incomplete_treatment" | "missed_appointment" | "lapsed";
+  step_number: number;
+  delay_days: number;
+  channel: "sms" | "email" | "both";
+  template_key: string;
+  subject_line: string | null;
+  active: boolean;
+}
+
+export interface PatientReactivationSequence {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  patient_id: string;
+  reactivation_type: string;
+  current_step: number;
+  status: "active" | "paused" | "completed" | "reactivated" | "opted_out";
+  next_send_at: string;
+  last_sent_at: string | null;
+  completed_at: string | null;
+  metadata: Json;
+}
+
 export interface DailyMetrics {
   id: string;
   date: string;
