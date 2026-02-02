@@ -39,9 +39,9 @@ export function Header() {
             <Image
               src="/ak-logo.png"
               alt={siteConfig.name}
-              width={280}
-              height={64}
-              className="h-14 w-auto"
+              width={320}
+              height={72}
+              className="h-16 w-auto"
               priority
             />
           </Link>

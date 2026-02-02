@@ -12,7 +12,7 @@ export default function HomePage() {
   return (
     <>
       {/* Premium Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+      <section className="relative min-h-[calc(100vh-8rem)] flex items-center overflow-hidden">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <Image
@@ -50,7 +50,7 @@ export default function HomePage() {
               compassionate care, and stunning results—all in one place.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
+            <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <Button asChild size="lg" className="text-lg h-14 px-8 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 border-0">
                 <Link href="/appointment">
                   Book Free Consultation

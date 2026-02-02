@@ -25,7 +25,7 @@ export async function sendEmail({ to, subject, html, replyTo }: SendEmailParams)
       to,
       subject,
       html,
-      replyTo: replyTo || "dentalremind@yahoo.com",
+      replyTo: replyTo || "dr.alex@akultimatedental.com",
     });
 
     if (error) {

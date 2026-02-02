@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
     if (briefing) {
       // Send email briefing
       await sendEmail({
-        to: "dentalremind@yahoo.com",
+        to: "dr.alex@akultimatedental.com",
         subject: `One Engine Daily Briefing - ${new Date().toLocaleDateString("en-US", { month: "long", day: "numeric" })}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

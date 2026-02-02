@@ -64,7 +64,7 @@ export default function SettingsPage() {
           </div>
           <div>
             <label className="text-sm font-medium text-slate-700">Email</label>
-            <input type="text" defaultValue="dentalremind@yahoo.com" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+            <input type="text" defaultValue="dr.alex@akultimatedental.com" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
           </div>
           <div className="col-span-2">
             <label className="text-sm font-medium text-slate-700">Address</label>

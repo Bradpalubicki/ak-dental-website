@@ -311,7 +311,7 @@ CREATE TABLE IF NOT EXISTS oe_practice_settings (
 
 -- Insert default settings
 INSERT INTO oe_practice_settings (key, value) VALUES
-  ('practice_info', '{"name": "AK Ultimate Dental", "phone": "(702) 935-4395", "email": "dentalremind@yahoo.com", "address": "7480 West Sahara Avenue, Las Vegas, NV 89117", "doctor": "AK Ultimate Dental"}'),
+  ('practice_info', '{"name": "AK Ultimate Dental", "phone": "(702) 935-4395", "email": "dr.alex@akultimatedental.com", "address": "7480 West Sahara Avenue, Las Vegas, NV 89117", "doctor": "AK Ultimate Dental"}'),
   ('business_hours', '{"monday": "8:00 AM - 5:00 PM", "tuesday": "8:00 AM - 5:00 PM", "wednesday": "8:00 AM - 5:00 PM", "thursday": "8:00 AM - 5:00 PM", "friday": "Closed", "saturday": "Closed", "sunday": "Closed"}'),
   ('ai_settings', '{"auto_respond_leads": false, "auto_send_confirmations": true, "auto_send_reminders": true, "lead_response_mode": "draft_and_approve", "confidence_threshold": 0.85}'),
   ('notification_settings', '{"daily_briefing_time": "07:00", "daily_briefing_email": true, "alert_new_leads": true, "alert_no_shows": true, "alert_insurance_issues": true}'),

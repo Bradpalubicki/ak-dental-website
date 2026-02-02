@@ -4,7 +4,7 @@ export const siteConfig = {
   url: "https://www.akultimatedental.com",
   phone: "(702) 935-4395",
   phoneHref: "tel:+17029354395",
-  email: "dentalremind@yahoo.com",
+  email: "dr.alex@akultimatedental.com",
   address: {
     street: "7480 West Sahara Avenue",
     city: "Las Vegas",
