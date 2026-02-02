@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { Menu, Phone, Clock } from "lucide-react";
+import { Menu, Phone, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { siteConfig, navigation, services } from "@/lib/config";
@@ -15,20 +15,14 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-white">
       {/* Top bar */}
       <div className="bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 py-2 flex justify-between items-center text-sm">
-          <div className="flex items-center gap-4">
-            <a href={siteConfig.phoneHref} className="flex items-center gap-2 hover:underline">
-              <Phone className="h-4 w-4" />
-              {siteConfig.phone}
-            </a>
-            <span className="hidden md:flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              Mon-Thu: 8AM-5PM
-            </span>
-          </div>
-          <Button asChild size="sm" variant="secondary">
-            <Link href="/appointment">Book Appointment</Link>
-          </Button>
+        <div className="container mx-auto px-4 py-1.5 flex justify-center items-center text-sm">
+          <a href={siteConfig.phoneHref} className="flex items-center gap-2 hover:underline">
+            <Phone className="h-4 w-4" />
+            <span>{siteConfig.phone}</span>
+            <span className="text-primary-foreground/70">—</span>
+            <MessageSquare className="h-3.5 w-3.5" />
+            <span>Call or Text</span>
+          </a>
         </div>
       </div>
 
@@ -39,9 +33,9 @@ export function Header() {
             <Image
               src="/ak-logo.png"
               alt={siteConfig.name}
-              width={320}
-              height={72}
-              className="h-16 w-auto"
+              width={400}
+              height={228}
+              className="max-h-[4.75rem] w-auto"
               priority
             />
           </Link>

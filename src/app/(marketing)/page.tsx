@@ -12,7 +12,7 @@ export default function HomePage() {
   return (
     <>
       {/* Premium Hero Section */}
-      <section className="relative min-h-[calc(100vh-8rem)] flex items-center overflow-hidden">
+      <section className="relative min-h-[calc(100vh-11rem)] flex items-center overflow-hidden">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <Image
@@ -29,7 +29,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-2xl text-white">
             {/* Trust Badge */}
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-6">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-4">
               <div className="flex -space-x-1">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
@@ -38,19 +38,19 @@ export default function HomePage() {
               <span className="text-sm font-medium">4.9 Rating · 150+ Happy Patients</span>
             </div>
 
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight">
               Your Dream Smile
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">
                 Starts Here
               </span>
             </h1>
 
-            <p className="text-xl md:text-2xl text-gray-200 mb-8 leading-relaxed">
+            <p className="text-xl md:text-2xl text-gray-200 mb-5 leading-relaxed">
               Experience world-class dentistry in Las Vegas. Advanced technology,
               compassionate care, and stunning results—all in one place.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 mb-8">
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
               <Button asChild size="lg" className="text-lg h-14 px-8 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 border-0">
                 <Link href="/appointment">
                   Book Free Consultation
