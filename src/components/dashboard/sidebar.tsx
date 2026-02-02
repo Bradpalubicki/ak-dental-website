@@ -67,8 +67,8 @@ export function Sidebar() {
             <Image
               src="/ak-logo.png"
               alt="AK Ultimate Dental"
-              width={200}
-              height={44}
+              width={990}
+              height={329}
               className="h-10 w-auto"
             />
           </Link>

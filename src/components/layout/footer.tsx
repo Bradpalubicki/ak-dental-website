@@ -13,8 +13,8 @@ export function Footer() {
             <Image
               src="/ak-logo.png"
               alt={siteConfig.name}
-              width={240}
-              height={56}
+              width={990}
+              height={329}
               className="h-12 w-auto mb-4 brightness-0 invert"
             />
             <ul className="space-y-3">
