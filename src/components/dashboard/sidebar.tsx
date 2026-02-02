@@ -21,16 +21,25 @@ import {
   ChevronLeft,
   ChevronRight,
   Bell,
+  CheckSquare,
+  Inbox,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
-const navigation = [
+const navigation: Array<{
+  name: string;
+  href: string;
+  icon: typeof LayoutDashboard;
+  badge?: string;
+}> = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Leads", href: "/dashboard/leads", icon: UserPlus, badge: "3" },
+  { name: "Approvals", href: "/dashboard/approvals", icon: CheckSquare },
+  { name: "Inbox", href: "/dashboard/inbox", icon: Inbox },
+  { name: "Leads", href: "/dashboard/leads", icon: UserPlus },
   { name: "Patients", href: "/dashboard/patients", icon: Users },
   { name: "Appointments", href: "/dashboard/appointments", icon: Calendar },
-  { name: "Insurance", href: "/dashboard/insurance", icon: Shield, badge: "5" },
+  { name: "Insurance", href: "/dashboard/insurance", icon: Shield },
   { name: "Treatments", href: "/dashboard/treatments", icon: FileText },
   { name: "Calls", href: "/dashboard/calls", icon: Phone },
   { name: "Billing", href: "/dashboard/billing", icon: DollarSign },
