@@ -4,10 +4,10 @@
 export const images = {
   // Hero and main images
   hero: {
-    main: "/office-modern.png",
+    main: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1920&h=1080&fit=crop&q=90",
     dentist: "/dr-alex-headshot.jpg",
-    office: "/office-modern.png",
-    reception: "/office-modern.png",
+    office: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1920&h=1080&fit=crop&q=90",
+    reception: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1920&h=1080&fit=crop&q=90",
   },
 
   // Team and doctor images
