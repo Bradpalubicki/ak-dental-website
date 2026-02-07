@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Phone, MapPin, CheckCircle } from "lucide-react";
+import { Phone, MapPin, CheckCircle, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,9 +17,30 @@ export default function AppointmentPage() {
     e.preventDefault();
     setFormState("submitting");
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setFormState("success");
+    const form = e.currentTarget;
+    const data = new FormData(form);
+
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          first_name: data.get("firstName"),
+          last_name: data.get("lastName"),
+          email: data.get("email"),
+          phone: data.get("phone"),
+          source: "website",
+          inquiry_type: data.get("visitReason"),
+          message: data.get("message") || `Preferred date: ${data.get("preferredDate") || "Flexible"}, Time: ${data.get("preferredTime") || "Flexible"}. Patient type: ${data.get("patientType")}.`,
+          urgency: data.get("visitReason") === "emergency" || data.get("visitReason") === "toothache" ? "high" : "medium",
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to submit");
+      setFormState("success");
+    } catch {
+      setFormState("error");
+    }
   };
 
   return (
@@ -51,7 +72,28 @@ export default function AppointmentPage() {
           <div className="grid lg:grid-cols-3 gap-12">
             {/* Form */}
             <div className="lg:col-span-2">
-              {formState === "success" ? (
+              {formState === "error" ? (
+                <Card>
+                  <CardContent className="p-8 text-center">
+                    <div className="bg-red-100 rounded-full p-4 w-fit mx-auto mb-6">
+                      <AlertCircle className="h-12 w-12 text-red-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold mb-4">
+                      Something Went Wrong
+                    </h2>
+                    <p className="text-muted-foreground mb-6">
+                      We couldn&apos;t submit your request. Please call us directly at{" "}
+                      <a href={siteConfig.phoneHref} className="text-primary hover:underline">
+                        {siteConfig.phone}
+                      </a>
+                      .
+                    </p>
+                    <Button onClick={() => setFormState("idle")}>
+                      Try Again
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : formState === "success" ? (
                 <Card>
                   <CardContent className="p-8 text-center">
                     <div className="bg-green-100 rounded-full p-4 w-fit mx-auto mb-6">
