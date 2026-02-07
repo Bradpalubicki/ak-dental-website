@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { AppointmentsClient } from "./appointments-client";
 

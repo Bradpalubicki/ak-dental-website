@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { LeadsClient } from "./leads-client";
 import type { Lead } from "@/types/database";
