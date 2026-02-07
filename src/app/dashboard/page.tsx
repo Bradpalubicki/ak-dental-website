@@ -16,6 +16,7 @@ export default async function DashboardPage() {
     aiActionsTodayRes,
     recentAiActionsRes,
     pendingInsuranceRes,
+    emergencyLeadsRes,
   ] = await Promise.all([
     supabase.from("oe_patients").select("*", { count: "exact", head: true }),
     supabase
@@ -46,6 +47,13 @@ export default async function DashboardPage() {
       .from("oe_insurance_verifications")
       .select("*", { count: "exact", head: true })
       .eq("status", "pending"),
+    supabase
+      .from("oe_leads")
+      .select("id, first_name, last_name, urgency, inquiry_type, created_at")
+      .in("urgency", ["high", "emergency"])
+      .eq("status", "new")
+      .order("created_at", { ascending: false })
+      .limit(5),
   ]);
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -80,19 +88,74 @@ export default async function DashboardPage() {
   const approvedToday = aiActionsToday.filter(
     (a: any) => a.status === "approved" || a.status === "executed"
   ).length;
+
+  // Build urgent items
+  const urgentItems: Array<{ type: string; label: string; detail: string; href: string; level: "critical" | "warning" | "info" }> = [];
+
+  // Emergency/high-urgency leads
+  (emergencyLeadsRes.data || []).forEach((l: any) => {
+    urgentItems.push({
+      type: "lead",
+      label: l.urgency === "emergency" ? "EMERGENCY LEAD" : "High-Priority Lead",
+      detail: `${l.first_name} ${l.last_name} — ${l.inquiry_type || "new inquiry"}`,
+      href: "/dashboard/leads",
+      level: l.urgency === "emergency" ? "critical" : "warning",
+    });
+  });
+
+  // Pending approvals
+  const pendingApprovals = pendingApprovalsRes.count || 0;
+  if (pendingApprovals > 0) {
+    urgentItems.push({
+      type: "approvals",
+      label: `${pendingApprovals} AI Action${pendingApprovals !== 1 ? "s" : ""} Awaiting Approval`,
+      detail: "Review and approve before messages are sent",
+      href: "/dashboard/approvals",
+      level: pendingApprovals > 3 ? "warning" : "info",
+    });
+  }
+
+  // Unconfirmed appointments
+  const unconfirmed = appointments.filter((a) => a.status === "scheduled");
+  if (unconfirmed.length > 0) {
+    urgentItems.push({
+      type: "appointments",
+      label: `${unconfirmed.length} Unconfirmed Appointment${unconfirmed.length !== 1 ? "s" : ""} Today`,
+      detail: unconfirmed.map((a) => a.patientName).join(", "),
+      href: "/dashboard/appointments",
+      level: "warning",
+    });
+  }
+
+  // Pending insurance
+  const pendingIns = pendingInsuranceRes.count || 0;
+  if (pendingIns > 0) {
+    urgentItems.push({
+      type: "insurance",
+      label: `${pendingIns} Pending Insurance Verification${pendingIns !== 1 ? "s" : ""}`,
+      detail: "Verify before patient appointments",
+      href: "/dashboard/insurance",
+      level: "info",
+    });
+  }
   /* eslint-enable @typescript-eslint/no-explicit-any */
+
+  // Sort: critical first, then warning, then info
+  const levelOrder = { critical: 0, warning: 1, info: 2 };
+  urgentItems.sort((a, b) => levelOrder[a.level] - levelOrder[b.level]);
 
   return (
     <DashboardClient
       appointments={appointments}
       leads={leads}
       aiActions={aiActions}
+      urgentItems={urgentItems}
       stats={{
         appointmentCount: appointments.length,
-        unconfirmedCount: appointments.filter((a) => a.status === "scheduled").length,
+        unconfirmedCount: unconfirmed.length,
         leadCount: leads.length,
-        pendingApprovals: pendingApprovalsRes.count || 0,
-        pendingInsurance: pendingInsuranceRes.count || 0,
+        pendingApprovals,
+        pendingInsurance: pendingIns,
         patientCount: patientsRes.count || 0,
         aiActionsToday: aiActionsToday.length,
         approvedToday,

@@ -3,9 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-// UserButton conditionally imported when Clerk is configured
-const CLERK_KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-const isClerkConfigured = CLERK_KEY && !CLERK_KEY.includes("PLACEHOLDER");
 import {
   LayoutDashboard,
   Users,
@@ -21,7 +18,6 @@ import {
   Zap,
   ChevronLeft,
   ChevronRight,
-  Bell,
   CheckSquare,
   Inbox,
   Sparkles,
@@ -29,20 +25,30 @@ import {
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
+export interface SidebarBadges {
+  approvals: number;
+  leads: number;
+  inbox: number;
+  insurance: number;
+  appointments: number;
+}
+
 const navigation: Array<{
   name: string;
   href: string;
   icon: typeof LayoutDashboard;
-  badge?: string;
+  badgeKey?: keyof SidebarBadges;
+  badgeColor?: string;
+  badgeLabel?: string;
 }> = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
   { name: "Business Advisor", href: "/dashboard/advisor", icon: Sparkles },
-  { name: "Approvals", href: "/dashboard/approvals", icon: CheckSquare },
-  { name: "Inbox", href: "/dashboard/inbox", icon: Inbox },
-  { name: "Leads", href: "/dashboard/leads", icon: UserPlus },
+  { name: "Approvals", href: "/dashboard/approvals", icon: CheckSquare, badgeKey: "approvals", badgeColor: "bg-amber-500 text-white", badgeLabel: "pending" },
+  { name: "Inbox", href: "/dashboard/inbox", icon: Inbox, badgeKey: "inbox", badgeColor: "bg-blue-500 text-white", badgeLabel: "new" },
+  { name: "Leads", href: "/dashboard/leads", icon: UserPlus, badgeKey: "leads", badgeColor: "bg-emerald-500 text-white", badgeLabel: "new" },
   { name: "Patients", href: "/dashboard/patients", icon: Users },
-  { name: "Appointments", href: "/dashboard/appointments", icon: Calendar },
-  { name: "Insurance", href: "/dashboard/insurance", icon: Shield },
+  { name: "Appointments", href: "/dashboard/appointments", icon: Calendar, badgeKey: "appointments", badgeColor: "bg-orange-500 text-white", badgeLabel: "unconfirmed" },
+  { name: "Insurance", href: "/dashboard/insurance", icon: Shield, badgeKey: "insurance", badgeColor: "bg-purple-500 text-white", badgeLabel: "pending" },
   { name: "Treatments", href: "/dashboard/treatments", icon: FileText },
   { name: "Calls", href: "/dashboard/calls", icon: Phone },
   { name: "Billing", href: "/dashboard/billing", icon: DollarSign },
@@ -51,7 +57,7 @@ const navigation: Array<{
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
-export function Sidebar() {
+export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadges }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -91,24 +97,35 @@ export function Sidebar() {
                 ? pathname === "/dashboard"
                 : pathname.startsWith(item.href);
 
+            const badgeCount = item.badgeKey ? badges[item.badgeKey] || 0 : 0;
+
             return (
               <li key={item.name}>
                 <Link
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors relative",
                     isActive
                       ? "bg-cyan-50 text-cyan-700"
                       : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                   )}
                 >
-                  <item.icon className={cn("h-5 w-5 shrink-0", isActive ? "text-cyan-600" : "text-slate-400")} />
+                  <div className="relative shrink-0">
+                    <item.icon className={cn("h-5 w-5", isActive ? "text-cyan-600" : "text-slate-400")} />
+                    {/* Dot badge when collapsed */}
+                    {collapsed && badgeCount > 0 && (
+                      <span className="absolute -right-1 -top-1 flex h-3 w-3">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
+                        <span className={`relative inline-flex h-3 w-3 rounded-full ${item.badgeColor || "bg-amber-500"}`} />
+                      </span>
+                    )}
+                  </div>
                   {!collapsed && (
                     <>
                       <span className="flex-1">{item.name}</span>
-                      {item.badge && (
-                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-cyan-100 px-1.5 text-xs font-semibold text-cyan-700">
-                          {item.badge}
+                      {badgeCount > 0 && (
+                        <span className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-bold ${item.badgeColor || "bg-cyan-100 text-cyan-700"}`}>
+                          {badgeCount}
                         </span>
                       )}
                     </>

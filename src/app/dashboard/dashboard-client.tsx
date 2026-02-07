@@ -10,6 +10,9 @@ import {
   XCircle,
   Eye,
   Users,
+  AlertTriangle,
+  ArrowRight,
+  Siren,
 } from "lucide-react";
 import { StatCard } from "@/components/dashboard/stat-card";
 
@@ -49,10 +52,19 @@ interface DashboardStats {
   approvedToday: number;
 }
 
+interface UrgentItem {
+  type: string;
+  label: string;
+  detail: string;
+  href: string;
+  level: "critical" | "warning" | "info";
+}
+
 interface Props {
   appointments: DashboardAppointment[];
   leads: DashboardLead[];
   aiActions: DashboardAiAction[];
+  urgentItems: UrgentItem[];
   stats: DashboardStats;
 }
 
@@ -87,7 +99,7 @@ const statusColors: Record<string, string> = {
   cancelled: "bg-slate-100 text-slate-500",
 };
 
-export function DashboardClient({ appointments, leads, aiActions, stats }: Props) {
+export function DashboardClient({ appointments, leads, aiActions, urgentItems, stats }: Props) {
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -102,6 +114,69 @@ export function DashboardClient({ appointments, leads, aiActions, stats }: Props
           })}
         </p>
       </div>
+
+      {/* Urgent Matters */}
+      {urgentItems.length > 0 && (
+        <div className="rounded-xl border-2 border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-4">
+          <div className="mb-3 flex items-center gap-2">
+            <Siren className="h-5 w-5 text-amber-600" />
+            <h2 className="text-sm font-bold text-amber-900 uppercase tracking-wide">
+              Needs Your Attention
+            </h2>
+            <span className="rounded-full bg-amber-200 px-2 py-0.5 text-xs font-bold text-amber-800">
+              {urgentItems.length}
+            </span>
+          </div>
+          <div className="space-y-2">
+            {urgentItems.map((item, i) => (
+              <a
+                key={i}
+                href={item.href}
+                className={`flex items-center justify-between rounded-lg border px-4 py-3 transition-all hover:shadow-md ${
+                  item.level === "critical"
+                    ? "border-red-200 bg-red-50 hover:bg-red-100"
+                    : item.level === "warning"
+                    ? "border-amber-200 bg-white hover:bg-amber-50"
+                    : "border-slate-200 bg-white hover:bg-slate-50"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                      item.level === "critical"
+                        ? "bg-red-100"
+                        : item.level === "warning"
+                        ? "bg-amber-100"
+                        : "bg-blue-100"
+                    }`}
+                  >
+                    <AlertTriangle
+                      className={`h-4 w-4 ${
+                        item.level === "critical"
+                          ? "text-red-600"
+                          : item.level === "warning"
+                          ? "text-amber-600"
+                          : "text-blue-600"
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <p
+                      className={`text-sm font-semibold ${
+                        item.level === "critical" ? "text-red-900" : "text-slate-900"
+                      }`}
+                    >
+                      {item.label}
+                    </p>
+                    <p className="text-xs text-slate-500">{item.detail}</p>
+                  </div>
+                </div>
+                <ArrowRight className="h-4 w-4 shrink-0 text-slate-400" />
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* KPI Cards - Row 1 */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
