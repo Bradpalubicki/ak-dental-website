@@ -22,22 +22,22 @@ const SUGGESTED_QUESTIONS = [
   {
     label: "Employee Injury",
     question:
-      "An employee got injured at work today. What are my immediate obligations and what should I document?",
+      "An employee got hurt at work today. What do I need to do?",
   },
   {
-    label: "Termination Process",
+    label: "Letting Someone Go",
     question:
-      "I need to let an employee go for performance issues. What's the proper process in Nevada to protect the practice?",
+      "I need to let an employee go. How should I handle this?",
   },
   {
-    label: "Overtime Rules",
+    label: "Overtime Question",
     question:
-      "Can you explain Nevada overtime rules? I want to make sure we're compliant with how we schedule staff.",
+      "I'm not sure if we're handling overtime correctly for our staff.",
   },
   {
-    label: "HIPAA Breach",
+    label: "Patient Privacy",
     question:
-      "I think we may have had a minor HIPAA incident — a patient's info was visible on a screen in the waiting area. What do I need to do?",
+      "I think a patient's info may have been exposed by accident. Is this a problem?",
   },
 ];
 
@@ -268,7 +268,7 @@ export default function AdvisorPage() {
                 <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
                   <div className="flex items-center gap-2 text-sm text-slate-500">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Researching and analyzing...</span>
+                    <span>Thinking...</span>
                   </div>
                 </div>
               </div>
