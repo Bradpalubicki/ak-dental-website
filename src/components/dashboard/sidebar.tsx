@@ -24,6 +24,7 @@ import {
   Bell,
   CheckSquare,
   Inbox,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -35,6 +36,7 @@ const navigation: Array<{
   badge?: string;
 }> = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Business Advisor", href: "/dashboard/advisor", icon: Sparkles },
   { name: "Approvals", href: "/dashboard/approvals", icon: CheckSquare },
   { name: "Inbox", href: "/dashboard/inbox", icon: Inbox },
   { name: "Leads", href: "/dashboard/leads", icon: UserPlus },
