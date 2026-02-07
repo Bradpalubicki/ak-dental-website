@@ -264,6 +264,46 @@ export interface PatientReactivationSequence {
   metadata: Json;
 }
 
+export interface Employee {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  first_name: string;
+  last_name: string;
+  email: string | null;
+  phone: string | null;
+  role: string;
+  hire_date: string | null;
+  status: "active" | "inactive" | "terminated";
+  notes: string | null;
+}
+
+export interface HrDocument {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  employee_id: string;
+  type: "disciplinary" | "incident_report" | "performance_review" | "coaching_note" | "general" | "advisor_conversation";
+  title: string;
+  content: string;
+  severity: "info" | "warning" | "serious" | "critical" | null;
+  status: "draft" | "pending_signature" | "acknowledged" | "disputed";
+  created_by: string;
+  metadata: Json;
+}
+
+export interface DocumentAcknowledgment {
+  id: string;
+  created_at: string;
+  document_id: string;
+  employee_id: string;
+  acknowledgment_type: "initial" | "signature";
+  step_label: string | null;
+  typed_name: string | null;
+  ip_address: string | null;
+  acknowledged_at: string;
+}
+
 export interface DailyMetrics {
   id: string;
   date: string;

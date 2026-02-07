@@ -19,7 +19,7 @@ export default async function DashboardLayout({
   const todayStart = `${today}T00:00:00.000Z`;
 
   // Fetch badge counts in parallel
-  const [approvalsRes, leadsRes, inboxRes, insuranceRes, appointmentsRes] =
+  const [approvalsRes, leadsRes, inboxRes, insuranceRes, appointmentsRes, hrPendingRes] =
     await Promise.all([
       supabase
         .from("oe_ai_actions")
@@ -43,6 +43,10 @@ export default async function DashboardLayout({
         .select("*", { count: "exact", head: true })
         .eq("appointment_date", today)
         .eq("status", "scheduled"),
+      supabase
+        .from("oe_hr_documents")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending_signature"),
     ]);
 
   const badges = {
@@ -51,6 +55,7 @@ export default async function DashboardLayout({
     inbox: inboxRes.count || 0,
     insurance: insuranceRes.count || 0,
     appointments: appointmentsRes.count || 0,
+    hrPending: hrPendingRes.count || 0,
   };
 
   return (

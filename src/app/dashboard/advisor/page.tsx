@@ -9,6 +9,9 @@ import {
   AlertTriangle,
   Sparkles,
   Trash2,
+  Save,
+  X,
+  CheckCircle2,
 } from "lucide-react";
 
 interface Message {
@@ -16,6 +19,13 @@ interface Message {
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
+}
+
+interface Employee {
+  id: string;
+  first_name: string;
+  last_name: string;
+  role: string;
 }
 
 const SUGGESTED_QUESTIONS = [
@@ -45,6 +55,12 @@ export default function AdvisorPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [selectedEmployee, setSelectedEmployee] = useState("");
+  const [saveTitle, setSaveTitle] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedMessage, setSavedMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -126,10 +142,57 @@ export default function AdvisorPage() {
   function clearConversation() {
     setMessages([]);
     setInput("");
+    setSavedMessage("");
+  }
+
+  function openSaveDialog() {
+    setSavedMessage("");
+    setSelectedEmployee("");
+    setSaveTitle(
+      `Advisor Consultation — ${new Date().toLocaleDateString("en-US")}`
+    );
+    setShowSaveDialog(true);
+    // Fetch employees
+    fetch("/api/hr/employees?status=active")
+      .then((r) => r.json())
+      .then(setEmployees)
+      .catch(() => {});
+  }
+
+  async function saveToRecord() {
+    if (!selectedEmployee || messages.length === 0) return;
+    setIsSaving(true);
+
+    try {
+      const res = await fetch("/api/hr/advisor-save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          employee_id: selectedEmployee,
+          messages: messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+          title: saveTitle,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to save");
+
+      const emp = employees.find((e) => e.id === selectedEmployee);
+      setSavedMessage(
+        `Saved to ${emp?.first_name} ${emp?.last_name}'s HR file`
+      );
+      setShowSaveDialog(false);
+    } catch {
+      alert("Failed to save to employee record. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col">
+    <div className="relative flex h-[calc(100vh-4rem)] flex-col">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
         <div className="flex items-center gap-3">
@@ -148,13 +211,22 @@ export default function AdvisorPage() {
         </div>
         <div className="flex items-center gap-3">
           {messages.length > 0 && (
-            <button
-              onClick={clearConversation}
-              className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-700"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              New Conversation
-            </button>
+            <>
+              <button
+                onClick={openSaveDialog}
+                className="flex items-center gap-2 rounded-lg border border-cyan-200 bg-cyan-50 px-3 py-1.5 text-xs font-medium text-cyan-700 hover:bg-cyan-100"
+              >
+                <Save className="h-3.5 w-3.5" />
+                Save to Record
+              </button>
+              <button
+                onClick={clearConversation}
+                className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                New Conversation
+              </button>
+            </>
           )}
           <div className="flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1.5">
             <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
@@ -277,6 +349,98 @@ export default function AdvisorPage() {
           </div>
         )}
       </div>
+
+      {/* Saved success toast */}
+      {savedMessage && (
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg animate-in fade-in slide-in-from-top-2 duration-300">
+          <CheckCircle2 className="h-4 w-4" />
+          {savedMessage}
+          <button
+            onClick={() => setSavedMessage("")}
+            className="ml-2 text-white/70 hover:text-white"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
+
+      {/* Save to Record Dialog */}
+      {showSaveDialog && (
+        <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40">
+          <div className="mx-4 w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900">
+                Save to Employee Record
+              </h3>
+              <button
+                onClick={() => setShowSaveDialog(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                  Select Employee
+                </label>
+                <select
+                  value={selectedEmployee}
+                  onChange={(e) => setSelectedEmployee(e.target.value)}
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
+                >
+                  <option value="">Choose employee...</option>
+                  {employees.map((emp) => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.first_name} {emp.last_name} — {emp.role}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                  Title
+                </label>
+                <input
+                  type="text"
+                  value={saveTitle}
+                  onChange={(e) => setSaveTitle(e.target.value)}
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
+                />
+              </div>
+
+              <p className="text-xs text-slate-500">
+                This will save the full conversation ({messages.length}{" "}
+                message{messages.length !== 1 ? "s" : ""}) to the
+                employee&apos;s HR file.
+              </p>
+            </div>
+
+            <div className="mt-5 flex justify-end gap-3">
+              <button
+                onClick={() => setShowSaveDialog(false)}
+                className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveToRecord}
+                disabled={!selectedEmployee || isSaving}
+                className="flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {isSaving ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}
+                Save to Record
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Input Area */}
       <div className="border-t border-slate-200 bg-white px-6 py-4">

@@ -21,6 +21,7 @@ import {
   CheckSquare,
   Inbox,
   Sparkles,
+  UsersRound,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -31,6 +32,7 @@ export interface SidebarBadges {
   inbox: number;
   insurance: number;
   appointments: number;
+  hrPending: number;
 }
 
 const navigation: Array<{
@@ -43,6 +45,7 @@ const navigation: Array<{
 }> = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
   { name: "Business Advisor", href: "/dashboard/advisor", icon: Sparkles },
+  { name: "HR & Team", href: "/dashboard/hr", icon: UsersRound, badgeKey: "hrPending", badgeColor: "bg-rose-500 text-white", badgeLabel: "pending" },
   { name: "Approvals", href: "/dashboard/approvals", icon: CheckSquare, badgeKey: "approvals", badgeColor: "bg-amber-500 text-white", badgeLabel: "pending" },
   { name: "Inbox", href: "/dashboard/inbox", icon: Inbox, badgeKey: "inbox", badgeColor: "bg-blue-500 text-white", badgeLabel: "new" },
   { name: "Leads", href: "/dashboard/leads", icon: UserPlus, badgeKey: "leads", badgeColor: "bg-emerald-500 text-white", badgeLabel: "new" },
