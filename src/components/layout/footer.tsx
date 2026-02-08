@@ -11,11 +11,11 @@ export function Footer() {
           {/* Contact Info */}
           <div>
             <Image
-              src="/ak-logo-gold.jpg"
+              src="/ak-logo-footer.png"
               alt={siteConfig.name}
-              width={990}
-              height={329}
-              className="h-12 w-auto mb-4"
+              width={416}
+              height={128}
+              className="h-10 w-auto mb-4 brightness-110"
             />
             <ul className="space-y-3">
               <li>

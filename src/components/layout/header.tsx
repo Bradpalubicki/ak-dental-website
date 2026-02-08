@@ -31,11 +31,11 @@ export function Header() {
         <div className="flex h-20 items-center justify-between">
           <Link href="/" className="flex items-center">
             <Image
-              src="/ak-logo-gold.jpg"
+              src="/ak-logo-header.png"
               alt={siteConfig.name}
-              width={990}
-              height={329}
-              className="h-16 w-auto"
+              width={624}
+              height={196}
+              className="h-14 w-auto"
               priority
             />
           </Link>

@@ -113,11 +113,11 @@ export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadg
         {!collapsed ? (
           <Link href="/dashboard" className="flex items-center gap-2.5">
             <Image
-              src="/ak-logo-gold.jpg"
+              src="/ak-logo-sidebar.png"
               alt="AK Ultimate Dental"
-              width={990}
-              height={329}
-              className="h-9 w-auto rounded"
+              width={328}
+              height={104}
+              className="h-8 w-auto"
             />
             <div className="min-w-0">
               <p className="text-[11px] font-bold text-white tracking-tight leading-tight">One Engine</p>
@@ -126,11 +126,11 @@ export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadg
           </Link>
         ) : (
           <Image
-            src="/ak-logo-gold.jpg"
+            src="/ak-logo-sidebar.png"
             alt="AK"
-            width={990}
-            height={329}
-            className="h-9 w-auto rounded"
+            width={328}
+            height={104}
+            className="h-7 w-auto"
           />
         )}
       </div>
