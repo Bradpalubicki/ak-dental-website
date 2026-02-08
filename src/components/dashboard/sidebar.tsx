@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -22,6 +23,8 @@ import {
   Sparkles,
   UsersRound,
   Activity,
+  Wallet,
+  Award,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -68,18 +71,20 @@ const sections: NavSection[] = [
     ],
   },
   {
-    label: "Intelligence",
+    label: "Business Hub",
     items: [
-      { name: "Inbox", href: "/dashboard/inbox", icon: Inbox, badgeKey: "inbox", badgeColor: "bg-blue-400 text-blue-950" },
-      { name: "HR & Team", href: "/dashboard/hr", icon: UsersRound, badgeKey: "hrPending", badgeColor: "bg-rose-400 text-rose-950" },
+      { name: "Financials", href: "/dashboard/financials", icon: Wallet },
       { name: "Billing", href: "/dashboard/billing", icon: DollarSign },
-      { name: "Calls", href: "/dashboard/calls", icon: Phone },
+      { name: "HR & Payroll", href: "/dashboard/hr", icon: UsersRound, badgeKey: "hrPending", badgeColor: "bg-rose-400 text-rose-950" },
+      { name: "Licensing", href: "/dashboard/licensing", icon: Award },
     ],
   },
   {
-    label: "Insights",
+    label: "Intelligence",
     items: [
+      { name: "Inbox", href: "/dashboard/inbox", icon: Inbox, badgeKey: "inbox", badgeColor: "bg-blue-400 text-blue-950" },
       { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
+      { name: "Calls", href: "/dashboard/calls", icon: Phone },
       { name: "Outreach", href: "/dashboard/outreach", icon: Send },
       { name: "Settings", href: "/dashboard/settings", icon: Settings },
     ],
@@ -106,19 +111,27 @@ export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadg
         collapsed ? "h-16 justify-center px-2" : "h-16 px-5"
       )}>
         {!collapsed ? (
-          <Link href="/dashboard" className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 shadow-lg shadow-cyan-500/20">
-              <Zap className="h-5 w-5 text-white" />
-            </div>
+          <Link href="/dashboard" className="flex items-center gap-2.5">
+            <Image
+              src="/ak-logo-gold.jpg"
+              alt="AK Ultimate Dental"
+              width={990}
+              height={329}
+              className="h-9 w-auto rounded"
+            />
             <div className="min-w-0">
-              <p className="text-sm font-bold text-white tracking-tight">One Engine</p>
-              <p className="text-[10px] font-medium text-cyan-400/70 uppercase tracking-widest">AI Platform</p>
+              <p className="text-[11px] font-bold text-white tracking-tight leading-tight">One Engine</p>
+              <p className="text-[9px] font-medium text-amber-400/80 uppercase tracking-widest">Platform</p>
             </div>
           </Link>
         ) : (
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 shadow-lg shadow-cyan-500/20">
-            <Zap className="h-5 w-5 text-white" />
-          </div>
+          <Image
+            src="/ak-logo-gold.jpg"
+            alt="AK"
+            width={990}
+            height={329}
+            className="h-9 w-auto rounded"
+          />
         )}
       </div>
 

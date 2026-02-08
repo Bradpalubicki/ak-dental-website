@@ -9,8 +9,18 @@ import {
   Clock,
   XCircle,
   RefreshCw,
-  Eye,
+  Upload,
+  FileText,
+  Building2,
+  Users,
+  Sparkles,
+  ArrowRight,
+  ExternalLink,
+  DollarSign,
+  Calendar,
+  Gift,
 } from "lucide-react";
+import { StatCard } from "@/components/dashboard/stat-card";
 
 interface Verification {
   id: string;
@@ -41,6 +51,27 @@ const statusConfig: Record<string, { label: string; color: string; icon: typeof 
   not_found: { label: "Not Found", color: "bg-red-100 text-red-700", icon: XCircle },
 };
 
+// Insurance carriers the practice works with
+const carriers = [
+  { name: "Delta Dental", type: "PPO", patientsActive: 42, feeSched: "Premier", contracted: true, policyUploaded: true },
+  { name: "MetLife", type: "PPO", patientsActive: 28, feeSched: "Standard PPO", contracted: true, policyUploaded: true },
+  { name: "Cigna", type: "DPPO", patientsActive: 18, feeSched: "Cigna DPPO", contracted: true, policyUploaded: false },
+  { name: "Aetna", type: "DMO/PPO", patientsActive: 15, feeSched: "Aetna PPO", contracted: true, policyUploaded: false },
+  { name: "Guardian", type: "PPO", patientsActive: 12, feeSched: "Guardian PPO", contracted: false, policyUploaded: false },
+  { name: "United Concordia", type: "PPO", patientsActive: 8, feeSched: "Tricare/UC", contracted: true, policyUploaded: true },
+  { name: "Humana", type: "DHMO", patientsActive: 6, feeSched: "Humana DHMO", contracted: false, policyUploaded: false },
+];
+
+// Employee benefits (not health insurance - practice perks)
+const employeeBenefits = [
+  { benefit: "Free Dental Care", description: "All employees + immediate family receive free dental treatment at the practice", eligible: "All Staff", status: "Active" },
+  { benefit: "Paid Time Off", description: "Accrued PTO: 10 days/year (1-3 yrs), 15 days/year (3+ yrs)", eligible: "Full-Time", status: "Active" },
+  { benefit: "CE Reimbursement", description: "Up to $1,500/year for continuing education courses and conferences", eligible: "Licensed Staff", status: "Active" },
+  { benefit: "Uniform Allowance", description: "$300/year scrub and uniform allowance", eligible: "All Staff", status: "Active" },
+  { benefit: "401(k) Match", description: "3% employer match after 1 year of employment", eligible: "Full-Time (1+ yr)", status: "Active" },
+  { benefit: "Holiday Pay", description: "7 paid holidays per year", eligible: "All Staff", status: "Active" },
+];
+
 function formatTime(time: string | null): string {
   if (!time) return "";
   const [hours, minutes] = time.split(":");
@@ -56,6 +87,7 @@ interface Props {
 
 export function InsuranceClient({ initialVerifications }: Props) {
   const [search, setSearch] = useState("");
+  const [activeTab, setActiveTab] = useState<"verifications" | "carriers" | "benefits">("verifications");
 
   const filtered = initialVerifications.filter(
     (v) =>
@@ -71,169 +103,308 @@ export function InsuranceClient({ initialVerifications }: Props) {
     (v) => v.status === "issues" || v.status === "expired" || v.status === "not_found"
   ).length;
 
+  const carriersWithoutPolicy = carriers.filter((c) => !c.policyUploaded).length;
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Insurance Verification</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Insurance & Benefits</h1>
           <p className="text-sm text-slate-500">
-            Eligibility checks and coverage verification
+            Patient verification, carrier policies, and employee benefits
           </p>
         </div>
-        <button className="flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700">
-          <RefreshCw className="h-4 w-4" />
-          Verify All Pending
-        </button>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-4 gap-4">
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <p className="text-2xl font-bold text-amber-600">{pending}</p>
-          <p className="text-sm text-slate-500">Pending</p>
-        </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <p className="text-2xl font-bold text-emerald-600">{verified}</p>
-          <p className="text-sm text-slate-500">Verified</p>
-        </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <p className="text-2xl font-bold text-red-600">{issues}</p>
-          <p className="text-sm text-slate-500">Needs Attention</p>
-        </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <p className="text-2xl font-bold text-slate-900">{initialVerifications.length}</p>
-          <p className="text-sm text-slate-500">Total</p>
+        <div className="flex gap-2">
+          <button className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+            <Upload className="h-4 w-4" />
+            Upload Policy
+          </button>
+          <button className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 px-4 py-2 text-sm font-medium text-white hover:from-cyan-700 hover:to-blue-700 shadow-sm">
+            <RefreshCw className="h-4 w-4" />
+            Verify All Pending
+          </button>
         </div>
       </div>
 
-      {/* Verification List */}
-      <div className="rounded-xl border border-slate-200 bg-white">
-        <div className="border-b border-slate-200 px-6 py-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-base font-semibold text-slate-900">Verifications</h2>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="rounded-lg border border-slate-200 bg-slate-50 py-1.5 pl-9 pr-4 text-sm focus:border-cyan-500 focus:outline-none"
-              />
+      {/* AI Insight */}
+      {(carriersWithoutPolicy > 0 || pending > 0) && (
+        <div className="rounded-2xl border border-cyan-200/60 bg-gradient-to-br from-cyan-50 via-blue-50/30 to-cyan-50 p-5">
+          <div className="flex items-start gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 shadow-sm">
+              <Sparkles className="h-4 w-4 text-white" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-cyan-900">One Engine Insurance Intelligence</h3>
+              <div className="mt-1.5 space-y-1 text-sm text-cyan-800/80">
+                {pending > 0 && <p>{pending} patient verification{pending !== 1 ? "s" : ""} pending for upcoming appointments. One Engine can auto-verify through carrier portals.</p>}
+                {carriersWithoutPolicy > 0 && <p>{carriersWithoutPolicy} carriers missing uploaded fee schedules. Upload policy documents so One Engine can auto-calculate patient responsibility.</p>}
+                <p className="text-xs text-cyan-600/60 mt-2">Tip: Connect carriers via API for real-time eligibility checks and automated claim status updates.</p>
+              </div>
             </div>
           </div>
         </div>
+      )}
 
-        {filtered.length > 0 ? (
-          <div className="divide-y divide-slate-100">
-            {filtered.map((v) => {
-              const config = statusConfig[v.status] || statusConfig.pending;
-              const StatusIcon = config.icon;
-              const hasCoverage =
-                v.preventiveCoverage !== null || v.basicCoverage !== null;
+      {/* Stats */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard title="Pending Verifications" value={String(pending)} change={pending > 0 ? "Needs attention" : "All clear"} trend={pending > 0 ? "down" : "up"} icon={Clock} iconColor="bg-amber-50 text-amber-600" />
+        <StatCard title="Verified" value={String(verified)} icon={CheckCircle2} iconColor="bg-emerald-50 text-emerald-600" />
+        <StatCard title="Active Carriers" value={String(carriers.length)} change={`${carriers.filter(c => c.policyUploaded).length} policies uploaded`} trend="neutral" icon={Building2} iconColor="bg-blue-50 text-blue-600" />
+        <StatCard title="Issues" value={String(issues)} change={issues > 0 ? "Review needed" : "None"} trend={issues > 0 ? "down" : "up"} icon={AlertTriangle} iconColor="bg-red-50 text-red-600" />
+      </div>
 
-              return (
-                <div key={v.id} className="px-6 py-4 hover:bg-slate-50">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3">
-                        <p className="text-sm font-medium text-slate-900">
-                          {v.patientName}
-                        </p>
-                        <span
-                          className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${config.color}`}
-                        >
-                          <StatusIcon className="h-3 w-3" />
-                          {config.label}
-                        </span>
-                      </div>
-                      <div className="mt-1 flex items-center gap-4 text-xs text-slate-500">
-                        <span>{v.provider}</span>
-                        <span>ID: {v.memberId}</span>
-                        {v.appointmentDate && (
-                          <span>
-                            Appt:{" "}
-                            {new Date(v.appointmentDate + "T12:00:00").toLocaleDateString(
-                              "en-US",
-                              { month: "short", day: "numeric" }
-                            )}
-                            {v.appointmentTime && ` at ${formatTime(v.appointmentTime)}`}
+      {/* Tab Navigation */}
+      <div className="flex gap-1 rounded-xl bg-slate-100 p-1">
+        {[
+          { key: "verifications" as const, label: "Patient Verifications", icon: Shield, count: initialVerifications.length },
+          { key: "carriers" as const, label: "Insurance Carriers", icon: Building2, count: carriers.length },
+          { key: "benefits" as const, label: "Employee Benefits", icon: Gift, count: employeeBenefits.length },
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`flex-1 flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all ${
+              activeTab === tab.key
+                ? "bg-white text-slate-900 shadow-sm"
+                : "text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            <tab.icon className="h-4 w-4" />
+            {tab.label}
+            <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+              activeTab === tab.key ? "bg-cyan-100 text-cyan-700" : "bg-slate-200 text-slate-500"
+            }`}>
+              {tab.count}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* TAB: Patient Verifications */}
+      {activeTab === "verifications" && (
+        <div className="rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+          <div className="border-b border-slate-100 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-slate-900">Patient Insurance Verifications</h2>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search patient, carrier, ID..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="rounded-lg border border-slate-200 bg-slate-50 py-1.5 pl-9 pr-4 text-sm focus:border-cyan-500 focus:outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          {filtered.length > 0 ? (
+            <div className="divide-y divide-slate-50">
+              {filtered.map((v) => {
+                const config = statusConfig[v.status] || statusConfig.pending;
+                const StatusIcon = config.icon;
+                const hasCoverage = v.preventiveCoverage !== null || v.basicCoverage !== null;
+
+                return (
+                  <div key={v.id} className="px-6 py-4 hover:bg-slate-50/50 transition-colors">
+                    <div className="flex items-start gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3">
+                          <p className="text-sm font-semibold text-slate-900">{v.patientName}</p>
+                          <span className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${config.color}`}>
+                            <StatusIcon className="h-3 w-3" />
+                            {config.label}
                           </span>
+                        </div>
+                        <div className="mt-1 flex items-center gap-4 text-[11px] text-slate-400">
+                          <span>{v.provider}</span>
+                          <span>ID: {v.memberId}</span>
+                          {v.appointmentDate && (
+                            <span>Appt: {new Date(v.appointmentDate + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}{v.appointmentTime && ` at ${formatTime(v.appointmentTime)}`}</span>
+                          )}
+                        </div>
+
+                        {v.flags.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {v.flags.map((flag, i) => (
+                              <span key={i} className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600">{flag}</span>
+                            ))}
+                          </div>
                         )}
-                        {v.verifiedAt && <span>Verified: {v.verifiedAt}</span>}
+
+                        {hasCoverage && (
+                          <div className="mt-3 grid grid-cols-4 gap-4 rounded-lg bg-slate-50 p-3">
+                            <div>
+                              <p className="text-[10px] text-slate-400 uppercase tracking-wider">Preventive</p>
+                              <p className="text-sm font-bold text-slate-900">{v.preventiveCoverage ?? "—"}%</p>
+                            </div>
+                            <div>
+                              <p className="text-[10px] text-slate-400 uppercase tracking-wider">Basic</p>
+                              <p className="text-sm font-bold text-slate-900">{v.basicCoverage ?? "—"}%</p>
+                            </div>
+                            <div>
+                              <p className="text-[10px] text-slate-400 uppercase tracking-wider">Major</p>
+                              <p className="text-sm font-bold text-slate-900">{v.majorCoverage ?? "—"}%</p>
+                            </div>
+                            <div>
+                              <p className="text-[10px] text-slate-400 uppercase tracking-wider">Remaining</p>
+                              <p className="text-sm font-bold text-slate-900">
+                                {v.annualMax !== null && v.annualUsed !== null
+                                  ? `$${(v.annualMax - v.annualUsed).toLocaleString()}`
+                                  : "—"}
+                              </p>
+                            </div>
+                          </div>
+                        )}
                       </div>
 
-                      {v.flags.length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-1">
-                          {v.flags.map((flag, i) => (
-                            <span
-                              key={i}
-                              className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600"
-                            >
-                              {flag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-
-                      {hasCoverage && (
-                        <div className="mt-3 grid grid-cols-4 gap-4 rounded-lg bg-slate-50 p-3">
-                          <div>
-                            <p className="text-xs text-slate-400">Preventive</p>
-                            <p className="text-sm font-semibold text-slate-900">
-                              {v.preventiveCoverage ?? "—"}%
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-slate-400">Basic</p>
-                            <p className="text-sm font-semibold text-slate-900">
-                              {v.basicCoverage ?? "—"}%
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-slate-400">Major</p>
-                            <p className="text-sm font-semibold text-slate-900">
-                              {v.majorCoverage ?? "—"}%
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-slate-400">Remaining</p>
-                            <p className="text-sm font-semibold text-slate-900">
-                              {v.annualMax !== null && v.annualUsed !== null
-                                ? `$${(v.annualMax - v.annualUsed).toLocaleString()}`
-                                : "—"}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      {v.status === "pending" && (
-                        <button className="rounded-lg bg-cyan-50 px-3 py-1.5 text-xs font-medium text-cyan-700 hover:bg-cyan-100">
-                          Verify Now
-                        </button>
-                      )}
-                      {v.status === "issues" && (
-                        <button className="rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-100">
-                          Review
-                        </button>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {v.status === "pending" && (
+                          <button className="rounded-lg bg-cyan-50 px-3 py-1.5 text-xs font-medium text-cyan-700 hover:bg-cyan-100">Verify Now</button>
+                        )}
+                        {v.status === "issues" && (
+                          <button className="rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-100">Review</button>
+                        )}
+                      </div>
                     </div>
                   </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-16">
+              <Shield className="h-8 w-8 text-slate-200 mb-2" />
+              <p className="text-sm text-slate-400">
+                {initialVerifications.length === 0 ? "No insurance verifications yet." : "No verifications match your search"}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB: Insurance Carriers */}
+      {activeTab === "carriers" && (
+        <div className="rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+          <div className="border-b border-slate-100 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-bold text-slate-900">Insurance Carrier Directory</h2>
+                <p className="text-[11px] text-slate-400">Carriers the practice is contracted with and fee schedule status</p>
+              </div>
+              <button className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100">
+                <Upload className="h-3.5 w-3.5" />
+                Upload Fee Schedule
+              </button>
+            </div>
+          </div>
+          <div className="divide-y divide-slate-50">
+            {carriers.map((carrier) => (
+              <div key={carrier.name} className="flex items-center gap-4 px-6 py-4 hover:bg-slate-50/50 transition-colors">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                  <Building2 className="h-5 w-5" />
                 </div>
-              );
-            })}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold text-slate-900">{carrier.name}</p>
+                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">{carrier.type}</span>
+                    {carrier.contracted && (
+                      <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-emerald-200/50">Contracted</span>
+                    )}
+                    {!carrier.contracted && (
+                      <span className="rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-500 ring-1 ring-slate-200/50">Out of Network</span>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    Fee Schedule: {carrier.feeSched} &middot; {carrier.patientsActive} active patients
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  {carrier.policyUploaded ? (
+                    <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-600">
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      Policy Uploaded
+                    </span>
+                  ) : (
+                    <button className="flex items-center gap-1 rounded-lg bg-amber-50 border border-amber-200/50 px-3 py-1.5 text-[11px] font-medium text-amber-700 hover:bg-amber-100">
+                      <Upload className="h-3 w-3" />
+                      Upload Policy
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
-        ) : (
-          <div className="flex items-center justify-center py-12 text-sm text-slate-400">
-            {initialVerifications.length === 0
-              ? "No insurance verifications yet. They will appear when appointments are created."
-              : "No verifications match your search"}
+
+          {/* API Connection Info */}
+          <div className="border-t border-slate-100 px-6 py-4">
+            <div className="rounded-xl bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200/30 p-4">
+              <div className="flex items-start gap-3">
+                <ExternalLink className="h-5 w-5 text-cyan-600 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-cyan-900">Carrier API Integration</p>
+                  <p className="text-xs text-cyan-700/70 mt-1">One Engine can connect directly to carrier portals for real-time eligibility verification, automated claim submissions, and payment posting. Currently planning integration with Vyne Dental Trellis for batch processing.</p>
+                </div>
+              </div>
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* TAB: Employee Benefits */}
+      {activeTab === "benefits" && (
+        <div className="rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+          <div className="border-b border-slate-100 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-bold text-slate-900">Employee Benefits Package</h2>
+                <p className="text-[11px] text-slate-400">Benefits offered to AK Ultimate Dental team members</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Benefits Note */}
+          <div className="px-6 py-4 border-b border-slate-50">
+            <div className="rounded-xl bg-slate-50 p-4">
+              <p className="text-sm text-slate-600">
+                <span className="font-semibold">Note:</span> AK Ultimate Dental does not currently offer group health insurance to employees. Below are the benefits and perks currently provided to the team.
+              </p>
+            </div>
+          </div>
+
+          <div className="divide-y divide-slate-50">
+            {employeeBenefits.map((benefit) => (
+              <div key={benefit.benefit} className="flex items-start gap-4 px-6 py-4 hover:bg-slate-50/50 transition-colors">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50">
+                  <Gift className="h-5 w-5 text-emerald-600" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold text-slate-900">{benefit.benefit}</p>
+                    <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-emerald-200/50">{benefit.status}</span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">{benefit.description}</p>
+                  <p className="text-[11px] text-slate-400 mt-1">Eligible: {benefit.eligible}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Suggestions */}
+          <div className="border-t border-slate-100 px-6 py-4">
+            <div className="rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/30 p-4">
+              <div className="flex items-start gap-3">
+                <Sparkles className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-amber-900">One Engine Recommendation</p>
+                  <p className="text-xs text-amber-700/70 mt-1">Consider adding a group dental HMO/PPO plan through a carrier like Guardian or MetLife. As a contracted provider, your team gets treated at your practice at no cost, while the insurance benefit becomes a recruiting tool. Estimated employer cost: $85-150/employee/month.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
