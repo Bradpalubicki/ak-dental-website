@@ -59,7 +59,7 @@ export default async function DashboardLayout({
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50">
+    <div className="flex h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-slate-50 to-cyan-50/30">
       <Sidebar badges={badges} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <DashboardHeader />
