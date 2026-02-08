@@ -115,8 +115,8 @@ export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadg
             <Image
               src="/ak-logo-sidebar.png"
               alt="AK Ultimate Dental"
-              width={328}
-              height={104}
+              width={384}
+              height={150}
               className="h-8 w-auto"
             />
             <div className="min-w-0">
@@ -128,8 +128,8 @@ export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadg
           <Image
             src="/ak-logo-sidebar.png"
             alt="AK"
-            width={328}
-            height={104}
+            width={384}
+            height={150}
             className="h-7 w-auto"
           />
         )}

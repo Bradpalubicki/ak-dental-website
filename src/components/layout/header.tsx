@@ -33,8 +33,8 @@ export function Header() {
             <Image
               src="/ak-logo-header.png"
               alt={siteConfig.name}
-              width={824}
-              height={256}
+              width={848}
+              height={329}
               className="h-16 md:h-[72px] w-auto drop-shadow-sm"
               priority
             />
