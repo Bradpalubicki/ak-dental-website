@@ -100,7 +100,7 @@ const hrDocuments = [
     content: "On February 3, 2026, Tyler was observed not following the full instrument sterilization protocol between patients. Specifically, the autoclave cycle was not completed before instruments were returned to the operatory.\n\nThis was addressed immediately. Tyler acknowledged the oversight and committed to following the complete protocol going forward.\n\nNo patient was at risk as the instruments were caught before use.\n\nAction Required: Tyler will complete a refresher on sterilization procedures by February 14, 2026.",
     severity: "info",
     status: "acknowledged",
-    created_by: "Dr. Alex",
+    created_by: "Dr. Alexandru Chireu",
   },
   {
     employee_id: employees[3].id,
@@ -109,7 +109,7 @@ const hrDocuments = [
     content: "This is a formal written warning regarding repeated tardiness.\n\nBrandon has been late to his scheduled shift on the following dates:\n- January 15, 2026 — 12 minutes late\n- January 22, 2026 — 8 minutes late\n- January 29, 2026 — 15 minutes late\n- February 5, 2026 — 20 minutes late\n\nPrevious verbal warnings were given on January 15 and January 22.\n\nPer practice policy, continued tardiness may result in further disciplinary action up to and including termination.\n\nBrandon is expected to arrive on time for all scheduled shifts effective immediately.\n\nBy signing below, you acknowledge that you have received and read this written warning.",
     severity: "warning",
     status: "pending_signature",
-    created_by: "Dr. Alex",
+    created_by: "Dr. Alexandru Chireu",
   },
   {
     employee_id: employees[0].id,
@@ -118,7 +118,7 @@ const hrDocuments = [
     content: "Employee: Jessica Ramirez\nRole: Hygienist\nReview Period: January 2025 – December 2025\n\nOverall Rating: Exceeds Expectations\n\nStrengths:\n- Patient satisfaction scores consistently above 95%\n- Completed additional CE credits in periodontal therapy and laser dentistry\n- Excellent clinical precision and attention to detail\n- Outstanding team collaboration and mentorship\n\nAreas for Growth:\n- Continue developing skills in expanded practice procedures\n- Take on mentorship role when new hygienist is hired\n\nGoals for 2026:\n- Mentor new hygienist during onboarding\n- Pursue advanced periodontal certification\n- Continue maintaining patient satisfaction above 95%\n\nComments: Jessica is a valued member of the AK Ultimate Dental team and consistently demonstrates professionalism and clinical excellence.",
     severity: "info",
     status: "acknowledged",
-    created_by: "Dr. Alex",
+    created_by: "Dr. Alexandru Chireu",
   },
 ];
 

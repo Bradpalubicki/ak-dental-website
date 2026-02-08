@@ -21,7 +21,7 @@ async function seed() {
     {
       id: "c0000001-0000-0000-0000-000000000001",
       patient_id: "a0000001-0000-0000-0000-000000000006", // Michael Kim
-      provider_name: "Dr. Alex",
+      provider_name: "Dr. Alexandru Chireu",
       title: "Crown Restoration - Tooth #14",
       status: "presented",
       procedures: [
@@ -37,7 +37,7 @@ async function seed() {
     {
       id: "c0000001-0000-0000-0000-000000000002",
       patient_id: "a0000001-0000-0000-0000-000000000002", // James Rodriguez
-      provider_name: "Dr. Alex",
+      provider_name: "Dr. Alexandru Chireu",
       title: "Single Tooth Implant - Tooth #8",
       status: "draft",
       procedures: [
@@ -55,7 +55,7 @@ async function seed() {
     {
       id: "c0000001-0000-0000-0000-000000000003",
       patient_id: "a0000001-0000-0000-0000-000000000003", // Sarah Chen
-      provider_name: "Dr. Alex",
+      provider_name: "Dr. Alexandru Chireu",
       title: "Cosmetic Veneer Package - Upper Front 6",
       status: "presented",
       procedures: [
@@ -71,7 +71,7 @@ async function seed() {
     {
       id: "c0000001-0000-0000-0000-000000000004",
       patient_id: "a0000001-0000-0000-0000-000000000005", // Lisa Williams
-      provider_name: "Dr. Alex",
+      provider_name: "Dr. Alexandru Chireu",
       title: "Orthodontic Treatment - Clear Aligners",
       status: "presented",
       procedures: [

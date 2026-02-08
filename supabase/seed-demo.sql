@@ -38,17 +38,17 @@ INSERT INTO oe_patients (id, first_name, last_name, email, phone, date_of_birth,
 -- TODAY'S APPOINTMENTS (5 appointments for demo day)
 -- ============================================================================
 INSERT INTO oe_appointments (patient_id, provider_name, appointment_date, appointment_time, duration_minutes, type, status, confirmation_sent, reminder_24h_sent, reminder_2h_sent, insurance_verified) VALUES
-  ('a0000001-0000-0000-0000-000000000001', 'Dr. Alex', CURRENT_DATE, '09:00', 60, 'Cleaning & Exam', 'confirmed', true, true, true, true),
-  ('a0000001-0000-0000-0000-000000000003', 'Dr. Alex', CURRENT_DATE, '10:30', 90, 'Cosmetic Consultation', 'confirmed', true, true, false, true),
-  ('a0000001-0000-0000-0000-000000000006', 'Dr. Alex', CURRENT_DATE, '13:00', 90, 'Crown Prep', 'scheduled', true, true, false, true),
-  ('a0000001-0000-0000-0000-000000000005', 'Dr. Alex', CURRENT_DATE, '14:30', 60, 'Orthodontic Check', 'scheduled', true, false, false, false),
-  ('a0000001-0000-0000-0000-000000000008', 'Dr. Alex', CURRENT_DATE, '16:00', 60, 'Emergency - Toothache', 'confirmed', true, true, true, false);
+  ('a0000001-0000-0000-0000-000000000001', 'Dr. Alexandru Chireu', CURRENT_DATE, '09:00', 60, 'Cleaning & Exam', 'confirmed', true, true, true, true),
+  ('a0000001-0000-0000-0000-000000000003', 'Dr. Alexandru Chireu', CURRENT_DATE, '10:30', 90, 'Cosmetic Consultation', 'confirmed', true, true, false, true),
+  ('a0000001-0000-0000-0000-000000000006', 'Dr. Alexandru Chireu', CURRENT_DATE, '13:00', 90, 'Crown Prep', 'scheduled', true, true, false, true),
+  ('a0000001-0000-0000-0000-000000000005', 'Dr. Alexandru Chireu', CURRENT_DATE, '14:30', 60, 'Orthodontic Check', 'scheduled', true, false, false, false),
+  ('a0000001-0000-0000-0000-000000000008', 'Dr. Alexandru Chireu', CURRENT_DATE, '16:00', 60, 'Emergency - Toothache', 'confirmed', true, true, true, false);
 
 -- Future appointments
 INSERT INTO oe_appointments (patient_id, provider_name, appointment_date, appointment_time, duration_minutes, type, status, confirmation_sent, insurance_verified) VALUES
-  ('a0000001-0000-0000-0000-000000000002', 'Dr. Alex', CURRENT_DATE + INTERVAL '2 days', '09:00', 120, 'Implant Consultation', 'scheduled', false, false),
-  ('a0000001-0000-0000-0000-000000000009', 'Dr. Alex', CURRENT_DATE + INTERVAL '3 days', '11:00', 60, 'Teeth Whitening', 'scheduled', false, true),
-  ('a0000001-0000-0000-0000-000000000007', 'Dr. Alex', CURRENT_DATE + INTERVAL '5 days', '10:00', 90, 'Periodontal Scaling', 'scheduled', false, true);
+  ('a0000001-0000-0000-0000-000000000002', 'Dr. Alexandru Chireu', CURRENT_DATE + INTERVAL '2 days', '09:00', 120, 'Implant Consultation', 'scheduled', false, false),
+  ('a0000001-0000-0000-0000-000000000009', 'Dr. Alexandru Chireu', CURRENT_DATE + INTERVAL '3 days', '11:00', 60, 'Teeth Whitening', 'scheduled', false, true),
+  ('a0000001-0000-0000-0000-000000000007', 'Dr. Alexandru Chireu', CURRENT_DATE + INTERVAL '5 days', '10:00', 90, 'Periodontal Scaling', 'scheduled', false, true);
 
 -- ============================================================================
 -- LEADS (4 recent leads with varying urgency and status)
@@ -61,7 +61,7 @@ INSERT INTO oe_leads (id, first_name, last_name, email, phone, source, status, i
     'website', 'new', 'cosmetic',
     'Hi, I''m interested in veneers. I have a wedding coming up in April and want my smile to look perfect. Can you tell me about pricing and how many visits it would take?',
     'medium',
-    'Hi Amanda! Congratulations on your upcoming wedding! We''d love to help you achieve the perfect smile for your special day. Our cosmetic consultation with Dr. Alex is complimentary, and veneers typically require just 2-3 visits over 2-3 weeks. We offer flexible financing options to fit any budget. Would you like to schedule a consultation this week? We have openings on Tuesday and Thursday mornings.',
+    'Hi Amanda! Congratulations on your upcoming wedding! We''d love to help you achieve the perfect smile for your special day. Our cosmetic consultation with Dr. Alexandru is complimentary, and veneers typically require just 2-3 visits over 2-3 weeks. We offer flexible financing options to fit any budget. Would you like to schedule a consultation this week? We have openings on Tuesday and Thursday mornings.',
     now() - INTERVAL '25 minutes'
   ),
   (
@@ -71,7 +71,7 @@ INSERT INTO oe_leads (id, first_name, last_name, email, phone, source, status, i
     'google', 'new', 'implants',
     'I lost a tooth playing basketball and need to get it replaced. My dentist retired and I''m looking for a new office. Do you do implants?',
     'high',
-    'Hi Kevin, sorry to hear about your tooth! Yes, we absolutely specialize in dental implants. Dr. Alex has extensive experience with implant placement and restoration. For a missing tooth, a single implant is typically the best long-term solution. We''d like to get you in quickly for an evaluation and X-rays. Can we schedule you this week? We also accept most major insurance plans. Call or text us at (702) 935-4395 to get on the schedule.',
+    'Hi Kevin, sorry to hear about your tooth! Yes, we absolutely specialize in dental implants. Dr. Alexandru has extensive experience with implant placement and restoration. For a missing tooth, a single implant is typically the best long-term solution. We''d like to get you in quickly for an evaluation and X-rays. Can we schedule you this week? We also accept most major insurance plans. Call or text us at (702) 935-4395 to get on the schedule.',
     now() - INTERVAL '2 hours'
   ),
   (
@@ -105,7 +105,7 @@ INSERT INTO oe_ai_actions (action_type, module, description, input_data, output_
     'lead_response_draft', 'lead_response',
     'Drafted response for lead: Amanda Foster - Cosmetic/Veneers inquiry',
     '{"lead_id": "b0000001-0000-0000-0000-000000000001", "inquiry_type": "cosmetic", "message": "Interested in veneers for wedding"}',
-    '{"response": "Hi Amanda! Congratulations on your upcoming wedding! We''d love to help you achieve the perfect smile for your special day. Our cosmetic consultation with Dr. Alex is complimentary, and veneers typically require just 2-3 visits over 2-3 weeks. We offer flexible financing options to fit any budget. Would you like to schedule a consultation this week? We have openings on Tuesday and Thursday mornings."}',
+    '{"response": "Hi Amanda! Congratulations on your upcoming wedding! We''d love to help you achieve the perfect smile for your special day. Our cosmetic consultation with Dr. Alexandru is complimentary, and veneers typically require just 2-3 visits over 2-3 weeks. We offer flexible financing options to fit any budget. Would you like to schedule a consultation this week? We have openings on Tuesday and Thursday mornings."}',
     'pending_approval',
     'b0000001-0000-0000-0000-000000000001',
     0.92,
@@ -115,7 +115,7 @@ INSERT INTO oe_ai_actions (action_type, module, description, input_data, output_
     'lead_response_draft', 'lead_response',
     'Drafted response for lead: Kevin Marshall - Dental implant inquiry (HIGH URGENCY)',
     '{"lead_id": "b0000001-0000-0000-0000-000000000002", "inquiry_type": "implants", "message": "Lost tooth, needs implant replacement"}',
-    '{"response": "Hi Kevin, sorry to hear about your tooth! Yes, we absolutely specialize in dental implants. Dr. Alex has extensive experience with implant placement and restoration. For a missing tooth, a single implant is typically the best long-term solution. We''d like to get you in quickly for an evaluation and X-rays. Can we schedule you this week? We also accept most major insurance plans. Call or text us at (702) 935-4395 to get on the schedule."}',
+    '{"response": "Hi Kevin, sorry to hear about your tooth! Yes, we absolutely specialize in dental implants. Dr. Alexandru has extensive experience with implant placement and restoration. For a missing tooth, a single implant is typically the best long-term solution. We''d like to get you in quickly for an evaluation and X-rays. Can we schedule you this week? We also accept most major insurance plans. Call or text us at (702) 935-4395 to get on the schedule."}',
     'pending_approval',
     'b0000001-0000-0000-0000-000000000002',
     0.88,
@@ -138,7 +138,7 @@ INSERT INTO oe_ai_actions (action_type, module, description, input_data, output_
     'appointment_reminder', 'scheduling',
     'Send 2-hour reminder to Michael Kim for Crown Prep at 1:00 PM',
     '{"patient_id": "a0000001-0000-0000-0000-000000000006", "appointment_type": "Crown Prep", "time": "1:00 PM"}',
-    '{"message": "Hi Michael! This is a friendly reminder from AK Ultimate Dental - your Crown Prep appointment is today at 1:00 PM with Dr. Alex. Please arrive 10 minutes early. If you need to reschedule, reply to this text or call (702) 935-4395. See you soon!"}',
+    '{"message": "Hi Michael! This is a friendly reminder from AK Ultimate Dental - your Crown Prep appointment is today at 1:00 PM with Dr. Alexandru. Please arrive 10 minutes early. If you need to reschedule, reply to this text or call (702) 935-4395. See you soon!"}',
     'pending_approval',
     'a0000001-0000-0000-0000-000000000006',
     0.97,
@@ -161,7 +161,7 @@ INSERT INTO oe_ai_actions (action_type, module, description, input_data, output_
     'patient_recall', 'recall',
     'Recall outreach for Robert Thompson - 6 months overdue for cleaning',
     '{"patient_id": "a0000001-0000-0000-0000-000000000004", "last_visit": "180 days ago", "type": "recall"}',
-    '{"message": "Hi Robert! It''s been a while since your last visit to AK Ultimate Dental. Regular cleanings help prevent costly problems down the road. We have convenient morning and afternoon openings this week. Reply YES to book, or call us at (702) 935-4395. We''d love to see you! - Dr. Alex''s Team"}',
+    '{"message": "Hi Robert! It''s been a while since your last visit to AK Ultimate Dental. Regular cleanings help prevent costly problems down the road. We have convenient morning and afternoon openings this week. Reply YES to book, or call us at (702) 935-4395. We''d love to see you! - Dr. Alexandru''s Team"}',
     'pending_approval',
     'a0000001-0000-0000-0000-000000000004',
     0.78,
@@ -170,10 +170,10 @@ INSERT INTO oe_ai_actions (action_type, module, description, input_data, output_
 
 -- Some recently approved/executed actions (for the "Recent Decisions" section)
 INSERT INTO oe_ai_actions (action_type, module, description, input_data, output_data, status, confidence_score, approved_by, approved_at, created_at) VALUES
-  ('lead_response_draft', 'lead_response', 'Drafted response for lead: Stephanie Park - New patient family inquiry', '{}', '{}', 'executed', 0.91, 'Dr. Alex', now() - INTERVAL '20 hours', now() - INTERVAL '1 day'),
-  ('appointment_confirmation', 'scheduling', 'Sent confirmation to Maria Gonzalez for Cleaning & Exam', '{}', '{}', 'executed', 0.96, 'Dr. Alex', now() - INTERVAL '2 days', now() - INTERVAL '2 days'),
-  ('appointment_confirmation', 'scheduling', 'Sent confirmation to Sarah Chen for Cosmetic Consultation', '{}', '{}', 'approved', 0.94, 'Dr. Alex', now() - INTERVAL '1 day', now() - INTERVAL '1 day'),
-  ('patient_recall', 'recall', 'Recall outreach for inactive patient: Anthony Brown', '{}', '{}', 'rejected', 0.65, 'Dr. Alex', now() - INTERVAL '3 days', now() - INTERVAL '3 days');
+  ('lead_response_draft', 'lead_response', 'Drafted response for lead: Stephanie Park - New patient family inquiry', '{}', '{}', 'executed', 0.91, 'Dr. Alexandru Chireu', now() - INTERVAL '20 hours', now() - INTERVAL '1 day'),
+  ('appointment_confirmation', 'scheduling', 'Sent confirmation to Maria Gonzalez for Cleaning & Exam', '{}', '{}', 'executed', 0.96, 'Dr. Alexandru Chireu', now() - INTERVAL '2 days', now() - INTERVAL '2 days'),
+  ('appointment_confirmation', 'scheduling', 'Sent confirmation to Sarah Chen for Cosmetic Consultation', '{}', '{}', 'approved', 0.94, 'Dr. Alexandru Chireu', now() - INTERVAL '1 day', now() - INTERVAL '1 day'),
+  ('patient_recall', 'recall', 'Recall outreach for inactive patient: Anthony Brown', '{}', '{}', 'rejected', 0.65, 'Dr. Alexandru Chireu', now() - INTERVAL '3 days', now() - INTERVAL '3 days');
 
 -- ============================================================================
 -- INSURANCE VERIFICATIONS
@@ -194,8 +194,8 @@ INSERT INTO oe_insurance_verifications (patient_id, insurance_provider, member_i
 INSERT INTO oe_outreach_messages (patient_id, channel, direction, status, content, created_at) VALUES
   ('a0000001-0000-0000-0000-000000000001', 'sms', 'outbound', 'delivered', 'Hi Maria! Just a reminder - your cleaning appointment is tomorrow at 9:00 AM. Reply CONFIRM to confirm. - AK Ultimate Dental', now() - INTERVAL '1 day'),
   ('a0000001-0000-0000-0000-000000000001', 'sms', 'inbound', 'delivered', 'CONFIRM - see you tomorrow!', now() - INTERVAL '23 hours'),
-  ('a0000001-0000-0000-0000-000000000003', 'email', 'outbound', 'opened', 'Dear Sarah, Thank you for choosing AK Ultimate Dental for your cosmetic consultation. We look forward to discussing your smile goals with Dr. Alex. Your appointment is confirmed for today at 10:30 AM.', now() - INTERVAL '2 days'),
-  ('a0000001-0000-0000-0000-000000000006', 'sms', 'outbound', 'delivered', 'Hi Michael, your crown prep appointment is scheduled for today at 1:00 PM with Dr. Alex. Please arrive 10 min early. Reply C to confirm or R to reschedule.', now() - INTERVAL '1 day'),
+  ('a0000001-0000-0000-0000-000000000003', 'email', 'outbound', 'opened', 'Dear Sarah, Thank you for choosing AK Ultimate Dental for your cosmetic consultation. We look forward to discussing your smile goals with Dr. Alexandru. Your appointment is confirmed for today at 10:30 AM.', now() - INTERVAL '2 days'),
+  ('a0000001-0000-0000-0000-000000000006', 'sms', 'outbound', 'delivered', 'Hi Michael, your crown prep appointment is scheduled for today at 1:00 PM with Dr. Alexandru. Please arrive 10 min early. Reply C to confirm or R to reschedule.', now() - INTERVAL '1 day'),
   ('a0000001-0000-0000-0000-000000000006', 'sms', 'inbound', 'delivered', 'C', now() - INTERVAL '22 hours'),
   ('a0000001-0000-0000-0000-000000000004', 'sms', 'outbound', 'delivered', 'Hi Robert, it''s been a while since your last visit to AK Ultimate Dental! We miss seeing you. Would you like to schedule a cleaning? Reply YES or call (702) 935-4395.', now() - INTERVAL '5 days'),
   ('a0000001-0000-0000-0000-000000000009', 'email', 'outbound', 'delivered', 'Hi Emily, just a friendly reminder that you''re due for your 6-month cleaning. We have several openings next week. Book online or call us at (702) 935-4395!', now() - INTERVAL '3 days'),

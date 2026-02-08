@@ -2,6 +2,7 @@
 
 import { Bell, Search, Command, Zap } from "lucide-react";
 import { useState } from "react";
+import { UserButton, useUser } from "@clerk/nextjs";
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -23,13 +24,18 @@ export function DashboardHeader() {
   const [showSearch, setShowSearch] = useState(false);
   const greeting = getGreeting();
   const dateStr = getFormattedDate();
+  const { user, isLoaded } = useUser();
+
+  const displayName = user?.firstName
+    ? `Dr. ${user.firstName}`
+    : "Dr. Alexandru";
 
   return (
     <header className="flex h-14 items-center justify-between border-b border-slate-200/80 bg-white/80 backdrop-blur-sm px-6">
       <div className="flex items-center gap-4">
         {/* Greeting */}
         <div className="hidden md:block">
-          <p className="text-sm font-semibold text-slate-900">{greeting}, Dr. Alex</p>
+          <p className="text-sm font-semibold text-slate-900">{greeting}, {displayName}</p>
           <p className="text-[11px] text-slate-400">{dateStr}</p>
         </div>
 
@@ -83,10 +89,21 @@ export function DashboardHeader() {
           </span>
         </button>
 
-        {/* Avatar */}
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-slate-700 to-slate-900 text-[11px] font-bold text-white ring-2 ring-white shadow-sm">
-          AK
-        </div>
+        {/* Clerk User Button / Avatar */}
+        {isLoaded && user ? (
+          <UserButton
+            appearance={{
+              elements: {
+                avatarBox: "h-8 w-8 rounded-lg ring-2 ring-white shadow-sm",
+              },
+            }}
+            afterSignOutUrl="/"
+          />
+        ) : (
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-slate-700 to-slate-900 text-[11px] font-bold text-white ring-2 ring-white shadow-sm">
+            AK
+          </div>
+        )}
       </div>
     </header>
   );

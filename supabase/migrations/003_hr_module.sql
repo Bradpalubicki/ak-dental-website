@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS oe_hr_documents (
   content TEXT NOT NULL,
   severity TEXT CHECK (severity IN ('info', 'warning', 'serious', 'critical')),
   status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'pending_signature', 'acknowledged', 'disputed')),
-  created_by TEXT NOT NULL DEFAULT 'Dr. Alex',
+  created_by TEXT NOT NULL DEFAULT 'Dr. Alexandru Chireu',
   metadata JSONB DEFAULT '{}'
 );
 

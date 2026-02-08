@@ -248,7 +248,7 @@ export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadg
           {!collapsed && (
             <div className="flex-1 min-w-0">
               <p className="truncate text-xs font-medium text-slate-300">AK Ultimate Dental</p>
-              <p className="text-[10px] text-slate-500">Dr. Alex Khachaturian</p>
+              <p className="text-[10px] text-slate-500">Dr. Alexandru Chireu</p>
             </div>
           )}
         </div>

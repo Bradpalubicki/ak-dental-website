@@ -183,7 +183,7 @@ export default function TreatmentPresentationPage() {
                     <Sparkles className="h-5 w-5 text-cyan-400" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-cyan-400 mb-2">Dr. Alex&apos;s Summary</p>
+                    <p className="text-sm font-medium text-cyan-400 mb-2">Dr. Alexandru&apos;s Summary</p>
                     <p className="text-lg leading-relaxed text-slate-200">
                       {plan.ai_summary || "Your treatment plan has been carefully designed to address your dental needs with the best possible outcomes."}
                     </p>

@@ -208,7 +208,7 @@ const recentPunches = [
 
 const credentials = [
   {
-    holder: "Dr. Alex Khachaturian",
+    holder: "Dr. Alexandru Chireu",
     credential: "DDS License",
     number: "#DEN-12345",
     expires: "Jun 2027",
@@ -216,7 +216,7 @@ const credentials = [
     daysUntil: 510,
   },
   {
-    holder: "Dr. Alex Khachaturian",
+    holder: "Dr. Alexandru Chireu",
     credential: "DEA License",
     number: "#BK1234567",
     expires: "Mar 2026",
@@ -256,7 +256,7 @@ const credentials = [
     daysUntil: 358,
   },
   {
-    holder: "Dr. Alex Khachaturian",
+    holder: "Dr. Alexandru Chireu",
     credential: "Radiation Safety",
     number: "",
     expires: "Feb 2026",
@@ -755,7 +755,7 @@ export function HrClient({ stats, recentDocuments }: Props) {
         </div>
         <div className="border-t border-slate-200 px-6 py-3">
           <AiInsight>
-            One Engine Alert: Dr. Alex&apos;s DEA license expires in 49 days.
+            One Engine Alert: Dr. Alexandru&apos;s DEA license expires in 49 days.
             Radiation Safety certification has EXPIRED. Renewal applications have
             been drafted for your review.
           </AiInsight>

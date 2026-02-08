@@ -108,7 +108,7 @@ export default function AboutPage() {
             <div className="relative">
               <Image
                 src={images.team.graduation}
-                alt="Dr. Alex - UNLV School of Dental Medicine graduation"
+                alt="Dr. Alexandru Chireu - UNLV School of Dental Medicine graduation"
                 width={600}
                 height={450}
                 className="rounded-2xl shadow-xl"

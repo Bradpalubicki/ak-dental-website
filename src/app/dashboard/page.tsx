@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { createServiceSupabase } from "@/lib/supabase/server";
-import { DashboardClient } from "./dashboard-client";
+import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
 
 export default async function DashboardPage() {
   const supabase = createServiceSupabase();
@@ -72,7 +72,6 @@ export default async function DashboardPage() {
     name: `${l.first_name} ${l.last_name}`,
     source: l.source as string,
     urgency: l.urgency as string,
-    status: l.status as string,
     createdAt: l.created_at as string,
   }));
 
@@ -90,9 +89,8 @@ export default async function DashboardPage() {
   ).length;
 
   // Build urgent items
-  const urgentItems: Array<{ type: string; label: string; detail: string; href: string; level: "critical" | "warning" | "info" }> = [];
+  const urgentItems: Array<{ type: string; label: string; detail: string; href: string; level: string }> = [];
 
-  // Emergency/high-urgency leads
   (emergencyLeadsRes.data || []).forEach((l: any) => {
     urgentItems.push({
       type: "lead",
@@ -103,7 +101,6 @@ export default async function DashboardPage() {
     });
   });
 
-  // Pending approvals
   const pendingApprovals = pendingApprovalsRes.count || 0;
   if (pendingApprovals > 0) {
     urgentItems.push({
@@ -115,7 +112,6 @@ export default async function DashboardPage() {
     });
   }
 
-  // Unconfirmed appointments
   const unconfirmed = appointments.filter((a) => a.status === "scheduled");
   if (unconfirmed.length > 0) {
     urgentItems.push({
@@ -127,7 +123,6 @@ export default async function DashboardPage() {
     });
   }
 
-  // Pending insurance
   const pendingIns = pendingInsuranceRes.count || 0;
   if (pendingIns > 0) {
     urgentItems.push({
@@ -140,25 +135,26 @@ export default async function DashboardPage() {
   }
   /* eslint-enable @typescript-eslint/no-explicit-any */
 
-  // Sort: critical first, then warning, then info
-  const levelOrder = { critical: 0, warning: 1, info: 2 };
-  urgentItems.sort((a, b) => levelOrder[a.level] - levelOrder[b.level]);
+  const levelOrder: Record<string, number> = { critical: 0, warning: 1, info: 2 };
+  urgentItems.sort((a, b) => (levelOrder[a.level] ?? 2) - (levelOrder[b.level] ?? 2));
 
   return (
-    <DashboardClient
-      appointments={appointments}
-      leads={leads}
-      aiActions={aiActions}
-      urgentItems={urgentItems}
-      stats={{
-        appointmentCount: appointments.length,
-        unconfirmedCount: unconfirmed.length,
-        leadCount: leads.length,
-        pendingApprovals,
-        pendingInsurance: pendingIns,
-        patientCount: patientsRes.count || 0,
-        aiActionsToday: aiActionsToday.length,
-        approvedToday,
+    <DashboardGrid
+      data={{
+        appointments,
+        leads,
+        aiActions,
+        urgentItems,
+        stats: {
+          appointmentCount: appointments.length,
+          unconfirmedCount: unconfirmed.length,
+          leadCount: leads.length,
+          pendingApprovals,
+          pendingInsurance: pendingIns,
+          patientCount: patientsRes.count || 0,
+          aiActionsToday: aiActionsToday.length,
+          approvedToday,
+        },
       }}
     />
   );

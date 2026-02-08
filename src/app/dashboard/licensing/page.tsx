@@ -32,11 +32,11 @@ interface License {
 }
 
 const licenses: License[] = [
-  { id: "1", holder: "Dr. Alex Khachaturian", role: "Owner / Dentist", type: "DDS License", licenseNumber: "DEN-12345-NV", issuedBy: "Nevada State Board of Dental Examiners", issueDate: "2021-06-15", expirationDate: "2027-06-15", status: "current", daysUntilExpiry: 493 },
-  { id: "2", holder: "Dr. Alex Khachaturian", role: "Owner / Dentist", type: "DEA Registration", licenseNumber: "BK1234567", issuedBy: "U.S. Drug Enforcement Administration", issueDate: "2023-03-28", expirationDate: "2026-03-28", status: "expiring_soon", daysUntilExpiry: 49 },
-  { id: "3", holder: "Dr. Alex Khachaturian", role: "Owner / Dentist", type: "NPI Number", licenseNumber: "1234567890", issuedBy: "CMS / NPPES", issueDate: "2018-01-01", expirationDate: "N/A", status: "current", daysUntilExpiry: 9999 },
-  { id: "4", holder: "Dr. Alex Khachaturian", role: "Owner / Dentist", type: "Radiation Safety Certificate", licenseNumber: "RAD-NV-5678", issuedBy: "Nevada Radiation Control Program", issueDate: "2022-02-10", expirationDate: "2026-02-10", status: "expired", daysUntilExpiry: -3 },
-  { id: "5", holder: "Dr. Alex Khachaturian", role: "Owner / Dentist", type: "Conscious Sedation Permit", licenseNumber: "SED-NV-9012", issuedBy: "Nevada State Board of Dental Examiners", issueDate: "2024-08-01", expirationDate: "2027-08-01", status: "current", daysUntilExpiry: 540 },
+  { id: "1", holder: "Dr. Alexandru Chireu", role: "Owner / Dentist", type: "DDS License", licenseNumber: "DEN-12345-NV", issuedBy: "Nevada State Board of Dental Examiners", issueDate: "2021-06-15", expirationDate: "2027-06-15", status: "current", daysUntilExpiry: 493 },
+  { id: "2", holder: "Dr. Alexandru Chireu", role: "Owner / Dentist", type: "DEA Registration", licenseNumber: "BK1234567", issuedBy: "U.S. Drug Enforcement Administration", issueDate: "2023-03-28", expirationDate: "2026-03-28", status: "expiring_soon", daysUntilExpiry: 49 },
+  { id: "3", holder: "Dr. Alexandru Chireu", role: "Owner / Dentist", type: "NPI Number", licenseNumber: "1234567890", issuedBy: "CMS / NPPES", issueDate: "2018-01-01", expirationDate: "N/A", status: "current", daysUntilExpiry: 9999 },
+  { id: "4", holder: "Dr. Alexandru Chireu", role: "Owner / Dentist", type: "Radiation Safety Certificate", licenseNumber: "RAD-NV-5678", issuedBy: "Nevada Radiation Control Program", issueDate: "2022-02-10", expirationDate: "2026-02-10", status: "expired", daysUntilExpiry: -3 },
+  { id: "5", holder: "Dr. Alexandru Chireu", role: "Owner / Dentist", type: "Conscious Sedation Permit", licenseNumber: "SED-NV-9012", issuedBy: "Nevada State Board of Dental Examiners", issueDate: "2024-08-01", expirationDate: "2027-08-01", status: "current", daysUntilExpiry: 540 },
   { id: "6", holder: "Maria Santos", role: "Hygienist", type: "RDH License", licenseNumber: "HYG-54321-NV", issuedBy: "Nevada State Board of Dental Examiners", issueDate: "2022-12-01", expirationDate: "2026-12-01", status: "current", daysUntilExpiry: 297 },
   { id: "7", holder: "Maria Santos", role: "Hygienist", type: "Local Anesthesia Permit", licenseNumber: "LA-NV-6789", issuedBy: "Nevada State Board of Dental Examiners", issueDate: "2022-12-01", expirationDate: "2026-12-01", status: "current", daysUntilExpiry: 297 },
   { id: "8", holder: "Jessica Chen", role: "Dental Assistant", type: "DA Certification", licenseNumber: "DA-98765-NV", issuedBy: "DANB / Nevada Board", issueDate: "2023-08-15", expirationDate: "2026-08-15", status: "current", daysUntilExpiry: 189 },
@@ -60,7 +60,7 @@ export default function LicensingPage() {
   const current = licenses.filter((l) => l.status === "current");
 
   const grouped = [
-    { label: "Dr. Alex Khachaturian", items: licenses.filter((l) => l.holder === "Dr. Alex Khachaturian") },
+    { label: "Dr. Alexandru Chireu", items: licenses.filter((l) => l.holder === "Dr. Alexandru Chireu") },
     { label: "Maria Santos", items: licenses.filter((l) => l.holder === "Maria Santos") },
     { label: "Jessica Chen", items: licenses.filter((l) => l.holder === "Jessica Chen") },
     { label: "Team Certifications", items: licenses.filter((l) => l.holder === "All Staff") },

@@ -83,11 +83,11 @@ async function seed() {
   // ============================================================================
   console.log("\nSeeding appointments...");
   const appointments = [
-    { patient_id: patients[0].id, provider_name: "Dr. Alex", appointment_date: today, appointment_time: "09:00", duration_minutes: 60, type: "Cleaning & Exam", status: "confirmed", confirmation_sent: true, reminder_24h_sent: true, reminder_2h_sent: true, insurance_verified: true },
-    { patient_id: patients[2].id, provider_name: "Dr. Alex", appointment_date: today, appointment_time: "10:30", duration_minutes: 90, type: "Cosmetic Consultation", status: "confirmed", confirmation_sent: true, reminder_24h_sent: true, reminder_2h_sent: false, insurance_verified: true },
-    { patient_id: patients[5].id, provider_name: "Dr. Alex", appointment_date: today, appointment_time: "13:00", duration_minutes: 90, type: "Crown Prep", status: "scheduled", confirmation_sent: true, reminder_24h_sent: true, reminder_2h_sent: false, insurance_verified: true },
-    { patient_id: patients[4].id, provider_name: "Dr. Alex", appointment_date: today, appointment_time: "14:30", duration_minutes: 60, type: "Orthodontic Check", status: "scheduled", confirmation_sent: true, reminder_24h_sent: false, reminder_2h_sent: false, insurance_verified: false },
-    { patient_id: patients[7].id, provider_name: "Dr. Alex", appointment_date: today, appointment_time: "16:00", duration_minutes: 60, type: "Emergency - Toothache", status: "confirmed", confirmation_sent: true, reminder_24h_sent: true, reminder_2h_sent: true, insurance_verified: false },
+    { patient_id: patients[0].id, provider_name: "Dr. Alexandru Chireu", appointment_date: today, appointment_time: "09:00", duration_minutes: 60, type: "Cleaning & Exam", status: "confirmed", confirmation_sent: true, reminder_24h_sent: true, reminder_2h_sent: true, insurance_verified: true },
+    { patient_id: patients[2].id, provider_name: "Dr. Alexandru Chireu", appointment_date: today, appointment_time: "10:30", duration_minutes: 90, type: "Cosmetic Consultation", status: "confirmed", confirmation_sent: true, reminder_24h_sent: true, reminder_2h_sent: false, insurance_verified: true },
+    { patient_id: patients[5].id, provider_name: "Dr. Alexandru Chireu", appointment_date: today, appointment_time: "13:00", duration_minutes: 90, type: "Crown Prep", status: "scheduled", confirmation_sent: true, reminder_24h_sent: true, reminder_2h_sent: false, insurance_verified: true },
+    { patient_id: patients[4].id, provider_name: "Dr. Alexandru Chireu", appointment_date: today, appointment_time: "14:30", duration_minutes: 60, type: "Orthodontic Check", status: "scheduled", confirmation_sent: true, reminder_24h_sent: false, reminder_2h_sent: false, insurance_verified: false },
+    { patient_id: patients[7].id, provider_name: "Dr. Alexandru Chireu", appointment_date: today, appointment_time: "16:00", duration_minutes: 60, type: "Emergency - Toothache", status: "confirmed", confirmation_sent: true, reminder_24h_sent: true, reminder_2h_sent: true, insurance_verified: false },
   ];
 
   const { error: aErr } = await supabase.from("oe_appointments").insert(appointments);
@@ -96,9 +96,9 @@ async function seed() {
 
   // Future appointments
   const futureAppts = [
-    { patient_id: patients[1].id, provider_name: "Dr. Alex", appointment_date: daysAgo(-2), appointment_time: "09:00", duration_minutes: 120, type: "Implant Consultation", status: "scheduled", confirmation_sent: false, insurance_verified: false },
-    { patient_id: patients[8].id, provider_name: "Dr. Alex", appointment_date: daysAgo(-3), appointment_time: "11:00", duration_minutes: 60, type: "Teeth Whitening", status: "scheduled", confirmation_sent: false, insurance_verified: true },
-    { patient_id: patients[6].id, provider_name: "Dr. Alex", appointment_date: daysAgo(-5), appointment_time: "10:00", duration_minutes: 90, type: "Periodontal Scaling", status: "scheduled", confirmation_sent: false, insurance_verified: true },
+    { patient_id: patients[1].id, provider_name: "Dr. Alexandru Chireu", appointment_date: daysAgo(-2), appointment_time: "09:00", duration_minutes: 120, type: "Implant Consultation", status: "scheduled", confirmation_sent: false, insurance_verified: false },
+    { patient_id: patients[8].id, provider_name: "Dr. Alexandru Chireu", appointment_date: daysAgo(-3), appointment_time: "11:00", duration_minutes: 60, type: "Teeth Whitening", status: "scheduled", confirmation_sent: false, insurance_verified: true },
+    { patient_id: patients[6].id, provider_name: "Dr. Alexandru Chireu", appointment_date: daysAgo(-5), appointment_time: "10:00", duration_minutes: 90, type: "Periodontal Scaling", status: "scheduled", confirmation_sent: false, insurance_verified: true },
   ];
   const { error: faErr } = await supabase.from("oe_appointments").insert(futureAppts);
   if (faErr) console.error("  Future appt insert error:", faErr.message);
@@ -116,7 +116,7 @@ async function seed() {
       source: "website", status: "new", inquiry_type: "cosmetic",
       message: "Hi, I'm interested in veneers. I have a wedding coming up in April and want my smile to look perfect. Can you tell me about pricing and how many visits it would take?",
       urgency: "medium",
-      ai_response_draft: "Hi Amanda! Congratulations on your upcoming wedding! We'd love to help you achieve the perfect smile for your special day. Our cosmetic consultation with Dr. Alex is complimentary, and veneers typically require just 2-3 visits over 2-3 weeks. We offer flexible financing options to fit any budget. Would you like to schedule a consultation this week? We have openings on Tuesday and Thursday mornings.",
+      ai_response_draft: "Hi Amanda! Congratulations on your upcoming wedding! We'd love to help you achieve the perfect smile for your special day. Our cosmetic consultation with Dr. Alexandru is complimentary, and veneers typically require just 2-3 visits over 2-3 weeks. We offer flexible financing options to fit any budget. Would you like to schedule a consultation this week? We have openings on Tuesday and Thursday mornings.",
       created_at: minutesAgo(25),
     },
     {
@@ -126,7 +126,7 @@ async function seed() {
       source: "google", status: "new", inquiry_type: "implants",
       message: "I lost a tooth playing basketball and need to get it replaced. My dentist retired and I'm looking for a new office. Do you do implants?",
       urgency: "high",
-      ai_response_draft: "Hi Kevin, sorry to hear about your tooth! Yes, we absolutely specialize in dental implants. Dr. Alex has extensive experience with implant placement and restoration. For a missing tooth, a single implant is typically the best long-term solution. We'd like to get you in quickly for an evaluation and X-rays. Can we schedule you this week? We also accept most major insurance plans. Call or text us at (702) 935-4395 to get on the schedule.",
+      ai_response_draft: "Hi Kevin, sorry to hear about your tooth! Yes, we absolutely specialize in dental implants. Dr. Alexandru has extensive experience with implant placement and restoration. For a missing tooth, a single implant is typically the best long-term solution. We'd like to get you in quickly for an evaluation and X-rays. Can we schedule you this week? We also accept most major insurance plans. Call or text us at (702) 935-4395 to get on the schedule.",
       created_at: hoursAgo(2),
     },
     {
@@ -188,7 +188,7 @@ async function seed() {
       action_type: "appointment_reminder", module: "scheduling",
       description: "Send 2-hour reminder to Michael Kim for Crown Prep at 1:00 PM",
       input_data: { patient_id: patients[5].id, appointment_type: "Crown Prep", time: "1:00 PM" },
-      output_data: { message: "Hi Michael! This is a friendly reminder from AK Ultimate Dental - your Crown Prep appointment is today at 1:00 PM with Dr. Alex. Please arrive 10 minutes early. If you need to reschedule, reply to this text or call (702) 935-4395. See you soon!" },
+      output_data: { message: "Hi Michael! This is a friendly reminder from AK Ultimate Dental - your Crown Prep appointment is today at 1:00 PM with Dr. Alexandruandru. Please arrive 10 minutes early. If you need to reschedule, reply to this text or call (702) 935-4395. See you soon!" },
       status: "pending_approval", patient_id: patients[5].id, confidence_score: 0.97,
       created_at: minutesAgo(10),
     },
@@ -204,7 +204,7 @@ async function seed() {
       action_type: "patient_recall", module: "recall",
       description: "Recall outreach for Robert Thompson - 6 months overdue for cleaning",
       input_data: { patient_id: patients[3].id, last_visit: "180 days ago", type: "recall" },
-      output_data: { message: "Hi Robert! It's been a while since your last visit to AK Ultimate Dental. Regular cleanings help prevent costly problems down the road. We have convenient morning and afternoon openings this week. Reply YES to book, or call us at (702) 935-4395. We'd love to see you! - Dr. Alex's Team" },
+      output_data: { message: "Hi Robert! It's been a while since your last visit to AK Ultimate Dental. Regular cleanings help prevent costly problems down the road. We have convenient morning and afternoon openings this week. Reply YES to book, or call us at (702) 935-4395. We'd love to see you! - Dr. Alexandru's Team" },
       status: "pending_approval", patient_id: patients[3].id, confidence_score: 0.78,
       created_at: hoursAgo(3),
     },
@@ -216,10 +216,10 @@ async function seed() {
 
   // Recent processed actions
   const recentActions = [
-    { action_type: "lead_response_draft", module: "lead_response", description: "Drafted response for lead: Stephanie Park - New patient family inquiry", input_data: {}, output_data: {}, status: "executed", confidence_score: 0.91, approved_by: "Dr. Alex", approved_at: hoursAgo(20), created_at: hoursAgo(24) },
-    { action_type: "appointment_confirmation", module: "scheduling", description: "Sent confirmation to Maria Gonzalez for Cleaning & Exam", input_data: {}, output_data: {}, status: "executed", confidence_score: 0.96, approved_by: "Dr. Alex", approved_at: hoursAgo(48), created_at: hoursAgo(48) },
-    { action_type: "appointment_confirmation", module: "scheduling", description: "Sent confirmation to Sarah Chen for Cosmetic Consultation", input_data: {}, output_data: {}, status: "approved", confidence_score: 0.94, approved_by: "Dr. Alex", approved_at: hoursAgo(24), created_at: hoursAgo(24) },
-    { action_type: "patient_recall", module: "recall", description: "Recall outreach for inactive patient: Anthony Brown", input_data: {}, output_data: {}, status: "rejected", confidence_score: 0.65, approved_by: "Dr. Alex", approved_at: hoursAgo(72), created_at: hoursAgo(72) },
+    { action_type: "lead_response_draft", module: "lead_response", description: "Drafted response for lead: Stephanie Park - New patient family inquiry", input_data: {}, output_data: {}, status: "executed", confidence_score: 0.91, approved_by: "Dr. Alexandru Chireu", approved_at: hoursAgo(20), created_at: hoursAgo(24) },
+    { action_type: "appointment_confirmation", module: "scheduling", description: "Sent confirmation to Maria Gonzalez for Cleaning & Exam", input_data: {}, output_data: {}, status: "executed", confidence_score: 0.96, approved_by: "Dr. Alexandru Chireu", approved_at: hoursAgo(48), created_at: hoursAgo(48) },
+    { action_type: "appointment_confirmation", module: "scheduling", description: "Sent confirmation to Sarah Chen for Cosmetic Consultation", input_data: {}, output_data: {}, status: "approved", confidence_score: 0.94, approved_by: "Dr. Alexandru Chireu", approved_at: hoursAgo(24), created_at: hoursAgo(24) },
+    { action_type: "patient_recall", module: "recall", description: "Recall outreach for inactive patient: Anthony Brown", input_data: {}, output_data: {}, status: "rejected", confidence_score: 0.65, approved_by: "Dr. Alexandru Chireu", approved_at: hoursAgo(72), created_at: hoursAgo(72) },
   ];
 
   const { error: raErr } = await supabase.from("oe_ai_actions").insert(recentActions);
@@ -251,8 +251,8 @@ async function seed() {
   const messages = [
     { patient_id: patients[0].id, channel: "sms", direction: "outbound", status: "delivered", content: "Hi Maria! Just a reminder - your cleaning appointment is tomorrow at 9:00 AM. Reply CONFIRM to confirm. - AK Ultimate Dental", created_at: hoursAgo(24) },
     { patient_id: patients[0].id, channel: "sms", direction: "inbound", status: "delivered", content: "CONFIRM - see you tomorrow!", created_at: hoursAgo(23) },
-    { patient_id: patients[2].id, channel: "email", direction: "outbound", status: "opened", content: "Dear Sarah, Thank you for choosing AK Ultimate Dental for your cosmetic consultation. We look forward to discussing your smile goals with Dr. Alex. Your appointment is confirmed for today at 10:30 AM.", created_at: hoursAgo(48) },
-    { patient_id: patients[5].id, channel: "sms", direction: "outbound", status: "delivered", content: "Hi Michael, your crown prep appointment is scheduled for today at 1:00 PM with Dr. Alex. Please arrive 10 min early. Reply C to confirm or R to reschedule.", created_at: hoursAgo(24) },
+    { patient_id: patients[2].id, channel: "email", direction: "outbound", status: "opened", content: "Dear Sarah, Thank you for choosing AK Ultimate Dental for your cosmetic consultation. We look forward to discussing your smile goals with Dr. Alexandru. Your appointment is confirmed for today at 10:30 AM.", created_at: hoursAgo(48) },
+    { patient_id: patients[5].id, channel: "sms", direction: "outbound", status: "delivered", content: "Hi Michael, your crown prep appointment is scheduled for today at 1:00 PM with Dr. Alexandruandru. Please arrive 10 min early. Reply C to confirm or R to reschedule.", created_at: hoursAgo(24) },
     { patient_id: patients[5].id, channel: "sms", direction: "inbound", status: "delivered", content: "C", created_at: hoursAgo(22) },
     { patient_id: patients[3].id, channel: "sms", direction: "outbound", status: "delivered", content: "Hi Robert, it's been a while since your last visit to AK Ultimate Dental! We miss seeing you. Would you like to schedule a cleaning? Reply YES or call (702) 935-4395.", created_at: hoursAgo(120) },
     { patient_id: patients[8].id, channel: "email", direction: "outbound", status: "delivered", content: "Hi Emily, just a friendly reminder that you're due for your 6-month cleaning. We have several openings next week. Book online or call us at (702) 935-4395!", created_at: hoursAgo(72) },
