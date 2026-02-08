@@ -28,14 +28,14 @@ export function Header() {
 
       {/* Main navigation */}
       <div className="container mx-auto px-4">
-        <div className="flex h-20 items-center justify-between">
+        <div className="flex h-24 items-center justify-between">
           <Link href="/" className="flex items-center">
             <Image
               src="/ak-logo-header.png"
               alt={siteConfig.name}
-              width={624}
-              height={196}
-              className="h-14 w-auto"
+              width={824}
+              height={256}
+              className="h-16 md:h-[72px] w-auto drop-shadow-sm"
               priority
             />
           </Link>
