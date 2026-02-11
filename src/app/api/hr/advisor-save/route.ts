@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
+import { tryAuth } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
+  const authResult = await tryAuth();
+  if (authResult instanceof NextResponse) return authResult;
+
   const supabase = createServiceSupabase();
   const body = await req.json();
 

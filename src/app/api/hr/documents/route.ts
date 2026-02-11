@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
+import { tryAuth } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
+  const authResult = await tryAuth();
+  if (authResult instanceof NextResponse) return authResult;
+
   const supabase = createServiceSupabase();
   const employeeId = req.nextUrl.searchParams.get("employee_id");
   const type = req.nextUrl.searchParams.get("type");
@@ -24,6 +28,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const authResult = await tryAuth();
+  if (authResult instanceof NextResponse) return authResult;
+
   const supabase = createServiceSupabase();
   const body = await req.json();
 

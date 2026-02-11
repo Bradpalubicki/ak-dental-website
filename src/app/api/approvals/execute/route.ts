@@ -2,10 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { sendEmail, leadResponseEmail } from "@/lib/services/resend";
 import { sendSms } from "@/lib/services/twilio";
+import { tryAuth } from "@/lib/auth";
 
 // POST /api/approvals/execute - Approve or reject an AI action
 export async function POST(req: NextRequest) {
   try {
+    const authResult = await tryAuth();
+    if (authResult instanceof NextResponse) return authResult;
+    const { userId, userName } = authResult;
+
     const body = await req.json();
     const { action_id, decision, edited_content, reason } = body;
 
@@ -42,7 +47,7 @@ export async function POST(req: NextRequest) {
         .from("oe_ai_actions")
         .update({
           status: "rejected",
-          approved_by: "staff",
+          approved_by: userName || userId,
           approved_at: new Date().toISOString(),
           output_data: {
             ...((action.output_data as Record<string, unknown>) || {}),
@@ -296,7 +301,7 @@ export async function POST(req: NextRequest) {
       .from("oe_ai_actions")
       .update({
         status: "executed",
-        approved_by: "staff",
+        approved_by: userName || userId,
         approved_at: new Date().toISOString(),
         output_data: {
           ...((action.output_data as Record<string, unknown>) || {}),

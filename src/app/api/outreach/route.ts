@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
+import { tryAuth } from "@/lib/auth";
 
 export async function GET() {
   try {
+    const authResult = await tryAuth();
+    if (authResult instanceof NextResponse) return authResult;
+
     const supabase = createServiceSupabase();
     const { data, error } = await supabase
       .from("oe_outreach_workflows")
@@ -22,6 +26,9 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
+    const authResult = await tryAuth();
+    if (authResult instanceof NextResponse) return authResult;
+
     const body = await request.json();
     const { id, status } = body;
 

@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { sendEmail, appointmentConfirmationEmail } from "@/lib/services/resend";
 import { sendSms } from "@/lib/services/twilio";
+import { tryAuth } from "@/lib/auth";
 
 // POST /api/appointments/[id]/confirm - Send confirmation
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authResult = await tryAuth();
+  if (authResult instanceof NextResponse) return authResult;
   try {
     const { id } = await params;
     const supabase = createServiceSupabase();

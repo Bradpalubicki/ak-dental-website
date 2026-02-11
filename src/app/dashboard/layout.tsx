@@ -1,5 +1,7 @@
 export const dynamic = "force-dynamic";
 
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { createServiceSupabase } from "@/lib/supabase/server";
@@ -14,6 +16,9 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const { userId } = await auth();
+  if (!userId) redirect("/sign-in");
+
   const supabase = createServiceSupabase();
   const today = new Date().toISOString().split("T")[0];
   const todayStart = `${today}T00:00:00.000Z`;

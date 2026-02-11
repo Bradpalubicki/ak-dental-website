@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { tryAuth } from "@/lib/auth";
 
 const anthropic =
   process.env.ANTHROPIC_API_KEY &&
@@ -95,6 +96,9 @@ After giving guidance, end with something like:
 8. **Keep formatting clean.** Use bold for key terms, numbered lists for action steps, but don't overdo headers and sections for short responses.`;
 
 export async function POST(req: NextRequest) {
+  const authResult = await tryAuth();
+  if (authResult instanceof NextResponse) return authResult;
+
   if (!anthropic) {
     return NextResponse.json(
       { error: "AI not configured. Please add ANTHROPIC_API_KEY." },

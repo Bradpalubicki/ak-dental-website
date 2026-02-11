@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
+import { tryAuth } from "@/lib/auth";
 
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const authResult = await tryAuth();
+    if (authResult instanceof NextResponse) return authResult;
+
     const { id } = await params;
     const supabase = createServiceSupabase();
 

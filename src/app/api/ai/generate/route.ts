@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateLeadResponse, generateTreatmentSummary, generateDailyBriefing, classifyCallIntent } from "@/lib/services/ai";
 import { createServiceSupabase } from "@/lib/supabase/server";
+import { tryAuth } from "@/lib/auth";
 
 // POST /api/ai/generate - Generate AI content
 export async function POST(req: NextRequest) {
   try {
+    const authResult = await tryAuth();
+    if (authResult instanceof NextResponse) return authResult;
+
     const body = await req.json();
     const { type, params } = body;
 

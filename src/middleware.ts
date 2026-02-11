@@ -1,25 +1,23 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-
-const CLERK_KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-const isClerkConfigured = CLERK_KEY && !CLERK_KEY.includes("PLACEHOLDER");
 
 const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",
+  "/api/approvals(.*)",
+  "/api/settings(.*)",
+  "/api/outreach(.*)",
+  "/api/ai(.*)",
+  "/api/hr(.*)",
+  "/api/treatments(.*)",
+  "/api/dashboard(.*)",
+  "/api/leads/:id/respond(.*)",
+  "/api/appointments/:id/confirm(.*)",
 ]);
 
-function noopMiddleware(req: NextRequest) {
-  return NextResponse.next();
-}
-
-export default isClerkConfigured
-  ? clerkMiddleware(async (auth, req) => {
-      if (isProtectedRoute(req)) {
-        await auth.protect();
-      }
-    })
-  : noopMiddleware;
+export default clerkMiddleware(async (auth, req) => {
+  if (isProtectedRoute(req)) {
+    await auth.protect();
+  }
+});
 
 export const config = {
   matcher: [
