@@ -13,13 +13,13 @@ export async function GET(
   const supabase = createServiceSupabase();
 
   const { data, error } = await supabase
-    .from("oe_treatment_plans")
-    .select("*, patient:oe_patients(*)")
+    .from("oe_patients")
+    .select("*")
     .eq("id", id)
     .single();
 
-  if (error) return NextResponse.json({ error: "Treatment plan not found" }, { status: 404 });
-  return NextResponse.json({ plan: data });
+  if (error) return NextResponse.json({ error: error.message }, { status: 404 });
+  return NextResponse.json(data);
 }
 
 export async function PATCH(
@@ -34,17 +34,17 @@ export async function PATCH(
   const body = await req.json();
 
   const allowedFields = [
-    "title", "status", "procedures", "total_cost", "insurance_estimate",
-    "patient_estimate", "ai_summary", "notes", "decline_reason",
+    "first_name", "last_name", "email", "phone", "date_of_birth",
+    "address", "city", "state", "zip", "insurance_provider",
+    "insurance_member_id", "insurance_group_number", "status", "notes", "tags",
   ];
   const updates: Record<string, unknown> = {};
   for (const key of allowedFields) {
     if (body[key] !== undefined) updates[key] = body[key];
   }
-  if (body.status === "accepted") updates.accepted_at = new Date().toISOString();
 
   const { data, error } = await supabase
-    .from("oe_treatment_plans")
+    .from("oe_patients")
     .update(updates)
     .eq("id", id)
     .select()
@@ -65,12 +65,12 @@ export async function DELETE(
   const supabase = createServiceSupabase();
 
   const { data, error } = await supabase
-    .from("oe_treatment_plans")
+    .from("oe_patients")
     .update({ deleted_at: new Date().toISOString(), deleted_by: "Dr. Alexandru Chireu" })
     .eq("id", id)
     .select()
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ message: "Treatment plan moved to trash", data });
+  return NextResponse.json({ message: "Patient moved to trash", data });
 }
