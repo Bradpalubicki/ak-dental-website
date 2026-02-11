@@ -27,21 +27,25 @@ export default async function HrPage() {
     supabase
       .from("oe_hr_documents")
       .select("*", { count: "exact", head: true })
-      .eq("status", "pending_signature"),
+      .eq("status", "pending_signature")
+      .is("deleted_at", null),
     supabase
       .from("oe_hr_documents")
       .select("*", { count: "exact", head: true })
-      .gte("created_at", `${monthStart}T00:00:00.000Z`),
+      .gte("created_at", `${monthStart}T00:00:00.000Z`)
+      .is("deleted_at", null),
     supabase
       .from("oe_hr_documents")
       .select("*", { count: "exact", head: true })
       .eq("status", "acknowledged")
-      .gte("updated_at", `${monthStart}T00:00:00.000Z`),
+      .gte("updated_at", `${monthStart}T00:00:00.000Z`)
+      .is("deleted_at", null),
     supabase
       .from("oe_hr_documents")
       .select(
         "id, type, title, status, severity, created_at, created_by, employee:oe_employees(first_name, last_name)"
       )
+      .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .limit(10),
   ]);

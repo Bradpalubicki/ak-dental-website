@@ -9,11 +9,21 @@ export async function GET(req: NextRequest) {
   const supabase = createServiceSupabase();
   const employeeId = req.nextUrl.searchParams.get("employee_id");
   const type = req.nextUrl.searchParams.get("type");
+  const showDeleted = req.nextUrl.searchParams.get("deleted") === "true";
 
   let query = supabase
     .from("oe_hr_documents")
     .select("*, employee:oe_employees(first_name, last_name)")
     .order("created_at", { ascending: false });
+
+  if (showDeleted) {
+    // Show only soft-deleted documents from the last 30 days
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    query = query.not("deleted_at", "is", null).gte("deleted_at", thirtyDaysAgo);
+  } else {
+    // Default: filter out soft-deleted documents
+    query = query.is("deleted_at", null);
+  }
 
   if (employeeId) query = query.eq("employee_id", employeeId);
   if (type) query = query.eq("type", type);

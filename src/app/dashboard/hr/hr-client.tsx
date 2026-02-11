@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
   Users,
@@ -24,6 +25,9 @@ import {
   LogOut,
   ShieldAlert,
   Award,
+  GraduationCap,
+  ChevronDown,
+  Trash2,
 } from "lucide-react";
 import { StatCard } from "@/components/dashboard/stat-card";
 
@@ -87,7 +91,77 @@ const typeConfig: Record<
     color: "bg-purple-100 text-purple-700",
     icon: MessageSquare,
   },
+  training_record: {
+    label: "Training",
+    color: "bg-indigo-100 text-indigo-700",
+    icon: GraduationCap,
+  },
+  certificate: {
+    label: "Certificate",
+    color: "bg-teal-100 text-teal-700",
+    icon: Award,
+  },
+  credential: {
+    label: "Credential",
+    color: "bg-violet-100 text-violet-700",
+    icon: BadgeCheck,
+  },
 };
+
+/* ------------------------------------------------------------------ */
+/*  "Add New" Dropdown Menu Items                                      */
+/* ------------------------------------------------------------------ */
+const addNewItems = [
+  {
+    label: "Write-Up",
+    description: "Disciplinary or coaching write-up",
+    icon: AlertTriangle,
+    color: "text-red-600 bg-red-50",
+    href: "/dashboard/hr/documents/new?category=disciplinary",
+  },
+  {
+    label: "Training Record",
+    description: "Track completed or required training",
+    icon: GraduationCap,
+    color: "text-indigo-600 bg-indigo-50",
+    href: "/dashboard/hr/documents/new?category=training_record",
+  },
+  {
+    label: "Certificate / Credential",
+    description: "License, certification, or credential",
+    icon: Award,
+    color: "text-teal-600 bg-teal-50",
+    href: "/dashboard/hr/documents/new?category=certificate",
+  },
+  {
+    label: "Incident Report",
+    description: "Document a workplace incident",
+    icon: Shield,
+    color: "text-orange-600 bg-orange-50",
+    href: "/dashboard/hr/documents/new?category=incident_report",
+  },
+  {
+    label: "Performance Review",
+    description: "Annual or periodic review",
+    icon: Star,
+    color: "text-blue-600 bg-blue-50",
+    href: "/dashboard/hr/documents/new?category=performance_review",
+  },
+  {
+    label: "Coaching Note",
+    description: "Informal coaching or feedback",
+    icon: MessageSquare,
+    color: "text-cyan-600 bg-cyan-50",
+    href: "/dashboard/hr/documents/new?category=coaching_note",
+  },
+  {
+    label: "General Document",
+    description: "Other HR documentation",
+    icon: FileText,
+    color: "text-slate-600 bg-slate-50",
+    href: "/dashboard/hr/documents/new?category=general",
+  },
+];
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   draft: { label: "Draft", color: "bg-slate-100 text-slate-600" },
@@ -338,6 +412,71 @@ function AiInsight({ children }: { children: React.ReactNode }) {
 /* ------------------------------------------------------------------ */
 
 export function HrClient({ stats, recentDocuments }: Props) {
+  const [addMenuOpen, setAddMenuOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showTrash, setShowTrash] = useState(false);
+  const [deletedDocs, setDeletedDocs] = useState<RecentDocument[]>([]);
+  const addMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (addMenuRef.current && !addMenuRef.current.contains(e.target as Node)) {
+        setAddMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  async function handleDelete(docId: string) {
+    if (!confirm("Move this document to trash? It will be permanently deleted after 30 days.")) return;
+    setDeletingId(docId);
+    try {
+      const res = await fetch(`/api/hr/documents/${docId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete");
+      window.location.reload();
+    } catch {
+      alert("Failed to delete document.");
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  async function handleRestore(docId: string) {
+    try {
+      const res = await fetch(`/api/hr/documents/${docId}/restore`, { method: "POST" });
+      if (!res.ok) throw new Error("Failed to restore");
+      window.location.reload();
+    } catch {
+      alert("Failed to restore document.");
+    }
+  }
+
+  async function loadTrash() {
+    try {
+      const res = await fetch("/api/hr/documents?deleted=true");
+      const data = await res.json();
+      setDeletedDocs(
+        data.map((d: Record<string, unknown>) => ({
+          id: d.id as string,
+          type: d.type as string,
+          title: d.title as string,
+          status: d.status as string,
+          severity: d.severity as string | null,
+          createdAt: d.created_at as string,
+          createdBy: d.created_by as string,
+          employeeName: (d.employee as Record<string, string>)
+            ? `${(d.employee as Record<string, string>).first_name} ${(d.employee as Record<string, string>).last_name}`
+            : "Unknown",
+        }))
+      );
+      setShowTrash(true);
+    } catch {
+      alert("Failed to load trash.");
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -345,10 +484,17 @@ export function HrClient({ stats, recentDocuments }: Props) {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">HR & Team</h1>
           <p className="text-sm text-slate-500">
-            Employee records, write-ups, and document management
+            Employee records, training, credentials, and document management
           </p>
         </div>
         <div className="flex gap-3">
+          <button
+            onClick={loadTrash}
+            className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50"
+            title="View recently deleted"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
           <Link
             href="/dashboard/hr/employees"
             className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
@@ -356,15 +502,86 @@ export function HrClient({ stats, recentDocuments }: Props) {
             <Users className="h-4 w-4" />
             Team Directory
           </Link>
-          <Link
-            href="/dashboard/hr/documents/new"
-            className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 px-4 py-2 text-sm font-medium text-white hover:from-cyan-700 hover:to-blue-700 shadow-sm"
-          >
-            <Plus className="h-4 w-4" />
-            New Write-up
-          </Link>
+          <div className="relative" ref={addMenuRef}>
+            <button
+              onClick={() => setAddMenuOpen(!addMenuOpen)}
+              className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 px-4 py-2 text-sm font-medium text-white hover:from-cyan-700 hover:to-blue-700 shadow-sm"
+            >
+              <Plus className="h-4 w-4" />
+              Add New
+              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${addMenuOpen ? "rotate-180" : ""}`} />
+            </button>
+            {addMenuOpen && (
+              <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-xl border border-slate-200 bg-white shadow-xl">
+                <div className="p-2">
+                  {addNewItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        onClick={() => setAddMenuOpen(false)}
+                        className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-slate-50 transition-colors"
+                      >
+                        <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${item.color}`}>
+                          <Icon className="h-4 w-4" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-slate-900">{item.label}</p>
+                          <p className="text-xs text-slate-500">{item.description}</p>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Trash Modal */}
+      {showTrash && (
+        <div className="rounded-xl border border-red-200 bg-red-50/50">
+          <div className="flex items-center justify-between border-b border-red-200 px-6 py-3">
+            <div className="flex items-center gap-2">
+              <Trash2 className="h-4 w-4 text-red-500" />
+              <h2 className="text-sm font-semibold text-red-800">Recently Deleted (30-day retention)</h2>
+            </div>
+            <button onClick={() => setShowTrash(false)} className="text-xs text-red-600 hover:text-red-800 font-medium">
+              Close
+            </button>
+          </div>
+          {deletedDocs.length > 0 ? (
+            <div className="divide-y divide-red-100">
+              {deletedDocs.map((doc) => {
+                const tConfig = typeConfig[doc.type] || typeConfig.general;
+                return (
+                  <div key={doc.id} className="flex items-center gap-4 px-6 py-3">
+                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${tConfig.color}`}>
+                      <tConfig.icon className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-slate-700 truncate">{doc.title}</p>
+                      <p className="text-xs text-slate-500">{doc.employeeName} &middot; {timeAgo(doc.createdAt)}</p>
+                    </div>
+                    <button
+                      onClick={() => handleRestore(doc.id)}
+                      className="shrink-0 rounded-lg bg-white border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                    >
+                      Restore
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="px-6 py-8 text-center">
+              <p className="text-sm text-red-600">No deleted documents in the last 30 days.</p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -815,6 +1032,14 @@ export function HrClient({ stats, recentDocuments }: Props) {
                       Present
                     </Link>
                   )}
+                  <button
+                    onClick={() => handleDelete(doc.id)}
+                    disabled={deletingId === doc.id}
+                    className="shrink-0 text-slate-300 hover:text-red-500 transition-colors disabled:opacity-40"
+                    title="Delete"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                   <Link
                     href={`/dashboard/hr/employees/${doc.id}`}
                     className="shrink-0 text-slate-400 hover:text-slate-600"
