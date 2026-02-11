@@ -13,32 +13,23 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name} | Dentist in Las Vegas, NV`,
-    template: `%s | ${siteConfig.name}`,
+    default: siteConfig.seo.defaultTitle,
+    template: siteConfig.seo.titleTemplate,
   },
   description: siteConfig.description,
-  keywords: [
-    "dentist Las Vegas",
-    "Las Vegas dentist",
-    "dental implants Las Vegas",
-    "cosmetic dentistry Las Vegas",
-    "teeth whitening Las Vegas",
-    "family dentist Las Vegas",
-    "emergency dentist Las Vegas",
-    "dental care Las Vegas NV",
-  ],
-  authors: [{ name: siteConfig.doctor.name }],
+  keywords: siteConfig.seo.keywords,
+  authors: [{ name: siteConfig.team[0]?.name ?? siteConfig.name }],
   openGraph: {
     type: "website",
     locale: "en_US",
     url: siteConfig.url,
     siteName: siteConfig.name,
-    title: `${siteConfig.name} | Dentist in Las Vegas, NV`,
+    title: siteConfig.seo.defaultTitle,
     description: siteConfig.description,
   },
   twitter: {
     card: "summary_large_image",
-    title: `${siteConfig.name} | Dentist in Las Vegas, NV`,
+    title: siteConfig.seo.defaultTitle,
     description: siteConfig.description,
   },
   robots: {

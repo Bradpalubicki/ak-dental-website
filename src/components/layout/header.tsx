@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Menu, Phone, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { siteConfig, navigation, services } from "@/lib/config";
+import { siteConfig, navigation, services, engineConfig } from "@/lib/config";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -31,7 +31,7 @@ export function Header() {
         <div className="flex h-24 items-center justify-between">
           <Link href="/" className="flex items-center">
             <Image
-              src="/ak-logo-header.png"
+              src={siteConfig.branding.headerLogo}
               alt={siteConfig.name}
               width={848}
               height={329}
@@ -52,7 +52,7 @@ export function Header() {
               </Link>
             ))}
             <Button asChild>
-              <Link href="/appointment">Request Appointment</Link>
+              <Link href={engineConfig.navigation.ctaHref}>{engineConfig.navigation.ctaLabel}</Link>
             </Button>
           </nav>
 
@@ -90,8 +90,8 @@ export function Header() {
                   ))}
                 </div>
                 <Button asChild className="mt-4">
-                  <Link href="/appointment" onClick={() => setOpen(false)}>
-                    Request Appointment
+                  <Link href={engineConfig.navigation.ctaHref} onClick={() => setOpen(false)}>
+                    {engineConfig.navigation.ctaLabel}
                   </Link>
                 </Button>
               </nav>

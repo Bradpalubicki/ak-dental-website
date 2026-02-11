@@ -3,7 +3,7 @@ import { siteConfig } from "@/lib/config";
 export function LocalBusinessSchema() {
   const schema = {
     "@context": "https://schema.org",
-    "@type": "Dentist",
+    "@type": siteConfig.engine.schemaType,
     name: siteConfig.name,
     image: `${siteConfig.url}/images/office.jpg`,
     "@id": siteConfig.url,
@@ -20,8 +20,8 @@ export function LocalBusinessSchema() {
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: 36.1447,
-      longitude: -115.2847,
+      latitude: siteConfig.geo.latitude,
+      longitude: siteConfig.geo.longitude,
     },
     openingHoursSpecification: [
       {
@@ -31,22 +31,14 @@ export function LocalBusinessSchema() {
         closes: "17:00",
       },
     ],
-    sameAs: [siteConfig.social.facebook, siteConfig.social.yelp],
+    sameAs: Object.values(siteConfig.social).filter(Boolean),
     priceRange: "$$",
-    servesCuisine: undefined,
-    hasMenu: undefined,
-    acceptsReservations: true,
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "150",
+      ratingValue: siteConfig.ratings.average,
+      reviewCount: siteConfig.ratings.count,
     },
-    medicalSpecialty: [
-      "General Dentistry",
-      "Cosmetic Dentistry",
-      "Dental Implants",
-      "Orthodontics",
-    ],
+    medicalSpecialty: siteConfig.engine.medicalSpecialties,
   };
 
   return (
@@ -93,7 +85,7 @@ export function ServiceSchema({
     description,
     url: `${siteConfig.url}${url}`,
     provider: {
-      "@type": "Dentist",
+      "@type": siteConfig.engine.schemaType,
       name: siteConfig.name,
       address: {
         "@type": "PostalAddress",

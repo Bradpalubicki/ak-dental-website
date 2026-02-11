@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Phone, Mail, MapPin, Facebook } from "lucide-react";
-import { siteConfig, navigation, services } from "@/lib/config";
+import { siteConfig, navigation, services, engineConfig } from "@/lib/config";
 
 export function Footer() {
   return (
@@ -11,7 +11,7 @@ export function Footer() {
           {/* Contact Info */}
           <div>
             <Image
-              src="/ak-logo-footer.png"
+              src={siteConfig.branding.footerLogo}
               alt={siteConfig.name}
               width={512}
               height={198}
@@ -80,8 +80,8 @@ export function Footer() {
                 </li>
               ))}
               <li>
-                <Link href="/appointment" className="hover:text-white transition-colors">
-                  Book Appointment
+                <Link href={engineConfig.navigation.ctaHref} className="hover:text-white transition-colors">
+                  {engineConfig.navigation.ctaLabel}
                 </Link>
               </li>
             </ul>
