@@ -10,15 +10,14 @@ import {
   XCircle,
   RefreshCw,
   Upload,
-  FileText,
   Building2,
-  Users,
   Sparkles,
-  ArrowRight,
   ExternalLink,
-  DollarSign,
-  Calendar,
   Gift,
+  Plus,
+  Trash2,
+  RotateCcw,
+  X,
 } from "lucide-react";
 import { StatCard } from "@/components/dashboard/stat-card";
 
@@ -51,7 +50,6 @@ const statusConfig: Record<string, { label: string; color: string; icon: typeof 
   not_found: { label: "Not Found", color: "bg-red-100 text-red-700", icon: XCircle },
 };
 
-// Insurance carriers the practice works with
 const carriers = [
   { name: "Delta Dental", type: "PPO", patientsActive: 42, feeSched: "Premier", contracted: true, policyUploaded: true },
   { name: "MetLife", type: "PPO", patientsActive: 28, feeSched: "Standard PPO", contracted: true, policyUploaded: true },
@@ -62,7 +60,6 @@ const carriers = [
   { name: "Humana", type: "DHMO", patientsActive: 6, feeSched: "Humana DHMO", contracted: false, policyUploaded: false },
 ];
 
-// Employee benefits (not health insurance - practice perks)
 const employeeBenefits = [
   { benefit: "Free Dental Care", description: "All employees + immediate family receive free dental treatment at the practice", eligible: "All Staff", status: "Active" },
   { benefit: "Paid Time Off", description: "Accrued PTO: 10 days/year (1-3 yrs), 15 days/year (3+ yrs)", eligible: "Full-Time", status: "Active" },
@@ -81,15 +78,30 @@ function formatTime(time: string | null): string {
   return `${display}:${minutes} ${ampm}`;
 }
 
+const emptyForm = {
+  patient_id: "",
+  insurance_provider: "",
+  member_id: "",
+  group_number: "",
+  notes: "",
+};
+
 interface Props {
   initialVerifications: Verification[];
 }
 
 export function InsuranceClient({ initialVerifications }: Props) {
+  const [verifications, setVerifications] = useState(initialVerifications);
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<"verifications" | "carriers" | "benefits">("verifications");
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+  const [saving, setSaving] = useState(false);
+  const [showTrash, setShowTrash] = useState(false);
+  const [trashItems, setTrashItems] = useState<Verification[]>([]);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
-  const filtered = initialVerifications.filter(
+  const filtered = verifications.filter(
     (v) =>
       search === "" ||
       v.patientName.toLowerCase().includes(search.toLowerCase()) ||
@@ -97,13 +109,103 @@ export function InsuranceClient({ initialVerifications }: Props) {
       v.memberId.includes(search)
   );
 
-  const pending = initialVerifications.filter((v) => v.status === "pending").length;
-  const verified = initialVerifications.filter((v) => v.status === "verified").length;
-  const issues = initialVerifications.filter(
+  const pending = verifications.filter((v) => v.status === "pending").length;
+  const verified = verifications.filter((v) => v.status === "verified").length;
+  const issues = verifications.filter(
     (v) => v.status === "issues" || v.status === "expired" || v.status === "not_found"
   ).length;
 
   const carriersWithoutPolicy = carriers.filter((c) => !c.policyUploaded).length;
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const res = await fetch("/api/insurance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const newVer: Verification = {
+          id: data.id,
+          patientName: "New Patient",
+          provider: data.insurance_provider,
+          memberId: data.member_id,
+          groupNumber: data.group_number,
+          status: data.status,
+          appointmentDate: null,
+          appointmentTime: null,
+          preventiveCoverage: null,
+          basicCoverage: null,
+          majorCoverage: null,
+          deductible: null,
+          deductibleMet: null,
+          annualMax: null,
+          annualUsed: null,
+          flags: [],
+          verifiedAt: null,
+          notes: data.notes,
+        };
+        setVerifications((prev) => [newVer, ...prev]);
+        setForm(emptyForm);
+        setShowForm(false);
+      }
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDelete(id: string) {
+    setDeleting(id);
+    try {
+      const res = await fetch(`/api/insurance/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setVerifications((prev) => prev.filter((v) => v.id !== id));
+      }
+    } finally {
+      setDeleting(null);
+    }
+  }
+
+  async function loadTrash() {
+    const res = await fetch("/api/insurance?deleted=true");
+    if (res.ok) {
+      const data = await res.json();
+      /* eslint-disable @typescript-eslint/no-explicit-any */
+      const items = (data || []).map((v: any) => ({
+        id: v.id,
+        patientName: v.patient ? `${v.patient.first_name} ${v.patient.last_name}` : "Unknown",
+        provider: v.insurance_provider,
+        memberId: v.member_id,
+        groupNumber: v.group_number,
+        status: v.status,
+        appointmentDate: v.appointment?.appointment_date || null,
+        appointmentTime: v.appointment?.appointment_time || null,
+        preventiveCoverage: v.preventive_coverage,
+        basicCoverage: v.basic_coverage,
+        majorCoverage: v.major_coverage,
+        deductible: v.deductible,
+        deductibleMet: v.deductible_met,
+        annualMax: v.annual_maximum,
+        annualUsed: v.annual_used,
+        flags: v.flags || [],
+        verifiedAt: v.verified_at,
+        notes: v.notes,
+      }));
+      /* eslint-enable @typescript-eslint/no-explicit-any */
+      setTrashItems(items);
+    }
+    setShowTrash(true);
+  }
+
+  async function handleRestore(id: string) {
+    const res = await fetch(`/api/insurance/${id}/restore`, { method: "POST" });
+    if (res.ok) {
+      setTrashItems((prev) => prev.filter((v) => v.id !== id));
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -116,16 +218,108 @@ export function InsuranceClient({ initialVerifications }: Props) {
           </p>
         </div>
         <div className="flex gap-2">
+          <button
+            onClick={loadTrash}
+            className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50"
+          >
+            <Trash2 className="h-4 w-4" /> Trash
+          </button>
           <button className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
             <Upload className="h-4 w-4" />
             Upload Policy
           </button>
-          <button className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 px-4 py-2 text-sm font-medium text-white hover:from-cyan-700 hover:to-blue-700 shadow-sm">
-            <RefreshCw className="h-4 w-4" />
-            Verify All Pending
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 px-4 py-2 text-sm font-medium text-white hover:from-cyan-700 hover:to-blue-700 shadow-sm"
+          >
+            <Plus className="h-4 w-4" />
+            New Verification
           </button>
         </div>
       </div>
+
+      {/* New Verification Form */}
+      {showForm && (
+        <div className="rounded-xl border border-cyan-200 bg-cyan-50/30 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-slate-900">New Insurance Verification</h2>
+            <button onClick={() => setShowForm(false)} className="rounded-lg p-1 hover:bg-slate-200">
+              <X className="h-5 w-5 text-slate-400" />
+            </button>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Patient ID *</label>
+                <input
+                  required
+                  value={form.patient_id}
+                  onChange={(e) => setForm({ ...form, patient_id: e.target.value })}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                  placeholder="Patient UUID"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Insurance Provider *</label>
+                <select
+                  required
+                  value={form.insurance_provider}
+                  onChange={(e) => setForm({ ...form, insurance_provider: e.target.value })}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                >
+                  <option value="">Select carrier...</option>
+                  {carriers.map((c) => (
+                    <option key={c.name} value={c.name}>{c.name} ({c.type})</option>
+                  ))}
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Member ID *</label>
+                <input
+                  required
+                  value={form.member_id}
+                  onChange={(e) => setForm({ ...form, member_id: e.target.value })}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Group Number</label>
+                <input
+                  value={form.group_number}
+                  onChange={(e) => setForm({ ...form, group_number: e.target.value })}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Notes</label>
+              <textarea
+                value={form.notes}
+                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                rows={2}
+              />
+            </div>
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700 disabled:opacity-50"
+              >
+                {saving ? "Saving..." : "Submit Verification"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {/* AI Insight */}
       {(carriersWithoutPolicy > 0 || pending > 0) && (
@@ -157,7 +351,7 @@ export function InsuranceClient({ initialVerifications }: Props) {
       {/* Tab Navigation */}
       <div className="flex gap-1 rounded-xl bg-slate-100 p-1">
         {[
-          { key: "verifications" as const, label: "Patient Verifications", icon: Shield, count: initialVerifications.length },
+          { key: "verifications" as const, label: "Patient Verifications", icon: Shield, count: verifications.length },
           { key: "carriers" as const, label: "Insurance Carriers", icon: Building2, count: carriers.length },
           { key: "benefits" as const, label: "Employee Benefits", icon: Gift, count: employeeBenefits.length },
         ].map((tab) => (
@@ -267,6 +461,13 @@ export function InsuranceClient({ initialVerifications }: Props) {
                         {v.status === "issues" && (
                           <button className="rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-100">Review</button>
                         )}
+                        <button
+                          onClick={() => handleDelete(v.id)}
+                          disabled={deleting === v.id}
+                          className="rounded-lg p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -277,7 +478,7 @@ export function InsuranceClient({ initialVerifications }: Props) {
             <div className="flex flex-col items-center justify-center py-16">
               <Shield className="h-8 w-8 text-slate-200 mb-2" />
               <p className="text-sm text-slate-400">
-                {initialVerifications.length === 0 ? "No insurance verifications yet." : "No verifications match your search"}
+                {verifications.length === 0 ? "No insurance verifications yet." : "No verifications match your search"}
               </p>
             </div>
           )}
@@ -337,7 +538,6 @@ export function InsuranceClient({ initialVerifications }: Props) {
             ))}
           </div>
 
-          {/* API Connection Info */}
           <div className="border-t border-slate-100 px-6 py-4">
             <div className="rounded-xl bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200/30 p-4">
               <div className="flex items-start gap-3">
@@ -364,7 +564,6 @@ export function InsuranceClient({ initialVerifications }: Props) {
             </div>
           </div>
 
-          {/* Benefits Note */}
           <div className="px-6 py-4 border-b border-slate-50">
             <div className="rounded-xl bg-slate-50 p-4">
               <p className="text-sm text-slate-600">
@@ -391,7 +590,6 @@ export function InsuranceClient({ initialVerifications }: Props) {
             ))}
           </div>
 
-          {/* Suggestions */}
           <div className="border-t border-slate-100 px-6 py-4">
             <div className="rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/30 p-4">
               <div className="flex items-start gap-3">
@@ -402,6 +600,46 @@ export function InsuranceClient({ initialVerifications }: Props) {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Trash Panel */}
+      {showTrash && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">Trash</h2>
+                <p className="text-sm text-slate-500">Deleted verifications are kept for 30 days</p>
+              </div>
+              <button onClick={() => setShowTrash(false)} className="rounded-lg p-1 hover:bg-slate-100">
+                <X className="h-5 w-5 text-slate-400" />
+              </button>
+            </div>
+            {trashItems.length > 0 ? (
+              <div className="space-y-2">
+                {trashItems.map((v) => (
+                  <div key={v.id} className="flex items-center justify-between rounded-lg border border-slate-200 px-4 py-3">
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">{v.patientName}</p>
+                      <p className="text-xs text-slate-400">{v.provider} &middot; {v.memberId}</p>
+                    </div>
+                    <button
+                      onClick={() => handleRestore(v.id)}
+                      className="flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-100"
+                    >
+                      <RotateCcw className="h-3.5 w-3.5" />
+                      Restore
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center py-12 text-sm text-slate-400">
+                Trash is empty
+              </div>
+            )}
           </div>
         </div>
       )}

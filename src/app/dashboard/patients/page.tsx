@@ -11,11 +11,13 @@ export default async function PatientsPage() {
     supabase
       .from("oe_patients")
       .select("*")
+      .is("deleted_at", null)
       .order("last_name", { ascending: true })
       .limit(200),
     supabase
       .from("oe_patients")
-      .select("status", { count: "exact" }),
+      .select("status", { count: "exact" })
+      .is("deleted_at", null),
   ]);
 
   const patients = (patientsRes.data || []) as Patient[];

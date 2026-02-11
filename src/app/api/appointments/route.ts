@@ -9,12 +9,19 @@ export async function GET(req: NextRequest) {
     const date = searchParams.get("date");
     const status = searchParams.get("status");
     const patientId = searchParams.get("patient_id");
+    const deleted = searchParams.get("deleted");
 
     let query = supabase
       .from("oe_appointments")
       .select("*, oe_patients(first_name, last_name, phone, email)")
       .order("appointment_date", { ascending: true })
       .order("appointment_time", { ascending: true });
+
+    if (deleted === "true") {
+      query = query.not("deleted_at", "is", null);
+    } else {
+      query = query.is("deleted_at", null);
+    }
 
     if (date) query = query.eq("appointment_date", date);
     if (status) query = query.eq("status", status);

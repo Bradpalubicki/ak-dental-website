@@ -11,6 +11,7 @@ export default async function InsurancePage() {
     .select(
       "*, patient:oe_patients(first_name, last_name), appointment:oe_appointments(appointment_date, appointment_time)"
     )
+    .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .limit(50);
 

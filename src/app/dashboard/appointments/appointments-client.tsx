@@ -11,6 +11,9 @@ import {
   XCircle,
   AlertCircle,
   User,
+  Trash2,
+  RotateCcw,
+  X,
 } from "lucide-react";
 
 interface AppointmentRow {
@@ -40,6 +43,21 @@ const statusConfig: Record<string, { label: string; color: string; icon: typeof 
   rescheduled: { label: "Rescheduled", color: "bg-amber-100 text-amber-700", icon: Calendar },
 };
 
+const appointmentTypes = [
+  "New Patient Exam",
+  "Routine Cleaning",
+  "Deep Cleaning",
+  "Crown Prep",
+  "Root Canal",
+  "Filling",
+  "Extraction",
+  "Whitening",
+  "Consultation",
+  "Emergency",
+  "Follow-Up",
+  "Implant Consult",
+];
+
 function formatTime(time: string): string {
   if (!time) return "";
   const [hours, minutes] = time.split(":");
@@ -55,16 +73,33 @@ function addMinutes(time: string, minutes: number): string {
   return formatTime(`${Math.floor(total / 60).toString().padStart(2, "0")}:${(total % 60).toString().padStart(2, "0")}:00`);
 }
 
+const emptyForm = {
+  patient_id: "",
+  appointment_date: "",
+  appointment_time: "09:00",
+  duration_minutes: "60",
+  type: "Routine Cleaning",
+  provider_name: "Dr. Alexandru Chireu",
+  notes: "",
+};
+
 interface Props {
   initialAppointments: AppointmentRow[];
   today: string;
 }
 
 export function AppointmentsClient({ initialAppointments, today }: Props) {
+  const [appointments, setAppointments] = useState(initialAppointments);
   const [view, setView] = useState<"list" | "schedule">("list");
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({ ...emptyForm, appointment_date: today });
+  const [saving, setSaving] = useState(false);
+  const [showTrash, setShowTrash] = useState(false);
+  const [trashItems, setTrashItems] = useState<AppointmentRow[]>([]);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
-  const todayAppointments = initialAppointments.filter((a) => a.date === today);
-  const futureAppointments = initialAppointments.filter((a) => a.date > today);
+  const todayAppointments = appointments.filter((a) => a.date === today);
+  const futureAppointments = appointments.filter((a) => a.date > today);
 
   const stats = {
     total: todayAppointments.length,
@@ -80,6 +115,87 @@ export function AppointmentsClient({ initialAppointments, today }: Props) {
     year: "numeric",
   });
 
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const res = await fetch("/api/appointments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          duration_minutes: parseInt(form.duration_minutes),
+        }),
+      });
+      if (res.ok) {
+        const { appointment } = await res.json();
+        const newRow: AppointmentRow = {
+          id: appointment.id,
+          date: appointment.appointment_date,
+          time: appointment.appointment_time,
+          duration: appointment.duration_minutes,
+          type: appointment.type,
+          status: appointment.status,
+          provider: appointment.provider_name,
+          insuranceVerified: appointment.insurance_verified,
+          confirmationSent: appointment.confirmation_sent,
+          reminderSent: appointment.reminder_24h_sent,
+          notes: appointment.notes || "",
+          patientName: "New Patient",
+          patientPhone: "",
+        };
+        setAppointments((prev) => [newRow, ...prev]);
+        setForm({ ...emptyForm, appointment_date: today });
+        setShowForm(false);
+      }
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDelete(id: string) {
+    setDeleting(id);
+    try {
+      const res = await fetch(`/api/appointments/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setAppointments((prev) => prev.filter((a) => a.id !== id));
+      }
+    } finally {
+      setDeleting(null);
+    }
+  }
+
+  async function loadTrash() {
+    const res = await fetch("/api/appointments?deleted=true");
+    if (res.ok) {
+      const data = await res.json();
+      const items = (data.appointments || []).map((apt: Record<string, unknown>) => ({
+        id: apt.id as string,
+        date: apt.appointment_date as string,
+        time: apt.appointment_time as string,
+        duration: apt.duration_minutes as number,
+        type: apt.type as string,
+        status: apt.status as string,
+        provider: apt.provider_name as string,
+        insuranceVerified: apt.insurance_verified as boolean,
+        confirmationSent: false,
+        reminderSent: false,
+        notes: (apt.notes || "") as string,
+        patientName: "Deleted",
+        patientPhone: "",
+      }));
+      setTrashItems(items);
+    }
+    setShowTrash(true);
+  }
+
+  async function handleRestore(id: string) {
+    const res = await fetch(`/api/appointments/${id}/restore`, { method: "POST" });
+    if (res.ok) {
+      setTrashItems((prev) => prev.filter((a) => a.id !== id));
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -91,6 +207,12 @@ export function AppointmentsClient({ initialAppointments, today }: Props) {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={loadTrash}
+            className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50"
+          >
+            <Trash2 className="h-4 w-4" /> Trash
+          </button>
           <div className="flex rounded-lg border border-slate-200">
             <button
               onClick={() => setView("list")}
@@ -109,12 +231,120 @@ export function AppointmentsClient({ initialAppointments, today }: Props) {
               Schedule
             </button>
           </div>
-          <button className="flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700">
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700"
+          >
             <Plus className="h-4 w-4" />
             New Appointment
           </button>
         </div>
       </div>
+
+      {/* New Appointment Form */}
+      {showForm && (
+        <div className="rounded-xl border border-cyan-200 bg-cyan-50/30 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-slate-900">New Appointment</h2>
+            <button onClick={() => setShowForm(false)} className="rounded-lg p-1 hover:bg-slate-200">
+              <X className="h-5 w-5 text-slate-400" />
+            </button>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Patient ID *</label>
+                <input
+                  required
+                  value={form.patient_id}
+                  onChange={(e) => setForm({ ...form, patient_id: e.target.value })}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                  placeholder="Enter patient UUID or search"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Type *</label>
+                <select
+                  value={form.type}
+                  onChange={(e) => setForm({ ...form, type: e.target.value })}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                >
+                  {appointmentTypes.map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Date *</label>
+                <input
+                  type="date"
+                  required
+                  value={form.appointment_date}
+                  onChange={(e) => setForm({ ...form, appointment_date: e.target.value })}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Time *</label>
+                <input
+                  type="time"
+                  required
+                  value={form.appointment_time}
+                  onChange={(e) => setForm({ ...form, appointment_time: e.target.value })}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Duration (min)</label>
+                <select
+                  value={form.duration_minutes}
+                  onChange={(e) => setForm({ ...form, duration_minutes: e.target.value })}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                >
+                  <option value="30">30 minutes</option>
+                  <option value="45">45 minutes</option>
+                  <option value="60">60 minutes</option>
+                  <option value="90">90 minutes</option>
+                  <option value="120">120 minutes</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Provider</label>
+                <input
+                  value={form.provider_name}
+                  onChange={(e) => setForm({ ...form, provider_name: e.target.value })}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Notes</label>
+              <textarea
+                value={form.notes}
+                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                rows={2}
+              />
+            </div>
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700 disabled:opacity-50"
+              >
+                {saving ? "Saving..." : "Schedule Appointment"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {/* Date Navigation */}
       <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-6 py-3">
@@ -200,6 +430,13 @@ export function AppointmentsClient({ initialAppointments, today }: Props) {
                         AI Follow-Up
                       </button>
                     )}
+                    <button
+                      onClick={() => handleDelete(apt.id)}
+                      disabled={deleting === apt.id}
+                      className="rounded-lg p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
               );
@@ -247,9 +484,56 @@ export function AppointmentsClient({ initialAppointments, today }: Props) {
                     <StatusIcon className="h-3 w-3" />
                     {config.label}
                   </span>
+                  <button
+                    onClick={() => handleDelete(apt.id)}
+                    disabled={deleting === apt.id}
+                    className="rounded-lg p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {/* Trash Panel */}
+      {showTrash && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">Trash</h2>
+                <p className="text-sm text-slate-500">Deleted appointments are kept for 30 days</p>
+              </div>
+              <button onClick={() => setShowTrash(false)} className="rounded-lg p-1 hover:bg-slate-100">
+                <X className="h-5 w-5 text-slate-400" />
+              </button>
+            </div>
+            {trashItems.length > 0 ? (
+              <div className="space-y-2">
+                {trashItems.map((apt) => (
+                  <div key={apt.id} className="flex items-center justify-between rounded-lg border border-slate-200 px-4 py-3">
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">{apt.type}</p>
+                      <p className="text-xs text-slate-400">{apt.date} at {formatTime(apt.time)}</p>
+                    </div>
+                    <button
+                      onClick={() => handleRestore(apt.id)}
+                      className="flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-100"
+                    >
+                      <RotateCcw className="h-3.5 w-3.5" />
+                      Restore
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center py-12 text-sm text-slate-400">
+                Trash is empty
+              </div>
+            )}
           </div>
         </div>
       )}

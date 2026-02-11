@@ -9,6 +9,7 @@ export default async function TreatmentsPage() {
   const { data: plans } = await supabase
     .from("oe_treatment_plans")
     .select("*, patient:oe_patients(id, first_name, last_name, insurance_provider)")
+    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   /* eslint-disable @typescript-eslint/no-explicit-any */

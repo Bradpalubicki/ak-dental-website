@@ -12,6 +12,7 @@ export default async function AppointmentsPage() {
     .select(
       "id, appointment_date, appointment_time, duration_minutes, type, status, provider_name, insurance_verified, notes, confirmation_sent, reminder_24h_sent, patient:oe_patients(id, first_name, last_name, phone)"
     )
+    .is("deleted_at", null)
     .gte("appointment_date", today)
     .order("appointment_date", { ascending: true })
     .order("appointment_time", { ascending: true })
