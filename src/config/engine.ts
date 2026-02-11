@@ -77,8 +77,8 @@ export const serviceImages: Record<string, string> = {
   "crowns-bridges": "https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=800&h=600&fit=crop&q=80",
   "root-canal": "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=800&h=600&fit=crop&q=80",
   "oral-surgery": "https://images.unsplash.com/photo-1579684453423-f84349ef60b0?w=800&h=600&fit=crop&q=80",
-  "periodontics": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&h=600&fit=crop&q=80",
-  "orthodontics": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&h=600&fit=crop&q=80",
+  "periodontics": "https://images.unsplash.com/photo-1629909615850-30d5d9d04282?w=800&h=600&fit=crop&q=80",
+  "orthodontics": "https://images.unsplash.com/photo-1570621667406-0d7dfb3ccf2a?w=800&h=600&fit=crop&q=80",
   "pediatric-dentistry": "https://images.unsplash.com/photo-1581579439002-efa0a1e3b426?w=800&h=600&fit=crop&q=80",
 };
 

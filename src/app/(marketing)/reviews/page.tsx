@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BreadcrumbSchema } from "@/components/schema/local-business";
 import { testimonials, siteConfig } from "@/lib/config";
+import { GoogleReviewsBadge } from "@/components/marketing/google-reviews-badge";
 
 export const metadata: Metadata = {
   title: "Patient Reviews & Testimonials | Las Vegas Dentist",
@@ -42,16 +43,19 @@ export default function ReviewsPage() {
               ))}
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              4.9 out of 5 Stars
+              {siteConfig.ratings.count} Five-Star Google Reviews
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
-              Based on 150+ patient reviews. See what our Las Vegas patients are
+              Every single review is 5 stars. See what our Las Vegas patients are
               saying about their experience at AK Ultimate Dental.
             </p>
+            <div className="flex justify-center mb-8">
+              <GoogleReviewsBadge variant="full" />
+            </div>
             <div className="flex flex-wrap gap-4 justify-center">
               <Button asChild variant="outline">
                 <a
-                  href={siteConfig.social.google}
+                  href={siteConfig.ratings.googleReviewUrl || siteConfig.social.google}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -76,7 +80,7 @@ export default function ReviewsPage() {
                   rel="noopener noreferrer"
                 >
                   <ExternalLink className="mr-2 h-4 w-4" />
-                  Facebook Reviews
+                  Facebook
                 </a>
               </Button>
             </div>
@@ -209,7 +213,7 @@ export default function ReviewsPage() {
             Join Our Satisfied Patients
           </h2>
           <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
-            Experience the quality care that&apos;s earned us hundreds of 5-star
+            Experience the quality care that&apos;s earned us {siteConfig.ratings.count} five-star
             reviews. Schedule your appointment today.
           </p>
           <Button asChild size="lg" variant="secondary">

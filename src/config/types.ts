@@ -72,6 +72,7 @@ export interface PracticeConfig {
   ratings: {
     average: string;
     count: string;
+    googleReviewUrl?: string;
   };
 }
 
@@ -108,6 +109,7 @@ export interface PracticeImages {
     secondary?: string;
     group?: string;
     consultation?: string;
+    graduation?: string;
   };
   patients: {
     smile: string;
@@ -118,6 +120,9 @@ export interface PracticeImages {
     exterior?: string;
     neighborhood?: string;
     cityscape?: string;
+  };
+  office?: {
+    examRoom?: string;
   };
   backgrounds: {
     office: string;

@@ -17,7 +17,7 @@ export const images = {
     dentistWorking: practiceConfig.images.team.secondary ?? practiceConfig.images.team.primary,
     teamGroup: practiceConfig.images.team.group ?? practiceConfig.images.team.primary,
     consultation: practiceConfig.images.team.consultation ?? practiceConfig.images.patients.smile,
-    graduation: practiceConfig.images.team.secondary ?? practiceConfig.images.team.primary,
+    graduation: practiceConfig.images.team.graduation ?? practiceConfig.images.team.secondary ?? practiceConfig.images.team.primary,
     family: practiceConfig.images.team.group ?? practiceConfig.images.team.primary,
   },
   patients: {
@@ -26,6 +26,9 @@ export const images = {
     family: practiceConfig.images.patients.family ?? practiceConfig.images.patients.smile,
   },
   services: serviceImages,
+  office: {
+    examRoom: practiceConfig.images.office?.examRoom ?? practiceConfig.images.backgrounds.office,
+  },
   technology: {
     equipment: practiceConfig.images.backgrounds.office,
     xray: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&h=600&fit=crop&q=80",

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { siteConfig, services, testimonials } from "@/lib/config";
 import { images } from "@/lib/images";
+import { GoogleReviewsBadge } from "@/components/marketing/google-reviews-badge";
 
 export default function HomePage() {
   const featuredServices = services.filter((s) => s.featured);
@@ -13,13 +14,23 @@ export default function HomePage() {
     <>
       {/* Premium Hero Section */}
       <section className="relative min-h-[calc(100vh-11rem)] flex items-center overflow-hidden">
-        {/* Background Image with Overlay */}
+        {/* Video Background (desktop) with Image Fallback */}
         <div className="absolute inset-0 z-0">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster={images.hero.main}
+            className="absolute inset-0 w-full h-full object-cover hidden md:block"
+          >
+            <source src="/videos/hero-dental.mp4" type="video/mp4" />
+          </video>
           <Image
             src={images.hero.main}
-            alt="Modern dental office"
+            alt="AK Ultimate Dental modern office in Las Vegas"
             fill
-            className="object-cover"
+            className="object-cover md:hidden"
             priority
             quality={90}
           />
@@ -28,15 +39,20 @@ export default function HomePage() {
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-2xl text-white ml-auto">
-            {/* Trust Badge */}
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-4">
+            {/* Trust Badge - 128 Five-Star Reviews */}
+            <a
+              href={siteConfig.ratings.googleReviewUrl || siteConfig.social.google}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-4 hover:bg-white/20 transition-colors"
+            >
               <div className="flex -space-x-1">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                 ))}
               </div>
-              <span className="text-sm font-medium">4.9 Rating · 150+ Happy Patients</span>
-            </div>
+              <span className="text-sm font-medium">{siteConfig.ratings.count} Five-Star Google Reviews</span>
+            </a>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight">
               Your Dream Smile
@@ -67,11 +83,7 @@ export default function HomePage() {
 
             {/* Quick Stats */}
             <div className="grid grid-cols-3 gap-6">
-              {[
-                { value: "20+", label: "Years Experience" },
-                { value: "10K+", label: "Smiles Created" },
-                { value: "99%", label: "Patient Satisfaction" },
-              ].map((stat) => (
+              {siteConfig.stats.map((stat) => (
                 <div key={stat.label} className="text-center">
                   <div className="text-3xl md:text-4xl font-bold text-cyan-400">{stat.value}</div>
                   <div className="text-sm text-gray-300">{stat.label}</div>
@@ -109,14 +121,22 @@ export default function HomePage() {
       <section className="bg-gradient-to-r from-gray-900 to-gray-800 py-6 border-y border-gray-700">
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap justify-center md:justify-between items-center gap-8">
+            <a
+              href={siteConfig.ratings.googleReviewUrl || siteConfig.social.google}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-white hover:text-yellow-300 transition-colors"
+            >
+              <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+              <span className="font-medium">{siteConfig.ratings.count} Five-Star Google Reviews</span>
+            </a>
             {[
-              { icon: Star, text: "4.9/5 Google Rating", highlight: true },
               { icon: Award, text: "Top Rated Las Vegas Dentist" },
               { icon: Shield, text: "All Insurance Accepted" },
               { icon: Zap, text: "Same-Day Appointments" },
             ].map((item, i) => (
               <div key={i} className="flex items-center gap-2 text-white">
-                <item.icon className={`h-5 w-5 ${item.highlight ? "fill-yellow-400 text-yellow-400" : "text-cyan-400"}`} />
+                <item.icon className="h-5 w-5 text-cyan-400" />
                 <span className="font-medium">{item.text}</span>
               </div>
             ))}
@@ -195,8 +215,8 @@ export default function HomePage() {
             <div className="relative">
               <div className="relative z-10">
                 <Image
-                  src={images.team.dentistWorking}
-                  alt="Dental care at AK Ultimate Dental"
+                  src={images.office.examRoom}
+                  alt="AK Ultimate Dental exam room with scenic mural and modern equipment"
                   width={600}
                   height={700}
                   className="rounded-2xl shadow-2xl"
@@ -276,7 +296,7 @@ export default function HomePage() {
         <div className="absolute inset-0">
           <Image
             src={images.hero.office}
-            alt="Modern dental office interior"
+            alt="AK Ultimate Dental office interior in Las Vegas"
             fill
             className="object-cover"
           />
@@ -347,11 +367,14 @@ export default function HomePage() {
               Patient Stories
             </span>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Hear From Our Happy Patients
+              {siteConfig.ratings.count} Five-Star Google Reviews
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Real stories from real patients who transformed their smiles with us
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+              Every single review is 5 stars. See what our patients are saying.
             </p>
+            <div className="flex justify-center">
+              <GoogleReviewsBadge variant="full" />
+            </div>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -473,7 +496,7 @@ export default function HomePage() {
         <div className="absolute inset-0">
           <Image
             src={images.patients.smile}
-            alt="Happy patient smiling"
+            alt="Happy patient smiling at AK Ultimate Dental"
             fill
             className="object-cover"
           />

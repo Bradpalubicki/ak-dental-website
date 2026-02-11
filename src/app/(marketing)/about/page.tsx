@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { BreadcrumbSchema } from "@/components/schema/local-business";
 import { siteConfig } from "@/lib/config";
 import { images } from "@/lib/images";
+import { GoogleReviewsBadge } from "@/components/marketing/google-reviews-badge";
 
 export const metadata: Metadata = {
   title: "About Our Team | Las Vegas Dentist",
@@ -67,19 +68,24 @@ export default function AboutPage() {
                   </span>
                 ))}
               </div>
-              <Button asChild size="lg" className="h-14 px-8 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 border-0">
-                <Link href="/appointment">
-                  Schedule Your Visit
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-4 items-start">
+                <Button asChild size="lg" className="h-14 px-8 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 border-0">
+                  <Link href="/appointment">
+                    Schedule Your Visit
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+              </div>
+              <div className="mt-6">
+                <GoogleReviewsBadge variant="compact" className="bg-white/10 backdrop-blur-sm border border-white/20" />
+              </div>
             </div>
 
             <div className="relative hidden lg:block">
               <div className="relative">
                 <Image
                   src={images.team.doctor}
-                  alt="AK Ultimate Dental team"
+                  alt="Dr. Alexandru Chireu, DDS - AK Ultimate Dental"
                   width={500}
                   height={600}
                   className="rounded-2xl shadow-2xl"
@@ -108,10 +114,10 @@ export default function AboutPage() {
             <div className="relative">
               <Image
                 src={images.team.graduation}
-                alt="Dr. Alexandru Chireu - UNLV School of Dental Medicine graduation"
+                alt="Dr. Alexandru Chireu - UNLV School of Dental Medicine graduation with family"
                 width={600}
                 height={450}
-                className="rounded-2xl shadow-xl"
+                className="rounded-2xl shadow-xl object-cover"
               />
               <div className="absolute -bottom-8 -right-8 w-48 h-48 bg-cyan-100 rounded-2xl -z-10" />
             </div>
@@ -239,8 +245,21 @@ export default function AboutPage() {
       </section>
 
       {/* Practice Philosophy */}
-      <section className="py-20 md:py-32 bg-gray-900 text-white">
-        <div className="container mx-auto px-4">
+      <section className="relative py-20 md:py-32 text-white overflow-hidden">
+        {/* Video Background (desktop) with dark fallback */}
+        <div className="absolute inset-0 z-0">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover hidden md:block"
+          >
+            <source src="/videos/dental-office.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gray-900/90" />
+        </div>
+        <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <span className="inline-block text-cyan-400 font-semibold text-sm uppercase tracking-wider mb-4">

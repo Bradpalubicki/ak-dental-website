@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Phone, Mail, MapPin, Facebook } from "lucide-react";
+import { Phone, Mail, MapPin, Facebook, Star } from "lucide-react";
 import { siteConfig, navigation, services, engineConfig } from "@/lib/config";
 
 export function Footer() {
@@ -107,8 +107,25 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Google Reviews Badge */}
+        <div className="border-t border-gray-800 mt-8 pt-8 flex justify-center">
+          <a
+            href={siteConfig.ratings.googleReviewUrl || siteConfig.social.google}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-3 bg-gray-800 rounded-xl px-5 py-3 hover:bg-gray-700 transition-colors"
+          >
+            <div className="flex gap-0.5">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+              ))}
+            </div>
+            <span className="text-white font-semibold">{siteConfig.ratings.count} Five-Star Google Reviews</span>
+          </a>
+        </div>
+
         {/* Bottom bar */}
-        <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="border-t border-gray-800 mt-6 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm">
             © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
           </p>
@@ -120,7 +137,7 @@ export function Footer() {
             <a href={siteConfig.social.yelp} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
               <span className="text-sm font-semibold">Yelp</span>
             </a>
-            <a href={siteConfig.social.google} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+            <a href={siteConfig.ratings.googleReviewUrl || siteConfig.social.google} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
               <span className="text-sm font-semibold">Google</span>
             </a>
           </div>

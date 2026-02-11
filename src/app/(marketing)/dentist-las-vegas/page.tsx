@@ -17,7 +17,7 @@ import { images } from "@/lib/images";
 export const metadata: Metadata = {
   title: "Best Dentist in Las Vegas, NV | Top-Rated Dental Care | AK Ultimate Dental",
   description:
-    "Looking for the best dentist in Las Vegas? AK Ultimate Dental offers comprehensive dental care including implants, cosmetic dentistry & emergency services. 4.9★ rated. Call (702) 935-4395.",
+    "Looking for the best dentist in Las Vegas? AK Ultimate Dental offers comprehensive dental care including implants, cosmetic dentistry & emergency services. 128 five-star reviews. Call (702) 935-4395.",
   keywords: [
     "dentist Las Vegas",
     "Las Vegas dentist",
@@ -138,7 +138,7 @@ export default function DentistLasVegasPage() {
                   <Star key={i} className="h-6 w-6 fill-yellow-400 text-yellow-400" />
                 ))}
               </div>
-              <span className="text-lg">4.9/5 from 150+ Las Vegas patients</span>
+              <span className="text-lg">{siteConfig.ratings.count} Five-Star Google Reviews</span>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -164,9 +164,9 @@ export default function DentistLasVegasPage() {
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap justify-center md:justify-between items-center gap-8">
             {[
-              { icon: Star, text: "4.9★ Google Rating" },
+              { icon: Star, text: `${siteConfig.ratings.count} Five-Star Reviews` },
               { icon: Award, text: "Top Las Vegas Dentist" },
-              { icon: Users, text: "10,000+ Patients Served" },
+              { icon: Users, text: "20+ Years Serving LV" },
               { icon: Shield, text: "All Insurance Accepted" },
               { icon: Zap, text: "Same-Day Appointments" },
             ].map((item, i) => (

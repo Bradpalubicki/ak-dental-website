@@ -58,9 +58,9 @@ export const practiceConfig: PracticeConfig = {
 
   // Social
   social: {
-    facebook: "https://www.facebook.com/scottmillerddslv/",
+    facebook: "https://www.facebook.com/chireu.alexandru/",
     yelp: "https://www.yelp.com/biz/ak-ultimate-dental-las-vegas",
-    google: "https://maps.google.com/?cid=YOUR_CID",
+    google: "https://share.google/y4QOijKzxJN97403L",
   },
 
   // Team
@@ -100,14 +100,16 @@ export const practiceConfig: PracticeConfig = {
     hero: {
       main: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1920&h=1080&fit=crop&q=90",
       office:
-        "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1920&h=1080&fit=crop&q=90",
+        "https://images.unsplash.com/photo-1629909615850-30d5d9d04282?w=1920&h=1080&fit=crop&q=90",
+      reception: "/office-modern.png",
     },
     team: {
       primary: "/dr-alex-headshot.jpg",
       secondary: "/dr-alex-family.jpg",
       group: "/dr-alex-family.jpg",
       consultation:
-        "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&h=600&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&h=600&fit=crop&q=80",
+      graduation: "/dr-alex-graduation-unlv.jpg",
     },
     patients: {
       smile:
@@ -122,6 +124,9 @@ export const practiceConfig: PracticeConfig = {
         "https://images.unsplash.com/photo-1581351721010-8cf859cb14a4?w=1200&h=600&fit=crop&q=80",
       neighborhood:
         "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop&q=80",
+    },
+    office: {
+      examRoom: "/exam-room.webp",
     },
     backgrounds: {
       office: "/office-modern.png",
@@ -176,9 +181,9 @@ export const practiceConfig: PracticeConfig = {
 
   // Stats (shown on homepage)
   stats: [
-    { value: "20+", label: "Years Experience" },
-    { value: "10K+", label: "Smiles Created" },
-    { value: "99%", label: "Patient Satisfaction" },
+    { value: "128", label: "Five-Star Reviews" },
+    { value: "5.0", label: "Google Rating" },
+    { value: "20+", label: "Years Serving LV" },
   ],
 
   // SEO
@@ -199,7 +204,8 @@ export const practiceConfig: PracticeConfig = {
 
   // Ratings
   ratings: {
-    average: "4.9",
-    count: "150",
+    average: "5.0",
+    count: "128",
+    googleReviewUrl: "https://share.google/y4QOijKzxJN97403L",
   },
 };
