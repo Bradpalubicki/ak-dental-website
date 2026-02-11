@@ -48,43 +48,55 @@ interface WidgetDef {
 }
 
 const WIDGET_REGISTRY: WidgetDef[] = [
-  { id: "setup", label: "Setup Checklist", icon: ClipboardCheck, minW: 2, minH: 3, defaultW: 4, defaultH: 4 },
-  { id: "urgent", label: "Needs Attention", icon: Siren, minW: 2, minH: 2, defaultW: 4, defaultH: 3 },
-  { id: "kpi", label: "Key Metrics", icon: BarChart3, minW: 2, minH: 2, defaultW: 4, defaultH: 3 },
-  { id: "appointments", label: "Today's Schedule", icon: Calendar, minW: 2, minH: 3, defaultW: 2, defaultH: 5 },
-  { id: "leads", label: "Recent Leads", icon: UserPlus, minW: 2, minH: 3, defaultW: 2, defaultH: 5 },
-  { id: "ai_activity", label: "AI Activity", icon: Sparkles, minW: 2, minH: 2, defaultW: 4, defaultH: 4 },
-  { id: "financials", label: "Financial Summary", icon: Wallet, minW: 2, minH: 2, defaultW: 2, defaultH: 4 },
-  { id: "hr", label: "HR & Payroll", icon: UsersRound, minW: 2, minH: 2, defaultW: 2, defaultH: 4 },
-  { id: "compliance", label: "Compliance Alerts", icon: Award, minW: 2, minH: 2, defaultW: 2, defaultH: 4 },
-  { id: "insurance", label: "Insurance", icon: Shield, minW: 2, minH: 2, defaultW: 2, defaultH: 4 },
-  { id: "outreach", label: "Outreach", icon: Send, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
+  { id: "setup", label: "Setup Checklist", icon: ClipboardCheck, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
+  { id: "urgent", label: "Needs Attention", icon: Siren, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
+  { id: "kpi", label: "Key Metrics", icon: BarChart3, minW: 2, minH: 2, defaultW: 4, defaultH: 2 },
+  { id: "appointments", label: "Today's Schedule", icon: Calendar, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
+  { id: "leads", label: "Recent Leads", icon: UserPlus, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
+  { id: "ai_activity", label: "AI Activity", icon: Sparkles, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
+  { id: "financials", label: "Financial Summary", icon: Wallet, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
+  { id: "hr", label: "HR & Payroll", icon: UsersRound, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
+  { id: "compliance", label: "Compliance Alerts", icon: Award, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
+  { id: "insurance", label: "Insurance", icon: Shield, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
+  { id: "outreach", label: "Outreach", icon: Send, minW: 2, minH: 2, defaultW: 2, defaultH: 2 },
 ];
 
 const DEFAULT_VISIBLE = [
-  "setup", "urgent", "kpi", "appointments", "leads", "ai_activity",
-  "financials", "hr", "compliance", "insurance", "outreach",
+  "kpi", "urgent", "appointments", "leads", "ai_activity",
+  "financials", "compliance", "hr", "insurance", "outreach",
 ];
+
+// Explicit compact layout — fits ~one screen at 1080p
+const COMPACT_POSITIONS: Record<string, { x: number; y: number; w: number; h: number }> = {
+  kpi:          { x: 0, y: 0,  w: 4, h: 2 },
+  urgent:       { x: 0, y: 2,  w: 2, h: 3 },
+  appointments: { x: 2, y: 2,  w: 2, h: 3 },
+  leads:        { x: 0, y: 5,  w: 2, h: 3 },
+  financials:   { x: 2, y: 5,  w: 2, h: 3 },
+  ai_activity:  { x: 0, y: 8,  w: 2, h: 3 },
+  hr:           { x: 2, y: 8,  w: 2, h: 3 },
+  compliance:   { x: 0, y: 11, w: 2, h: 3 },
+  insurance:    { x: 2, y: 11, w: 2, h: 3 },
+  outreach:     { x: 0, y: 14, w: 2, h: 2 },
+  setup:        { x: 2, y: 14, w: 2, h: 3 },
+};
 
 function buildDefaultLayout(visible: string[]): LayoutItem[] {
   const items: LayoutItem[] = [];
-  let x = 0;
-  let y = 0;
+  let autoY = 20; // high y for auto-placed items (compactor will fix)
   visible.forEach((id) => {
     const def = WIDGET_REGISTRY.find((w) => w.id === id);
     if (!def) return;
-    if (x + def.defaultW > 4) { x = 0; y += 4; }
-    items.push({
-      i: id,
-      x,
-      y,
-      w: def.defaultW,
-      h: def.defaultH,
-      minW: def.minW,
-      minH: def.minH,
-    });
-    x += def.defaultW;
-    if (x >= 4) { x = 0; y += def.defaultH; }
+    const pos = COMPACT_POSITIONS[id];
+    if (pos) {
+      items.push({ i: id, ...pos, minW: def.minW, minH: def.minH });
+    } else {
+      items.push({
+        i: id, x: 0, y: autoY, w: def.defaultW, h: def.defaultH,
+        minW: def.minW, minH: def.minH,
+      });
+      autoY += def.defaultH;
+    }
   });
   return items;
 }
@@ -179,16 +191,18 @@ function KpiWidget({ data }: { data: DashboardData }) {
     { label: "Insurance", value: data.stats.pendingInsurance, icon: Shield, color: "text-purple-600 bg-purple-50" },
   ];
   return (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="grid grid-cols-6 gap-2">
       {kpis.map((kpi) => {
         const Icon = kpi.icon;
         return (
-          <div key={kpi.label} className="rounded-lg border border-slate-100 bg-slate-50/50 p-3 text-center">
-            <div className={`mx-auto mb-1.5 flex h-8 w-8 items-center justify-center rounded-lg ${kpi.color}`}>
-              <Icon className="h-4 w-4" />
+          <div key={kpi.label} className="flex items-center gap-2 rounded-lg border border-slate-100 bg-slate-50/50 px-2.5 py-2">
+            <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${kpi.color}`}>
+              <Icon className="h-3.5 w-3.5" />
             </div>
-            <p className="text-xl font-bold text-slate-900">{kpi.value}</p>
-            <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wide">{kpi.label}</p>
+            <div className="min-w-0">
+              <p className="text-lg font-bold text-slate-900 leading-tight">{kpi.value}</p>
+              <p className="text-[9px] font-medium text-slate-400 uppercase tracking-wide truncate">{kpi.label}</p>
+            </div>
           </div>
         );
       })}
@@ -582,21 +596,21 @@ function WidgetCard({ id, data, isEditing }: { id: string; data: DashboardData; 
   };
 
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-slate-200/80 bg-white shadow-sm overflow-hidden">
+    <div className="flex h-full flex-col rounded-xl border border-slate-200/80 bg-white shadow-sm overflow-hidden">
       {/* Widget header */}
-      <div className="flex items-center gap-2.5 border-b border-slate-100 px-4 py-3 shrink-0">
+      <div className="flex items-center gap-2 border-b border-slate-100 px-3 py-2 shrink-0">
         {isEditing && (
           <GripVertical className="h-4 w-4 text-slate-300 cursor-grab active:cursor-grabbing drag-handle" />
         )}
-        <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${
+        <div className={`flex h-6 w-6 items-center justify-center rounded-md ${
           id === "urgent" ? "bg-amber-50" : "bg-slate-50"
         }`}>
-          <Icon className={`h-3.5 w-3.5 ${id === "urgent" ? "text-amber-600" : "text-slate-500"}`} />
+          <Icon className={`h-3 w-3 ${id === "urgent" ? "text-amber-600" : "text-slate-500"}`} />
         </div>
-        <h3 className="text-xs font-bold text-slate-900 flex-1">{def.label}</h3>
+        <h3 className="text-[11px] font-bold text-slate-900 flex-1">{def.label}</h3>
       </div>
       {/* Widget body */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto px-3 py-2">
         {content[id] || <p className="text-xs text-slate-400">Widget: {id}</p>}
       </div>
     </div>
@@ -679,6 +693,7 @@ export function DashboardGrid({ data }: DashboardGridProps) {
   const [layouts, setGridLayouts] = useState<ResponsiveLayouts>({});
   const [showSettings, setShowSettings] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [columnCount, setColumnCount] = useState(4);
   const [hydrated, setHydrated] = useState(false);
 
   // Load saved preferences
@@ -688,18 +703,19 @@ export function DashboardGrid({ data }: DashboardGridProps) {
       .then((prefs) => {
         if (prefs.visible_widgets?.length) setVisible(prefs.visible_widgets);
         if (prefs.layouts && Object.keys(prefs.layouts).length) setGridLayouts(prefs.layouts);
+        if (prefs.column_count) setColumnCount(prefs.column_count);
         setHydrated(true);
       })
       .catch(() => setHydrated(true));
   }, []);
 
   // Debounced save
-  const savePreferences = useCallback(
-    debounce((newGridLayouts: ResponsiveLayouts, newVisible: string[]) => {
+  const savePreferences = useMemo(
+    () => debounce((newGridLayouts: ResponsiveLayouts, newVisible: string[], newColumnCount?: number) => {
       fetch("/api/dashboard/preferences", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ layouts: newGridLayouts, visible_widgets: newVisible }),
+        body: JSON.stringify({ layouts: newGridLayouts, visible_widgets: newVisible, column_count: newColumnCount }),
       }).catch(() => {});
     }, 1000),
     []
@@ -709,26 +725,27 @@ export function DashboardGrid({ data }: DashboardGridProps) {
     (_layout: readonly LayoutItem[], allGridLayouts: ResponsiveLayouts) => {
       if (!hydrated) return;
       setGridLayouts(allGridLayouts);
-      savePreferences(allGridLayouts, visible);
+      savePreferences(allGridLayouts, visible, columnCount);
     },
-    [hydrated, visible, savePreferences]
+    [hydrated, visible, columnCount, savePreferences]
   );
 
   const handleToggle = useCallback(
     (id: string) => {
       setVisible((prev) => {
         const next = prev.includes(id) ? prev.filter((w) => w !== id) : [...prev, id];
-        savePreferences(layouts, next);
+        savePreferences(layouts, next, columnCount);
         return next;
       });
     },
-    [layouts, savePreferences]
+    [layouts, columnCount, savePreferences]
   );
 
   const handleReset = useCallback(() => {
     setVisible(DEFAULT_VISIBLE);
     setGridLayouts({});
-    savePreferences({}, DEFAULT_VISIBLE);
+    setColumnCount(4);
+    savePreferences({}, DEFAULT_VISIBLE, 4);
   }, [savePreferences]);
 
   const currentLayout = useMemo(() => {
@@ -742,14 +759,32 @@ export function DashboardGrid({ data }: DashboardGridProps) {
   }, [layouts, currentLayout]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Dashboard toolbar */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-bold text-slate-900">Dashboard</h1>
-          <p className="text-xs text-slate-400">Your One Engine overview — drag widgets to rearrange</p>
+          <h1 className="text-lg font-bold text-slate-900">Command Center</h1>
+          <p className="text-xs text-slate-400">Your One Engine operations at a glance</p>
         </div>
         <div className="flex items-center gap-2">
+          <div className="flex items-center gap-0.5 rounded-lg border border-slate-200 p-0.5">
+            {[2, 3, 4].map((cols) => (
+              <button
+                key={cols}
+                onClick={() => {
+                  setColumnCount(cols);
+                  savePreferences(layouts, visible, cols);
+                }}
+                className={`px-2 py-1 text-[11px] font-medium rounded transition-colors ${
+                  columnCount === cols
+                    ? "bg-cyan-100 text-cyan-700"
+                    : "text-slate-400 hover:text-slate-600"
+                }`}
+              >
+                {cols}
+              </button>
+            ))}
+          </div>
           <button
             onClick={() => setIsEditing(!isEditing)}
             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
@@ -779,13 +814,13 @@ export function DashboardGrid({ data }: DashboardGridProps) {
             width={width}
             layouts={resolvedLayouts}
             breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480 }}
-            cols={{ lg: 4, md: 4, sm: 2, xs: 1 }}
-            rowHeight={60}
+            cols={{ lg: columnCount, md: columnCount, sm: 2, xs: 1 }}
+            rowHeight={50}
             dragConfig={{ enabled: isEditing, handle: ".drag-handle" }}
             resizeConfig={{ enabled: isEditing }}
             onLayoutChange={handleLayoutChange}
             compactor={verticalCompactor}
-            margin={[16, 16]}
+            margin={[10, 10]}
           >
             {visible.map((id) => (
               <div key={id}>

@@ -134,6 +134,7 @@ export interface EngineConfig {
   // Engine identity
   engineType: "dental" | "stylist" | "counseling" | "chiro" | "vet" | "privatepay-medical" | "home-services";
   engineLabel: string;
+  dashboardHomeName?: string;
 
   // Schema.org type
   schemaType: string;

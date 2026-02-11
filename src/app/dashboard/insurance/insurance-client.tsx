@@ -9,7 +9,6 @@ import {
   Clock,
   XCircle,
   RefreshCw,
-  Upload,
   Building2,
   Sparkles,
   ExternalLink,
@@ -20,6 +19,8 @@ import {
   X,
 } from "lucide-react";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { FileUpload } from "@/components/dashboard/file-upload";
+import { DocumentList } from "@/components/dashboard/document-list";
 
 interface Verification {
   id: string;
@@ -100,6 +101,8 @@ export function InsuranceClient({ initialVerifications }: Props) {
   const [showTrash, setShowTrash] = useState(false);
   const [trashItems, setTrashItems] = useState<Verification[]>([]);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [docRefreshKey, setDocRefreshKey] = useState(0);
+  const [uploadForCarrier, setUploadForCarrier] = useState<string | null>(null);
 
   const filtered = verifications.filter(
     (v) =>
@@ -224,10 +227,11 @@ export function InsuranceClient({ initialVerifications }: Props) {
           >
             <Trash2 className="h-4 w-4" /> Trash
           </button>
-          <button className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
-            <Upload className="h-4 w-4" />
-            Upload Policy
-          </button>
+          <FileUpload
+            entityType="insurance_policy"
+            compact
+            onUploadComplete={() => setDocRefreshKey((k) => k + 1)}
+          />
           <button
             onClick={() => setShowForm(true)}
             className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 px-4 py-2 text-sm font-medium text-white hover:from-cyan-700 hover:to-blue-700 shadow-sm"
@@ -494,10 +498,11 @@ export function InsuranceClient({ initialVerifications }: Props) {
                 <h2 className="text-sm font-bold text-slate-900">Insurance Carrier Directory</h2>
                 <p className="text-[11px] text-slate-400">Carriers the practice is contracted with and fee schedule status</p>
               </div>
-              <button className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100">
-                <Upload className="h-3.5 w-3.5" />
-                Upload Fee Schedule
-              </button>
+              <FileUpload
+                entityType="insurance_fee_schedule"
+                compact
+                onUploadComplete={() => setDocRefreshKey((k) => k + 1)}
+              />
             </div>
           </div>
           <div className="divide-y divide-slate-50">
@@ -528,17 +533,28 @@ export function InsuranceClient({ initialVerifications }: Props) {
                       Policy Uploaded
                     </span>
                   ) : (
-                    <button className="flex items-center gap-1 rounded-lg bg-amber-50 border border-amber-200/50 px-3 py-1.5 text-[11px] font-medium text-amber-700 hover:bg-amber-100">
-                      <Upload className="h-3 w-3" />
-                      Upload Policy
-                    </button>
+                    <FileUpload
+                      entityType="insurance_policy"
+                      compact
+                      description={`${carrier.name} policy`}
+                      onUploadComplete={() => setDocRefreshKey((k) => k + 1)}
+                    />
                   )}
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="border-t border-slate-100 px-6 py-4">
+          <div className="border-t border-slate-100 px-6 py-4 space-y-4">
+            <DocumentList
+              entityType="insurance_policy"
+              refreshKey={docRefreshKey}
+            />
+            <DocumentList
+              entityType="insurance_fee_schedule"
+              refreshKey={docRefreshKey}
+              className="mt-3"
+            />
             <div className="rounded-xl bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200/30 p-4">
               <div className="flex items-start gap-3">
                 <ExternalLink className="h-5 w-5 text-cyan-600 mt-0.5 shrink-0" />

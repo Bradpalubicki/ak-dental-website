@@ -15,7 +15,10 @@ import {
   AlertCircle,
   RefreshCw,
   Loader2,
+  Users,
+  ArrowRight,
 } from "lucide-react";
+import Link from "next/link";
 
 interface PracticeInfo {
   name: string;
@@ -115,6 +118,23 @@ export function SettingsClient({ initialSettings }: { initialSettings: SettingsD
         <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
         <p className="text-sm text-slate-500">Platform configuration and integrations</p>
       </div>
+
+      {/* Users & Permissions Link */}
+      <Link
+        href="/dashboard/settings/users"
+        className="flex items-center justify-between rounded-xl border border-cyan-200 bg-gradient-to-r from-cyan-50 to-blue-50 p-5 hover:border-cyan-300 transition-colors group"
+      >
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-100">
+            <Users className="h-5 w-5 text-cyan-700" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-slate-900">Users & Permissions</p>
+            <p className="text-xs text-slate-500">Manage team access levels and feature permissions</p>
+          </div>
+        </div>
+        <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-cyan-600 transition-colors" />
+      </Link>
 
       {/* Practice Info */}
       <div className="rounded-xl border border-slate-200 bg-white p-6">

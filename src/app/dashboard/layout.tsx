@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
+import { AiCommandBar } from "@/components/dashboard/ai-command-bar";
 import { createServiceSupabase } from "@/lib/supabase/server";
 
 export const metadata = {
@@ -70,6 +71,7 @@ export default async function DashboardLayout({
         <DashboardHeader />
         <main className="flex-1 overflow-y-auto p-6">{children}</main>
       </div>
+      <AiCommandBar />
     </div>
   );
 }

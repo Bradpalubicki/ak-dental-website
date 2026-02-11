@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   Clock,
   XCircle,
-  Upload,
   Sparkles,
   Calendar,
   User,
@@ -14,8 +13,11 @@ import {
   Plus,
   Search,
   Filter,
+  FileText,
 } from "lucide-react";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { FileUpload } from "@/components/dashboard/file-upload";
+import { DocumentList } from "@/components/dashboard/document-list";
 
 interface License {
   id: string;
@@ -56,6 +58,8 @@ const statusConfig: Record<string, { label: string; color: string; icon: typeof 
 export function LicensingClient({ licenses, stats }: LicensingClientProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [docRefreshKey, setDocRefreshKey] = useState(0);
+  const [uploadForLicense, setUploadForLicense] = useState<string | null>(null);
 
   const expired = licenses.filter((l) => l.status === "expired");
   const expiringSoon = licenses.filter((l) => l.status === "expiring_soon");
@@ -90,10 +94,11 @@ export function LicensingClient({ licenses, stats }: LicensingClientProps) {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button className="flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 shadow-sm">
-            <Upload className="h-4 w-4" />
-            Upload Document
-          </button>
+          <FileUpload
+            entityType="license"
+            compact
+            onUploadComplete={() => setDocRefreshKey((k) => k + 1)}
+          />
           <button className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 px-4 py-2 text-sm font-medium text-white hover:from-cyan-700 hover:to-blue-700 shadow-sm">
             <Plus className="h-4 w-4" />
             Add License
@@ -224,75 +229,102 @@ export function LicensingClient({ licenses, stats }: LicensingClientProps) {
               {items.map((license) => {
                 const sc = statusConfig[license.status] || statusConfig.current;
                 return (
-                  <div
-                    key={license.id}
-                    className="flex items-center gap-4 px-6 py-3.5 hover:bg-slate-50/50 transition-colors"
-                  >
-                    <div
-                      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
-                        license.status === "expired"
-                          ? "bg-red-100"
-                          : license.status === "expiring_soon"
-                          ? "bg-amber-100"
-                          : "bg-emerald-50"
-                      }`}
-                    >
-                      <Award
-                        className={`h-4 w-4 ${
+                  <div key={license.id}>
+                    <div className="flex items-center gap-4 px-6 py-3.5 hover:bg-slate-50/50 transition-colors">
+                      <div
+                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
                           license.status === "expired"
-                            ? "text-red-600"
+                            ? "bg-red-100"
                             : license.status === "expiring_soon"
-                            ? "text-amber-600"
-                            : "text-emerald-600"
+                            ? "bg-amber-100"
+                            : "bg-emerald-50"
                         }`}
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-semibold text-slate-900">{license.licenseType}</p>
-                        <span
-                          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ring-inset ${sc.color}`}
-                        >
-                          <span className={`h-1.5 w-1.5 rounded-full ${sc.dot}`} />
-                          {sc.label}
-                        </span>
-                        {license.renewalSubmitted && (
-                          <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700 ring-1 ring-inset ring-blue-600/20">
-                            Renewal Submitted
-                          </span>
-                        )}
-                      </div>
-                      <div className="mt-0.5 flex items-center gap-3 text-[11px] text-slate-400">
-                        {license.licenseNumber && <span className="font-mono">{license.licenseNumber}</span>}
-                        <span>{license.issuedBy}</span>
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="text-xs font-medium text-slate-900">
-                        {!license.expirationDate
-                          ? "No Expiration"
-                          : `Exp: ${new Date(license.expirationDate + "T12:00:00").toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            })}`}
-                      </p>
-                      {license.expirationDate && license.daysUntilExpiry !== null && (
-                        <p
-                          className={`text-[11px] font-medium ${
+                      >
+                        <Award
+                          className={`h-4 w-4 ${
                             license.status === "expired"
                               ? "text-red-600"
                               : license.status === "expiring_soon"
                               ? "text-amber-600"
-                              : "text-slate-400"
+                              : "text-emerald-600"
                           }`}
-                        >
-                          {license.daysUntilExpiry < 0
-                            ? `${Math.abs(license.daysUntilExpiry)} days overdue`
-                            : `${license.daysUntilExpiry} days remaining`}
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-semibold text-slate-900">{license.licenseType}</p>
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ring-inset ${sc.color}`}
+                          >
+                            <span className={`h-1.5 w-1.5 rounded-full ${sc.dot}`} />
+                            {sc.label}
+                          </span>
+                          {license.renewalSubmitted && (
+                            <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                              Renewal Submitted
+                            </span>
+                          )}
+                        </div>
+                        <div className="mt-0.5 flex items-center gap-3 text-[11px] text-slate-400">
+                          {license.licenseNumber && <span className="font-mono">{license.licenseNumber}</span>}
+                          <span>{license.issuedBy}</span>
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-xs font-medium text-slate-900">
+                          {!license.expirationDate
+                            ? "No Expiration"
+                            : `Exp: ${new Date(license.expirationDate + "T12:00:00").toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              })}`}
                         </p>
-                      )}
+                        {license.expirationDate && license.daysUntilExpiry !== null && (
+                          <p
+                            className={`text-[11px] font-medium ${
+                              license.status === "expired"
+                                ? "text-red-600"
+                                : license.status === "expiring_soon"
+                                ? "text-amber-600"
+                                : "text-slate-400"
+                            }`}
+                          >
+                            {license.daysUntilExpiry < 0
+                              ? `${Math.abs(license.daysUntilExpiry)} days overdue`
+                              : `${license.daysUntilExpiry} days remaining`}
+                          </p>
+                        )}
+                      </div>
+                      <button
+                        onClick={() =>
+                          setUploadForLicense(uploadForLicense === license.id ? null : license.id)
+                        }
+                        className={`shrink-0 rounded-lg p-2 transition-colors ${
+                          license.documentUrl
+                            ? "text-emerald-600 hover:bg-emerald-50"
+                            : "text-slate-400 hover:bg-slate-100"
+                        }`}
+                        title={license.documentUrl ? "View documents" : "Attach document"}
+                      >
+                        <FileText className="h-4 w-4" />
+                      </button>
                     </div>
+                    {uploadForLicense === license.id && (
+                      <div className="px-6 pb-4 space-y-3">
+                        <FileUpload
+                          entityType="license"
+                          entityId={license.id}
+                          compact
+                          onUploadComplete={() => setDocRefreshKey((k) => k + 1)}
+                        />
+                        <DocumentList
+                          entityType="license"
+                          entityId={license.id}
+                          refreshKey={docRefreshKey}
+                        />
+                      </div>
+                    )}
                   </div>
                 );
               })}

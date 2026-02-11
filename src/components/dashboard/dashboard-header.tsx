@@ -26,9 +26,11 @@ export function DashboardHeader() {
   const dateStr = getFormattedDate();
   const { user, isLoaded } = useUser();
 
+  // Only prefix title (e.g. "Dr.") for users who have it set in Clerk metadata
+  const title = (user?.publicMetadata?.title as string) || "";
   const displayName = user?.firstName
-    ? `Dr. ${user.firstName}`
-    : "Dr. Alexandru";
+    ? `${title ? title + " " : ""}${user.firstName}`
+    : "there";
 
   return (
     <header className="flex h-14 items-center justify-between border-b border-slate-200/80 bg-white/80 backdrop-blur-sm px-6">

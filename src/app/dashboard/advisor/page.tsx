@@ -12,6 +12,16 @@ import {
   Save,
   X,
   CheckCircle2,
+  Calendar,
+  TrendingUp,
+  UserX,
+  Megaphone,
+  HelpCircle,
+  FileText,
+  BarChart3,
+  Navigation,
+  BookOpen,
+  type LucideIcon,
 } from "lucide-react";
 
 interface Message {
@@ -28,26 +38,59 @@ interface Employee {
   role: string;
 }
 
-const SUGGESTED_QUESTIONS = [
+const SUGGESTED_QUESTIONS: { label: string; question: string; icon: LucideIcon }[] = [
   {
-    label: "Employee Injury",
-    question:
-      "An employee got hurt at work today. What do I need to do?",
+    label: "Today's Summary",
+    question: "Give me a quick summary of today — appointments, leads, and anything that needs my attention.",
+    icon: Calendar,
   },
   {
-    label: "Letting Someone Go",
-    question:
-      "I need to let an employee go. How should I handle this?",
+    label: "Revenue Report",
+    question: "How is our revenue looking this month? Any concerns I should know about?",
+    icon: TrendingUp,
   },
   {
-    label: "Overtime Question",
-    question:
-      "I'm not sure if we're handling overtime correctly for our staff.",
+    label: "Employee Issue",
+    question: "An employee got hurt at work today. What do I need to do?",
+    icon: AlertTriangle,
   },
   {
-    label: "Patient Privacy",
-    question:
-      "I think a patient's info may have been exposed by accident. Is this a problem?",
+    label: "No-Show Problem",
+    question: "We've been having a lot of no-shows lately. What can we do to fix this?",
+    icon: UserX,
+  },
+  {
+    label: "Marketing Ideas",
+    question: "What outreach campaigns should I run this month to bring in new patients?",
+    icon: Megaphone,
+  },
+  {
+    label: "Help Me Navigate",
+    question: "How do I upload a license document for one of my staff members?",
+    icon: HelpCircle,
+  },
+];
+
+const QUICK_ACTIONS: { label: string; prompt: string; icon: LucideIcon }[] = [
+  {
+    label: "Pull a Report",
+    prompt: "I need a report on ",
+    icon: FileText,
+  },
+  {
+    label: "Analyze Data",
+    prompt: "Analyze our ",
+    icon: BarChart3,
+  },
+  {
+    label: "Find a Page",
+    prompt: "Where can I find ",
+    icon: Navigation,
+  },
+  {
+    label: "How Do I...",
+    prompt: "How do I ",
+    icon: BookOpen,
   },
 ];
 
@@ -152,7 +195,6 @@ export default function AdvisorPage() {
       `Advisor Consultation — ${new Date().toLocaleDateString("en-US")}`
     );
     setShowSaveDialog(true);
-    // Fetch employees
     fetch("/api/hr/employees?status=active")
       .then((r) => r.json())
       .then(setEmployees)
@@ -191,164 +233,293 @@ export default function AdvisorPage() {
     }
   }
 
+  function handleQuickAction(prompt: string) {
+    setInput(prompt);
+    textareaRef.current?.focus();
+  }
+
   return (
-    <div className="relative flex h-[calc(100vh-4rem)] flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600">
-            <Sparkles className="h-5 w-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-slate-900">
-              Business Advisor
-            </h1>
-            <p className="text-xs text-slate-500">
-              HR, Compliance, Insurance & Business Operations — Powered by One
-              Engine AI
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          {messages.length > 0 && (
-            <>
-              <button
-                onClick={openSaveDialog}
-                className="flex items-center gap-2 rounded-lg border border-cyan-200 bg-cyan-50 px-3 py-1.5 text-xs font-medium text-cyan-700 hover:bg-cyan-100"
-              >
-                <Save className="h-3.5 w-3.5" />
-                Save to Record
-              </button>
-              <button
-                onClick={clearConversation}
-                className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-700"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-                New Conversation
-              </button>
-            </>
-          )}
-          <div className="flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1.5">
-            <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
-            <span className="text-xs font-medium text-amber-700">
-              Not Legal Advice
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto bg-slate-50">
-        {messages.length === 0 ? (
-          /* Empty state with suggested questions */
-          <div className="flex h-full items-center justify-center p-6">
-            <div className="max-w-2xl text-center">
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600">
-                <Sparkles className="h-8 w-8 text-white" />
-              </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">
-                Ask Your Business Advisor
-              </h2>
-              <p className="text-sm text-slate-500 mb-8 max-w-md mx-auto">
-                Get instant guidance on HR situations, compliance questions,
-                insurance claims, employee issues, and business operations.
-                Tailored for your Nevada dental practice.
+    <div className="relative flex h-[calc(100vh-4rem)]">
+      {/* ─── Main Chat Area ─── */}
+      <div className="flex flex-1 flex-col min-w-0">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600">
+              <Sparkles className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-slate-900">
+                Business Advisor
+              </h1>
+              <p className="text-xs text-slate-500">
+                HR, Compliance, Insurance & Business Operations — Powered by One
+                Engine AI
               </p>
-
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {SUGGESTED_QUESTIONS.map((sq) => (
-                  <button
-                    key={sq.label}
-                    onClick={() => sendMessage(sq.question)}
-                    className="group rounded-xl border border-slate-200 bg-white p-4 text-left transition-all hover:border-cyan-300 hover:shadow-md"
-                  >
-                    <p className="text-sm font-semibold text-slate-900 group-hover:text-cyan-700">
-                      {sq.label}
-                    </p>
-                    <p className="mt-1 text-xs text-slate-500 line-clamp-2">
-                      {sq.question}
-                    </p>
-                  </button>
-                ))}
-              </div>
-
-              <div className="mt-8 flex items-center justify-center gap-2 text-xs text-slate-400">
-                <AlertTriangle className="h-3.5 w-3.5" />
-                <span>
-                  Guidance only — not legal advice. Consult an attorney for
-                  specific legal matters.
-                </span>
-              </div>
             </div>
           </div>
-        ) : (
-          /* Message thread */
-          <div className="mx-auto max-w-3xl space-y-1 p-6">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex gap-3 ${
-                  message.role === "user" ? "justify-end" : "justify-start"
-                }`}
-              >
-                {message.role === "assistant" && (
+          <div className="flex items-center gap-3">
+            {messages.length > 0 && (
+              <>
+                <button
+                  onClick={openSaveDialog}
+                  className="flex items-center gap-2 rounded-lg border border-cyan-200 bg-cyan-50 px-3 py-1.5 text-xs font-medium text-cyan-700 hover:bg-cyan-100"
+                >
+                  <Save className="h-3.5 w-3.5" />
+                  Save to Record
+                </button>
+                <button
+                  onClick={clearConversation}
+                  className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  New Conversation
+                </button>
+              </>
+            )}
+            <div className="flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1.5">
+              <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
+              <span className="text-xs font-medium text-amber-700">
+                Not Legal Advice
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Messages Area */}
+        <div className="flex-1 overflow-y-auto bg-slate-50">
+          {messages.length === 0 ? (
+            <div className="flex h-full items-center justify-center p-6">
+              <div className="max-w-2xl text-center">
+                <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600">
+                  <Sparkles className="h-8 w-8 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                  Ask Your Business Advisor
+                </h2>
+                <p className="text-sm text-slate-500 mb-8 max-w-md mx-auto">
+                  Get instant guidance on HR situations, compliance questions,
+                  insurance claims, employee issues, and business operations.
+                  Tailored for your Nevada dental practice.
+                </p>
+
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {SUGGESTED_QUESTIONS.map((sq) => {
+                    const Icon = sq.icon;
+                    return (
+                      <button
+                        key={sq.label}
+                        onClick={() => sendMessage(sq.question)}
+                        className="group rounded-xl border border-slate-200 bg-white p-4 text-left transition-all hover:border-cyan-300 hover:shadow-md"
+                      >
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <Icon className="h-4 w-4 text-slate-400 group-hover:text-cyan-600 transition-colors" />
+                          <p className="text-sm font-semibold text-slate-900 group-hover:text-cyan-700">
+                            {sq.label}
+                          </p>
+                        </div>
+                        <p className="text-xs text-slate-500 line-clamp-2">
+                          {sq.question}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-8 flex items-center justify-center gap-2 text-xs text-slate-400">
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                  <span>
+                    Guidance only — not legal advice. Consult an attorney for
+                    specific legal matters.
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="mx-auto max-w-3xl space-y-1 p-6">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex gap-3 ${
+                    message.role === "user" ? "justify-end" : "justify-start"
+                  }`}
+                >
+                  {message.role === "assistant" && (
+                    <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600">
+                      <Bot className="h-4 w-4 text-white" />
+                    </div>
+                  )}
+                  <div
+                    className={`max-w-[85%] rounded-2xl px-4 py-3 ${
+                      message.role === "user"
+                        ? "bg-cyan-600 text-white"
+                        : "bg-white border border-slate-200 text-slate-800"
+                    }`}
+                  >
+                    <div
+                      className={`text-sm leading-relaxed whitespace-pre-line ${
+                        message.role === "assistant" ? "advisor-response" : ""
+                      }`}
+                    >
+                      {message.content}
+                    </div>
+                    <p
+                      className={`mt-2 text-xs ${
+                        message.role === "user"
+                          ? "text-cyan-200"
+                          : "text-slate-400"
+                      }`}
+                    >
+                      {message.timestamp.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
+                  {message.role === "user" && (
+                    <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-200">
+                      <User className="h-4 w-4 text-slate-600" />
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {isLoading && (
+                <div className="flex gap-3">
                   <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600">
                     <Bot className="h-4 w-4 text-white" />
                   </div>
-                )}
-                <div
-                  className={`max-w-[85%] rounded-2xl px-4 py-3 ${
-                    message.role === "user"
-                      ? "bg-cyan-600 text-white"
-                      : "bg-white border border-slate-200 text-slate-800"
-                  }`}
-                >
-                  <div
-                    className={`text-sm leading-relaxed whitespace-pre-line ${
-                      message.role === "assistant" ? "advisor-response" : ""
-                    }`}
-                  >
-                    {message.content}
+                  <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                    <div className="flex items-center gap-2 text-sm text-slate-500">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Thinking...</span>
+                    </div>
                   </div>
-                  <p
-                    className={`mt-2 text-xs ${
-                      message.role === "user"
-                        ? "text-cyan-200"
-                        : "text-slate-400"
-                    }`}
-                  >
-                    {message.timestamp.toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
                 </div>
-                {message.role === "user" && (
-                  <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-200">
-                    <User className="h-4 w-4 text-slate-600" />
-                  </div>
-                )}
-              </div>
-            ))}
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
+        </div>
 
-            {/* Loading indicator */}
-            {isLoading && (
-              <div className="flex gap-3">
-                <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600">
-                  <Bot className="h-4 w-4 text-white" />
-                </div>
-                <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-                  <div className="flex items-center gap-2 text-sm text-slate-500">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Thinking...</span>
-                  </div>
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
+        {/* Input Area */}
+        <div className="border-t border-slate-200 bg-white px-6 py-4">
+          <div className="mx-auto flex max-w-3xl items-end gap-3">
+            <div className="relative flex-1">
+              <textarea
+                ref={textareaRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Describe your situation or ask a question about HR, compliance, insurance, operations..."
+                rows={1}
+                disabled={isLoading}
+                className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 pr-12 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100 disabled:opacity-60"
+              />
+            </div>
+            <button
+              onClick={() => sendMessage(input)}
+              disabled={!input.trim() || isLoading}
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-600 text-white transition-colors hover:bg-cyan-700 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Send className="h-5 w-5" />
+              )}
+            </button>
           </div>
-        )}
+          <p className="mx-auto mt-2 max-w-3xl text-center text-xs text-slate-400">
+            Shift+Enter for new line. Your conversations are private and not stored
+            permanently.
+          </p>
+        </div>
       </div>
+
+      {/* ─── Tools Sidebar ─── */}
+      <div className="hidden lg:flex w-72 flex-col border-l border-slate-200 bg-white">
+        {/* Ask Me Anything header */}
+        <div className="border-b border-slate-100 px-5 py-5">
+          <div className="relative overflow-hidden">
+            <p className="text-[13px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-blue-500 to-cyan-600 bg-[length:200%_100%] animate-[wave_3s_ease-in-out_infinite]">
+              Ask Me Anything
+            </p>
+            <p className="mt-1 text-[10px] text-slate-400">
+              Your AI-powered business assistant
+            </p>
+          </div>
+          {/* Wave animation keyframes */}
+          <style dangerouslySetInnerHTML={{ __html: `
+            @keyframes wave {
+              0% { background-position: 200% 0; }
+              100% { background-position: -200% 0; }
+            }
+          ` }} />
+        </div>
+
+        {/* Quick Actions */}
+        <div className="px-5 py-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400 mb-3">
+            Quick Actions
+          </p>
+          <div className="space-y-1.5">
+            {QUICK_ACTIONS.map((action) => {
+              const Icon = action.icon;
+              return (
+                <button
+                  key={action.label}
+                  onClick={() => handleQuickAction(action.prompt)}
+                  className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-slate-50 group"
+                >
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-50 group-hover:bg-cyan-50 transition-colors">
+                    <Icon className="h-3.5 w-3.5 text-slate-400 group-hover:text-cyan-600 transition-colors" />
+                  </div>
+                  <span className="text-xs font-medium text-slate-600 group-hover:text-slate-900">
+                    {action.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="mx-5 h-px bg-slate-100" />
+
+        {/* Suggested Topics */}
+        <div className="flex-1 overflow-y-auto px-5 py-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400 mb-3">
+            Suggested Topics
+          </p>
+          <div className="space-y-1">
+            {SUGGESTED_QUESTIONS.map((sq) => {
+              const Icon = sq.icon;
+              return (
+                <button
+                  key={sq.label}
+                  onClick={() => sendMessage(sq.question)}
+                  className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left transition-colors hover:bg-slate-50 group"
+                >
+                  <Icon className="h-3.5 w-3.5 shrink-0 text-slate-300 group-hover:text-cyan-500 transition-colors" />
+                  <span className="text-[11px] font-medium text-slate-500 group-hover:text-slate-800 truncate">
+                    {sq.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Sidebar footer */}
+        <div className="border-t border-slate-100 px-5 py-3">
+          <div className="flex items-center gap-2 text-[10px] text-slate-400">
+            <Sparkles className="h-3 w-3 text-cyan-500" />
+            <span>Powered by One Engine AI</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ─── Overlays ─── */}
 
       {/* Saved success toast */}
       {savedMessage && (
@@ -441,39 +612,6 @@ export default function AdvisorPage() {
           </div>
         </div>
       )}
-
-      {/* Input Area */}
-      <div className="border-t border-slate-200 bg-white px-6 py-4">
-        <div className="mx-auto flex max-w-3xl items-end gap-3">
-          <div className="relative flex-1">
-            <textarea
-              ref={textareaRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Describe your situation or ask a question about HR, compliance, insurance, operations..."
-              rows={1}
-              disabled={isLoading}
-              className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 pr-12 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100 disabled:opacity-60"
-            />
-          </div>
-          <button
-            onClick={() => sendMessage(input)}
-            disabled={!input.trim() || isLoading}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-600 text-white transition-colors hover:bg-cyan-700 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {isLoading ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <Send className="h-5 w-5" />
-            )}
-          </button>
-        </div>
-        <p className="mx-auto mt-2 max-w-3xl text-center text-xs text-slate-400">
-          Shift+Enter for new line. Your conversations are private and not stored
-          permanently.
-        </p>
-      </div>
     </div>
   );
 }

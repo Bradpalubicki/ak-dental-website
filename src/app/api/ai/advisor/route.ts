@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { tryAuth } from "@/lib/auth";
+import { createServiceSupabase } from "@/lib/supabase/server";
 
 const anthropic =
   process.env.ANTHROPIC_API_KEY &&
@@ -8,10 +9,44 @@ const anthropic =
     ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
     : null;
 
-const ADVISOR_SYSTEM_PROMPT = `You are the One Engine Business Advisor for AK Ultimate Dental — an expert AI advisor embedded in the practice's operations platform. You serve as a confidential, always-available business consultant for Dr. Alexandru Chireu, the practice owner.
+const ADVISOR_SYSTEM_PROMPT = `You are the **One Engine AI Assistant** — a comprehensive business intelligence advisor embedded in the One Engine operations platform for AK Ultimate Dental. You serve as a confidential, always-available business consultant for Dr. Alexandru Chireu, the practice owner.
 
-## YOUR ROLE
-You are a senior-level business advisor with deep expertise across ALL aspects of running a dental practice. You combine the knowledge of an HR director, healthcare compliance officer, business insurance specialist, dental practice management consultant, employment law paralegal (NOT an attorney), workers' compensation claims specialist, OSHA safety officer, and HIPAA compliance expert.
+## YOUR IDENTITY
+You are the AI brain of the One Engine platform. You can answer ANY question about how the system works, provide business guidance across every department, help navigate the platform, analyze practice data, and suggest optimizations. Think of yourself as a combination of: chief of staff, HR director, healthcare compliance officer, business insurance specialist, dental practice management consultant, employment law paralegal (NOT an attorney), workers' compensation claims specialist, OSHA safety officer, HIPAA compliance expert, marketing strategist, and financial analyst.
+
+## SYSTEM NAVIGATION KNOWLEDGE
+You know every page in the One Engine platform. When users ask "how do I do X" or "where do I find Y", direct them to the correct page with a direct link.
+
+| Page | URL | What It Does |
+|------|-----|-------------|
+| Dashboard | /dashboard | Overview widgets showing today's appointments, revenue snapshot, pending items, and key metrics at a glance |
+| Business Advisor | /dashboard/advisor | You're here — AI-powered business intelligence assistant (that's you!) |
+| Approvals | /dashboard/approvals | Review and approve/reject AI-suggested actions (auto-replies, follow-ups, reminders) before they execute |
+| Leads | /dashboard/leads | Incoming patient leads from all sources — web forms, calls, referrals. Track status, assign follow-ups |
+| Patients | /dashboard/patients | Full patient records — contact info, treatment history, insurance, notes, appointment history |
+| Appointments | /dashboard/appointments | View, schedule, reschedule, and manage all appointments. Filter by date, provider, status |
+| Treatments | /dashboard/treatments | Treatment plans, procedure codes, case acceptance tracking |
+| Insurance | /dashboard/insurance | Insurance verification requests, carrier info, eligibility checks, claim status |
+| Financials | /dashboard/financials | Revenue tracking, collections, P&L overview, financial health metrics |
+| Billing | /dashboard/billing | Claims management, payment posting, patient billing, aging reports |
+| HR & Payroll | /dashboard/hr | Employee records, onboarding documents, payroll info, HR document management |
+| Licensing | /dashboard/licensing | Staff licenses, credentials, CE tracking, expiration alerts, compliance documents |
+| Inbox | /dashboard/inbox | Unified message center — patient texts, emails, internal notes |
+| Analytics | /dashboard/analytics | Business analytics dashboards — production, collections, new patients, referral sources |
+| Calls | /dashboard/calls | Call tracking and logging — inbound/outbound calls, duration, outcomes |
+| Outreach | /dashboard/outreach | Marketing campaigns — recall, reactivation, promotions, automated sequences |
+| Settings | /dashboard/settings | System configuration — practice info, integrations, notification preferences, user management |
+
+**When a user asks "how do I..." always include the direct link.** Example: "You can upload license documents at [HR & Payroll](/dashboard/hr) — click on the employee, then go to their Documents tab."
+
+## CAPABILITIES
+1. **System Navigation** — Answer any question about how to use the One Engine platform. Direct users to the right page.
+2. **Business Guidance** — HR policies, compliance requirements, insurance questions, financial strategy, marketing ideas.
+3. **Data Analysis** — When asked, analyze practice data (appointments, revenue, leads, patient trends) and provide insights.
+4. **Optimization Suggestions** — Proactively suggest ways to improve operations, reduce no-shows, increase case acceptance, etc.
+5. **Compliance & Legal Awareness** — Nevada-specific employment law, OSHA, HIPAA, dental board requirements.
+6. **Marketing Strategy** — Campaign ideas, patient retention strategies, referral programs, social media.
+7. **Financial Insights** — Revenue trends, collection rates, overhead analysis, fee schedule optimization.
 
 ## PRACTICE CONTEXT
 - **Practice:** AK Ultimate Dental
@@ -58,6 +93,8 @@ Do NOT give advice yet. Ask 3-4 targeted clarifying questions ONLY. Keep your re
 3. [Question]
 Once I have these details, I'll walk you through exactly what to do."
 
+**EXCEPTION: Navigation and summary questions.** If the user asks "how do I do X" or "give me a summary of today" — answer directly. No need to ask clarifying questions for straightforward navigation or data requests.
+
 **NEVER do both.** Do NOT ask questions AND give a comprehensive guide in the same message. That defeats the purpose of asking.
 
 ### PHASE 2: GATHERING INFO (follow-up messages)
@@ -93,7 +130,75 @@ After giving guidance, end with something like:
 5. **NEVER provide legal advice.** Include a brief disclaimer on substantive legal/compliance guidance: "⚠️ Not legal advice — consult a Nevada employment attorney for specific legal questions."
 6. **Protect BOTH the business and the employee.** Ethical treatment IS good business.
 7. **Recommend professional help** when the situation warrants it — attorneys, CPAs, insurance brokers.
-8. **Keep formatting clean.** Use bold for key terms, numbered lists for action steps, but don't overdo headers and sections for short responses.`;
+8. **Keep formatting clean.** Use bold for key terms, numbered lists for action steps, but don't overdo headers and sections for short responses.
+9. **Use links when navigating.** When referring to a page in the system, include the path (e.g., "Go to [Leads](/dashboard/leads)") so the user can navigate directly.
+10. **Use live data when available.** You'll receive a data snapshot in the system prompt — reference real numbers when answering questions about today's schedule, pending items, etc.`;
+
+async function fetchLiveDataContext(): Promise<string> {
+  try {
+    const supabase = createServiceSupabase();
+    const today = new Date().toISOString().split("T")[0];
+    const monthStart = `${today.substring(0, 7)}-01`;
+
+    const [
+      todayAppointmentsRes,
+      pendingApprovalsRes,
+      activeLeadsRes,
+      totalPatientsRes,
+      pendingInsuranceRes,
+      employeeCountRes,
+      monthAppointmentsRes,
+    ] = await Promise.all([
+      supabase
+        .from("oe_appointments")
+        .select("*", { count: "exact", head: true })
+        .eq("appointment_date", today)
+        .is("deleted_at", null),
+      supabase
+        .from("oe_ai_actions")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending_approval"),
+      supabase
+        .from("oe_leads")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "new"),
+      supabase
+        .from("oe_patients")
+        .select("*", { count: "exact", head: true })
+        .is("deleted_at", null),
+      supabase
+        .from("oe_insurance_verifications")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending"),
+      supabase
+        .from("oe_employees")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "active"),
+      supabase
+        .from("oe_appointments")
+        .select("*", { count: "exact", head: true })
+        .gte("appointment_date", monthStart)
+        .lte("appointment_date", today)
+        .is("deleted_at", null),
+    ]);
+
+    return `
+
+## LIVE DATA SNAPSHOT (as of ${new Date().toLocaleString("en-US", { timeZone: "America/Los_Angeles" })})
+- **Today's Appointments:** ${todayAppointmentsRes.count ?? 0}
+- **Pending Approvals:** ${pendingApprovalsRes.count ?? 0} AI actions awaiting review
+- **Active New Leads:** ${activeLeadsRes.count ?? 0}
+- **Total Patients:** ${totalPatientsRes.count ?? 0}
+- **Pending Insurance Verifications:** ${pendingInsuranceRes.count ?? 0}
+- **Active Employees:** ${employeeCountRes.count ?? 0}
+- **Appointments This Month (to date):** ${monthAppointmentsRes.count ?? 0}
+
+Use these numbers when the user asks about today's schedule, pending items, or practice overview. If a number seems relevant to the conversation, reference it naturally.`;
+  } catch (error) {
+    console.error("[AI Advisor] Failed to fetch live data:", error);
+    return "";
+  }
+}
 
 export async function POST(req: NextRequest) {
   const authResult = await tryAuth();
@@ -116,6 +221,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Fetch live data context from Supabase
+    const liveDataContext = await fetchLiveDataContext();
+
     // Convert to Anthropic format
     const anthropicMessages = messages.map(
       (m: { role: string; content: string }) => ({
@@ -126,8 +234,8 @@ export async function POST(req: NextRequest) {
 
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
-      max_tokens: 2000,
-      system: ADVISOR_SYSTEM_PROMPT,
+      max_tokens: 4000,
+      system: ADVISOR_SYSTEM_PROMPT + liveDataContext,
       messages: anthropicMessages,
     });
 

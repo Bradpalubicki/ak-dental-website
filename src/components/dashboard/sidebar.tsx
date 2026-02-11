@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { usePermissions } from "@/hooks/use-permissions";
 
 export interface SidebarBadges {
   approvals: number;
@@ -44,6 +45,7 @@ interface NavItem {
   icon: typeof LayoutDashboard;
   badgeKey?: keyof SidebarBadges;
   badgeColor?: string;
+  requiredPermission?: string;
 }
 
 interface NavSection {
@@ -55,38 +57,38 @@ const sections: NavSection[] = [
   {
     label: "Command Center",
     items: [
-      { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
-      { name: "Business Advisor", href: "/dashboard/advisor", icon: Sparkles },
-      { name: "Approvals", href: "/dashboard/approvals", icon: CheckSquare, badgeKey: "approvals", badgeColor: "bg-amber-400 text-amber-950" },
+      { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, requiredPermission: "dashboard.view" },
+      { name: "Business Advisor", href: "/dashboard/advisor", icon: Sparkles, requiredPermission: "advisor.use" },
+      { name: "Approvals", href: "/dashboard/approvals", icon: CheckSquare, badgeKey: "approvals", badgeColor: "bg-amber-400 text-amber-950", requiredPermission: "approvals.view" },
     ],
   },
   {
     label: "Operations",
     items: [
-      { name: "Leads", href: "/dashboard/leads", icon: UserPlus, badgeKey: "leads", badgeColor: "bg-emerald-400 text-emerald-950" },
-      { name: "Patients", href: "/dashboard/patients", icon: Users },
-      { name: "Appointments", href: "/dashboard/appointments", icon: Calendar, badgeKey: "appointments", badgeColor: "bg-orange-400 text-orange-950" },
-      { name: "Treatments", href: "/dashboard/treatments", icon: FileText },
-      { name: "Insurance", href: "/dashboard/insurance", icon: Shield, badgeKey: "insurance", badgeColor: "bg-violet-400 text-violet-950" },
+      { name: "Leads", href: "/dashboard/leads", icon: UserPlus, badgeKey: "leads", badgeColor: "bg-emerald-400 text-emerald-950", requiredPermission: "leads.view" },
+      { name: "Patients", href: "/dashboard/patients", icon: Users, requiredPermission: "patients.view" },
+      { name: "Appointments", href: "/dashboard/appointments", icon: Calendar, badgeKey: "appointments", badgeColor: "bg-orange-400 text-orange-950", requiredPermission: "appointments.view" },
+      { name: "Treatments", href: "/dashboard/treatments", icon: FileText, requiredPermission: "treatments.view" },
+      { name: "Insurance", href: "/dashboard/insurance", icon: Shield, badgeKey: "insurance", badgeColor: "bg-violet-400 text-violet-950", requiredPermission: "insurance.view" },
     ],
   },
   {
     label: "Business Hub",
     items: [
-      { name: "Financials", href: "/dashboard/financials", icon: Wallet },
-      { name: "Billing", href: "/dashboard/billing", icon: DollarSign },
-      { name: "HR & Payroll", href: "/dashboard/hr", icon: UsersRound, badgeKey: "hrPending", badgeColor: "bg-rose-400 text-rose-950" },
-      { name: "Licensing", href: "/dashboard/licensing", icon: Award },
+      { name: "Financials", href: "/dashboard/financials", icon: Wallet, requiredPermission: "financials.view" },
+      { name: "Billing", href: "/dashboard/billing", icon: DollarSign, requiredPermission: "billing.view" },
+      { name: "HR & Payroll", href: "/dashboard/hr", icon: UsersRound, badgeKey: "hrPending", badgeColor: "bg-rose-400 text-rose-950", requiredPermission: "hr.view" },
+      { name: "Licensing", href: "/dashboard/licensing", icon: Award, requiredPermission: "licensing.view" },
     ],
   },
   {
     label: "Intelligence",
     items: [
-      { name: "Inbox", href: "/dashboard/inbox", icon: Inbox, badgeKey: "inbox", badgeColor: "bg-blue-400 text-blue-950" },
-      { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
-      { name: "Calls", href: "/dashboard/calls", icon: Phone },
-      { name: "Outreach", href: "/dashboard/outreach", icon: Send },
-      { name: "Settings", href: "/dashboard/settings", icon: Settings },
+      { name: "Inbox", href: "/dashboard/inbox", icon: Inbox, badgeKey: "inbox", badgeColor: "bg-blue-400 text-blue-950", requiredPermission: "inbox.view" },
+      { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3, requiredPermission: "analytics.view" },
+      { name: "Calls", href: "/dashboard/calls", icon: Phone, requiredPermission: "calls.view" },
+      { name: "Outreach", href: "/dashboard/outreach", icon: Send, requiredPermission: "outreach.view" },
+      { name: "Settings", href: "/dashboard/settings", icon: Settings, requiredPermission: "settings.view" },
     ],
   },
 ];
@@ -94,6 +96,7 @@ const sections: NavSection[] = [
 export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadges }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const { can } = usePermissions();
 
   return (
     <aside
@@ -137,7 +140,12 @@ export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadg
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
-        {sections.map((section) => (
+        {sections.map((section) => {
+          const visibleItems = section.items.filter(
+            (item) => !item.requiredPermission || can(item.requiredPermission)
+          );
+          if (visibleItems.length === 0) return null;
+          return (
           <div key={section.label}>
             {!collapsed && (
               <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-500">
@@ -146,7 +154,7 @@ export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadg
             )}
             {collapsed && <div className="mb-1 mx-auto h-px w-6 bg-white/[0.06]" />}
             <ul className="space-y-0.5">
-              {section.items.map((item) => {
+              {visibleItems.map((item) => {
                 const isActive =
                   item.href === "/dashboard"
                     ? pathname === "/dashboard"
@@ -185,7 +193,14 @@ export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadg
                       </div>
                       {!collapsed && (
                         <>
-                          <span className="flex-1">{item.name}</span>
+                          <span className="flex-1">
+                            {item.name}
+                            {item.href === "/dashboard/advisor" && (
+                              <span className="block text-[9px] font-medium animate-shimmer bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 bg-[length:200%_auto] bg-clip-text text-transparent">
+                                ask me anything
+                              </span>
+                            )}
+                          </span>
                           {badgeCount > 0 && (
                             <span className={cn(
                               "flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[10px] font-bold",
@@ -202,7 +217,8 @@ export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadg
               })}
             </ul>
           </div>
-        ))}
+          );
+        })}
       </nav>
 
       {/* System Status */}

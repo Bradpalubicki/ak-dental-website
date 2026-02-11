@@ -85,6 +85,7 @@ export const serviceImages: Record<string, string> = {
 export const engineConfig: EngineConfig = {
   engineType: "dental",
   engineLabel: "Dental Engine",
+  dashboardHomeName: "Dashboard",
 
   schemaType: "Dentist",
   medicalSpecialties: [
