@@ -32,7 +32,10 @@ import {
   Phone,
   FileText,
   Plus,
+  PanelRightOpen,
+  PanelRightClose,
 } from "lucide-react";
+import { StatCard } from "./stat-card";
 
 // ─── Widget registry ──────────────────────────────────────────────
 interface WidgetDef {
@@ -166,6 +169,60 @@ function AskMeAnythingBanner() {
   );
 }
 
+// ─── Today's Summary Stats Bar ──────────────────────────────────
+
+function TodaySummaryBar({ data }: { data: DashboardData }) {
+  const nextApt = data.appointments[0];
+  const urgentCount = data.urgentItems.filter(
+    (i) => i.level === "critical" || i.level === "warning"
+  ).length;
+
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-xl bg-gradient-to-r from-cyan-50 via-white to-cyan-50 border border-cyan-100 px-5 py-2.5">
+      <span className="text-[11px] font-bold text-cyan-700 uppercase tracking-wider">
+        Today
+      </span>
+      <div className="h-4 w-px bg-cyan-200" />
+      <span className="text-xs text-slate-600">
+        <strong className="text-slate-900">{data.stats.appointmentCount}</strong>{" "}
+        appointments
+        {data.stats.unconfirmedCount > 0 && (
+          <span className="text-amber-600">
+            {" "}
+            ({data.stats.unconfirmedCount} unconfirmed)
+          </span>
+        )}
+      </span>
+      <span className="text-xs text-slate-600">
+        <strong className="text-slate-900">{data.stats.leadCount}</strong> leads
+      </span>
+      <span className="text-xs text-slate-600">
+        <strong className="text-slate-900">
+          {data.stats.pendingApprovals}
+        </strong>{" "}
+        pending
+      </span>
+      {urgentCount > 0 && (
+        <span className="text-xs font-semibold text-red-600">
+          {urgentCount} urgent
+        </span>
+      )}
+      {nextApt && (
+        <>
+          <div className="h-4 w-px bg-cyan-200 hidden sm:block" />
+          <span className="text-xs text-slate-600">
+            Next:{" "}
+            <strong className="text-slate-900">{nextApt.patientName}</strong> at{" "}
+            <strong className="text-slate-900">
+              {formatTime(nextApt.time)}
+            </strong>
+          </span>
+        </>
+      )}
+    </div>
+  );
+}
+
 // ─── AI Insights Widget ──────────────────────────────────────────
 
 function AiInsightsWidget({ data }: { data: DashboardData }) {
@@ -287,30 +344,79 @@ function UrgentWidget({ data }: { data: DashboardData }) {
 }
 
 function KpiWidget({ data }: { data: DashboardData }) {
+  const confirmed = data.stats.appointmentCount - data.stats.unconfirmedCount;
+  const urgentLeads = data.leads
+    ? data.leads.filter(
+        (l) => l.urgency === "high" || l.urgency === "emergency"
+      ).length
+    : 0;
+
   const kpis = [
-    { label: "Appointments", value: data.stats.appointmentCount, icon: Calendar, color: "text-blue-600 bg-blue-50" },
-    { label: "New Leads", value: data.stats.leadCount, icon: UserPlus, color: "text-emerald-600 bg-emerald-50" },
-    { label: "Approvals", value: data.stats.pendingApprovals, icon: Eye, color: "text-amber-600 bg-amber-50" },
-    { label: "Patients", value: data.stats.patientCount, icon: Users, color: "text-cyan-600 bg-cyan-50" },
-    { label: "AI Actions", value: data.stats.aiActionsToday, icon: Zap, color: "text-indigo-600 bg-indigo-50" },
-    { label: "Insurance", value: data.stats.pendingInsurance, icon: Shield, color: "text-purple-600 bg-purple-50" },
+    {
+      title: "Appointments",
+      value: String(data.stats.appointmentCount),
+      icon: Calendar,
+      iconColor: "text-blue-600 bg-blue-50",
+      accentColor: "#3b82f6",
+      description: `${confirmed} confirmed, ${data.stats.unconfirmedCount} pending`,
+      href: "/dashboard/appointments",
+    },
+    {
+      title: "New Leads",
+      value: String(data.stats.leadCount),
+      icon: UserPlus,
+      iconColor: "text-emerald-600 bg-emerald-50",
+      accentColor: "#10b981",
+      description:
+        urgentLeads > 0
+          ? `${urgentLeads} high priority`
+          : "all normal priority",
+      href: "/dashboard/leads",
+    },
+    {
+      title: "Pending Approvals",
+      value: String(data.stats.pendingApprovals),
+      icon: Eye,
+      iconColor: "text-amber-600 bg-amber-50",
+      accentColor: "#f59e0b",
+      description: `${data.stats.approvedToday} approved today`,
+      pulse: data.stats.pendingApprovals > 0,
+      href: "/dashboard/approvals",
+    },
+    {
+      title: "Patients",
+      value: String(data.stats.patientCount),
+      icon: Users,
+      iconColor: "text-cyan-600 bg-cyan-50",
+      accentColor: "#06b6d4",
+      description: "active roster",
+      href: "/dashboard/patients",
+    },
+    {
+      title: "AI Actions",
+      value: String(data.stats.aiActionsToday),
+      icon: Zap,
+      iconColor: "text-indigo-600 bg-indigo-50",
+      accentColor: "#6366f1",
+      description: `${data.stats.approvedToday} executed today`,
+      href: "/dashboard/approvals",
+    },
+    {
+      title: "Insurance",
+      value: String(data.stats.pendingInsurance),
+      icon: Shield,
+      iconColor: "text-purple-600 bg-purple-50",
+      accentColor: "#a855f7",
+      description: "pending verification",
+      href: "/dashboard/insurance",
+    },
   ];
+
   return (
-    <div className="grid grid-cols-6 gap-2">
-      {kpis.map((kpi) => {
-        const Icon = kpi.icon;
-        return (
-          <div key={kpi.label} className="flex items-center gap-2 rounded-lg border border-slate-100 bg-slate-50/50 px-2.5 py-2">
-            <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${kpi.color}`}>
-              <Icon className="h-3.5 w-3.5" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-lg font-bold text-slate-900 leading-tight">{kpi.value}</p>
-              <p className="text-[9px] font-medium text-slate-400 uppercase tracking-wide truncate">{kpi.label}</p>
-            </div>
-          </div>
-        );
-      })}
+    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+      {kpis.map((kpi) => (
+        <StatCard key={kpi.title} {...kpi} />
+      ))}
     </div>
   );
 }
@@ -698,6 +804,179 @@ function OutreachWidget() {
   );
 }
 
+// ─── Activity Sidebar ──────────────────────────────────────────────
+
+function ActivitySidebar({
+  data,
+  open,
+  onToggle,
+}: {
+  data: DashboardData;
+  open: boolean;
+  onToggle: () => void;
+}) {
+  if (!open) {
+    const totalAttention = data.urgentItems.length;
+    return (
+      <div className="hidden lg:flex flex-col items-center w-10 shrink-0">
+        <button
+          onClick={onToggle}
+          className="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white px-1.5 py-3 hover:bg-slate-50 transition-colors shadow-sm"
+          title="Open activity panel"
+        >
+          <PanelRightOpen className="h-4 w-4 text-slate-400" />
+          {totalAttention > 0 && (
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-100 text-[9px] font-bold text-amber-700">
+              {totalAttention}
+            </span>
+          )}
+        </button>
+      </div>
+    );
+  }
+
+  const critical = data.urgentItems.filter((i) => i.level === "critical");
+  const warnings = data.urgentItems.filter((i) => i.level === "warning");
+  const info = data.urgentItems.filter((i) => i.level === "info");
+
+  return (
+    <div className="hidden lg:flex flex-col w-80 shrink-0 rounded-xl border border-slate-200/80 bg-white shadow-sm overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+        <h3 className="text-xs font-bold text-slate-900">Activity</h3>
+        <button
+          onClick={onToggle}
+          className="rounded-lg p-1 hover:bg-slate-100 transition-colors"
+          title="Collapse panel"
+        >
+          <PanelRightClose className="h-3.5 w-3.5 text-slate-400" />
+        </button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto">
+        {/* Needs Attention */}
+        {data.urgentItems.length > 0 && (
+          <div className="border-b border-slate-100 px-4 py-3">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+              Needs Attention
+            </p>
+            <div className="space-y-1.5">
+              {critical.length > 0 && (
+                <div className="flex items-center gap-2 rounded-lg bg-red-50 px-2.5 py-1.5">
+                  <span className="h-2 w-2 rounded-full bg-red-500 shrink-0" />
+                  <span className="text-[11px] font-semibold text-red-700 flex-1">
+                    Critical
+                  </span>
+                  <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-200 px-1 text-[10px] font-bold text-red-800">
+                    {critical.length}
+                  </span>
+                </div>
+              )}
+              {warnings.length > 0 && (
+                <div className="flex items-center gap-2 rounded-lg bg-amber-50 px-2.5 py-1.5">
+                  <span className="h-2 w-2 rounded-full bg-amber-500 shrink-0" />
+                  <span className="text-[11px] font-semibold text-amber-700 flex-1">
+                    Warnings
+                  </span>
+                  <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-amber-200 px-1 text-[10px] font-bold text-amber-800">
+                    {warnings.length}
+                  </span>
+                </div>
+              )}
+              {info.length > 0 && (
+                <div className="flex items-center gap-2 rounded-lg bg-blue-50 px-2.5 py-1.5">
+                  <span className="h-2 w-2 rounded-full bg-blue-500 shrink-0" />
+                  <span className="text-[11px] font-semibold text-blue-700 flex-1">
+                    Info
+                  </span>
+                  <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-blue-200 px-1 text-[10px] font-bold text-blue-800">
+                    {info.length}
+                  </span>
+                </div>
+              )}
+              {/* Individual items */}
+              <div className="mt-2 space-y-1">
+                {data.urgentItems.slice(0, 5).map((item, i) => (
+                  <a
+                    key={i}
+                    href={item.href}
+                    className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-slate-50 transition-colors"
+                  >
+                    <AlertTriangle
+                      className={`h-3 w-3 shrink-0 ${
+                        item.level === "critical"
+                          ? "text-red-500"
+                          : item.level === "warning"
+                            ? "text-amber-500"
+                            : "text-blue-400"
+                      }`}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[11px] font-medium text-slate-700 truncate">
+                        {item.label}
+                      </p>
+                      <p className="text-[9px] text-slate-400 truncate">
+                        {item.detail}
+                      </p>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Activity Feed */}
+        <div className="px-4 py-3">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+            Recent Activity
+          </p>
+          {data.aiActions.length === 0 ? (
+            <p className="text-[11px] text-slate-400 py-2">
+              No recent activity
+            </p>
+          ) : (
+            <div className="space-y-1">
+              {data.aiActions.slice(0, 8).map((action) => (
+                <div
+                  key={action.id}
+                  className="flex items-start gap-2 rounded-md px-2 py-1.5 hover:bg-slate-50 transition-colors"
+                >
+                  <div
+                    className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md ${
+                      action.status === "pending_approval"
+                        ? "bg-amber-50"
+                        : action.status === "rejected"
+                          ? "bg-red-50"
+                          : "bg-cyan-50"
+                    }`}
+                  >
+                    {action.status === "pending_approval" ? (
+                      <Clock className="h-2.5 w-2.5 text-amber-600" />
+                    ) : action.status === "rejected" ? (
+                      <XCircle className="h-2.5 w-2.5 text-red-600" />
+                    ) : (
+                      <CheckCircle2 className="h-2.5 w-2.5 text-cyan-600" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[11px] text-slate-700 leading-snug truncate">
+                      {action.description}
+                    </p>
+                    <p className="text-[9px] text-slate-400">
+                      {timeAgo(action.createdAt)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Widget Wrapper ────────────────────────────────────────────────
 
 function WidgetCard({ id, data }: { id: string; data: DashboardData }) {
@@ -813,6 +1092,13 @@ export function DashboardGrid({ data }: DashboardGridProps) {
   const [visible, setVisible] = useState<string[]>(DEFAULT_VISIBLE);
   const [showSettings, setShowSettings] = useState(false);
   const [columnCount, setColumnCount] = useState(3);
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("ak-sidebar-open");
+      return saved !== null ? saved === "true" : true;
+    }
+    return true;
+  });
 
   // Load saved preferences
   useEffect(() => {
@@ -823,6 +1109,14 @@ export function DashboardGrid({ data }: DashboardGridProps) {
         if (prefs.column_count) setColumnCount(prefs.column_count);
       })
       .catch(() => {});
+  }, []);
+
+  const toggleSidebar = useCallback(() => {
+    setSidebarOpen((prev) => {
+      const next = !prev;
+      localStorage.setItem("ak-sidebar-open", String(next));
+      return next;
+    });
   }, []);
 
   const savePreferences = useCallback((newVisible: string[], newColumnCount: number) => {
@@ -862,6 +1156,9 @@ export function DashboardGrid({ data }: DashboardGridProps) {
       {/* Ask Me Anything Banner */}
       <AskMeAnythingBanner />
 
+      {/* Today's Summary Stats Bar */}
+      <TodaySummaryBar data={data} />
+
       {/* Quick Actions Bar */}
       <QuickActionsBar />
 
@@ -880,13 +1177,13 @@ export function DashboardGrid({ data }: DashboardGridProps) {
                   setColumnCount(cols);
                   savePreferences(visible, cols);
                 }}
-                className={`px-2 py-1 text-[11px] font-medium rounded transition-colors ${
+                className={`px-2.5 py-1 text-[11px] font-medium rounded transition-colors ${
                   columnCount === cols
                     ? "bg-cyan-100 text-cyan-700"
                     : "text-slate-400 hover:text-slate-600"
                 }`}
               >
-                {cols}
+                {cols}-col
               </button>
             ))}
           </div>
@@ -895,21 +1192,34 @@ export function DashboardGrid({ data }: DashboardGridProps) {
             className="flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-200 transition-colors"
           >
             <Settings2 className="h-3.5 w-3.5" />
-            Customize
+            Edit Layout
           </button>
         </div>
       </div>
 
-      {/* Card Grid */}
-      <div className={gridClass}>
-        {visible.map((id) => (
-          <div
-            key={id}
-            className={FULL_WIDTH_WIDGETS.has(id) ? "col-span-full" : ""}
-          >
-            <WidgetCard id={id} data={data} />
+      {/* Card Grid + Activity Sidebar */}
+      <div className="flex gap-4">
+        <div className="flex-1 min-w-0">
+          <div className={gridClass}>
+            {visible.map((id) => (
+              <div
+                key={id}
+                className={FULL_WIDTH_WIDGETS.has(id) ? "col-span-full" : ""}
+              >
+                {id === "kpi" ? (
+                  <KpiWidget data={data} />
+                ) : (
+                  <WidgetCard id={id} data={data} />
+                )}
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
+        <ActivitySidebar
+          data={data}
+          open={sidebarOpen}
+          onToggle={toggleSidebar}
+        />
       </div>
 
       {/* Settings panel */}
