@@ -7,12 +7,14 @@ import {
   verticalCompactor,
 } from "react-grid-layout";
 import type { LayoutItem, ResponsiveLayouts } from "react-grid-layout";
+import Link from "next/link";
 import {
   Settings2,
   GripVertical,
   X,
   RotateCcw,
   Calendar,
+  CalendarPlus,
   UserPlus,
   Sparkles,
   Wallet,
@@ -32,6 +34,12 @@ import {
   CheckCircle2,
   XCircle,
   ClipboardCheck,
+  Lightbulb,
+  MessageSquare,
+  Phone,
+  FileText,
+  Pencil,
+  Plus,
 } from "lucide-react";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
@@ -50,6 +58,7 @@ interface WidgetDef {
 const WIDGET_REGISTRY: WidgetDef[] = [
   { id: "setup", label: "Setup Checklist", icon: ClipboardCheck, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
   { id: "urgent", label: "Needs Attention", icon: Siren, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
+  { id: "ai_insights", label: "AI Insights", icon: Lightbulb, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
   { id: "kpi", label: "Key Metrics", icon: BarChart3, minW: 2, minH: 2, defaultW: 4, defaultH: 2 },
   { id: "appointments", label: "Today's Schedule", icon: Calendar, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
   { id: "leads", label: "Recent Leads", icon: UserPlus, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
@@ -62,7 +71,7 @@ const WIDGET_REGISTRY: WidgetDef[] = [
 ];
 
 const DEFAULT_VISIBLE = [
-  "kpi", "urgent", "appointments", "leads", "ai_activity",
+  "kpi", "urgent", "ai_insights", "appointments", "leads", "ai_activity",
   "financials", "compliance", "hr", "insurance", "outreach",
 ];
 
@@ -70,15 +79,16 @@ const DEFAULT_VISIBLE = [
 const COMPACT_POSITIONS: Record<string, { x: number; y: number; w: number; h: number }> = {
   kpi:          { x: 0, y: 0,  w: 4, h: 2 },
   urgent:       { x: 0, y: 2,  w: 2, h: 3 },
-  appointments: { x: 2, y: 2,  w: 2, h: 3 },
-  leads:        { x: 0, y: 5,  w: 2, h: 3 },
-  financials:   { x: 2, y: 5,  w: 2, h: 3 },
-  ai_activity:  { x: 0, y: 8,  w: 2, h: 3 },
-  hr:           { x: 2, y: 8,  w: 2, h: 3 },
-  compliance:   { x: 0, y: 11, w: 2, h: 3 },
-  insurance:    { x: 2, y: 11, w: 2, h: 3 },
-  outreach:     { x: 0, y: 14, w: 2, h: 2 },
-  setup:        { x: 2, y: 14, w: 2, h: 3 },
+  ai_insights:  { x: 2, y: 2,  w: 2, h: 3 },
+  appointments: { x: 0, y: 5,  w: 2, h: 3 },
+  leads:        { x: 2, y: 5,  w: 2, h: 3 },
+  financials:   { x: 0, y: 8,  w: 2, h: 3 },
+  ai_activity:  { x: 2, y: 8,  w: 2, h: 3 },
+  hr:           { x: 0, y: 11, w: 2, h: 3 },
+  compliance:   { x: 2, y: 11, w: 2, h: 3 },
+  insurance:    { x: 0, y: 14, w: 2, h: 3 },
+  outreach:     { x: 2, y: 14, w: 2, h: 2 },
+  setup:        { x: 0, y: 16, w: 2, h: 3 },
 };
 
 function buildDefaultLayout(visible: string[]): LayoutItem[] {
@@ -147,6 +157,148 @@ const statusConfig: Record<string, { label: string; color: string; dot: string }
   completed: { label: "Completed", color: "bg-green-50 text-green-700 ring-green-600/20", dot: "bg-green-500" },
   no_show: { label: "No Show", color: "bg-red-50 text-red-700 ring-red-600/20", dot: "bg-red-500" },
 };
+
+// ─── Quick Actions Bar ────────────────────────────────────────────
+
+function QuickActionsBar() {
+  const actions = [
+    { label: "New Patient", icon: Plus, href: "/dashboard/patients", color: "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-200" },
+    { label: "Schedule Appt", icon: CalendarPlus, href: "/dashboard/appointments", color: "bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200" },
+    { label: "New Lead", icon: UserPlus, href: "/dashboard/leads", color: "bg-amber-50 text-amber-700 hover:bg-amber-100 border-amber-200" },
+    { label: "Send Message", icon: MessageSquare, href: "/dashboard/inbox", color: "bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border-indigo-200" },
+    { label: "AI Advisor", icon: Sparkles, href: "/dashboard/advisor", color: "bg-purple-50 text-purple-700 hover:bg-purple-100 border-purple-200" },
+  ];
+
+  return (
+    <div className="flex items-center gap-2 overflow-x-auto pb-1">
+      <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider shrink-0">Quick Actions</span>
+      <div className="h-4 w-px bg-slate-200 shrink-0" />
+      {actions.map((action) => {
+        const Icon = action.icon;
+        return (
+          <a
+            key={action.label}
+            href={action.href}
+            className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-semibold transition-all hover:shadow-sm shrink-0 ${action.color}`}
+          >
+            <Icon className="h-3.5 w-3.5" />
+            {action.label}
+          </a>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── Ask Me Anything Banner ──────────────────────────────────────
+
+function AskMeAnythingBanner() {
+  return (
+    <Link
+      href="/dashboard/advisor"
+      className="group relative flex items-center gap-4 rounded-2xl bg-gradient-to-r from-cyan-600 via-blue-600 to-cyan-700 px-6 py-4 text-white shadow-lg overflow-hidden transition-all hover:shadow-xl hover:scale-[1.005]"
+    >
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/20">
+        <Sparkles className="h-6 w-6 text-white" />
+      </div>
+      <div className="flex-1">
+        <p className="text-base font-bold">Ask Me Anything</p>
+        <p className="text-xs text-white/80">
+          Pull reports, analyze data, navigate the system, or get instant answers from your AI business advisor
+        </p>
+      </div>
+      <ArrowRight className="h-5 w-5 text-white/60 group-hover:text-white group-hover:translate-x-1 transition-all" />
+    </Link>
+  );
+}
+
+// ─── AI Insights Widget ──────────────────────────────────────────
+
+function AiInsightsWidget({ data }: { data: DashboardData }) {
+  const insights: Array<{ text: string; action: string; href: string; type: "suggestion" | "warning" | "success" }> = [];
+
+  if (data.stats.leadCount > 0) {
+    insights.push({
+      text: `${data.stats.leadCount} new lead${data.stats.leadCount !== 1 ? "s" : ""} today — follow up within 1 hour for 3x higher conversion`,
+      action: "View Leads",
+      href: "/dashboard/leads",
+      type: "suggestion",
+    });
+  }
+
+  if (data.stats.unconfirmedCount > 0) {
+    insights.push({
+      text: `${data.stats.unconfirmedCount} unconfirmed appointment${data.stats.unconfirmedCount !== 1 ? "s" : ""} today — send confirmation reminders to reduce no-shows`,
+      action: "Send Reminders",
+      href: "/dashboard/appointments",
+      type: "warning",
+    });
+  }
+
+  if (data.stats.pendingApprovals > 0) {
+    insights.push({
+      text: `${data.stats.pendingApprovals} AI-drafted message${data.stats.pendingApprovals !== 1 ? "s" : ""} waiting for your approval before sending`,
+      action: "Review & Approve",
+      href: "/dashboard/approvals",
+      type: "suggestion",
+    });
+  }
+
+  if (data.stats.approvedToday > 0) {
+    const timeSaved = (data.stats.approvedToday * 4.5).toFixed(0);
+    insights.push({
+      text: `AI saved you ~${timeSaved} minutes today by handling ${data.stats.approvedToday} task${data.stats.approvedToday !== 1 ? "s" : ""} automatically`,
+      action: "View Activity",
+      href: "/dashboard/approvals",
+      type: "success",
+    });
+  }
+
+  if (data.stats.pendingInsurance > 0) {
+    insights.push({
+      text: `${data.stats.pendingInsurance} insurance verification${data.stats.pendingInsurance !== 1 ? "s" : ""} pending — verify before appointments to avoid billing issues`,
+      action: "Verify Now",
+      href: "/dashboard/insurance",
+      type: "warning",
+    });
+  }
+
+  if (insights.length === 0) {
+    insights.push({
+      text: "All caught up! Your practice is running smoothly. AI is monitoring for new opportunities.",
+      action: "View Analytics",
+      href: "/dashboard/analytics",
+      type: "success",
+    });
+  }
+
+  const typeStyles = {
+    suggestion: { bg: "bg-indigo-50/60", border: "border-indigo-100", icon: "text-indigo-500", badge: "bg-indigo-100 text-indigo-700" },
+    warning: { bg: "bg-amber-50/60", border: "border-amber-100", icon: "text-amber-500", badge: "bg-amber-100 text-amber-700" },
+    success: { bg: "bg-emerald-50/60", border: "border-emerald-100", icon: "text-emerald-500", badge: "bg-emerald-100 text-emerald-700" },
+  };
+
+  return (
+    <div className="space-y-2">
+      {insights.slice(0, 4).map((insight, i) => {
+        const styles = typeStyles[insight.type];
+        return (
+          <div key={i} className={`flex items-start gap-3 rounded-lg border ${styles.border} ${styles.bg} px-3 py-2.5`}>
+            <Lightbulb className={`h-4 w-4 shrink-0 mt-0.5 ${styles.icon}`} />
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] text-slate-700 leading-relaxed">{insight.text}</p>
+              <a href={insight.href} className={`mt-1.5 inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold ${styles.badge} hover:opacity-80 transition-opacity`}>
+                {insight.action}
+                <ArrowRight className="h-2.5 w-2.5" />
+              </a>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 function UrgentWidget({ data }: { data: DashboardData }) {
   if (data.urgentItems.length === 0) {
@@ -225,6 +377,7 @@ function AppointmentsWidget({ data }: { data: DashboardData }) {
     <div className="space-y-1">
       {data.appointments.slice(0, 8).map((apt) => {
         const sc = statusConfig[apt.status] || statusConfig.scheduled;
+        const isUnconfirmed = apt.status === "scheduled";
         return (
           <div key={apt.id} className="flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-slate-50 transition-colors">
             <span className="text-[11px] font-bold text-slate-500 w-16 shrink-0">{formatTime(apt.time)}</span>
@@ -232,7 +385,20 @@ function AppointmentsWidget({ data }: { data: DashboardData }) {
               <p className="text-xs font-semibold text-slate-900 truncate">{apt.patientName}</p>
               <p className="text-[10px] text-slate-400 capitalize">{apt.type.replace(/_/g, " ")}</p>
             </div>
-            <span className={`h-2 w-2 rounded-full shrink-0 ${sc.dot}`} />
+            {isUnconfirmed ? (
+              <div className="flex items-center gap-1 shrink-0">
+                <a href="/dashboard/appointments" className="rounded-md bg-emerald-100 px-2 py-0.5 text-[9px] font-bold text-emerald-700 hover:bg-emerald-200 transition-colors">
+                  Confirm
+                </a>
+                <a href="/dashboard/appointments" className="rounded-md bg-slate-100 px-2 py-0.5 text-[9px] font-bold text-slate-500 hover:bg-slate-200 transition-colors">
+                  Reschedule
+                </a>
+              </div>
+            ) : (
+              <span className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[9px] font-semibold ring-1 ring-inset ${sc.color}`}>
+                {sc.label}
+              </span>
+            )}
           </div>
         );
       })}
@@ -244,9 +410,6 @@ function AppointmentsWidget({ data }: { data: DashboardData }) {
 }
 
 function LeadsWidget({ data }: { data: DashboardData }) {
-  const urgencyDot: Record<string, string> = {
-    emergency: "bg-red-500", high: "bg-orange-500", medium: "bg-amber-400", low: "bg-emerald-400",
-  };
   if (data.leads.length === 0) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -268,7 +431,15 @@ function LeadsWidget({ data }: { data: DashboardData }) {
             <p className="text-xs font-semibold text-slate-900 truncate">{lead.name}</p>
             <p className="text-[10px] text-slate-400">{lead.source.replace(/_/g, " ")} · {timeAgo(lead.createdAt)}</p>
           </div>
-          <span className={`h-2 w-2 rounded-full shrink-0 ${urgencyDot[lead.urgency] || "bg-slate-300"}`} />
+          <div className="flex items-center gap-1 shrink-0">
+            <a href="/dashboard/leads" className="rounded-md bg-indigo-100 px-2 py-0.5 text-[9px] font-bold text-indigo-700 hover:bg-indigo-200 transition-colors flex items-center gap-0.5" title="Send Intake Form">
+              <FileText className="h-2.5 w-2.5" />
+              Intake
+            </a>
+            <a href="/dashboard/leads" className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[9px] font-bold text-slate-500 hover:bg-slate-200 transition-colors" title="Schedule Call">
+              <Phone className="h-2.5 w-2.5" />
+            </a>
+          </div>
         </div>
       ))}
       <a href="/dashboard/leads" className="flex items-center justify-center gap-1 rounded-lg py-1.5 text-[11px] font-medium text-cyan-600 hover:bg-cyan-50 transition-colors">
@@ -584,6 +755,7 @@ function WidgetCard({ id, data, isEditing }: { id: string; data: DashboardData; 
   const content: Record<string, React.ReactNode> = {
     setup: <SetupChecklistWidget />,
     urgent: <UrgentWidget data={data} />,
+    ai_insights: <AiInsightsWidget data={data} />,
     kpi: <KpiWidget data={data} />,
     appointments: <AppointmentsWidget data={data} />,
     leads: <LeadsWidget data={data} />,
@@ -603,9 +775,9 @@ function WidgetCard({ id, data, isEditing }: { id: string; data: DashboardData; 
           <GripVertical className="h-4 w-4 text-slate-300 cursor-grab active:cursor-grabbing drag-handle" />
         )}
         <div className={`flex h-6 w-6 items-center justify-center rounded-md ${
-          id === "urgent" ? "bg-amber-50" : "bg-slate-50"
+          id === "urgent" ? "bg-amber-50" : id === "ai_insights" ? "bg-indigo-50" : "bg-slate-50"
         }`}>
-          <Icon className={`h-3 w-3 ${id === "urgent" ? "text-amber-600" : "text-slate-500"}`} />
+          <Icon className={`h-3 w-3 ${id === "urgent" ? "text-amber-600" : id === "ai_insights" ? "text-indigo-600" : "text-slate-500"}`} />
         </div>
         <h3 className="text-[11px] font-bold text-slate-900 flex-1">{def.label}</h3>
       </div>
@@ -695,6 +867,8 @@ export function DashboardGrid({ data }: DashboardGridProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [columnCount, setColumnCount] = useState(4);
   const [hydrated, setHydrated] = useState(false);
+  const [pageTitle, setPageTitle] = useState("Command Center");
+  const [editingTitle, setEditingTitle] = useState(false);
 
   // Load saved preferences
   useEffect(() => {
@@ -704,6 +878,7 @@ export function DashboardGrid({ data }: DashboardGridProps) {
         if (prefs.visible_widgets?.length) setVisible(prefs.visible_widgets);
         if (prefs.layouts && Object.keys(prefs.layouts).length) setGridLayouts(prefs.layouts);
         if (prefs.column_count) setColumnCount(prefs.column_count);
+        if (prefs.page_title) setPageTitle(prefs.page_title);
         setHydrated(true);
       })
       .catch(() => setHydrated(true));
@@ -745,8 +920,22 @@ export function DashboardGrid({ data }: DashboardGridProps) {
     setVisible(DEFAULT_VISIBLE);
     setGridLayouts({});
     setColumnCount(4);
+    setPageTitle("Command Center");
     savePreferences({}, DEFAULT_VISIBLE, 4);
+    fetch("/api/dashboard/preferences", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ layouts: {}, visible_widgets: DEFAULT_VISIBLE, column_count: 4, page_title: "Command Center" }),
+    }).catch(() => {});
   }, [savePreferences]);
+
+  const saveTitle = useCallback((title: string) => {
+    fetch("/api/dashboard/preferences", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ layouts, visible_widgets: visible, column_count: columnCount, page_title: title }),
+    }).catch(() => {});
+  }, [layouts, visible, columnCount]);
 
   const currentLayout = useMemo(() => {
     if (layouts.lg?.length) return undefined;
@@ -760,11 +949,35 @@ export function DashboardGrid({ data }: DashboardGridProps) {
 
   return (
     <div className="space-y-3">
+      {/* Ask Me Anything Banner */}
+      <AskMeAnythingBanner />
+
+      {/* Quick Actions Bar */}
+      <QuickActionsBar />
+
       {/* Dashboard toolbar */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-bold text-slate-900">Command Center</h1>
-          <p className="text-xs text-slate-400">Your One Engine operations at a glance</p>
+          {editingTitle ? (
+            <input
+              autoFocus
+              value={pageTitle}
+              onChange={(e) => setPageTitle(e.target.value)}
+              onBlur={() => { setEditingTitle(false); saveTitle(pageTitle); }}
+              onKeyDown={(e) => { if (e.key === "Enter") { setEditingTitle(false); saveTitle(pageTitle); } if (e.key === "Escape") { setEditingTitle(false); } }}
+              className="text-lg font-bold text-slate-900 bg-transparent border-b-2 border-cyan-400 outline-none w-64"
+            />
+          ) : (
+            <button
+              onClick={() => setEditingTitle(true)}
+              className="group flex items-center gap-2 text-lg font-bold text-slate-900 hover:text-cyan-600 transition-colors"
+              title="Click to rename"
+            >
+              {pageTitle}
+              <Pencil className="h-3.5 w-3.5 text-slate-300 group-hover:text-cyan-400 transition-colors" />
+            </button>
+          )}
+          <p className="text-xs text-slate-400">Your Dental Engine — drag widgets to rearrange</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-0.5 rounded-lg border border-slate-200 p-0.5">
