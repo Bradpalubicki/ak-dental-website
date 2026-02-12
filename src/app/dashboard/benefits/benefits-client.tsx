@@ -373,7 +373,6 @@ export function BenefitsClient({
 
 function EmployeeBenefitsTab({
   enrollments,
-  employees: _employees,
   search,
 }: {
   enrollments: EnrollmentRow[];

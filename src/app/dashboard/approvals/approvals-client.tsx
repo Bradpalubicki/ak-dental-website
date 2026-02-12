@@ -6,13 +6,9 @@ import {
   CheckCircle2,
   XCircle,
   Pencil,
-  Send,
-  Clock,
-  AlertTriangle,
   Loader2,
   ChevronDown,
   ChevronUp,
-  Shield,
 } from "lucide-react";
 
 interface PendingAction {
@@ -97,6 +93,31 @@ export function ApprovalsClient({ pendingActions, recentActions }: Props) {
 
   const selected = pending[selectedIndex] || null;
 
+  const handleApprove = useCallback(
+    async (actionId: string) => {
+      setProcessing(actionId);
+      try {
+        const res = await fetch("/api/approvals/execute", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action_id: actionId,
+            decision: "approve",
+            edited_content: editingId === actionId ? editText : undefined,
+          }),
+        });
+        if (res.ok) {
+          setPending((prev) => prev.filter((a) => a.id !== actionId));
+          setEditingId(null);
+          setSelectedIndex((i) => Math.min(i, pending.length - 2));
+        }
+      } finally {
+        setProcessing(null);
+      }
+    },
+    [editingId, editText, pending.length]
+  );
+
   // Keyboard shortcuts
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -118,35 +139,13 @@ export function ApprovalsClient({ pendingActions, recentActions }: Props) {
         setShowRejectModal(selected.id);
       }
     },
-    [pending, selectedIndex, selected, showRejectModal, editingId]
+    [pending, selected, showRejectModal, editingId, handleApprove]
   );
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
-
-  async function handleApprove(actionId: string) {
-    setProcessing(actionId);
-    try {
-      const res = await fetch("/api/approvals/execute", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action_id: actionId,
-          decision: "approve",
-          edited_content: editingId === actionId ? editText : undefined,
-        }),
-      });
-      if (res.ok) {
-        setPending((prev) => prev.filter((a) => a.id !== actionId));
-        setEditingId(null);
-        setSelectedIndex((i) => Math.min(i, pending.length - 2));
-      }
-    } finally {
-      setProcessing(null);
-    }
-  }
 
   async function handleReject(actionId: string) {
     setProcessing(actionId);

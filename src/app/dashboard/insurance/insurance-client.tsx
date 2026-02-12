@@ -8,7 +8,6 @@ import {
   CheckCircle2,
   Clock,
   XCircle,
-  RefreshCw,
   Building2,
   Sparkles,
   ExternalLink,
@@ -102,7 +101,6 @@ export function InsuranceClient({ initialVerifications }: Props) {
   const [trashItems, setTrashItems] = useState<Verification[]>([]);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [docRefreshKey, setDocRefreshKey] = useState(0);
-  const [uploadForCarrier, setUploadForCarrier] = useState<string | null>(null);
 
   const filtered = verifications.filter(
     (v) =>

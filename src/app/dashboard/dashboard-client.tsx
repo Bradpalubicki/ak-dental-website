@@ -277,7 +277,7 @@ export function DashboardClient({ appointments, leads, aiActions, urgentItems, s
           </div>
           {appointments.length > 0 ? (
             <div className="divide-y divide-slate-50">
-              {appointments.map((apt, index) => {
+              {appointments.map((apt) => {
                 const sc = statusConfig[apt.status] || statusConfig.scheduled;
                 return (
                   <div key={apt.id} className="flex items-center gap-4 px-6 py-3.5 hover:bg-slate-50/50 transition-colors">

@@ -20,7 +20,7 @@ export async function GET() {
     }
 
     return NextResponse.json(settings);
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to load settings" },
       { status: 500 }
@@ -54,7 +54,7 @@ export async function PUT(request: NextRequest) {
     if (error) throw error;
 
     return NextResponse.json({ success: true });
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to save settings" },
       { status: 500 }

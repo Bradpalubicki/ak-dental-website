@@ -43,19 +43,10 @@ async function getAccessToken(): Promise<string | null> {
     // Create JWT for service account auth
     // In production, use googleapis or google-auth-library
     // For now, use a simplified OAuth2 flow
-    const tokenUrl = "https://oauth2.googleapis.com/token";
-    const now = Math.floor(Date.now() / 1000);
-
-    const header = btoa(JSON.stringify({ alg: "RS256", typ: "JWT" }));
-    const claim = btoa(
-      JSON.stringify({
-        iss: key.client_email,
-        scope: "https://www.googleapis.com/auth/webmasters.readonly",
-        aud: tokenUrl,
-        iat: now,
-        exp: now + 3600,
-      })
-    );
+    // JWT components for RS256 signing (googleapis package needed):
+    // tokenUrl: "https://oauth2.googleapis.com/token"
+    // header: { alg: "RS256", typ: "JWT" }
+    // claim: { iss: key.client_email, scope: "...", aud: tokenUrl, iat: now, exp: now + 3600 }
 
     // Note: RS256 signing requires a crypto library in production
     // This is a placeholder — use googleapis package for real implementation
