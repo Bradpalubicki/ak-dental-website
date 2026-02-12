@@ -14,105 +14,96 @@ export default function HomePage() {
     <>
       {/* Premium Hero Section */}
       <section className="relative min-h-[calc(100vh-11rem)] flex items-center overflow-hidden">
-        {/* Video Background (desktop) with Image Fallback */}
-        <div className="absolute inset-0 z-0">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster={images.hero.main}
-            className="absolute inset-0 w-full h-full object-cover hidden md:block"
-          >
-            <source src="/videos/hero-dental.mp4" type="video/mp4" />
-          </video>
-          <Image
-            src={images.hero.main}
-            alt="AK Ultimate Dental modern office in Las Vegas"
-            fill
-            className="object-cover md:hidden"
-            priority
-            quality={90}
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/50 to-black/70" />
+        {/* Premium Gradient Background */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-900">
+          {/* Subtle radial accents for depth */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_50%,rgba(6,182,212,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_20%,rgba(59,130,246,0.1),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_80%,rgba(6,182,212,0.08),transparent_40%)]" />
+          {/* Subtle dot pattern overlay */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)", backgroundSize: "32px 32px" }} />
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-2xl text-white ml-auto">
-            {/* Trust Badge - 128 Five-Star Reviews */}
-            <a
-              href={siteConfig.ratings.googleReviewUrl || siteConfig.social.google}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-4 hover:bg-white/20 transition-colors"
-            >
-              <div className="flex -space-x-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Text Content */}
+            <div className="text-white">
+              {/* Trust Badge - 128 Five-Star Reviews */}
+              <a
+                href={siteConfig.ratings.googleReviewUrl || siteConfig.social.google}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-4 hover:bg-white/20 transition-colors"
+              >
+                <div className="flex -space-x-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                <span className="text-sm font-medium">{siteConfig.ratings.count} Five-Star Google Reviews</span>
+              </a>
+
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight">
+                Your Dream Smile
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">
+                  Starts Here
+                </span>
+              </h1>
+
+              <p className="text-xl md:text-2xl text-gray-200 mb-5 leading-relaxed">
+                Experience world-class dentistry in Las Vegas. Advanced technology,
+                compassionate care, and stunning results—all in one place.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                <Button asChild size="lg" className="text-lg h-14 px-8 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 border-0">
+                  <Link href="/appointment">
+                    Book Free Consultation
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="text-lg h-14 px-8 bg-white/10 border-white/30 text-white hover:bg-white/20">
+                  <a href={siteConfig.phoneHref}>
+                    <Phone className="mr-2 h-5 w-5" />
+                    {siteConfig.phone}
+                  </a>
+                </Button>
+              </div>
+
+              {/* Quick Stats */}
+              <div className="grid grid-cols-3 gap-6">
+                {siteConfig.stats.map((stat) => (
+                  <div key={stat.label} className="text-center">
+                    <div className="text-3xl md:text-4xl font-bold text-cyan-400">{stat.value}</div>
+                    <div className="text-sm text-gray-300">{stat.label}</div>
+                  </div>
                 ))}
               </div>
-              <span className="text-sm font-medium">{siteConfig.ratings.count} Five-Star Google Reviews</span>
-            </a>
-
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight">
-              Your Dream Smile
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">
-                Starts Here
-              </span>
-            </h1>
-
-            <p className="text-xl md:text-2xl text-gray-200 mb-5 leading-relaxed">
-              Experience world-class dentistry in Las Vegas. Advanced technology,
-              compassionate care, and stunning results—all in one place.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 mb-6">
-              <Button asChild size="lg" className="text-lg h-14 px-8 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 border-0">
-                <Link href="/appointment">
-                  Book Free Consultation
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="text-lg h-14 px-8 bg-white/10 border-white/30 text-white hover:bg-white/20">
-                <a href={siteConfig.phoneHref}>
-                  <Phone className="mr-2 h-5 w-5" />
-                  {siteConfig.phone}
-                </a>
-              </Button>
             </div>
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-3 gap-6">
-              {siteConfig.stats.map((stat) => (
-                <div key={stat.label} className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-cyan-400">{stat.value}</div>
-                  <div className="text-sm text-gray-300">{stat.label}</div>
+            {/* Doctor Photo + Card */}
+            <div className="hidden lg:flex justify-center">
+              <div className="relative">
+                <div className="relative w-80 h-96 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10">
+                  <Image
+                    src={images.team.doctor}
+                    alt="Dr. Alex Khachaturian - AK Ultimate Dental"
+                    fill
+                    className="object-cover object-top"
+                    priority
+                  />
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Floating Card */}
-        <div className="absolute bottom-8 left-8 hidden lg:block">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-xs">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="relative w-16 h-16 rounded-full overflow-hidden">
-                <Image
-                  src={images.team.doctor}
-                  alt="AK Ultimate Dental team"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div>
-                <p className="font-semibold text-gray-900">AK Ultimate Dental</p>
-                <p className="text-sm text-gray-500">Your Dental Team</p>
+                {/* Quote Card */}
+                <div className="absolute -bottom-6 -left-8 bg-white rounded-xl shadow-xl p-5 max-w-xs">
+                  <p className="text-sm text-gray-600 italic mb-2">
+                    &ldquo;Your smile is my passion. Let&apos;s create something beautiful together.&rdquo;
+                  </p>
+                  <p className="text-xs font-semibold text-gray-900">— Dr. Alex Khachaturian, DDS</p>
+                </div>
+                {/* Decorative accent */}
+                <div className="absolute -top-4 -right-4 w-24 h-24 bg-cyan-500/20 rounded-full blur-2xl" />
               </div>
             </div>
-            <p className="text-sm text-gray-600 italic">
-              &ldquo;Your smile is my passion. Let&apos;s create something beautiful together.&rdquo;
-            </p>
           </div>
         </div>
       </section>
