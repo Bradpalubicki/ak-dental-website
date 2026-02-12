@@ -8,15 +8,14 @@
  * Schedule: Daily 8 AM UTC
  */
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { fetchSearchAnalytics } from "@/lib/seo/google-search-console";
+import { verifyCronSecret } from "@/lib/cron-auth";
 
-export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export async function GET(request: NextRequest) {
+  const auth = verifyCronSecret(request);
+  if (!auth.valid) return auth.response!;
 
   try {
     const supabase = await createServerSupabase();

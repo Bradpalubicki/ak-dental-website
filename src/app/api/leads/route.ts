@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { generateLeadResponse } from "@/lib/services/ai";
 import { tryAuth } from "@/lib/auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 // GET /api/leads - List all leads (requires auth)
 export async function GET(req: NextRequest) {
@@ -12,7 +13,7 @@ export async function GET(req: NextRequest) {
     const supabase = createServiceSupabase();
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status");
-    const limit = parseInt(searchParams.get("limit") || "50");
+    const limit = Math.min(parseInt(searchParams.get("limit") || "50"), 200);
 
     let query = supabase
       .from("oe_leads")
@@ -34,16 +35,33 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST /api/leads - Create a new lead (from website form, etc.)
+// POST /api/leads - Create a new lead (from website form — public, rate-limited)
 export async function POST(req: NextRequest) {
+  // Rate limit: 5 submissions per minute per IP
+  const rl = rateLimit(req, { limit: 5, windowMs: 60_000, prefix: "leads" });
+  if (!rl.allowed) return rl.response!;
+
   try {
     const body = await req.json();
     const supabase = createServiceSupabase();
 
     const { first_name, last_name, email, phone, source, inquiry_type, message, urgency } = body;
 
-    if (!first_name || !last_name) {
+    // Input validation
+    if (!first_name || !last_name || typeof first_name !== "string" || typeof last_name !== "string") {
       return NextResponse.json({ error: "First and last name required" }, { status: 400 });
+    }
+    if (first_name.length > 100 || last_name.length > 100) {
+      return NextResponse.json({ error: "Name too long" }, { status: 400 });
+    }
+    if (email && (typeof email !== "string" || !email.includes("@") || email.length > 254)) {
+      return NextResponse.json({ error: "Invalid email" }, { status: 400 });
+    }
+    if (phone && (typeof phone !== "string" || phone.length > 20)) {
+      return NextResponse.json({ error: "Invalid phone" }, { status: 400 });
+    }
+    if (message && (typeof message !== "string" || message.length > 5000)) {
+      return NextResponse.json({ error: "Message too long" }, { status: 400 });
     }
 
     // Insert lead

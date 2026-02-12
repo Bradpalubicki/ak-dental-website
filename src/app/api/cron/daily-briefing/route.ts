@@ -2,14 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { generateDailyBriefing } from "@/lib/services/ai";
 import { sendEmail } from "@/lib/services/resend";
+import { verifyCronSecret } from "@/lib/cron-auth";
 
 // GET /api/cron/daily-briefing - Generate and send daily briefing (called by Vercel Cron)
 export async function GET(req: NextRequest) {
-  // Verify cron secret
-  const authHeader = req.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = verifyCronSecret(req);
+  if (!auth.valid) return auth.response!;
 
   try {
     const supabase = createServiceSupabase();

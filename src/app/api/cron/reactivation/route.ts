@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { enrollReactivationPatients, processReactivationSequences } from "@/lib/workflows/reactivation-engine";
+import { verifyCronSecret } from "@/lib/cron-auth";
 
 // GET /api/cron/reactivation - Enroll patients + process reactivation sequences
 // Runs daily at 15:00 UTC Mon-Fri via Vercel Cron
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = verifyCronSecret(req);
+  if (!auth.valid) return auth.response!;
 
   try {
     // Phase 1: Scan for patients needing reactivation and enroll them

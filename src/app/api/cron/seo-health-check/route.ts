@@ -7,8 +7,9 @@
  * Schedule: Daily 7 AM Central (13:00 UTC)
  */
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { siteConfig, services } from "@/lib/config";
+import { verifyCronSecret } from "@/lib/cron-auth";
 
 const BASE_URL = siteConfig.url;
 
@@ -270,11 +271,9 @@ async function runHealthCheck(): Promise<HealthReport> {
   };
 }
 
-export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export async function GET(request: NextRequest) {
+  const auth = verifyCronSecret(request);
+  if (!auth.valid) return auth.response!;
 
   try {
     const report = await runHealthCheck();

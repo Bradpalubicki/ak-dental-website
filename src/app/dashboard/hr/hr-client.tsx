@@ -49,6 +49,7 @@ import {
   DonutChart,
   ProgressBar,
 } from "@/components/dashboard/chart-components";
+import { ConfirmDialog } from "@/components/dashboard/confirm-dialog";
 
 /* ================================================================== */
 /*  Types                                                              */
@@ -728,6 +729,8 @@ type TabId = (typeof tabs)[number]["id"];
 export function HrClient({ stats, recentDocuments }: Props) {
   const [addMenuOpen, setAddMenuOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [showTrash, setShowTrash] = useState(false);
   const [deletedDocs, setDeletedDocs] = useState<RecentDocument[]>([]);
   const [activeTab, setActiveTab] = useState<TabId>("overview");
@@ -899,13 +902,14 @@ export function HrClient({ stats, recentDocuments }: Props) {
     );
   }, []);
 
-  async function handleDelete(docId: string) {
-    if (
-      !confirm(
-        "Move this document to trash? It will be permanently deleted after 30 days."
-      )
-    )
-      return;
+  function handleDeleteClick(docId: string) {
+    setPendingDeleteId(docId);
+  }
+
+  async function handleDeleteConfirm() {
+    if (!pendingDeleteId) return;
+    const docId = pendingDeleteId;
+    setPendingDeleteId(null);
     setDeletingId(docId);
     try {
       const res = await fetch(`/api/hr/documents/${docId}`, {
@@ -914,13 +918,15 @@ export function HrClient({ stats, recentDocuments }: Props) {
       if (!res.ok) throw new Error("Failed to delete");
       window.location.reload();
     } catch {
-      alert("Failed to delete document.");
+      // Error displayed via UI state, not alert
+      setDeletingId(null);
     } finally {
       setDeletingId(null);
     }
   }
 
   async function handleRestore(docId: string) {
+    setErrorMsg(null);
     try {
       const res = await fetch(`/api/hr/documents/${docId}/restore`, {
         method: "POST",
@@ -928,11 +934,12 @@ export function HrClient({ stats, recentDocuments }: Props) {
       if (!res.ok) throw new Error("Failed to restore");
       window.location.reload();
     } catch {
-      alert("Failed to restore document.");
+      setErrorMsg("Failed to restore document. Please try again.");
     }
   }
 
   async function loadTrash() {
+    setErrorMsg(null);
     try {
       const res = await fetch("/api/hr/documents?deleted=true");
       const data = await res.json();
@@ -952,12 +959,21 @@ export function HrClient({ stats, recentDocuments }: Props) {
       );
       setShowTrash(true);
     } catch {
-      alert("Failed to load trash.");
+      setErrorMsg("Failed to load trash.");
     }
   }
 
   return (
     <div className="space-y-6">
+      {/* Error Banner */}
+      {errorMsg && (
+        <div className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          <span className="flex-1">{errorMsg}</span>
+          <button onClick={() => setErrorMsg(null)} className="text-red-400 hover:text-red-600">&times;</button>
+        </div>
+      )}
+
       {/* ============================================================ */}
       {/*  Header + Sync + Date Range                                   */}
       {/* ============================================================ */}
@@ -2309,7 +2325,7 @@ export function HrClient({ stats, recentDocuments }: Props) {
                         </Link>
                       )}
                       <button
-                        onClick={() => handleDelete(doc.id)}
+                        onClick={() => handleDeleteClick(doc.id)}
                         disabled={deletingId === doc.id}
                         className="shrink-0 text-slate-300 hover:text-red-500 transition-colors disabled:opacity-40"
                         title="Delete"
@@ -2340,6 +2356,16 @@ export function HrClient({ stats, recentDocuments }: Props) {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!pendingDeleteId}
+        title="Delete Document"
+        message="Move this document to trash? It will be permanently deleted after 30 days."
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setPendingDeleteId(null)}
+      />
     </div>
   );
 }

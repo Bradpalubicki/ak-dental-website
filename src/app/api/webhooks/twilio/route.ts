@@ -1,12 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { generateLeadResponse } from "@/lib/services/ai";
+import crypto from "crypto";
+
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
+
+/**
+ * Validate Twilio request signature (X-Twilio-Signature header).
+ * See: https://www.twilio.com/docs/usage/security#validating-requests
+ */
+function validateTwilioSignature(
+  url: string,
+  params: Record<string, string>,
+  signature: string
+): boolean {
+  if (!TWILIO_AUTH_TOKEN) {
+    console.warn("[Twilio] TWILIO_AUTH_TOKEN not set — skipping signature validation");
+    return true; // Allow in dev when token not configured
+  }
+
+  // Sort params alphabetically and append key+value to URL
+  const data =
+    url +
+    Object.keys(params)
+      .sort()
+      .reduce((acc, key) => acc + key + params[key], "");
+
+  const computed = crypto
+    .createHmac("sha1", TWILIO_AUTH_TOKEN)
+    .update(data, "utf-8")
+    .digest("base64");
+
+  return crypto.timingSafeEqual(Buffer.from(computed), Buffer.from(signature));
+}
 
 // POST /api/webhooks/twilio - Handle Twilio webhooks (inbound SMS, status updates)
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const body = Object.fromEntries(formData.entries());
+    const body = Object.fromEntries(formData.entries()) as Record<string, string>;
+
+    // Validate Twilio signature
+    const twilioSignature = req.headers.get("x-twilio-signature") || "";
+    const requestUrl = req.url;
+    if (!validateTwilioSignature(requestUrl, body, twilioSignature)) {
+      console.error("[Twilio] Invalid signature — rejecting request");
+      return new NextResponse("Forbidden", { status: 403 });
+    }
 
     const from = body.From as string;
     const to = body.To as string;

@@ -2,13 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { sendEmail, appointmentReminderEmail } from "@/lib/services/resend";
 import { sendSms } from "@/lib/services/twilio";
+import { verifyCronSecret } from "@/lib/cron-auth";
 
 // GET /api/cron/reminders - Send appointment reminders (Vercel Cron)
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = verifyCronSecret(req);
+  if (!auth.valid) return auth.response!;
 
   try {
     const supabase = createServiceSupabase();

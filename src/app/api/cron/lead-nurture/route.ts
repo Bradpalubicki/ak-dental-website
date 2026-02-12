@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { enrollNewLeads, processNurtureSequences } from "@/lib/workflows/lead-nurture-engine";
+import { verifyCronSecret } from "@/lib/cron-auth";
 
 // GET /api/cron/lead-nurture - Enroll leads + process nurture sequences
 // Runs every 2 hours Mon-Thu via Vercel Cron
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = verifyCronSecret(req);
+  if (!auth.valid) return auth.response!;
 
   try {
     // Phase 1: Enroll new leads into nurture sequences
