@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
+import { tryAuth } from "@/lib/auth";
 
 // GET /api/appointments
 export async function GET(req: NextRequest) {
+  const authResult = await tryAuth();
+  if (authResult instanceof NextResponse) return authResult;
+
   try {
     const supabase = createServiceSupabase();
     const { searchParams } = new URL(req.url);
@@ -27,7 +31,7 @@ export async function GET(req: NextRequest) {
     if (status) query = query.eq("status", status);
     if (patientId) query = query.eq("patient_id", patientId);
 
-    const { data, error } = await query;
+    const { data, error } = await query.limit(200);
     if (error) throw error;
 
     return NextResponse.json({ appointments: data });
@@ -39,6 +43,9 @@ export async function GET(req: NextRequest) {
 
 // POST /api/appointments
 export async function POST(req: NextRequest) {
+  const authResult = await tryAuth();
+  if (authResult instanceof NextResponse) return authResult;
+
   try {
     const body = await req.json();
     const supabase = createServiceSupabase();

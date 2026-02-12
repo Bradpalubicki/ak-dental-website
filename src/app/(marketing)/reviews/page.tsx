@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   title: "Patient Reviews & Testimonials | Las Vegas Dentist",
   description:
     "Read reviews from our satisfied patients at AK Ultimate Dental in Las Vegas. See why patients trust our team for their dental care.",
+  alternates: {
+    canonical: `${siteConfig.url}/reviews`,
+  },
   keywords: [
     "AK Ultimate Dental reviews",
     "Las Vegas dentist reviews",

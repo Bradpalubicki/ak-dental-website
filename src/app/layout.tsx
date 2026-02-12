@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
-import { LocalBusinessSchema } from "@/components/schema/local-business";
+import {
+  LocalBusinessSchema,
+  WebSiteSchema,
+  OrganizationSchema,
+} from "@/components/schema/local-business";
+import { WebVitalsReporter } from "@/components/seo/web-vitals-reporter";
 import { siteConfig } from "@/lib/config";
 
 const inter = Inter({
@@ -19,6 +24,9 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   keywords: siteConfig.seo.keywords,
   authors: [{ name: siteConfig.team[0]?.name ?? siteConfig.name }],
+  alternates: {
+    canonical: siteConfig.url,
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -43,6 +51,18 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  ...(siteConfig.seo.googleSiteVerification || siteConfig.seo.bingSiteVerification
+    ? {
+        verification: {
+          ...(siteConfig.seo.googleSiteVerification && {
+            google: siteConfig.seo.googleSiteVerification,
+          }),
+          ...(siteConfig.seo.bingSiteVerification && {
+            other: { "msvalidate.01": siteConfig.seo.bingSiteVerification },
+          }),
+        },
+      }
+    : {}),
 };
 
 export default function RootLayout({
@@ -55,9 +75,12 @@ export default function RootLayout({
       <html lang="en">
         <head>
           <LocalBusinessSchema />
+          <WebSiteSchema />
+          <OrganizationSchema />
         </head>
         <body className={`${inter.variable} font-sans antialiased`}>
           {children}
+          <WebVitalsReporter />
         </body>
       </html>
     </Providers>

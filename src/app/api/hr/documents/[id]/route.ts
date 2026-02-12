@@ -73,7 +73,7 @@ export async function DELETE(
     .from("oe_hr_documents")
     .update({
       deleted_at: new Date().toISOString(),
-      deleted_by: "Dr. Alexandru Chireu",
+      deleted_by: authResult.userName || authResult.userId,
     })
     .eq("id", id)
     .select()

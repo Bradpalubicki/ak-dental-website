@@ -66,7 +66,7 @@ export async function DELETE(
 
   const { data, error } = await supabase
     .from("oe_treatment_plans")
-    .update({ deleted_at: new Date().toISOString(), deleted_by: "Dr. Alexandru Chireu" })
+    .update({ deleted_at: new Date().toISOString(), deleted_by: authResult.userName || authResult.userId })
     .eq("id", id)
     .select()
     .single();

@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { generateLeadResponse } from "@/lib/services/ai";
-import { sendEmail, leadResponseEmail } from "@/lib/services/resend";
-import { sendSms } from "@/lib/services/twilio";
+import { tryAuth } from "@/lib/auth";
 
-// GET /api/leads - List all leads
+// GET /api/leads - List all leads (requires auth)
 export async function GET(req: NextRequest) {
+  const authResult = await tryAuth();
+  if (authResult instanceof NextResponse) return authResult;
+
   try {
     const supabase = createServiceSupabase();
     const { searchParams } = new URL(req.url);

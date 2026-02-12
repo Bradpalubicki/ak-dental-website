@@ -66,6 +66,9 @@ export interface PracticeConfig {
     defaultTitle: string;
     keywords: string[];
     ogImage?: string;
+    googleSiteVerification?: string;
+    bingSiteVerification?: string;
+    indexNowKey?: string;
   };
 
   // Ratings

@@ -15,6 +15,22 @@
     {
       "path": "/api/cron/reactivation",
       "schedule": "0 15 * * 1-5"
+    },
+    {
+      "path": "/api/cron/seo-health-check",
+      "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/cron/seo-auto-fix",
+      "schedule": "0 6 * * 1"
+    },
+    {
+      "path": "/api/cron/seo-gsc-sync",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/seo-report",
+      "schedule": "0 9 1 * *"
     }
   ]
 }

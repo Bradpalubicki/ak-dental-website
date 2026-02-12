@@ -15,7 +15,7 @@ import {
   BarChart3,
   Send,
   Settings,
-  Zap,
+  Search,
   ChevronLeft,
   ChevronRight,
   CheckSquare,
@@ -85,6 +85,7 @@ const sections: NavSection[] = [
     label: "Intelligence",
     items: [
       { name: "Inbox", href: "/dashboard/inbox", icon: Inbox, badgeKey: "inbox", badgeColor: "bg-blue-400 text-blue-950", requiredPermission: "inbox.view" },
+      { name: "SEO", href: "/dashboard/seo", icon: Search, requiredPermission: "seo.view" },
       { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3, requiredPermission: "analytics.view" },
       { name: "Calls", href: "/dashboard/calls", icon: Phone, requiredPermission: "calls.view" },
       { name: "Outreach", href: "/dashboard/outreach", icon: Send, requiredPermission: "outreach.view" },

@@ -1,8 +1,8 @@
 import { MetadataRoute } from "next";
-import { services } from "@/lib/config";
+import { services, siteConfig } from "@/lib/config";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://www.akultimatedental.com";
+  const baseUrl = siteConfig.url;
 
   const staticPages = [
     {

@@ -5,7 +5,16 @@ import { auth } from "@clerk/nextjs/server";
 export async function GET() {
   try {
     const { userId } = await auth();
-    const uid = userId || "default";
+    if (!userId) {
+      return NextResponse.json({
+        layouts: {},
+        visible_widgets: [
+          "urgent", "kpi", "appointments", "leads", "ai_activity",
+          "financials", "hr", "compliance", "insurance", "outreach",
+        ],
+      });
+    }
+    const uid = userId;
     const supabase = createServiceSupabase();
 
     const { data } = await supabase
@@ -40,7 +49,8 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const { userId } = await auth();
-    const uid = userId || "default";
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const uid = userId;
     const body = await req.json();
     const supabase = createServiceSupabase();
 

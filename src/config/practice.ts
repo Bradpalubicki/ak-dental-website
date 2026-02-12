@@ -200,6 +200,9 @@ export const practiceConfig: PracticeConfig = {
       "emergency dentist Las Vegas",
       "dental care Las Vegas NV",
     ],
+    googleSiteVerification: process.env.GOOGLE_SITE_VERIFICATION,
+    bingSiteVerification: process.env.BING_SITE_VERIFICATION,
+    indexNowKey: process.env.INDEXNOW_KEY,
   },
 
   // Ratings
