@@ -24,34 +24,34 @@ export default async function DashboardLayout({
   const today = new Date().toISOString().split("T")[0];
   const todayStart = `${today}T00:00:00.000Z`;
 
-  // Fetch badge counts in parallel
+  // Fetch badge counts in parallel (head: true = count only, no row data)
   const [approvalsRes, leadsRes, inboxRes, insuranceRes, appointmentsRes, hrPendingRes] =
     await Promise.all([
       supabase
         .from("oe_ai_actions")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .eq("status", "pending_approval"),
       supabase
         .from("oe_leads")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .eq("status", "new"),
       supabase
         .from("oe_outreach_messages")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .eq("direction", "inbound")
         .gte("created_at", todayStart),
       supabase
         .from("oe_insurance_verifications")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .eq("status", "pending"),
       supabase
         .from("oe_appointments")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .eq("appointment_date", today)
         .eq("status", "scheduled"),
       supabase
         .from("oe_hr_documents")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .eq("status", "pending_signature"),
     ]);
 

@@ -18,7 +18,7 @@ export default async function DashboardPage() {
     pendingInsuranceRes,
     emergencyLeadsRes,
   ] = await Promise.all([
-    supabase.from("oe_patients").select("*", { count: "exact", head: true }),
+    supabase.from("oe_patients").select("id", { count: "exact", head: true }),
     supabase
       .from("oe_appointments")
       .select("id, appointment_time, type, status, patient:oe_patients(first_name, last_name)")
@@ -32,7 +32,7 @@ export default async function DashboardPage() {
       .limit(5),
     supabase
       .from("oe_ai_actions")
-      .select("*", { count: "exact", head: true })
+      .select("id", { count: "exact", head: true })
       .eq("status", "pending_approval"),
     supabase
       .from("oe_ai_actions")
@@ -45,7 +45,7 @@ export default async function DashboardPage() {
       .limit(8),
     supabase
       .from("oe_insurance_verifications")
-      .select("*", { count: "exact", head: true })
+      .select("id", { count: "exact", head: true })
       .eq("status", "pending"),
     supabase
       .from("oe_leads")
