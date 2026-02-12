@@ -28,7 +28,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { usePermissions } from "@/hooks/use-permissions";
 
 export interface SidebarBadges {
   approvals: number;
@@ -97,7 +96,9 @@ const sections: NavSection[] = [
 export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadges }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
-  const { can, isLoading } = usePermissions();
+  // Sidebar always shows all nav items — access control is enforced server-side
+  // in API routes via requirePermission(). Hiding nav links caused blank sidebar
+  // when RBAC wasn't fully configured.
 
   return (
     <aside
@@ -142,10 +143,7 @@ export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadg
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
         {sections.map((section) => {
-          const visibleItems = section.items.filter(
-            (item) => !item.requiredPermission || isLoading || can(item.requiredPermission)
-          );
-          if (visibleItems.length === 0) return null;
+          const visibleItems = section.items;
           return (
           <div key={section.label}>
             {!collapsed && (
