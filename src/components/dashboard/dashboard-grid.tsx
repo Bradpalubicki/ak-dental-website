@@ -1,16 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
-import {
-  ResponsiveGridLayout,
-  useContainerWidth,
-  verticalCompactor,
-} from "react-grid-layout";
-import type { LayoutItem, ResponsiveLayouts } from "react-grid-layout";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   Settings2,
-  GripVertical,
   X,
   RotateCcw,
   Calendar,
@@ -38,36 +31,29 @@ import {
   MessageSquare,
   Phone,
   FileText,
-  Pencil,
   Plus,
 } from "lucide-react";
-import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
 
 // ─── Widget registry ──────────────────────────────────────────────
 interface WidgetDef {
   id: string;
   label: string;
   icon: typeof Calendar;
-  minW: number;
-  minH: number;
-  defaultW: number;
-  defaultH: number;
 }
 
 const WIDGET_REGISTRY: WidgetDef[] = [
-  { id: "setup", label: "Setup Checklist", icon: ClipboardCheck, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
-  { id: "urgent", label: "Needs Attention", icon: Siren, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
-  { id: "ai_insights", label: "AI Insights", icon: Lightbulb, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
-  { id: "kpi", label: "Key Metrics", icon: BarChart3, minW: 2, minH: 2, defaultW: 4, defaultH: 2 },
-  { id: "appointments", label: "Today's Schedule", icon: Calendar, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
-  { id: "leads", label: "Recent Leads", icon: UserPlus, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
-  { id: "ai_activity", label: "AI Activity", icon: Sparkles, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
-  { id: "financials", label: "Financial Summary", icon: Wallet, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
-  { id: "hr", label: "HR & Payroll", icon: UsersRound, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
-  { id: "compliance", label: "Compliance Alerts", icon: Award, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
-  { id: "insurance", label: "Insurance", icon: Shield, minW: 2, minH: 2, defaultW: 2, defaultH: 3 },
-  { id: "outreach", label: "Outreach", icon: Send, minW: 2, minH: 2, defaultW: 2, defaultH: 2 },
+  { id: "setup", label: "Setup Checklist", icon: ClipboardCheck },
+  { id: "urgent", label: "Needs Attention", icon: Siren },
+  { id: "ai_insights", label: "AI Insights", icon: Lightbulb },
+  { id: "kpi", label: "Key Metrics", icon: BarChart3 },
+  { id: "appointments", label: "Today's Schedule", icon: Calendar },
+  { id: "leads", label: "Recent Leads", icon: UserPlus },
+  { id: "ai_activity", label: "AI Activity", icon: Sparkles },
+  { id: "financials", label: "Financial Summary", icon: Wallet },
+  { id: "hr", label: "HR & Payroll", icon: UsersRound },
+  { id: "compliance", label: "Compliance Alerts", icon: Award },
+  { id: "insurance", label: "Insurance", icon: Shield },
+  { id: "outreach", label: "Outreach", icon: Send },
 ];
 
 const DEFAULT_VISIBLE = [
@@ -75,41 +61,8 @@ const DEFAULT_VISIBLE = [
   "financials", "compliance", "hr", "insurance", "outreach",
 ];
 
-// Explicit compact layout — fits ~one screen at 1080p
-const COMPACT_POSITIONS: Record<string, { x: number; y: number; w: number; h: number }> = {
-  kpi:          { x: 0, y: 0,  w: 4, h: 2 },
-  urgent:       { x: 0, y: 2,  w: 2, h: 3 },
-  ai_insights:  { x: 2, y: 2,  w: 2, h: 3 },
-  appointments: { x: 0, y: 5,  w: 2, h: 3 },
-  leads:        { x: 2, y: 5,  w: 2, h: 3 },
-  financials:   { x: 0, y: 8,  w: 2, h: 3 },
-  ai_activity:  { x: 2, y: 8,  w: 2, h: 3 },
-  hr:           { x: 0, y: 11, w: 2, h: 3 },
-  compliance:   { x: 2, y: 11, w: 2, h: 3 },
-  insurance:    { x: 0, y: 14, w: 2, h: 3 },
-  outreach:     { x: 2, y: 14, w: 2, h: 2 },
-  setup:        { x: 0, y: 16, w: 2, h: 3 },
-};
-
-function buildDefaultLayout(visible: string[]): LayoutItem[] {
-  const items: LayoutItem[] = [];
-  let autoY = 20; // high y for auto-placed items (compactor will fix)
-  visible.forEach((id) => {
-    const def = WIDGET_REGISTRY.find((w) => w.id === id);
-    if (!def) return;
-    const pos = COMPACT_POSITIONS[id];
-    if (pos) {
-      items.push({ i: id, ...pos, minW: def.minW, minH: def.minH });
-    } else {
-      items.push({
-        i: id, x: 0, y: autoY, w: def.defaultW, h: def.defaultH,
-        minW: def.minW, minH: def.minH,
-      });
-      autoY += def.defaultH;
-    }
-  });
-  return items;
-}
+// Widgets that should span full width in the grid
+const FULL_WIDTH_WIDGETS = new Set(["kpi"]);
 
 // ─── Widget Content Components ────────────────────────────────────
 
@@ -747,7 +700,7 @@ function OutreachWidget() {
 
 // ─── Widget Wrapper ────────────────────────────────────────────────
 
-function WidgetCard({ id, data, isEditing }: { id: string; data: DashboardData; isEditing: boolean }) {
+function WidgetCard({ id, data }: { id: string; data: DashboardData }) {
   const def = WIDGET_REGISTRY.find((w) => w.id === id);
   if (!def) return null;
   const Icon = def.icon;
@@ -768,21 +721,18 @@ function WidgetCard({ id, data, isEditing }: { id: string; data: DashboardData; 
   };
 
   return (
-    <div className="flex h-full flex-col rounded-xl border border-slate-200/80 bg-white shadow-sm overflow-hidden">
+    <div className="flex flex-col rounded-xl border border-slate-200/80 bg-white shadow-sm hover:shadow-md transition-shadow">
       {/* Widget header */}
-      <div className="flex items-center gap-2 border-b border-slate-100 px-3 py-2 shrink-0">
-        {isEditing && (
-          <GripVertical className="h-4 w-4 text-slate-300 cursor-grab active:cursor-grabbing drag-handle" />
-        )}
-        <div className={`flex h-6 w-6 items-center justify-center rounded-md ${
+      <div className="flex items-center gap-2 border-b border-slate-100 px-4 py-3">
+        <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${
           id === "urgent" ? "bg-amber-50" : id === "ai_insights" ? "bg-indigo-50" : "bg-slate-50"
         }`}>
-          <Icon className={`h-3 w-3 ${id === "urgent" ? "text-amber-600" : id === "ai_insights" ? "text-indigo-600" : "text-slate-500"}`} />
+          <Icon className={`h-3.5 w-3.5 ${id === "urgent" ? "text-amber-600" : id === "ai_insights" ? "text-indigo-600" : "text-slate-500"}`} />
         </div>
-        <h3 className="text-[11px] font-bold text-slate-900 flex-1">{def.label}</h3>
+        <h3 className="text-xs font-bold text-slate-900 flex-1">{def.label}</h3>
       </div>
       {/* Widget body */}
-      <div className="flex-1 overflow-y-auto px-3 py-2">
+      <div className="px-4 py-3">
         {content[id] || <p className="text-xs text-slate-400">Widget: {id}</p>}
       </div>
     </div>
@@ -860,15 +810,9 @@ interface DashboardGridProps {
 }
 
 export function DashboardGrid({ data }: DashboardGridProps) {
-  const { width, containerRef } = useContainerWidth();
   const [visible, setVisible] = useState<string[]>(DEFAULT_VISIBLE);
-  const [layouts, setGridLayouts] = useState<ResponsiveLayouts>({});
   const [showSettings, setShowSettings] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [columnCount, setColumnCount] = useState(4);
-  const [hydrated, setHydrated] = useState(false);
-  const [pageTitle, setPageTitle] = useState("Command Center");
-  const [editingTitle, setEditingTitle] = useState(false);
+  const [columnCount, setColumnCount] = useState(3);
 
   // Load saved preferences
   useEffect(() => {
@@ -876,79 +820,45 @@ export function DashboardGrid({ data }: DashboardGridProps) {
       .then((r) => r.json())
       .then((prefs) => {
         if (prefs.visible_widgets?.length) setVisible(prefs.visible_widgets);
-        if (prefs.layouts && Object.keys(prefs.layouts).length) setGridLayouts(prefs.layouts);
         if (prefs.column_count) setColumnCount(prefs.column_count);
-        if (prefs.page_title) setPageTitle(prefs.page_title);
-        setHydrated(true);
       })
-      .catch(() => setHydrated(true));
+      .catch(() => {});
   }, []);
 
-  // Debounced save
-  const savePreferences = useMemo(
-    () => debounce((newGridLayouts: ResponsiveLayouts, newVisible: string[], newColumnCount?: number) => {
-      fetch("/api/dashboard/preferences", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ layouts: newGridLayouts, visible_widgets: newVisible, column_count: newColumnCount }),
-      }).catch(() => {});
-    }, 1000),
-    []
-  );
-
-  const handleLayoutChange = useCallback(
-    (_layout: readonly LayoutItem[], allGridLayouts: ResponsiveLayouts) => {
-      if (!hydrated) return;
-      setGridLayouts(allGridLayouts);
-      savePreferences(allGridLayouts, visible, columnCount);
-    },
-    [hydrated, visible, columnCount, savePreferences]
-  );
+  const savePreferences = useCallback((newVisible: string[], newColumnCount: number) => {
+    fetch("/api/dashboard/preferences", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ visible_widgets: newVisible, column_count: newColumnCount }),
+    }).catch(() => {});
+  }, []);
 
   const handleToggle = useCallback(
     (id: string) => {
       setVisible((prev) => {
         const next = prev.includes(id) ? prev.filter((w) => w !== id) : [...prev, id];
-        savePreferences(layouts, next, columnCount);
+        savePreferences(next, columnCount);
         return next;
       });
     },
-    [layouts, columnCount, savePreferences]
+    [columnCount, savePreferences]
   );
 
   const handleReset = useCallback(() => {
     setVisible(DEFAULT_VISIBLE);
-    setGridLayouts({});
-    setColumnCount(4);
-    setPageTitle("Command Center");
-    savePreferences({}, DEFAULT_VISIBLE, 4);
-    fetch("/api/dashboard/preferences", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ layouts: {}, visible_widgets: DEFAULT_VISIBLE, column_count: 4, page_title: "Command Center" }),
-    }).catch(() => {});
+    setColumnCount(3);
+    savePreferences(DEFAULT_VISIBLE, 3);
   }, [savePreferences]);
 
-  const saveTitle = useCallback((title: string) => {
-    fetch("/api/dashboard/preferences", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ layouts, visible_widgets: visible, column_count: columnCount, page_title: title }),
-    }).catch(() => {});
-  }, [layouts, visible, columnCount]);
-
-  const currentLayout = useMemo(() => {
-    if (layouts.lg?.length) return undefined;
-    return buildDefaultLayout(visible);
-  }, [layouts, visible]);
-
-  const resolvedLayouts = useMemo(() => {
-    if (layouts.lg) return layouts;
-    return { lg: currentLayout || [] };
-  }, [layouts, currentLayout]);
+  const gridClass =
+    columnCount === 2
+      ? "grid grid-cols-1 md:grid-cols-2 gap-4"
+      : columnCount === 4
+        ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+        : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4";
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {/* Ask Me Anything Banner */}
       <AskMeAnythingBanner />
 
@@ -958,26 +868,8 @@ export function DashboardGrid({ data }: DashboardGridProps) {
       {/* Dashboard toolbar */}
       <div className="flex items-center justify-between">
         <div>
-          {editingTitle ? (
-            <input
-              autoFocus
-              value={pageTitle}
-              onChange={(e) => setPageTitle(e.target.value)}
-              onBlur={() => { setEditingTitle(false); saveTitle(pageTitle); }}
-              onKeyDown={(e) => { if (e.key === "Enter") { setEditingTitle(false); saveTitle(pageTitle); } if (e.key === "Escape") { setEditingTitle(false); } }}
-              className="text-lg font-bold text-slate-900 bg-transparent border-b-2 border-cyan-400 outline-none w-64"
-            />
-          ) : (
-            <button
-              onClick={() => setEditingTitle(true)}
-              className="group flex items-center gap-2 text-lg font-bold text-slate-900 hover:text-cyan-600 transition-colors"
-              title="Click to rename"
-            >
-              {pageTitle}
-              <Pencil className="h-3.5 w-3.5 text-slate-300 group-hover:text-cyan-400 transition-colors" />
-            </button>
-          )}
-          <p className="text-xs text-slate-400">Your Dental Engine — drag widgets to rearrange</p>
+          <h2 className="text-lg font-bold text-slate-900">Command Center</h2>
+          <p className="text-xs text-slate-400">Your practice at a glance</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-0.5 rounded-lg border border-slate-200 p-0.5">
@@ -986,7 +878,7 @@ export function DashboardGrid({ data }: DashboardGridProps) {
                 key={cols}
                 onClick={() => {
                   setColumnCount(cols);
-                  savePreferences(layouts, visible, cols);
+                  savePreferences(visible, cols);
                 }}
                 className={`px-2 py-1 text-[11px] font-medium rounded transition-colors ${
                   columnCount === cols
@@ -999,17 +891,6 @@ export function DashboardGrid({ data }: DashboardGridProps) {
             ))}
           </div>
           <button
-            onClick={() => setIsEditing(!isEditing)}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-              isEditing
-                ? "bg-cyan-100 text-cyan-700 border border-cyan-200"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-            }`}
-          >
-            <GripVertical className="h-3.5 w-3.5" />
-            {isEditing ? "Done Editing" : "Edit Layout"}
-          </button>
-          <button
             onClick={() => setShowSettings(true)}
             className="flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-200 transition-colors"
           >
@@ -1019,29 +900,16 @@ export function DashboardGrid({ data }: DashboardGridProps) {
         </div>
       </div>
 
-      {/* Grid */}
-      <div ref={containerRef}>
-        {width > 0 && (
-          <ResponsiveGridLayout
-            className="layout"
-            width={width}
-            layouts={resolvedLayouts}
-            breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480 }}
-            cols={{ lg: columnCount, md: columnCount, sm: 2, xs: 1 }}
-            rowHeight={50}
-            dragConfig={{ enabled: isEditing, handle: ".drag-handle" }}
-            resizeConfig={{ enabled: isEditing }}
-            onLayoutChange={handleLayoutChange}
-            compactor={verticalCompactor}
-            margin={[10, 10]}
+      {/* Card Grid */}
+      <div className={gridClass}>
+        {visible.map((id) => (
+          <div
+            key={id}
+            className={FULL_WIDTH_WIDGETS.has(id) ? "col-span-full" : ""}
           >
-            {visible.map((id) => (
-              <div key={id}>
-                <WidgetCard id={id} data={data} isEditing={isEditing} />
-              </div>
-            ))}
-          </ResponsiveGridLayout>
-        )}
+            <WidgetCard id={id} data={data} />
+          </div>
+        ))}
       </div>
 
       {/* Settings panel */}
@@ -1057,12 +925,3 @@ export function DashboardGrid({ data }: DashboardGridProps) {
   );
 }
 
-// ─── Debounce helper ──────────────────────────────────────────────
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function debounce<T extends (...args: any[]) => void>(fn: T, ms: number): T {
-  let timer: ReturnType<typeof setTimeout>;
-  return ((...args: Parameters<T>) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), ms);
-  }) as T;
-}

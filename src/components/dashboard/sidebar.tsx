@@ -97,7 +97,7 @@ const sections: NavSection[] = [
 export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadges }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
-  const { can } = usePermissions();
+  const { can, isLoading } = usePermissions();
 
   return (
     <aside
@@ -124,8 +124,8 @@ export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadg
               className="h-8 w-auto"
             />
             <div className="min-w-0">
-              <p className="text-[11px] font-bold text-white tracking-tight leading-tight">One Engine</p>
-              <p className="text-[9px] font-medium text-amber-400/80 uppercase tracking-widest">Platform</p>
+              <p className="text-[11px] font-bold text-white tracking-tight leading-tight">AK Ultimate</p>
+              <p className="text-[9px] font-medium text-amber-400/80 uppercase tracking-widest">Dental</p>
             </div>
           </Link>
         ) : (
@@ -143,7 +143,7 @@ export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadg
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
         {sections.map((section) => {
           const visibleItems = section.items.filter(
-            (item) => !item.requiredPermission || can(item.requiredPermission)
+            (item) => !item.requiredPermission || isLoading || can(item.requiredPermission)
           );
           if (visibleItems.length === 0) return null;
           return (
@@ -265,7 +265,7 @@ export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadg
           {!collapsed && (
             <div className="flex-1 min-w-0">
               <p className="truncate text-xs font-medium text-slate-300">AK Ultimate Dental</p>
-              <p className="text-[10px] text-slate-500">Dr. Alexandru Chireu</p>
+              <p className="text-[10px] text-slate-500">Dr. Alex Khachaturian</p>
             </div>
           )}
         </div>

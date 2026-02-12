@@ -159,7 +159,7 @@ export default function HomePage() {
               >
                 <div className="relative h-48 overflow-hidden">
                   <Image
-                    src={images.services[Object.keys(images.services)[index % 9] as keyof typeof images.services]}
+                    src={images.services[service.slug as keyof typeof images.services] || images.services[Object.keys(images.services)[0] as keyof typeof images.services]}
                     alt={service.title}
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-500"

@@ -8,7 +8,7 @@ import { AiCommandBar } from "@/components/dashboard/ai-command-bar";
 import { createServiceSupabase } from "@/lib/supabase/server";
 
 export const metadata = {
-  title: "Dashboard | One Engine",
+  title: "Dashboard | AK Ultimate Dental",
   description: "AI Operations Platform for AK Ultimate Dental",
 };
 
