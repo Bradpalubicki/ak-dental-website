@@ -332,29 +332,30 @@ One Engine is **NOT a practice management system**. It is an **AI-powered operat
 
 | Method | Best For | Cost | Complexity |
 |--------|---------|------|-----------|
-| **1. NexHealth Synchronizer** | Quick access to 30+ PMS systems | Starting $350/mo | LOW |
-| **2. Open Dental REST API** | Open Dental practices (direct) | $179/mo + endpoint fees | MEDIUM |
-| **3. Kolla / DentalBridge** | DSOs, multi-location, data warehouse | Custom (70% less than competitors) | MEDIUM |
-| **4. Dentrix DDP** | Dentrix practices (official) | $10K entry + SOC2 required | HIGH |
-| **5. Eaglesoft PIC** | Eaglesoft practices (official) | $3-5K entry | MEDIUM-HIGH |
+| **1. Sikka ONE API** | Universal connector, 96% of PMS | $350/mo + $35-175/location | LOW |
+| **2. NexHealth Synchronizer** | Quick access to 30+ PMS systems | Starting $350/mo | LOW |
+| **3. Open Dental REST API** | Open Dental practices (direct) | $179/mo + endpoint fees | MEDIUM |
+| **4. Kolla / DentalBridge** | DSOs, multi-location, data warehouse | Custom ($19/location) | MEDIUM |
+| **5. Dentrix DDP** | Dentrix practices (official) | $10K entry + SOC2 required | HIGH |
+| **6. Eaglesoft PIC** | Eaglesoft practices (official) | $3-5K entry | MEDIUM-HIGH |
 
 ### Recommended Strategy
 
-**Phase 1 — NexHealth Synchronizer** (fastest to market)
-- Single API connection → access to 30+ PMS systems instantly
-- No need for individual PMS certifications
-- $10,000 Synchronizer Guarantee
-- Trade-off: dependency on NexHealth, less control, adds cost layer
+**Phase 1 — Sikka ONE API or NexHealth Synchronizer** (fastest to market)
+- **Sikka ONE**: Connects to 96% of retail healthcare PMS systems. 40K+ practice installations. SOC 2 + HIPAA compliant. Silver $35/location/mo, Gold $45/location/mo, Platinum $175/location/mo.
+- **NexHealth Synchronizer**: Single API → 30+ PMS systems. $10,000 Synchronizer Guarantee.
+- Trade-off: dependency on middleware vendor, adds cost layer, but dramatically faster to market
 
 **Phase 2 — Open Dental Direct** (our primary market)
 - Full REST API available (Remote Mode at `api.opendental.com`)
 - Endpoints: patients, appointments, insurance, claims, referrals, recalls
 - Webhooks available for real-time sync
 - Most dental practices are adopting Open Dental due to pricing
+- Reduces per-practice cost by eliminating middleware
 
 **Phase 3 — Kolla for DSOs** (enterprise accounts)
 - PMS-agnostic unified API + data warehouse
-- 70% cost reduction vs. building individual integrations
+- Direct tunnel access at $19/location (very affordable for DSOs)
 - Target multi-location groups running mixed PMS systems
 
 ### What Data We Read vs. Write
@@ -432,34 +433,83 @@ One Engine is **NOT a practice management system**. It is an **AI-powered operat
 
 ### High-Value Referral Programs
 
-| Vendor | Commission / Revenue | How It Works |
-|--------|---------------------|-------------|
-| **Gusto** (Payroll) | $300-$1,000 per referral (tiered) | 1st=$300, 2nd=$400, 3rd=$500, 4th=$700, 5th+=$1,000 |
-| **NexHealth** | $525 per referral ($25 qualified + $500 at launch) | No limit on referrals |
-| **RingCentral** | $85 per customer + lifetime recurring | Channel Harmony program, 100% commissions |
-| **Podium** (Reviews) | 30% commission + 30% renewals for 1 year | Affiliate program |
-| **Stripe Connect** | Platform fee revenue (0.25%+ of processing) | Earn on every transaction |
-| **Weave** | Commission on customer transactions | Affiliate Partner Agreement exists |
-| **BirdEye** (Reviews) | Commission (undisclosed) | Reseller/affiliate programs available |
+| Vendor | Category | Commission / Revenue | How It Works |
+|--------|----------|---------------------|-------------|
+| **8x8** (VoIP) | Phone | Up to **$15,000 per referral** | Commission after 90 days active + 1 bill paid |
+| **Cherry** (Financing) | Payments | Up to **$1,000 per referral** | Based on practice's first 30-day transaction volume. No cap. |
+| **ADP** (Payroll) | HR | Up to **$1,000 per lead** | Single-tier, earn on direct referrals |
+| **Gusto** (Payroll) | HR | $300-$500 per referral | Standard $300 + limited-time $200 bonus |
+| **NexHealth** | Booking | $500 per referral | Practice must sign up and launch |
+| **Podium** (Reviews) | Reviews | **30% commission + 30% renewals for 12 months** | At ~$400-500/mo = $1,440-$1,800/yr per practice |
+| **Stripe Connect** | Payments | **Uncapped recurring platform fees** | 0.25%+ markup on all patient payments |
+| **RingCentral** | Phone | $85 per sale + **lifetime monthly commissions** | Channel Harmony program |
+| **Mailchimp & Co** | Marketing | **25% commission + 5% managed revenue for 12 months** | Agency partner program |
+| **Weave** | Phone | Commission on transactions | Affiliate Partner Agreement exists |
+| **BirdEye** (Reviews) | Reviews | Commission (undisclosed) | Reseller/affiliate programs |
+| **Sunbit** (Financing) | Payments | $50 per demo referral | Simple referral link |
 
 ### Revenue Modeling: Affiliate Income per Practice
 
-| Revenue Source | Annual Estimate | Notes |
-|---------------|----------------|-------|
-| Stripe Connect platform fees | $1,200-$3,600 | 0.25% on $40K-$120K/mo processing |
-| Gusto referral | $300-$1,000 | One-time per practice |
-| NexHealth referral (if used) | $525 | One-time per practice |
-| Podium affiliate | $120-$180/yr | 30% of $400+/mo subscription |
-| RingCentral referral | $85 + recurring | If practice switches phone system |
-| **Total Year 1 per practice** | **$2,230-$5,390** | Mix of one-time + recurring |
+**Conservative Estimate (3-4 vendor referrals):**
 
-### Free Integrations (No Cost to Us)
+| Revenue Source | Year 1 | Recurring/Year | Notes |
+|---------------|--------|----------------|-------|
+| Stripe Connect platform fees | — | $1,250-$5,000 | 0.25% on $500K-$2M annual payments |
+| Cherry referral | $500-$1,000 | — | One-time per practice |
+| NexHealth referral | $500 | — | One-time per practice |
+| Gusto referral | $300-$500 | — | One-time per practice |
+| **Conservative Total** | **$1,300-$2,000** | **$1,250-$5,000/yr** | |
+
+**Moderate Estimate (6-8 vendor referrals):**
+
+| Revenue Source | Year 1 | Recurring/Year | Notes |
+|---------------|--------|----------------|-------|
+| Stripe Connect | — | $1,250-$5,000 | Platform fees |
+| Podium affiliate | — | $1,440-$1,800 | 30% recurring for 12 months |
+| Cherry + Sunbit | $550-$1,050 | — | Patient financing referrals |
+| ADP or Gusto | $300-$1,000 | — | HR/payroll referral |
+| NexHealth | $500 | — | Booking referral |
+| RingCentral | $85 | $50-$100/mo | Lifetime recurring |
+| Vapi markup | — | $600-$1,200 | Resell voice AI minutes |
+| **Moderate Total** | **$1,435-$2,635** | **$3,940-$9,300/yr** | |
+
+**Aggressive Estimate (10+ vendor referrals, including 8x8):**
+
+| Revenue Source | Year 1 | Recurring/Year | Notes |
+|---------------|--------|----------------|-------|
+| All moderate sources | $1,435-$2,635 | $3,940-$9,300 | See above |
+| 8x8 referral | Up to $15,000 | — | Requires volume qualification |
+| Mailchimp & Co | $100 | 25% + 5% recurring | Agency program |
+| **Aggressive Total** | **$1,535-$17,735** | **$3,940-$9,300+/yr** | |
+
+### At Scale (Revenue from Referrals Alone)
+
+| Practices | Conservative/Year | Moderate/Year | Aggressive/Year |
+|-----------|------------------|---------------|-----------------|
+| 15 | $37K-$105K | $81K-$179K | $82K-$406K |
+| 50 | $123K-$350K | $269K-$597K | $274K-$1.35M |
+| 250 | $613K-$1.75M | $1.34M-$2.98M | $1.37M-$6.76M |
+
+### Embedded / White-Label Opportunities
+
+| Vendor | Model | Revenue Potential |
+|--------|-------|------------------|
+| **Stripe Connect** | Embedded patient payments with platform fee markup | Uncapped, scales with payment volume |
+| **Gusto Embedded** | White-label payroll directly in One Engine dashboard | Per-practice API revenue + referral |
+| **Vapi** | White-label voice AI as branded One Engine feature | Wholesale → retail markup on minutes |
+| **Cherry Strategic** | Embedded patient financing in treatment presentations | Contact partnerships@withcherry.com |
+| **Sikka Payments** | Process payments across PMS systems | $125/location/month |
+
+### Free APIs to Leverage
 
 | Service | Cost | Value |
 |---------|------|-------|
-| Google Business Profile API | FREE | Review management, business info |
-| Twilio (pay-per-use) | Per message | No monthly minimum |
-| Open Dental API | Included in their subscription | Most endpoints free for practices |
+| Google Business Profile API | FREE | Review monitoring, listing management |
+| Twilio (pay-per-use) | $0.0083/SMS | No monthly minimum, already installed |
+| Resend (free tier) | 3,000 emails/mo free | Already installed |
+| Deepgram | $200 free credits | Speech-to-text for voice features |
+| Open Dental API | Included in practice subscription | Most endpoints free |
+| Mailchimp (free tier) | 500 contacts, 1K emails/mo | Email marketing |
 
 ---
 
@@ -593,14 +643,14 @@ A typical practice paying Weave ($400) + Dental Intelligence ($500) + RevenueWel
 
 ### Revenue Projections
 
-| Year | Practices | Avg MRR | Monthly Revenue | Annual Revenue | + Affiliate Rev |
-|------|-----------|---------|----------------|----------------|----------------|
-| Year 1 | 15 | $449 | $6,735 | $80,820 | +$33K-$81K |
-| Year 2 | 75 | $499 | $37,425 | $449,100 | +$167K-$404K |
-| Year 3 | 250 | $549 | $137,250 | $1,647,000 | +$558K-$1.35M |
-| Year 5 | 750 | $599 | $449,250 | $5,391,000 | +$1.67M-$4.04M |
+| Year | Practices | Avg MRR | Subscription Rev | Affiliate Rev (Moderate) | **Total Revenue** |
+|------|-----------|---------|-----------------|-------------------------|-------------------|
+| Year 1 | 15 | $449 | $80,820 | $81K-$179K | **$162K-$260K** |
+| Year 2 | 75 | $499 | $449,100 | $269K-$597K | **$718K-$1.05M** |
+| Year 3 | 250 | $549 | $1,647,000 | $1.34M-$2.98M | **$2.99M-$4.63M** |
+| Year 5 | 750 | $599 | $5,391,000 | $2.96M-$6.98M | **$8.35M-$12.37M** |
 
-**Note:** Affiliate revenue (Stripe Connect fees, Gusto referrals, etc.) adds 40-75% on top of subscription revenue.
+**Note:** Affiliate revenue (Stripe Connect fees, Cherry/Gusto referrals, Podium commissions, Vapi markup) can match or **exceed** subscription revenue at scale. This dual revenue model — SaaS subscription + vendor affiliate/embedded fees — is the key to high margins.
 
 ---
 
@@ -761,14 +811,24 @@ At **$499/mo Professional tier** with **$295-$865/mo variable cost per practice*
 - DentalBridge: dentistryautomation.com
 
 ### Partner/Affiliate Programs
-- Gusto: gusto.com/affiliates ($300-$1,000 tiered)
-- NexHealth: nexhealth.com/partner-program ($525/referral)
-- RingCentral: ringcentral.com/partner ($85 + recurring)
-- Podium: hello.podium.page/affiliates (30% + renewals)
+- 8x8: 8x8.com/referto8-overview (up to $15,000/referral)
+- Cherry: withcherry.com/partners (up to $1,000/referral)
+- ADP: partners.adp.com (up to $1,000/lead)
+- Gusto: gusto.com/affiliates ($300-$500/referral + Embedded payroll API)
+- NexHealth: nexhealth.com/partner-program ($500/referral)
+- Podium: hello.podium.page/affiliates (30% + renewals for 12 months)
+- RingCentral: ringcentral.com/partner ($85/sale + lifetime recurring)
+- Mailchimp: mailchimp.com/help/earn-commission (25% + 5% managed)
+- Stripe: docs.stripe.com/partners (platform fee revenue sharing)
 - Weave: getweave.com/dental-affiliate-programs
 - BirdEye: birdeye.com/partners
-- Stripe: docs.stripe.com/partners (revenue sharing)
+- Sunbit: sunbit.com ($50/demo referral)
 - Google Business Profile: FREE API
+
+### PMS Connectors
+- Sikka ONE API: sikka.ai/api-packages ($350/mo + $35-175/location, 96% PMS coverage)
+- NexHealth Synchronizer: synchronizer.io (30+ PMS systems)
+- Kolla: getkolla.com ($19/location for DSOs)
 
 ### Market Data
 - Dental PMS Market: $2.98B (2025), 10.8% CAGR — grandviewresearch.com
