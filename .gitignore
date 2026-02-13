@@ -41,4 +41,25 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
+# planning/reference docs (not source code)
+*.pdf
+*.docx
+alignment_report.txt
+OVERNIGHT-BUILD-*.md
+COMPETITIVE-ANALYSIS-*.md
+
+# unused logo variants (committed logos: ak-logo-header/footer/sidebar.png)
+public/AK_Ultimate_Dental_*
+public/Gemini_Generated_*
+
+# unused photos (committed photos: dr-alex-*.jpg)
+public/Alex*
+public/Exam*
+public/image000000*
+Alex Photo*
+
+# candidate videos (committed: dental-office.mp4)
+public/videos/option-*
+
+# temp/misc
+nul
