@@ -20,7 +20,17 @@ const isProtectedRoute = createRouteMatcher([
   "/api/seo/indexnow(.*)",
 ]);
 
+// Portal routes use Supabase Auth, not Clerk
+const isPortalRoute = createRouteMatcher([
+  "/portal(.*)",
+  "/api/portal(.*)",
+  "/auth/callback(.*)",
+]);
+
 export default clerkMiddleware(async (auth, req) => {
+  // Skip Clerk protection for patient portal (uses Supabase Auth)
+  if (isPortalRoute(req)) return;
+
   if (isProtectedRoute(req)) {
     await auth.protect({
       unauthenticatedUrl: new URL("/sign-in", req.url).toString(),

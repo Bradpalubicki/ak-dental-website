@@ -43,10 +43,10 @@ export default function PatientPortalPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="h-14 px-8 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-semibold border-0">
-                <a href="#" target="_blank" rel="noopener noreferrer">
+                <Link href="/portal/login">
                   Access Patient Portal
                   <ExternalLink className="ml-2 h-5 w-5" />
-                </a>
+                </Link>
               </Button>
               <Button asChild size="lg" className="h-14 px-8 bg-white/10 border-2 border-white/30 text-white hover:bg-white/20 font-semibold">
                 <a href={siteConfig.phoneHref}>

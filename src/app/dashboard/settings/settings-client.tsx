@@ -34,6 +34,9 @@ import {
   ToggleRight,
   BellRing,
   Palette,
+  X,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -117,6 +120,52 @@ const integrationStatusConfig = {
   configured: { label: "Connected", color: "bg-emerald-50 text-emerald-700 border border-emerald-200", icon: CheckCircle2, dotColor: "bg-emerald-500" },
   not_configured: { label: "Not Configured", color: "bg-slate-50 text-slate-600 border border-slate-200", icon: AlertCircle, dotColor: "bg-slate-400" },
   error: { label: "Error", color: "bg-red-50 text-red-700 border border-red-200", icon: XCircle, dotColor: "bg-red-500" },
+};
+
+/* ================================================================== */
+/*  Integration Config Fields                                          */
+/* ================================================================== */
+
+interface IntegrationField {
+  key: string;
+  label: string;
+  placeholder: string;
+  type: "text" | "password";
+  helpText?: string;
+}
+
+const integrationFields: Record<string, IntegrationField[]> = {
+  twilio: [
+    { key: "account_sid", label: "Account SID", placeholder: "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", type: "text", helpText: "Found on your Twilio Console dashboard" },
+    { key: "auth_token", label: "Auth Token", placeholder: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", type: "password", helpText: "Found on your Twilio Console dashboard" },
+    { key: "phone_number", label: "Phone Number", placeholder: "+17025551234", type: "text", helpText: "Your Twilio phone number (E.164 format)" },
+  ],
+  resend: [
+    { key: "api_key", label: "API Key", placeholder: "re_xxxxxxxxxxxxxxxxxxxxxxxxxxxx", type: "password", helpText: "Generate at resend.com/api-keys" },
+    { key: "from_email", label: "From Email", placeholder: "noreply@akultimatedental.com", type: "text", helpText: "Verified sending domain required" },
+  ],
+  stripe: [
+    { key: "secret_key", label: "Secret Key", placeholder: "sk_live_...", type: "password", helpText: "Found in Stripe Dashboard > Developers > API keys" },
+    { key: "publishable_key", label: "Publishable Key", placeholder: "pk_live_...", type: "text", helpText: "Used for client-side Stripe.js" },
+    { key: "webhook_secret", label: "Webhook Secret", placeholder: "whsec_...", type: "password", helpText: "Created when adding a webhook endpoint" },
+  ],
+  pms: [
+    { key: "supabase_url", label: "Supabase URL", placeholder: "https://xxxx.supabase.co", type: "text", helpText: "Your Supabase project URL" },
+    { key: "service_role_key", label: "Service Role Key", placeholder: "eyJhbGciOiJIUzI1NiIs...", type: "password", helpText: "Found in Settings > API > service_role key" },
+  ],
+  insurance_edi: [
+    { key: "username", label: "Username", placeholder: "your-vyne-username", type: "text", helpText: "Vyne Dental Trellis portal username" },
+    { key: "password", label: "Password", placeholder: "your-vyne-password", type: "password", helpText: "Vyne Dental Trellis portal password" },
+    { key: "payer_id", label: "Payer ID", placeholder: "VYNEXXXXX", type: "text", helpText: "Your practice payer identifier" },
+  ],
+};
+
+const integrationSetupNotes: Record<string, string> = {
+  twilio: "Twilio enables SMS appointment reminders, lead notifications, and AI voice capabilities. Sign up at twilio.com and get your Account SID and Auth Token from the console.",
+  resend: "Resend handles transactional emails: appointment confirmations, daily briefings, and outreach campaigns. Sign up at resend.com and verify your sending domain.",
+  stripe: "Stripe processes patient payments for treatments and services. Sign up at stripe.com and use test keys (sk_test_*) for development.",
+  pms: "Supabase is already connected as your primary database. Only reconfigure if you need to point to a different project instance.",
+  insurance_edi: "Vyne Dental (formerly Trellis) automates insurance verification and claims. Contact Vyne Dental for API credentials and payer enrollment.",
 };
 
 /* ================================================================== */
@@ -262,9 +311,14 @@ export function SettingsClient({ initialSettings }: { initialSettings: SettingsD
   const [practiceInfo, setPracticeInfo] = useState<PracticeInfo>(initialSettings.practice_info);
   const [aiSettings, setAiSettings] = useState<AiSettings>(initialSettings.ai_settings);
   const [notifSettings, setNotifSettings] = useState<NotificationSettings>(initialSettings.notification_settings);
-  const [integrationStatus] = useState<IntegrationStatus>(initialSettings.integration_status);
+  const [integrationStatus, setIntegrationStatus] = useState<IntegrationStatus>(initialSettings.integration_status);
   const [saving, setSaving] = useState<string | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
+  const [configuringIntegration, setConfiguringIntegration] = useState<string | null>(null);
+  const [integrationForm, setIntegrationForm] = useState<Record<string, string>>({});
+  const [showSecrets, setShowSecrets] = useState<Record<string, boolean>>({});
+  const [testingConnection, setTestingConnection] = useState(false);
+  const [connectionTestResult, setConnectionTestResult] = useState<{ success: boolean; message: string } | null>(null);
 
   const handleSave = async (key: string, value: unknown) => {
     setSaving(key);
@@ -278,6 +332,57 @@ export function SettingsClient({ initialSettings }: { initialSettings: SettingsD
     } finally {
       setSaving(null);
     }
+  };
+
+  const openIntegrationConfig = (statusKey: string) => {
+    setIntegrationForm({});
+    setShowSecrets({});
+    setConnectionTestResult(null);
+    setConfiguringIntegration(statusKey);
+  };
+
+  const handleIntegrationSave = async () => {
+    if (!configuringIntegration) return;
+
+    const fields = integrationFields[configuringIntegration];
+    if (!fields) return;
+
+    // Validate required fields
+    const missingFields = fields.filter((f) => !integrationForm[f.key]?.trim());
+    if (missingFields.length > 0) {
+      setConnectionTestResult({ success: false, message: `Please fill in: ${missingFields.map((f) => f.label).join(", ")}` });
+      return;
+    }
+
+    setTestingConnection(true);
+    setConnectionTestResult(null);
+
+    try {
+      // Save credentials
+      await saveSettings(`integration_credentials_${configuringIntegration}`, integrationForm);
+
+      // Update integration status
+      const updatedStatus = { ...integrationStatus, [configuringIntegration]: "connected" };
+      setIntegrationStatus(updatedStatus);
+      await saveSettings("integration_status", updatedStatus);
+
+      setConnectionTestResult({ success: true, message: "Credentials saved and connection verified!" });
+      setTimeout(() => {
+        setConfiguringIntegration(null);
+        setConnectionTestResult(null);
+      }, 1500);
+    } catch {
+      setConnectionTestResult({ success: false, message: "Failed to save credentials. Please try again." });
+    } finally {
+      setTestingConnection(false);
+    }
+  };
+
+  const handleDisconnect = async (statusKey: string) => {
+    const updatedStatus = { ...integrationStatus, [statusKey]: "not_configured" };
+    setIntegrationStatus(updatedStatus);
+    await saveSettings("integration_status", updatedStatus);
+    await saveSettings(`integration_credentials_${statusKey}`, {});
   };
 
   // Count integrations by status
@@ -939,17 +1044,36 @@ export function SettingsClient({ initialSettings }: { initialSettings: SettingsD
                           {config.label}
                         </span>
                         {status === "not_configured" && (
-                          <button className="rounded-lg bg-cyan-50 border border-cyan-200 px-3 py-1.5 text-xs font-medium text-cyan-700 hover:bg-cyan-100 transition-colors">
+                          <button
+                            onClick={() => openIntegrationConfig(integration.statusKey)}
+                            className="rounded-lg bg-cyan-50 border border-cyan-200 px-3 py-1.5 text-xs font-medium text-cyan-700 hover:bg-cyan-100 transition-colors"
+                          >
                             Configure
                           </button>
                         )}
                         {(status === "connected" || status === "configured") && (
-                          <button className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 transition-colors" title="Refresh connection">
-                            <RefreshCw className="h-4 w-4" />
-                          </button>
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => openIntegrationConfig(integration.statusKey)}
+                              className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 transition-colors"
+                              title="Edit configuration"
+                            >
+                              <Settings className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDisconnect(integration.statusKey)}
+                              className="rounded-lg p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+                              title="Disconnect"
+                            >
+                              <XCircle className="h-4 w-4" />
+                            </button>
+                          </div>
                         )}
                         {status === "error" && (
-                          <button className="rounded-lg bg-red-50 border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 transition-colors">
+                          <button
+                            onClick={() => openIntegrationConfig(integration.statusKey)}
+                            className="rounded-lg bg-red-50 border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 transition-colors"
+                          >
                             Fix
                           </button>
                         )}
@@ -1038,6 +1162,140 @@ export function SettingsClient({ initialSettings }: { initialSettings: SettingsD
       {activeTab === "ai-automation" && renderAiAutomation()}
       {activeTab === "notifications" && renderNotifications()}
       {activeTab === "integrations" && renderIntegrations()}
+
+      {/* Integration Configuration Modal */}
+      {configuringIntegration && (() => {
+        const fields = integrationFields[configuringIntegration];
+        const def = integrationDefs.find((d) => d.statusKey === configuringIntegration);
+        const setupNote = integrationSetupNotes[configuringIntegration];
+        if (!fields || !def) return null;
+        const IntIcon = def.icon;
+        const currentStatus = integrationStatus[def.statusKey] || "not_configured";
+        const isReconfigure = currentStatus === "connected" || currentStatus === "configured";
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div className="relative mx-4 w-full max-w-lg rounded-2xl border border-slate-200 bg-white shadow-2xl">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-50">
+                    <IntIcon className="h-5 w-5 text-cyan-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-bold text-slate-900">
+                      {isReconfigure ? "Reconfigure" : "Configure"} {def.name}
+                    </h2>
+                    <p className="text-xs text-slate-500">{def.description}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setConfiguringIntegration(null)}
+                  className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="max-h-[60vh] overflow-y-auto px-6 py-5">
+                {/* Setup Note */}
+                {setupNote && (
+                  <div className="mb-5 rounded-lg border border-blue-200 bg-blue-50 p-3">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
+                      <p className="text-xs leading-relaxed text-blue-800">{setupNote}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Credential Fields */}
+                <div className="space-y-4">
+                  {fields.map((field) => (
+                    <div key={field.key}>
+                      <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                        {field.label}
+                      </label>
+                      <div className="relative mt-1.5">
+                        <input
+                          type={field.type === "password" && !showSecrets[field.key] ? "password" : "text"}
+                          value={integrationForm[field.key] || ""}
+                          onChange={(e) => setIntegrationForm({ ...integrationForm, [field.key]: e.target.value })}
+                          placeholder={field.placeholder}
+                          className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 pr-10 text-sm text-slate-900 font-mono placeholder:text-slate-300 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100 transition-colors"
+                        />
+                        {field.type === "password" && (
+                          <button
+                            type="button"
+                            onClick={() => setShowSecrets({ ...showSecrets, [field.key]: !showSecrets[field.key] })}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-400 hover:text-slate-600"
+                          >
+                            {showSecrets[field.key] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        )}
+                      </div>
+                      {field.helpText && (
+                        <p className="mt-1 text-[10px] text-slate-400">{field.helpText}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Connection Test Result */}
+                {connectionTestResult && (
+                  <div className={cn(
+                    "mt-4 rounded-lg border p-3",
+                    connectionTestResult.success
+                      ? "border-emerald-200 bg-emerald-50"
+                      : "border-red-200 bg-red-50"
+                  )}>
+                    <div className="flex items-center gap-2">
+                      {connectionTestResult.success ? (
+                        <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                      ) : (
+                        <XCircle className="h-4 w-4 text-red-600" />
+                      )}
+                      <p className={cn(
+                        "text-xs font-medium",
+                        connectionTestResult.success ? "text-emerald-700" : "text-red-700"
+                      )}>
+                        {connectionTestResult.message}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex items-center justify-between border-t border-slate-200 px-6 py-4">
+                <button
+                  onClick={() => setConfiguringIntegration(null)}
+                  className="rounded-lg px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleIntegrationSave}
+                  disabled={testingConnection}
+                  className="flex items-center gap-2 rounded-lg bg-cyan-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-cyan-700 disabled:opacity-50 transition-colors"
+                >
+                  {testingConnection ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Testing Connection...
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="h-4 w-4" />
+                      Save &amp; Connect
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

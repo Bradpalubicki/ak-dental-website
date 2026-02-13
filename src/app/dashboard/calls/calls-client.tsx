@@ -86,89 +86,24 @@ const intentConfig: Record<string, { label: string; color: string }> = {
 };
 
 /* ================================================================== */
-/*  Demo Data                                                          */
+/*  Analytics Props Interface                                          */
 /* ================================================================== */
 
-const dailyCallVolume = [
-  { day: "Mon", inbound: 28, outbound: 12, aiHandled: 18 },
-  { day: "Tue", inbound: 35, outbound: 15, aiHandled: 24 },
-  { day: "Wed", inbound: 32, outbound: 18, aiHandled: 22 },
-  { day: "Thu", inbound: 38, outbound: 14, aiHandled: 26 },
-  { day: "Fri", inbound: 30, outbound: 16, aiHandled: 20 },
-  { day: "Sat", inbound: 12, outbound: 4, aiHandled: 10 },
-  { day: "Sun", inbound: 5, outbound: 0, aiHandled: 5 },
-];
-
-const monthlyCallTrend = [
-  { month: "Sep", total: 480, answered: 390, missed: 52, aiHandled: 180 },
-  { month: "Oct", total: 520, answered: 430, missed: 48, aiHandled: 220 },
-  { month: "Nov", total: 560, answered: 470, missed: 42, aiHandled: 280 },
-  { month: "Dec", total: 420, answered: 350, missed: 38, aiHandled: 210 },
-  { month: "Jan", total: 610, answered: 520, missed: 35, aiHandled: 340 },
-  { month: "Feb", total: 650, answered: 560, missed: 30, aiHandled: 385 },
-];
-
-const callsByStatus = [
-  { name: "Answered", value: 560, color: "#059669" },
-  { name: "Missed", value: 30, color: "#dc2626" },
-  { name: "Voicemail", value: 42, color: "#d97706" },
-  { name: "Abandoned", value: 18, color: "#94a3b8" },
-];
-
-const callsByIntent = [
-  { name: "Appointment", value: 285, color: "#2563eb" },
-  { name: "Billing", value: 120, color: "#059669" },
-  { name: "Insurance", value: 95, color: "#7c3aed" },
-  { name: "General", value: 80, color: "#94a3b8" },
-  { name: "Emergency", value: 35, color: "#dc2626" },
-  { name: "Follow-up", value: 35, color: "#0891b2" },
-];
-
-const hourlyDistribution = [
-  { hour: "8AM", calls: 22 }, { hour: "9AM", calls: 45 },
-  { hour: "10AM", calls: 58 }, { hour: "11AM", calls: 52 },
-  { hour: "12PM", calls: 35 }, { hour: "1PM", calls: 48 },
-  { hour: "2PM", calls: 55 }, { hour: "3PM", calls: 50 },
-  { hour: "4PM", calls: 42 }, { hour: "5PM", calls: 28 },
-  { hour: "6PM", calls: 15 }, { hour: "7PM", calls: 8 },
-];
-
-const aiResolutionTypes = [
-  { type: "Appointment Scheduled", count: 145, pct: 38 },
-  { type: "Info Provided", count: 98, pct: 25 },
-  { type: "Voicemail Taken", count: 62, pct: 16 },
-  { type: "Transferred to Staff", count: 48, pct: 12 },
-  { type: "Follow-up Created", count: 32, pct: 9 },
-];
-
-const aiMonthlyPerformance = [
-  { month: "Sep", resolutionRate: 72, satisfactionScore: 82, avgHandleTime: 145 },
-  { month: "Oct", resolutionRate: 76, satisfactionScore: 85, avgHandleTime: 132 },
-  { month: "Nov", resolutionRate: 80, satisfactionScore: 87, avgHandleTime: 120 },
-  { month: "Dec", resolutionRate: 78, satisfactionScore: 86, avgHandleTime: 125 },
-  { month: "Jan", resolutionRate: 84, satisfactionScore: 90, avgHandleTime: 108 },
-  { month: "Feb", resolutionRate: 88, satisfactionScore: 92, avgHandleTime: 95 },
-];
-
-const recentAiActions = [
-  { id: 1, action: "Scheduled cleaning appointment for Maria Garcia (Tue 3PM)", type: "appointment", time: "12 min ago", outcome: "Booked" },
-  { id: 2, action: "Answered insurance eligibility question for John Smith", type: "info", time: "28 min ago", outcome: "Resolved" },
-  { id: 3, action: "Took voicemail from unknown caller - billing inquiry", type: "voicemail", time: "45 min ago", outcome: "Queued" },
-  { id: 4, action: "Transferred emergency call for tooth pain to Dr. K", type: "transfer", time: "1 hr ago", outcome: "Transferred" },
-  { id: 5, action: "Confirmed tomorrow's appointment for David Lee", type: "confirmation", time: "1.5 hr ago", outcome: "Confirmed" },
-  { id: 6, action: "Created follow-up task: patient needs insurance pre-auth", type: "followup", time: "2 hr ago", outcome: "Task Created" },
-  { id: 7, action: "Handled after-hours call — provided office hours and emergency line", type: "after-hours", time: "3 hr ago", outcome: "Resolved" },
-  { id: 8, action: "Rescheduled appointment for Sarah Johnson (moved to Thu 10AM)", type: "appointment", time: "4 hr ago", outcome: "Rescheduled" },
-];
-
-const avgCallDurationByIntent = [
-  { intent: "Appointment", avgDuration: 2.3 },
-  { intent: "Billing", avgDuration: 4.1 },
-  { intent: "Insurance", avgDuration: 5.2 },
-  { intent: "General", avgDuration: 1.8 },
-  { intent: "Emergency", avgDuration: 3.5 },
-  { intent: "Follow-up", avgDuration: 2.8 },
-];
+interface CallsAnalytics {
+  totalCalls: number;
+  answerRate: number;
+  aiHandledCount: number;
+  aiHandledPct: number;
+  avgDuration: number;
+  dailyCallVolume: { day: string; inbound: number; outbound: number; aiHandled: number }[];
+  monthlyCallTrend: { month: string; total: number; answered: number; missed: number; aiHandled: number }[];
+  callsByStatus: { name: string; value: number; color: string }[];
+  callsByIntent: { name: string; value: number; color: string }[];
+  hourlyDistribution: { hour: string; calls: number }[];
+  aiResolutionTypes: { type: string; count: number; pct: number }[];
+  aiMonthlyPerformance: { month: string; resolutionRate: number; satisfactionScore: number; avgHandleTime: number }[];
+  avgCallDurationByIntent: { intent: string; avgDuration: number }[];
+}
 
 /* ================================================================== */
 /*  Utility helpers                                                    */
@@ -184,6 +119,16 @@ function formatDuration(seconds: number | null): string {
 function formatTime(dateStr: string): string {
   const d = new Date(dateStr);
   return d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+}
+
+function formatRelativeTime(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins} min ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs} hr ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
 }
 
 /* ================================================================== */
@@ -303,7 +248,7 @@ function exportCSV(rows: Record<string, unknown>[], filename: string) {
 /*  Main Component                                                     */
 /* ================================================================== */
 
-export function CallsClient({ initialCalls }: { initialCalls: Call[] }) {
+export function CallsClient({ initialCalls, analytics }: { initialCalls: Call[]; analytics: CallsAnalytics }) {
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -311,13 +256,31 @@ export function CallsClient({ initialCalls }: { initialCalls: Call[] }) {
 
   const calls = initialCalls;
 
-  // Computed from real data
-  const totalCalls = calls.length;
-  const answered = calls.filter((c) => c.status === "answered").length;
+  // Destructure analytics from server
+  const {
+    totalCalls, answerRate, aiHandledCount, aiHandledPct, avgDuration,
+    dailyCallVolume, monthlyCallTrend, callsByStatus, callsByIntent,
+    hourlyDistribution, aiResolutionTypes, aiMonthlyPerformance,
+    avgCallDurationByIntent,
+  } = analytics;
+
+  // Local stats from recent calls (for call log tab)
   const missed = calls.filter((c) => c.status === "missed").length;
-  const aiHandled = calls.filter((c) => c.ai_handled).length;
   const needFollowUp = calls.filter((c) => c.follow_up_required && !c.follow_up_completed).length;
-  const answerRate = totalCalls > 0 ? Math.round((answered / totalCalls) * 100) : 0;
+
+  // Build recent AI actions from real call data
+  const recentAiActions = useMemo(() => {
+    return calls
+      .filter((c) => c.ai_handled && c.ai_summary)
+      .slice(0, 8)
+      .map((c, i) => ({
+        id: i + 1,
+        action: c.ai_summary!,
+        type: c.intent || "other",
+        time: formatRelativeTime(c.created_at),
+        outcome: c.action_taken || "Resolved",
+      }));
+  }, [calls]);
 
   // Filtered calls for call log tab
   const filteredCalls = useMemo(() => {
@@ -345,68 +308,68 @@ export function CallsClient({ initialCalls }: { initialCalls: Call[] }) {
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
           <StatCard
             title="Total Calls"
-            value={totalCalls > 0 ? totalCalls.toLocaleString() : "650"}
-            change="+6.6% vs last month"
+            value={totalCalls.toLocaleString()}
+            change="This month"
             trend="up"
             icon={Phone}
             iconColor="text-blue-600 bg-blue-50"
-            sparkData={[480, 520, 560, 420, 610, 650]}
+            sparkData={monthlyCallTrend.map((m) => m.total)}
             sparkColor="#2563eb"
             accentColor="#2563eb"
           />
           <StatCard
             title="Answer Rate"
-            value={answerRate > 0 ? `${answerRate}%` : "86.2%"}
-            change="+2.1% improvement"
+            value={`${answerRate}%`}
+            change="This month"
             trend="up"
             icon={PhoneCall}
             iconColor="text-emerald-600 bg-emerald-50"
-            sparkData={[81.3, 82.7, 83.9, 83.3, 85.2, 86.2]}
+            sparkData={monthlyCallTrend.map((m) => m.total > 0 ? Math.round((m.answered / m.total) * 100) : 0)}
             sparkColor="#059669"
             accentColor="#059669"
           />
           <StatCard
             title="Missed Calls"
-            value={missed > 0 ? String(missed) : "30"}
-            change="-14.3% vs last month"
+            value={String(monthlyCallTrend.length > 0 ? monthlyCallTrend[monthlyCallTrend.length - 1].missed : missed)}
+            change="This month"
             trend="up"
             icon={PhoneMissed}
             iconColor="text-red-600 bg-red-50"
-            sparkData={[52, 48, 42, 38, 35, 30]}
+            sparkData={monthlyCallTrend.map((m) => m.missed)}
             sparkColor="#dc2626"
             accentColor="#dc2626"
           />
           <StatCard
             title="AI Handled"
-            value={aiHandled > 0 ? String(aiHandled) : "385"}
-            change="+13.2% vs last month"
+            value={`${aiHandledCount} (${aiHandledPct}%)`}
+            change="This month"
             trend="up"
             icon={Bot}
             iconColor="text-cyan-600 bg-cyan-50"
-            sparkData={[180, 220, 280, 210, 340, 385]}
+            sparkData={monthlyCallTrend.map((m) => m.aiHandled)}
             sparkColor="#0891b2"
             accentColor="#0891b2"
           />
           <StatCard
             title="Avg Duration"
-            value="3:24"
-            change="-12s vs last month"
+            value={formatDuration(avgDuration)}
+            change="This month"
             trend="up"
             icon={Clock}
             iconColor="text-purple-600 bg-purple-50"
-            sparkData={[245, 232, 220, 225, 208, 204]}
+            sparkData={monthlyCallTrend.map((m) => m.answered)}
             sparkColor="#7c3aed"
             accentColor="#7c3aed"
           />
           <StatCard
             title="Follow-Ups"
-            value={needFollowUp > 0 ? String(needFollowUp) : "8"}
+            value={String(needFollowUp)}
             change="Pending action"
             trend="neutral"
             icon={AlertCircle}
             iconColor="text-amber-600 bg-amber-50"
             accentColor="#d97706"
-            pulse={needFollowUp > 0 || true}
+            pulse={needFollowUp > 0}
           />
         </div>
 
@@ -436,7 +399,9 @@ export function CallsClient({ initialCalls }: { initialCalls: Call[] }) {
               height={220}
             />
             <AiInsight>
-              Call volume up 35% over 6 months while missed calls dropped 42%. AI now handles 59% of all calls — up from 38% in September.
+              {monthlyCallTrend.length >= 2
+                ? `Call volume trending ${monthlyCallTrend[monthlyCallTrend.length - 1].total >= monthlyCallTrend[0].total ? "up" : "down"} over ${monthlyCallTrend.length} months. AI handles ${aiHandledPct}% of this month's calls.`
+                : `${totalCalls} calls this month. AI handles ${aiHandledPct}% automatically.`}
             </AiInsight>
           </div>
 
@@ -449,7 +414,7 @@ export function CallsClient({ initialCalls }: { initialCalls: Call[] }) {
             <DonutChart
               data={callsByStatus}
               centerLabel="Total"
-              centerValue="650"
+              centerValue={String(totalCalls)}
               height={160}
               innerRadius={45}
               outerRadius={65}
@@ -504,7 +469,7 @@ export function CallsClient({ initialCalls }: { initialCalls: Call[] }) {
             <DonutChart
               data={callsByIntent}
               centerLabel="Intents"
-              centerValue="6"
+              centerValue={String(callsByIntent.length)}
               height={160}
               innerRadius={45}
               outerRadius={65}
@@ -521,7 +486,13 @@ export function CallsClient({ initialCalls }: { initialCalls: Call[] }) {
               ))}
             </div>
             <AiInsight variant="recommendation">
-              44% of calls are appointment-related. Expanding AI scheduling capabilities could automate 80%+ of these without staff involvement.
+              {(() => {
+                const appt = callsByIntent.find((i) => i.name === "Appointment");
+                const apptPct = appt && totalCalls > 0 ? Math.round((appt.value / totalCalls) * 100) : 0;
+                return apptPct > 0
+                  ? `${apptPct}% of calls are appointment-related. Expanding AI scheduling capabilities could automate 80%+ of these without staff involvement.`
+                  : "Analyze call intent patterns to identify automation opportunities.";
+              })()}
             </AiInsight>
           </div>
         </div>
@@ -533,10 +504,10 @@ export function CallsClient({ initialCalls }: { initialCalls: Call[] }) {
             <h3 className="text-sm font-semibold text-slate-800">Key Performance Gauges</h3>
           </div>
           <div className="grid grid-cols-2 gap-6 py-2 sm:grid-cols-5">
-            <GaugeRing value={86} label="Answer Rate" color="#059669" />
-            <GaugeRing value={59} label="AI Handle Rate" color="#0891b2" />
-            <GaugeRing value={88} label="Resolution Rate" color="#7c3aed" />
-            <GaugeRing value={92} label="Satisfaction" color="#d97706" />
+            <GaugeRing value={answerRate} label="Answer Rate" color="#059669" />
+            <GaugeRing value={aiHandledPct} label="AI Handle Rate" color="#0891b2" />
+            <GaugeRing value={aiMonthlyPerformance.length > 0 ? aiMonthlyPerformance[aiMonthlyPerformance.length - 1].resolutionRate : 0} label="Resolution Rate" color="#7c3aed" />
+            <GaugeRing value={aiMonthlyPerformance.length > 0 ? aiMonthlyPerformance[aiMonthlyPerformance.length - 1].satisfactionScore : 0} label="Satisfaction" color="#d97706" />
             <GaugeRing value={95} label="Uptime" color="#2563eb" />
           </div>
         </div>
@@ -755,54 +726,70 @@ export function CallsClient({ initialCalls }: { initialCalls: Call[] }) {
       <div className="space-y-6">
         {/* AI Summary Cards */}
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <div className="rounded-xl border border-slate-200/80 bg-gradient-to-br from-cyan-50 to-blue-50 p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <Bot className="h-4 w-4 text-cyan-600" />
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-cyan-600">AI Resolution</span>
-            </div>
-            <p className="text-2xl font-bold text-slate-900">88%</p>
-            <p className="text-xs text-slate-600 mt-1">First-call resolution rate</p>
-            <div className="mt-2 flex items-center gap-1 text-[10px]">
-              <ArrowUpRight className="h-3 w-3 text-emerald-500" />
-              <span className="text-emerald-600">+4% vs last month</span>
-            </div>
-          </div>
-          <div className="rounded-xl border border-slate-200/80 bg-gradient-to-br from-purple-50 to-indigo-50 p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <Star className="h-4 w-4 text-purple-600" />
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-purple-600">Satisfaction</span>
-            </div>
-            <p className="text-2xl font-bold text-slate-900">92%</p>
-            <p className="text-xs text-slate-600 mt-1">Caller satisfaction score</p>
-            <div className="mt-2 flex items-center gap-1 text-[10px]">
-              <ArrowUpRight className="h-3 w-3 text-emerald-500" />
-              <span className="text-emerald-600">+2% vs last month</span>
-            </div>
-          </div>
-          <div className="rounded-xl border border-slate-200/80 bg-gradient-to-br from-emerald-50 to-teal-50 p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <Clock className="h-4 w-4 text-emerald-600" />
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-600">Avg Handle Time</span>
-            </div>
-            <p className="text-2xl font-bold text-slate-900">1:35</p>
-            <p className="text-xs text-slate-600 mt-1">AI avg call duration</p>
-            <div className="mt-2 flex items-center gap-1 text-[10px]">
-              <ArrowDownRight className="h-3 w-3 text-emerald-500" />
-              <span className="text-emerald-600">-13s improvement</span>
-            </div>
-          </div>
-          <div className="rounded-xl border border-slate-200/80 bg-gradient-to-br from-amber-50 to-orange-50 p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <RefreshCw className="h-4 w-4 text-amber-600" />
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-amber-600">Time Saved</span>
-            </div>
-            <p className="text-2xl font-bold text-slate-900">52h</p>
-            <p className="text-xs text-slate-600 mt-1">Staff hours this month</p>
-            <div className="mt-2 flex items-center gap-1 text-[10px]">
-              <ArrowUpRight className="h-3 w-3 text-emerald-500" />
-              <span className="text-emerald-600">~$1,560 labor savings</span>
-            </div>
-          </div>
+          {(() => {
+            const latest = aiMonthlyPerformance.length > 0 ? aiMonthlyPerformance[aiMonthlyPerformance.length - 1] : null;
+            const prev = aiMonthlyPerformance.length > 1 ? aiMonthlyPerformance[aiMonthlyPerformance.length - 2] : null;
+            const resRate = latest?.resolutionRate ?? 0;
+            const satScore = latest?.satisfactionScore ?? 0;
+            const avgHandle = latest?.avgHandleTime ?? 0;
+            const resDelta = prev ? resRate - prev.resolutionRate : 0;
+            const satDelta = prev ? satScore - prev.satisfactionScore : 0;
+            const handleDelta = prev ? prev.avgHandleTime - avgHandle : 0;
+            const timeSavedHrs = Math.round((aiHandledCount * (avgHandle > 0 ? avgHandle : 120)) / 3600);
+            const laborSavings = timeSavedHrs * 30;
+            return (
+              <>
+                <div className="rounded-xl border border-slate-200/80 bg-gradient-to-br from-cyan-50 to-blue-50 p-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Bot className="h-4 w-4 text-cyan-600" />
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-cyan-600">AI Resolution</span>
+                  </div>
+                  <p className="text-2xl font-bold text-slate-900">{resRate}%</p>
+                  <p className="text-xs text-slate-600 mt-1">First-call resolution rate</p>
+                  <div className="mt-2 flex items-center gap-1 text-[10px]">
+                    {resDelta >= 0 ? <ArrowUpRight className="h-3 w-3 text-emerald-500" /> : <ArrowDownRight className="h-3 w-3 text-red-500" />}
+                    <span className={resDelta >= 0 ? "text-emerald-600" : "text-red-600"}>{resDelta >= 0 ? "+" : ""}{resDelta}% vs last month</span>
+                  </div>
+                </div>
+                <div className="rounded-xl border border-slate-200/80 bg-gradient-to-br from-purple-50 to-indigo-50 p-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Star className="h-4 w-4 text-purple-600" />
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-purple-600">Satisfaction</span>
+                  </div>
+                  <p className="text-2xl font-bold text-slate-900">{satScore}%</p>
+                  <p className="text-xs text-slate-600 mt-1">Caller satisfaction score</p>
+                  <div className="mt-2 flex items-center gap-1 text-[10px]">
+                    {satDelta >= 0 ? <ArrowUpRight className="h-3 w-3 text-emerald-500" /> : <ArrowDownRight className="h-3 w-3 text-red-500" />}
+                    <span className={satDelta >= 0 ? "text-emerald-600" : "text-red-600"}>{satDelta >= 0 ? "+" : ""}{satDelta}% vs last month</span>
+                  </div>
+                </div>
+                <div className="rounded-xl border border-slate-200/80 bg-gradient-to-br from-emerald-50 to-teal-50 p-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Clock className="h-4 w-4 text-emerald-600" />
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-600">Avg Handle Time</span>
+                  </div>
+                  <p className="text-2xl font-bold text-slate-900">{formatDuration(avgHandle)}</p>
+                  <p className="text-xs text-slate-600 mt-1">AI avg call duration</p>
+                  <div className="mt-2 flex items-center gap-1 text-[10px]">
+                    {handleDelta >= 0 ? <ArrowDownRight className="h-3 w-3 text-emerald-500" /> : <ArrowUpRight className="h-3 w-3 text-red-500" />}
+                    <span className={handleDelta >= 0 ? "text-emerald-600" : "text-red-600"}>{handleDelta >= 0 ? "-" : "+"}{Math.abs(handleDelta)}s vs last month</span>
+                  </div>
+                </div>
+                <div className="rounded-xl border border-slate-200/80 bg-gradient-to-br from-amber-50 to-orange-50 p-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <RefreshCw className="h-4 w-4 text-amber-600" />
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-amber-600">Time Saved</span>
+                  </div>
+                  <p className="text-2xl font-bold text-slate-900">{timeSavedHrs}h</p>
+                  <p className="text-xs text-slate-600 mt-1">Staff hours this month</p>
+                  <div className="mt-2 flex items-center gap-1 text-[10px]">
+                    <ArrowUpRight className="h-3 w-3 text-emerald-500" />
+                    <span className="text-emerald-600">~${laborSavings.toLocaleString()} labor savings</span>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
         </div>
 
         {/* Charts Row */}
@@ -862,13 +849,18 @@ export function CallsClient({ initialCalls }: { initialCalls: Call[] }) {
             <Brain className="h-4 w-4 text-purple-600" />
             <h3 className="text-sm font-semibold text-slate-800">AI Performance Scores</h3>
           </div>
-          <div className="grid grid-cols-2 gap-6 py-2 sm:grid-cols-5">
-            <GaugeRing value={88} label="Resolution" color="#0891b2" />
-            <GaugeRing value={92} label="Satisfaction" color="#7c3aed" />
-            <GaugeRing value={95} label="Accuracy" color="#059669" />
-            <GaugeRing value={97} label="Uptime" color="#2563eb" />
-            <GaugeRing value={85} label="Containment" color="#d97706" />
-          </div>
+          {(() => {
+            const latest = aiMonthlyPerformance.length > 0 ? aiMonthlyPerformance[aiMonthlyPerformance.length - 1] : null;
+            return (
+              <div className="grid grid-cols-2 gap-6 py-2 sm:grid-cols-5">
+                <GaugeRing value={latest?.resolutionRate ?? 0} label="Resolution" color="#0891b2" />
+                <GaugeRing value={latest?.satisfactionScore ?? 0} label="Satisfaction" color="#7c3aed" />
+                <GaugeRing value={aiHandledPct} label="AI Rate" color="#059669" />
+                <GaugeRing value={97} label="Uptime" color="#2563eb" />
+                <GaugeRing value={answerRate} label="Answer Rate" color="#d97706" />
+              </div>
+            );
+          })()}
         </div>
 
         {/* Recent AI Actions */}

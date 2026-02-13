@@ -65,6 +65,24 @@ export default function TreatmentPresentationPage() {
   const [selectedPayment, setSelectedPayment] = useState<"card" | "financing" | null>(null);
   const [cardSubmitted, setCardSubmitted] = useState(false);
   const [financingSubmitted, setFinancingSubmitted] = useState(false);
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+
+  // Check for payment success from Stripe redirect
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("payment") === "success") {
+      setCardSubmitted(true);
+      setCurrentStep("thankyou");
+      // Verify payment server-side
+      const sessionId = params.get("session_id");
+      if (sessionId) {
+        fetch(`/api/payments/success?session_id=${sessionId}`).catch(() => {});
+      }
+    } else if (params.get("payment") === "cancelled") {
+      setCurrentStep("payment");
+    }
+  }, []);
 
   useEffect(() => {
     fetch(`/api/treatments/${id}`)
@@ -385,59 +403,68 @@ export default function TreatmentPresentationPage() {
                 </button>
               </div>
 
-              {/* Card Payment Form */}
+              {/* Stripe Checkout */}
               {selectedPayment === "card" && (
                 <div className="mt-8 max-w-lg mx-auto rounded-3xl bg-white/5 border border-white/10 p-8 backdrop-blur-sm animate-in fade-in duration-300">
-                  <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                     <CreditCard className="h-5 w-5 text-cyan-400" />
-                    Card Payment — ${plan.patient_estimate.toLocaleString()}
+                    Secure Payment — ${plan.patient_estimate.toLocaleString()}
                   </h3>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-xs font-medium text-slate-400 mb-1.5 block">Cardholder Name</label>
-                      <input
-                        type="text"
-                        defaultValue={`${patient.first_name} ${patient.last_name}`}
-                        className="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none"
-                      />
+                  <p className="text-sm text-slate-400 mb-6">
+                    You&apos;ll be redirected to our secure payment processor (Stripe) to complete your payment.
+                  </p>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 rounded-xl bg-white/5 p-3">
+                      <Shield className="h-5 w-5 text-emerald-400" />
+                      <span className="text-sm text-slate-300">256-bit SSL encrypted</span>
                     </div>
-                    <div>
-                      <label className="text-xs font-medium text-slate-400 mb-1.5 block">Card Number</label>
-                      <input
-                        type="text"
-                        placeholder="4242 4242 4242 4242"
-                        className="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none"
-                      />
+                    <div className="flex items-center gap-3 rounded-xl bg-white/5 p-3">
+                      <CreditCard className="h-5 w-5 text-blue-400" />
+                      <span className="text-sm text-slate-300">Visa, Mastercard, Amex, Discover accepted</span>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-xs font-medium text-slate-400 mb-1.5 block">Expiry</label>
-                        <input
-                          type="text"
-                          placeholder="MM/YY"
-                          className="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-slate-400 mb-1.5 block">CVC</label>
-                        <input
-                          type="text"
-                          placeholder="123"
-                          className="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none"
-                        />
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setCardSubmitted(true);
-                        setCurrentStep("thankyou");
-                      }}
-                      className="w-full mt-4 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-6 py-4 text-lg font-semibold text-white hover:from-cyan-600 hover:to-blue-700 transition-all"
-                    >
-                      Pay ${plan.patient_estimate.toLocaleString()}
-                      <ArrowRight className="h-5 w-5" />
-                    </button>
                   </div>
+                  {paymentError && (
+                    <div className="mt-4 rounded-xl bg-red-500/10 border border-red-500/20 p-3">
+                      <p className="text-sm text-red-300">{paymentError}</p>
+                    </div>
+                  )}
+                  <button
+                    onClick={async () => {
+                      setPaymentLoading(true);
+                      setPaymentError(null);
+                      try {
+                        const res = await fetch("/api/payments/checkout", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            treatmentPlanId: plan.id,
+                            patientId: patient.id,
+                          }),
+                        });
+                        const data = await res.json();
+                        if (data.url) {
+                          window.location.href = data.url;
+                        } else {
+                          setPaymentError(data.error || "Unable to start checkout. Please try again.");
+                          setPaymentLoading(false);
+                        }
+                      } catch {
+                        setPaymentError("Connection error. Please try again.");
+                        setPaymentLoading(false);
+                      }
+                    }}
+                    disabled={paymentLoading}
+                    className="w-full mt-6 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-6 py-4 text-lg font-semibold text-white hover:from-cyan-600 hover:to-blue-700 disabled:opacity-50 transition-all"
+                  >
+                    {paymentLoading ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <>
+                        Pay ${plan.patient_estimate.toLocaleString()}
+                        <ArrowRight className="h-5 w-5" />
+                      </>
+                    )}
+                  </button>
                 </div>
               )}
             </div>

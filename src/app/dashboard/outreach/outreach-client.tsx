@@ -98,81 +98,27 @@ const channelIcons: Record<string, typeof Mail> = {
 };
 
 /* ================================================================== */
-/*  Demo Data                                                          */
+/*  Analytics Props Interface                                          */
 /* ================================================================== */
 
-const monthlyOutreach = [
-  { month: "Sep", sent: 1240, delivered: 1180, opened: 720, clicked: 310, converted: 85 },
-  { month: "Oct", sent: 1380, delivered: 1310, opened: 810, clicked: 365, converted: 98 },
-  { month: "Nov", sent: 1520, delivered: 1460, opened: 920, clicked: 420, converted: 112 },
-  { month: "Dec", sent: 1150, delivered: 1090, opened: 680, clicked: 290, converted: 76 },
-  { month: "Jan", sent: 1680, delivered: 1620, opened: 1050, clicked: 480, converted: 135 },
-  { month: "Feb", sent: 1820, delivered: 1750, opened: 1140, clicked: 530, converted: 148 },
-];
-
-const channelPerformance = [
-  { name: "Email", value: 58, color: "#2563eb" },
-  { name: "SMS", value: 32, color: "#059669" },
-  { name: "Phone", value: 10, color: "#7c3aed" },
-];
-
-const weeklyEngagement = [
-  { day: "Mon", openRate: 42, clickRate: 18, responseRate: 8 },
-  { day: "Tue", openRate: 48, clickRate: 22, responseRate: 11 },
-  { day: "Wed", openRate: 51, clickRate: 24, responseRate: 13 },
-  { day: "Thu", openRate: 45, clickRate: 20, responseRate: 10 },
-  { day: "Fri", openRate: 38, clickRate: 16, responseRate: 7 },
-  { day: "Sat", openRate: 28, clickRate: 12, responseRate: 5 },
-  { day: "Sun", openRate: 22, clickRate: 9, responseRate: 4 },
-];
-
-const campaignTypePerformance = [
-  { type: "Welcome", openRate: 68, clickRate: 32, convRate: 18, volume: 420 },
-  { type: "Recall", openRate: 52, clickRate: 24, convRate: 14, volume: 680 },
-  { type: "Treatment", openRate: 45, clickRate: 19, convRate: 11, volume: 340 },
-  { type: "Reactivation", openRate: 38, clickRate: 15, convRate: 8, volume: 520 },
-  { type: "No-Show", openRate: 56, clickRate: 28, convRate: 16, volume: 180 },
-  { type: "Reviews", openRate: 42, clickRate: 35, convRate: 22, volume: 290 },
-];
-
-const hourlyHeatmap = [
-  { hour: "8AM", mon: 32, tue: 38, wed: 41, thu: 35, fri: 28 },
-  { hour: "9AM", mon: 45, tue: 52, wed: 55, thu: 48, fri: 42 },
-  { hour: "10AM", mon: 58, tue: 62, wed: 65, thu: 60, fri: 52 },
-  { hour: "11AM", mon: 52, tue: 56, wed: 58, thu: 54, fri: 48 },
-  { hour: "12PM", mon: 38, tue: 42, wed: 44, thu: 40, fri: 35 },
-  { hour: "1PM", mon: 48, tue: 52, wed: 55, thu: 50, fri: 44 },
-  { hour: "2PM", mon: 55, tue: 60, wed: 62, thu: 58, fri: 50 },
-  { hour: "3PM", mon: 50, tue: 54, wed: 56, thu: 52, fri: 45 },
-  { hour: "4PM", mon: 42, tue: 46, wed: 48, thu: 44, fri: 38 },
-  { hour: "5PM", mon: 35, tue: 38, wed: 40, thu: 36, fri: 30 },
-];
-
-const conversionFunnel = [
-  { stage: "Messages Sent", value: 1820, pct: 100 },
-  { stage: "Delivered", value: 1750, pct: 96 },
-  { stage: "Opened", value: 1140, pct: 63 },
-  { stage: "Clicked / Replied", value: 530, pct: 29 },
-  { stage: "Converted", value: 148, pct: 8 },
-];
-
-const aiActions = [
-  { id: 1, action: "Auto-sent recall reminder to 32 patients due for cleaning", type: "recall", time: "2 hours ago", status: "completed", impact: "+12 appointments booked" },
-  { id: 2, action: "Optimized send time for reactivation campaign (shifted to 10AM Tue)", type: "optimization", time: "4 hours ago", status: "completed", impact: "+8% open rate" },
-  { id: 3, action: "Generated personalized birthday messages for 15 patients", type: "content", time: "6 hours ago", status: "completed", impact: "15 messages queued" },
-  { id: 4, action: "Flagged 3 patients at risk of churning - initiated win-back sequence", type: "prediction", time: "8 hours ago", status: "completed", impact: "3 patients re-engaged" },
-  { id: 5, action: "A/B tested subject lines for treatment follow-up campaign", type: "testing", time: "12 hours ago", status: "completed", impact: "+15% open rate on variant B" },
-  { id: 6, action: "Auto-paused low-performing reactivation variant", type: "optimization", time: "1 day ago", status: "completed", impact: "Saved 240 sends" },
-];
-
-const automationMetrics = [
-  { month: "Sep", manual: 820, automated: 420, aiGenerated: 180 },
-  { month: "Oct", manual: 740, automated: 540, aiGenerated: 220 },
-  { month: "Nov", manual: 650, automated: 680, aiGenerated: 310 },
-  { month: "Dec", manual: 580, automated: 720, aiGenerated: 280 },
-  { month: "Jan", manual: 480, automated: 890, aiGenerated: 420 },
-  { month: "Feb", manual: 380, automated: 1020, aiGenerated: 520 },
-];
+interface OutreachAnalytics {
+  totalSent: number;
+  deliveryRate: number;
+  openRate: number;
+  clickRate: number;
+  conversionCount: number;
+  monthlyOutreach: { month: string; sent: number; delivered: number; opened: number; clicked: number; converted: number }[];
+  channelPerformance: { name: string; value: number; color: string }[];
+  weeklyEngagement: { day: string; openRate: number; clickRate: number; responseRate: number }[];
+  campaignTypePerformance: { type: string; volume: number; openRate: number; clickRate: number; convRate: number }[];
+  hourlyHeatmap: Record<string, string | number>[];
+  conversionFunnel: { stage: string; value: number; pct: number }[];
+  automationMetrics: { month: string; manual: number; automated: number; aiGenerated: number }[];
+  aiGeneratedCount: number;
+  automatedCount: number;
+  unsubscribeRate: number;
+  bounceRate: number;
+}
 
 /* ================================================================== */
 /*  Utility helpers                                                    */
@@ -369,13 +315,22 @@ function exportCSV(rows: Record<string, unknown>[], filename: string) {
 /*  Main Component                                                     */
 /* ================================================================== */
 
-export function OutreachClient({ initialWorkflows }: { initialWorkflows: Workflow[] }) {
+export function OutreachClient({ initialWorkflows, analytics }: { initialWorkflows: Workflow[]; analytics: OutreachAnalytics }) {
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
 
   const workflows = initialWorkflows;
+
+  // Destructure analytics
+  const {
+    totalSent, deliveryRate, openRate, clickRate, conversionCount,
+    monthlyOutreach, channelPerformance, weeklyEngagement,
+    campaignTypePerformance, hourlyHeatmap, conversionFunnel,
+    automationMetrics, aiGeneratedCount, automatedCount,
+    unsubscribeRate, bounceRate,
+  } = analytics;
 
   // Computed metrics
   const activeWorkflows = workflows.filter((w) => w.status === "active").length;
@@ -389,6 +344,77 @@ export function OutreachClient({ initialWorkflows }: { initialWorkflows: Workflo
       return true;
     });
   }, [workflows, searchQuery, statusFilter, typeFilter]);
+
+  // Workflow CRUD state
+  const [showModal, setShowModal] = useState(false);
+  const [editingWorkflow, setEditingWorkflow] = useState<Workflow | null>(null);
+  const [formName, setFormName] = useState("");
+  const [formType, setFormType] = useState("recall");
+  const [formSteps, setFormSteps] = useState<{ channel: string; delay_days: number; subject: string; body: string }[]>([
+    { channel: "email", delay_days: 0, subject: "", body: "" },
+  ]);
+  const [saving, setSaving] = useState(false);
+
+  const openCreate = () => {
+    setEditingWorkflow(null);
+    setFormName("");
+    setFormType("recall");
+    setFormSteps([{ channel: "email", delay_days: 0, subject: "", body: "" }]);
+    setShowModal(true);
+  };
+
+  const openEdit = (w: Workflow) => {
+    setEditingWorkflow(w);
+    setFormName(w.name);
+    setFormType(w.type);
+    const steps = Array.isArray(w.steps) && w.steps.length > 0
+      ? (w.steps as { channel: string; delay_days: number; subject: string; body: string }[])
+      : [{ channel: "email", delay_days: 0, subject: "", body: "" }];
+    setFormSteps(steps);
+    setShowModal(true);
+  };
+
+  const addStep = () => {
+    setFormSteps((prev) => [...prev, { channel: "email", delay_days: prev.length > 0 ? (prev[prev.length - 1].delay_days + 3) : 0, subject: "", body: "" }]);
+  };
+
+  const removeStep = (index: number) => {
+    setFormSteps((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const updateStep = (index: number, field: string, value: string | number) => {
+    setFormSteps((prev) => prev.map((s, i) => i === index ? { ...s, [field]: value } : s));
+  };
+
+  const handleSave = async () => {
+    if (!formName.trim()) return;
+    setSaving(true);
+    try {
+      if (editingWorkflow) {
+        await fetch("/api/outreach", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: editingWorkflow.id, name: formName, type: formType, steps: formSteps }),
+        });
+      } else {
+        await fetch("/api/outreach", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: formName, type: formType, steps: formSteps }),
+        });
+      }
+      setShowModal(false);
+      window.location.reload();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this workflow? This cannot be undone.")) return;
+    await fetch(`/api/outreach?id=${id}`, { method: "DELETE" });
+    window.location.reload();
+  };
 
   const handleToggleStatus = async (id: string, currentStatus: string) => {
     const newStatus = currentStatus === "active" ? "paused" : "active";
@@ -410,56 +436,56 @@ export function OutreachClient({ initialWorkflows }: { initialWorkflows: Workflo
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
           <StatCard
             title="Messages Sent"
-            value="1,820"
-            change="+8.3% vs last month"
+            value={totalSent.toLocaleString()}
+            change="This month"
             trend="up"
             icon={Send}
             iconColor="text-blue-600 bg-blue-50"
-            sparkData={[1240, 1380, 1520, 1150, 1680, 1820]}
+            sparkData={monthlyOutreach.map((m) => m.sent)}
             sparkColor="#2563eb"
             accentColor="#2563eb"
           />
           <StatCard
             title="Delivery Rate"
-            value="96.2%"
-            change="+0.4% improvement"
+            value={`${deliveryRate}%`}
+            change="This month"
             trend="up"
             icon={CheckCircle2}
             iconColor="text-emerald-600 bg-emerald-50"
-            sparkData={[94.8, 95.0, 96.1, 94.8, 96.4, 96.2]}
+            sparkData={monthlyOutreach.map((m) => m.sent > 0 ? Math.round((m.delivered / m.sent) * 100) : 0)}
             sparkColor="#059669"
             accentColor="#059669"
           />
           <StatCard
             title="Open Rate"
-            value="62.6%"
-            change="+3.2% vs last month"
+            value={`${openRate}%`}
+            change="This month"
             trend="up"
             icon={Eye}
             iconColor="text-cyan-600 bg-cyan-50"
-            sparkData={[58.1, 58.7, 60.5, 59.1, 64.8, 62.6]}
+            sparkData={monthlyOutreach.map((m) => m.delivered > 0 ? Math.round((m.opened / m.delivered) * 100) : 0)}
             sparkColor="#0891b2"
             accentColor="#0891b2"
           />
           <StatCard
             title="Click Rate"
-            value="29.1%"
-            change="+0.5% vs last month"
+            value={`${clickRate}%`}
+            change="This month"
             trend="up"
             icon={MousePointerClick}
             iconColor="text-purple-600 bg-purple-50"
-            sparkData={[25.0, 26.4, 27.6, 25.2, 28.6, 29.1]}
+            sparkData={monthlyOutreach.map((m) => m.delivered > 0 ? Math.round((m.clicked / m.delivered) * 100) : 0)}
             sparkColor="#7c3aed"
             accentColor="#7c3aed"
           />
           <StatCard
             title="Conversions"
-            value="148"
-            change="+9.6% vs last month"
+            value={String(conversionCount)}
+            change="This month"
             trend="up"
             icon={Target}
             iconColor="text-amber-600 bg-amber-50"
-            sparkData={[85, 98, 112, 76, 135, 148]}
+            sparkData={monthlyOutreach.map((m) => m.converted)}
             sparkColor="#d97706"
             accentColor="#d97706"
           />
@@ -569,10 +595,10 @@ export function OutreachClient({ initialWorkflows }: { initialWorkflows: Workflo
               <h3 className="text-sm font-semibold text-slate-800">Key Performance Gauges</h3>
             </div>
             <div className="grid grid-cols-2 gap-6 py-2 sm:grid-cols-4">
-              <GaugeRing value={96} label="Delivery" color="#059669" />
-              <GaugeRing value={63} label="Open Rate" color="#0891b2" />
-              <GaugeRing value={29} label="Click Rate" color="#7c3aed" />
-              <GaugeRing value={8} label="Conversion" color="#d97706" />
+              <GaugeRing value={Math.round(deliveryRate)} label="Delivery" color="#059669" />
+              <GaugeRing value={Math.round(openRate)} label="Open Rate" color="#0891b2" />
+              <GaugeRing value={Math.round(clickRate)} label="Click Rate" color="#7c3aed" />
+              <GaugeRing value={totalSent > 0 ? Math.round((conversionCount / totalSent) * 100) : 0} label="Conversion" color="#d97706" />
             </div>
             <AiInsight variant="prediction">
               At current trajectory, you&apos;ll reach 10% conversion rate by April. Welcome sequences are your highest converting workflow type at 18%.
@@ -688,7 +714,10 @@ export function OutreachClient({ initialWorkflows }: { initialWorkflows: Workflo
               ))}
             </select>
           </div>
-          <button className="flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700 transition-colors">
+          <button
+            onClick={openCreate}
+            className="flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700 transition-colors"
+          >
             <Plus className="h-4 w-4" />
             New Workflow
           </button>
@@ -768,7 +797,11 @@ export function OutreachClient({ initialWorkflows }: { initialWorkflows: Workflo
                           <Play className="h-3 w-3" /> Activate
                         </button>
                       )}
-                      <button className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 transition-colors">
+                      <button
+                        onClick={() => openEdit(workflow)}
+                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 transition-colors"
+                        title="Edit workflow"
+                      >
                         <Settings className="h-4 w-4" />
                       </button>
                     </div>
@@ -935,7 +968,7 @@ export function OutreachClient({ initialWorkflows }: { initialWorkflows: Workflo
                     <tr key={row.hour}>
                       <td className="py-1.5 font-medium text-slate-600">{row.hour}</td>
                       {(["mon", "tue", "wed", "thu", "fri"] as const).map((day) => {
-                        const val = row[day];
+                        const val = Number(row[day]) || 0;
                         const intensity = Math.min(val / 65, 1);
                         return (
                           <td key={day} className="py-1.5 text-center">
@@ -1058,18 +1091,18 @@ export function OutreachClient({ initialWorkflows }: { initialWorkflows: Workflo
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <div className="rounded-lg border border-slate-100 p-4">
               <p className="text-xs text-slate-500 mb-1">Bounce Rate</p>
-              <p className="text-xl font-bold text-slate-900">1.8%</p>
+              <p className="text-xl font-bold text-slate-900">{bounceRate}%</p>
               <div className="mt-2 flex items-center gap-1 text-[10px]">
                 <ArrowDownRight className="h-3 w-3 text-emerald-500" />
-                <span className="text-emerald-600">-0.3% vs last month</span>
+                <span className="text-emerald-600">{bounceRate < 3 ? "Within healthy range" : "Needs attention"}</span>
               </div>
             </div>
             <div className="rounded-lg border border-slate-100 p-4">
               <p className="text-xs text-slate-500 mb-1">Unsubscribe Rate</p>
-              <p className="text-xl font-bold text-slate-900">0.4%</p>
+              <p className="text-xl font-bold text-slate-900">{unsubscribeRate}%</p>
               <div className="mt-2 flex items-center gap-1 text-[10px]">
                 <ArrowDownRight className="h-3 w-3 text-emerald-500" />
-                <span className="text-emerald-600">-0.1% vs last month</span>
+                <span className="text-emerald-600">{unsubscribeRate < 1 ? "Well below threshold" : "Monitor closely"}</span>
               </div>
             </div>
             <div className="rounded-lg border border-slate-100 p-4">
@@ -1110,11 +1143,11 @@ export function OutreachClient({ initialWorkflows }: { initialWorkflows: Workflo
               <Bot className="h-4 w-4 text-purple-600" />
               <span className="text-[10px] font-semibold uppercase tracking-wider text-purple-600">AI-Generated</span>
             </div>
-            <p className="text-2xl font-bold text-slate-900">520</p>
+            <p className="text-2xl font-bold text-slate-900">{aiGeneratedCount.toLocaleString()}</p>
             <p className="text-xs text-slate-600 mt-1">Messages this month</p>
             <div className="mt-2 flex items-center gap-1 text-[10px]">
               <ArrowUpRight className="h-3 w-3 text-emerald-500" />
-              <span className="text-emerald-600">+23.8% vs last month</span>
+              <span className="text-emerald-600">{totalSent > 0 ? Math.round((aiGeneratedCount / totalSent) * 100) : 0}% of total</span>
             </div>
           </div>
           <div className="rounded-xl border border-slate-200/80 bg-gradient-to-br from-cyan-50 to-blue-50 p-5">
@@ -1122,11 +1155,11 @@ export function OutreachClient({ initialWorkflows }: { initialWorkflows: Workflo
               <Zap className="h-4 w-4 text-cyan-600" />
               <span className="text-[10px] font-semibold uppercase tracking-wider text-cyan-600">Automated</span>
             </div>
-            <p className="text-2xl font-bold text-slate-900">1,020</p>
+            <p className="text-2xl font-bold text-slate-900">{automatedCount.toLocaleString()}</p>
             <p className="text-xs text-slate-600 mt-1">Auto-sent messages</p>
             <div className="mt-2 flex items-center gap-1 text-[10px]">
               <ArrowUpRight className="h-3 w-3 text-emerald-500" />
-              <span className="text-emerald-600">+14.6% vs last month</span>
+              <span className="text-emerald-600">{totalSent > 0 ? Math.round((automatedCount / totalSent) * 100) : 0}% automation rate</span>
             </div>
           </div>
           <div className="rounded-xl border border-slate-200/80 bg-gradient-to-br from-emerald-50 to-teal-50 p-5">
@@ -1134,11 +1167,11 @@ export function OutreachClient({ initialWorkflows }: { initialWorkflows: Workflo
               <RefreshCw className="h-4 w-4 text-emerald-600" />
               <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-600">Time Saved</span>
             </div>
-            <p className="text-2xl font-bold text-slate-900">38h</p>
+            <p className="text-2xl font-bold text-slate-900">{Math.round(automatedCount * 2 / 60)}h</p>
             <p className="text-xs text-slate-600 mt-1">Staff hours this month</p>
             <div className="mt-2 flex items-center gap-1 text-[10px]">
               <ArrowUpRight className="h-3 w-3 text-emerald-500" />
-              <span className="text-emerald-600">~$1,140 labor savings</span>
+              <span className="text-emerald-600">~${(Math.round(automatedCount * 2 / 60) * 30).toLocaleString()} labor savings</span>
             </div>
           </div>
           <div className="rounded-xl border border-slate-200/80 bg-gradient-to-br from-amber-50 to-orange-50 p-5">
@@ -1150,7 +1183,7 @@ export function OutreachClient({ initialWorkflows }: { initialWorkflows: Workflo
             <p className="text-xs text-slate-600 mt-1">Message quality score</p>
             <div className="mt-2 flex items-center gap-1 text-[10px]">
               <ArrowUpRight className="h-3 w-3 text-emerald-500" />
-              <span className="text-emerald-600">+2% improvement</span>
+              <span className="text-emerald-600">Consistent performance</span>
             </div>
           </div>
         </div>
@@ -1227,72 +1260,56 @@ export function OutreachClient({ initialWorkflows }: { initialWorkflows: Workflo
           </div>
           <div className="grid grid-cols-2 gap-6 py-2 sm:grid-cols-5">
             <GaugeRing value={94} label="Quality" color="#7c3aed" />
-            <GaugeRing value={73} label="Automation" color="#0891b2" />
+            <GaugeRing value={totalSent > 0 ? Math.round((automatedCount / totalSent) * 100) : 0} label="Automation" color="#0891b2" />
             <GaugeRing value={88} label="Relevance" color="#059669" />
             <GaugeRing value={91} label="Timing" color="#d97706" />
-            <GaugeRing value={96} label="Delivery" color="#2563eb" />
+            <GaugeRing value={Math.round(deliveryRate)} label="Delivery" color="#2563eb" />
           </div>
         </div>
 
         {/* Recent AI Actions */}
         <div className="rounded-xl border border-slate-200/80 bg-white p-5">
-          <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-purple-600" />
-              <h3 className="text-sm font-semibold text-slate-800">Recent AI Actions</h3>
-            </div>
-            <button
-              onClick={() =>
-                exportCSV(
-                  aiActions.map(({ id, action, type, time, status, impact }) => ({
-                    id,
-                    action,
-                    type,
-                    time,
-                    status,
-                    impact,
-                  })),
-                  "ai-actions.csv"
-                )
-              }
-              className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50"
-            >
-              <Download className="h-3 w-3" /> Export
-            </button>
+          <div className="mb-4 flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-purple-600" />
+            <h3 className="text-sm font-semibold text-slate-800">AI Automation Summary</h3>
           </div>
           <div className="space-y-3">
-            {aiActions.map((action) => {
+            {(() => {
               const typeColors: Record<string, string> = {
                 recall: "bg-green-50 text-green-700 border-green-200",
-                optimization: "bg-blue-50 text-blue-700 border-blue-200",
+                automation: "bg-blue-50 text-blue-700 border-blue-200",
                 content: "bg-purple-50 text-purple-700 border-purple-200",
-                prediction: "bg-amber-50 text-amber-700 border-amber-200",
-                testing: "bg-cyan-50 text-cyan-700 border-cyan-200",
+                delivery: "bg-cyan-50 text-cyan-700 border-cyan-200",
               };
-              return (
+              const summaryItems = [
+                { id: 1, action: `${automatedCount.toLocaleString()} messages auto-sent this month across all workflows`, type: "automation", impact: `${totalSent > 0 ? Math.round((automatedCount / totalSent) * 100) : 0}% automation rate` },
+                { id: 2, action: `${aiGeneratedCount.toLocaleString()} messages were AI-generated with personalized content`, type: "content", impact: `${totalSent > 0 ? Math.round((aiGeneratedCount / totalSent) * 100) : 0}% AI-written` },
+                { id: 3, action: `${conversionCount.toLocaleString()} patient conversions driven by outreach campaigns`, type: "recall", impact: `${totalSent > 0 ? Math.round((conversionCount / totalSent) * 100) : 0}% conversion rate` },
+                { id: 4, action: `${Math.round(deliveryRate)}% delivery rate maintained across all channels`, type: "delivery", impact: `${bounceRate}% bounce rate` },
+              ];
+              return summaryItems.map((item) => (
                 <div
-                  key={action.id}
+                  key={item.id}
                   className="flex items-start gap-3 rounded-lg border border-slate-100 bg-slate-50/50 p-3 transition-colors hover:bg-slate-50"
                 >
                   <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-purple-50">
                     <Bot className="h-4 w-4 text-purple-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-slate-800">{action.action}</p>
-                    <div className="mt-1 flex flex-wrap items-center gap-2">
-                      <span className={cn("rounded-full border px-2 py-0.5 text-[9px] font-medium", typeColors[action.type] || "bg-slate-50 text-slate-700 border-slate-200")}>
-                        {action.type}
+                    <p className="text-xs font-medium text-slate-800">{item.action}</p>
+                    <div className="mt-1">
+                      <span className={cn("rounded-full border px-2 py-0.5 text-[9px] font-medium", typeColors[item.type] || "bg-slate-50 text-slate-700 border-slate-200")}>
+                        {item.type}
                       </span>
-                      <span className="text-[10px] text-slate-400">{action.time}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5">
                     <CheckCircle2 className="h-3 w-3 text-emerald-600" />
-                    <span className="text-[10px] font-medium text-emerald-700 whitespace-nowrap">{action.impact}</span>
+                    <span className="text-[10px] font-medium text-emerald-700 whitespace-nowrap">{item.impact}</span>
                   </div>
                 </div>
-              );
-            })}
+              ));
+            })()}
           </div>
         </div>
       </div>
@@ -1360,6 +1377,149 @@ export function OutreachClient({ initialWorkflows }: { initialWorkflows: Workflo
       {activeTab === "campaigns" && renderCampaigns()}
       {activeTab === "engagement" && renderEngagement()}
       {activeTab === "ai-automation" && renderAiAutomation()}
+
+      {/* Create/Edit Workflow Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl bg-white shadow-2xl">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4 rounded-t-xl">
+              <h2 className="text-lg font-semibold text-slate-900">
+                {editingWorkflow ? "Edit Workflow" : "Create Workflow"}
+              </h2>
+              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 text-xl">&times;</button>
+            </div>
+
+            <div className="p-6 space-y-5">
+              {/* Name */}
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Workflow Name</label>
+                <input
+                  type="text"
+                  value={formName}
+                  onChange={(e) => setFormName(e.target.value)}
+                  placeholder="e.g., 6-Month Recall Reminder"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
+                />
+              </div>
+
+              {/* Type */}
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Campaign Type</label>
+                <select
+                  value={formType}
+                  onChange={(e) => setFormType(e.target.value)}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
+                >
+                  {Object.entries(typeConfig).map(([key, conf]) => (
+                    <option key={key} value={key}>{conf.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Steps */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-medium text-slate-700">Workflow Steps</label>
+                  <button
+                    onClick={addStep}
+                    className="flex items-center gap-1 text-xs font-medium text-cyan-600 hover:text-cyan-700"
+                  >
+                    <Plus className="h-3 w-3" /> Add Step
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {formSteps.map((step, i) => (
+                    <div key={i} className="rounded-lg border border-slate-200 bg-slate-50/50 p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-xs font-semibold text-slate-600">Step {i + 1}</span>
+                        {formSteps.length > 1 && (
+                          <button
+                            onClick={() => removeStep(i)}
+                            className="text-[10px] text-red-500 hover:text-red-700"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[10px] font-medium text-slate-500 mb-1">Channel</label>
+                          <select
+                            value={step.channel}
+                            onChange={(e) => updateStep(i, "channel", e.target.value)}
+                            className="w-full rounded-md border border-slate-200 px-2 py-1.5 text-xs text-slate-700"
+                          >
+                            <option value="email">Email</option>
+                            <option value="sms">SMS</option>
+                            <option value="phone">Phone Call</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-medium text-slate-500 mb-1">Delay (days)</label>
+                          <input
+                            type="number"
+                            min={0}
+                            value={step.delay_days}
+                            onChange={(e) => updateStep(i, "delay_days", parseInt(e.target.value) || 0)}
+                            className="w-full rounded-md border border-slate-200 px-2 py-1.5 text-xs text-slate-700"
+                          />
+                        </div>
+                      </div>
+                      <div className="mt-3">
+                        <label className="block text-[10px] font-medium text-slate-500 mb-1">Subject</label>
+                        <input
+                          type="text"
+                          value={step.subject}
+                          onChange={(e) => updateStep(i, "subject", e.target.value)}
+                          placeholder="Message subject..."
+                          className="w-full rounded-md border border-slate-200 px-2 py-1.5 text-xs text-slate-700"
+                        />
+                      </div>
+                      <div className="mt-2">
+                        <label className="block text-[10px] font-medium text-slate-500 mb-1">Message Body</label>
+                        <textarea
+                          value={step.body}
+                          onChange={(e) => updateStep(i, "body", e.target.value)}
+                          placeholder="Hi {{patient_name}}, it's time for your..."
+                          rows={3}
+                          className="w-full rounded-md border border-slate-200 px-2 py-1.5 text-xs text-slate-700 resize-none"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="sticky bottom-0 flex items-center justify-between border-t border-slate-200 bg-white px-6 py-4 rounded-b-xl">
+              {editingWorkflow && (
+                <button
+                  onClick={() => { setShowModal(false); handleDelete(editingWorkflow.id); }}
+                  className="text-xs font-medium text-red-500 hover:text-red-700"
+                >
+                  Delete Workflow
+                </button>
+              )}
+              <div className={cn("flex items-center gap-3", !editingWorkflow && "ml-auto")}>
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="rounded-lg border border-slate-200 px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={saving || !formName.trim()}
+                  className="rounded-lg bg-cyan-600 px-4 py-2 text-xs font-medium text-white hover:bg-cyan-700 disabled:opacity-50 transition-colors"
+                >
+                  {saving ? "Saving..." : editingWorkflow ? "Save Changes" : "Create Workflow"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
