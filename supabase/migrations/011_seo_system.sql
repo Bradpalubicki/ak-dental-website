@@ -118,11 +118,11 @@ CREATE INDEX IF NOT EXISTS idx_gsc_date
 CREATE INDEX IF NOT EXISTS idx_gsc_query
   ON seo_search_console_data(query, date DESC);
 
--- Add SEO permissions to RBAC
-INSERT INTO oe_permission_definitions (key, label, description, category, default_admin, default_manager, default_staff)
+-- Add SEO permissions to RBAC (uses oe_permissions from migration 009)
+INSERT INTO oe_permissions (key, label, category, sort_order)
 VALUES
-  ('seo.view', 'View SEO Dashboard', 'View SEO metrics, keywords, and audit results', 'seo', true, true, false),
-  ('seo.manage', 'Manage SEO', 'Add keywords, run audits, manage SEO settings', 'seo', true, false, false)
+  ('seo.view', 'View SEO Dashboard', 'seo', 60),
+  ('seo.manage', 'Manage SEO', 'seo', 61)
 ON CONFLICT (key) DO NOTHING;
 
 -- Enable RLS on all SEO tables

@@ -6,12 +6,21 @@ import type { BillingClaim } from "@/types/database";
 
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+const CATEGORY_COLORS: Record<string, string> = {
+  Labor: "#0891b2",
+  Clinical: "#059669",
+  Overhead: "#2563eb",
+  Growth: "#7c3aed",
+  Other: "#64748b",
+};
+
 export default async function FinancialsPage() {
   const supabase = createServiceSupabase();
   const now = new Date();
   const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1).toISOString().split("T")[0];
+  const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
 
-  const [metricsResult, claimsResult] = await Promise.all([
+  const [metricsResult, claimsResult, expensesResult, apResult] = await Promise.all([
     // Last 6 months of daily metrics for revenue charts
     supabase
       .from("oe_daily_metrics")
@@ -25,6 +34,20 @@ export default async function FinancialsPage() {
       .select("*, oe_patients(first_name, last_name)")
       .order("aging_days", { ascending: false })
       .limit(200),
+
+    // Current month expenses
+    supabase
+      .from("oe_monthly_expenses")
+      .select("label, category, amount, month")
+      .gte("month", sixMonthsAgo)
+      .order("month", { ascending: true }),
+
+    // Active accounts payable
+    supabase
+      .from("oe_accounts_payable")
+      .select("*")
+      .neq("status", "paid")
+      .order("due_date", { ascending: true }),
   ]);
 
   // Build monthly revenue from daily metrics
@@ -89,9 +112,67 @@ export default async function FinancialsPage() {
       insurance: c.insurance_provider || "—",
     }));
 
-  // Estimate net income (production minus static expenses placeholder)
-  const staticExpenses = 36600; // Sum of expense items in client
-  const netIncome = currentMonth.collections - staticExpenses;
+  // Build expense items from DB (current month)
+  const allExpenses = expensesResult.data || [];
+  const currentMonthExpenses = allExpenses.filter((e) => e.month === currentMonthStart);
+  const totalExpenses = currentMonthExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
+
+  const expenseItems = currentMonthExpenses.map((e) => ({
+    label: e.label,
+    amount: Number(e.amount),
+    category: e.category,
+    pctOfRev: currentMonth.production > 0
+      ? Math.round((Number(e.amount) / currentMonth.production) * 1000) / 10
+      : 0,
+  }));
+
+  // Build expense by category (aggregate for donut chart)
+  const categoryMap = new Map<string, number>();
+  for (const e of currentMonthExpenses) {
+    categoryMap.set(e.category, (categoryMap.get(e.category) || 0) + Number(e.amount));
+  }
+  const expenseByCategory = Array.from(categoryMap.entries()).map(([name, value]) => ({
+    name,
+    value,
+    color: CATEGORY_COLORS[name] || "#64748b",
+  }));
+
+  // Build cash flow data (monthly: inflow = collections, outflow = expenses)
+  const monthlyExpenseMap = new Map<string, number>();
+  for (const e of allExpenses) {
+    const d = new Date(e.month + "T12:00:00");
+    const key = `${d.getFullYear()}-${d.getMonth()}`;
+    monthlyExpenseMap.set(key, (monthlyExpenseMap.get(key) || 0) + Number(e.amount));
+  }
+
+  const cashFlowData = Array.from(monthlyMap.entries())
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([key, val]) => {
+      const outflow = monthlyExpenseMap.get(key) || 0;
+      return {
+        name: MONTH_NAMES[parseInt(key.split("-")[1])],
+        inflow: val.collections,
+        outflow,
+        net: val.collections - outflow,
+      };
+    });
+
+  // Accounts payable from DB
+  const accountsPayable = (apResult.data || []).map((ap) => {
+    const dueDate = new Date(ap.due_date + "T12:00:00");
+    const daysUntil = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    return {
+      vendor: ap.vendor,
+      description: ap.description || "",
+      amount: Number(ap.amount),
+      dueDate: dueDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      status: (daysUntil < 0 ? "overdue" : daysUntil <= 7 ? "due_soon" : ap.status) as "upcoming" | "due_soon" | "paid" | "overdue",
+      daysUntil,
+    };
+  });
+
+  // Net income
+  const netIncome = currentMonth.collections - totalExpenses;
 
   return (
     <FinancialsClient
@@ -104,6 +185,10 @@ export default async function FinancialsPage() {
         mtdProduction: currentMonth.production,
         mtdCollections: currentMonth.collections,
         netIncome: Math.max(netIncome, 0),
+        expenseItems,
+        accountsPayable,
+        cashFlowData,
+        expenseByCategory,
       }}
     />
   );

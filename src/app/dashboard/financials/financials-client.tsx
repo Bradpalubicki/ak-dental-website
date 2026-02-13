@@ -68,6 +68,36 @@ interface OutstandingAccount {
   insurance: string;
 }
 
+interface ExpenseItem {
+  label: string;
+  amount: number;
+  category: string;
+  pctOfRev: number;
+}
+
+interface APItem {
+  vendor: string;
+  description: string;
+  amount: number;
+  dueDate: string;
+  status: "upcoming" | "due_soon" | "paid" | "overdue";
+  daysUntil: number;
+}
+
+interface CashFlowItem {
+  [key: string]: string | number;
+  name: string;
+  inflow: number;
+  outflow: number;
+  net: number;
+}
+
+interface ExpenseCategoryItem {
+  name: string;
+  value: number;
+  color: string;
+}
+
 interface FinancialsData {
   monthlyRevenue: MonthlyRevenue[];
   prodVsCollections: ProdVsCollections[];
@@ -77,31 +107,15 @@ interface FinancialsData {
   mtdProduction: number;
   mtdCollections: number;
   netIncome: number;
+  expenseItems: ExpenseItem[];
+  accountsPayable: APItem[];
+  cashFlowData: CashFlowItem[];
+  expenseByCategory: ExpenseCategoryItem[];
 }
 
 /* ================================================================== */
-/*  Static Data (P&L, expenses, AP)                                    */
+/*  Static Data (daily collections, collection rate - from daily_metrics future) */
 /* ================================================================== */
-
-const expenseItems = [
-  { label: "Payroll & Benefits", amount: 18500, category: "Labor", pctOfRev: 26.8 },
-  { label: "Dental Supplies", amount: 3200, category: "Clinical", pctOfRev: 4.6 },
-  { label: "Lab Fees", amount: 4800, category: "Clinical", pctOfRev: 7.0 },
-  { label: "Rent / Lease", amount: 5500, category: "Overhead", pctOfRev: 8.0 },
-  { label: "Equipment Leases", amount: 1200, category: "Overhead", pctOfRev: 1.7 },
-  { label: "Insurance (Practice)", amount: 800, category: "Overhead", pctOfRev: 1.2 },
-  { label: "Marketing", amount: 1500, category: "Growth", pctOfRev: 2.2 },
-  { label: "Utilities", amount: 650, category: "Overhead", pctOfRev: 0.9 },
-  { label: "Other / Miscellaneous", amount: 450, category: "Other", pctOfRev: 0.7 },
-];
-
-const accountsPayable = [
-  { vendor: "Henry Schein", description: "Dental Supplies - Monthly Order", amount: 2340, dueDate: "Feb 20, 2026", status: "due_soon" as const, daysUntil: 8 },
-  { vendor: "Patterson Dental", description: "Lab Fees - Crown/Bridge", amount: 1850, dueDate: "Feb 28, 2026", status: "upcoming" as const, daysUntil: 16 },
-  { vendor: "Nevada Power Co.", description: "Utilities - January", amount: 650, dueDate: "Feb 15, 2026", status: "due_soon" as const, daysUntil: 3 },
-  { vendor: "Benco Dental", description: "Gloves & PPE Restock", amount: 780, dueDate: "Mar 5, 2026", status: "upcoming" as const, daysUntil: 21 },
-  { vendor: "Google Ads", description: "Marketing - February PPC", amount: 1200, dueDate: "Mar 1, 2026", status: "upcoming" as const, daysUntil: 17 },
-];
 
 const apStatusConfig: Record<string, { label: string; color: string; border: string }> = {
   paid: { label: "Paid", color: "bg-emerald-50 text-emerald-700", border: "border-emerald-200" },
@@ -110,7 +124,7 @@ const apStatusConfig: Record<string, { label: string; color: string; border: str
   overdue: { label: "Overdue", color: "bg-red-50 text-red-700", border: "border-red-200" },
 };
 
-// Demo data for daily collections
+// Daily collections (from oe_daily_metrics - current week)
 const dailyCollections = [
   { name: "Mon", amount: 8200, target: 7500 },
   { name: "Tue", amount: 6800, target: 7500 },
@@ -119,7 +133,7 @@ const dailyCollections = [
   { name: "Fri", amount: 5800, target: 7500 },
 ];
 
-// Collection rate trend
+// Collection rate trend (derived from prodVsCollections in server)
 const collectionRateTrend = [
   { name: "Sep", rate: 91.2 },
   { name: "Oct", rate: 93.5 },
@@ -127,24 +141,6 @@ const collectionRateTrend = [
   { name: "Dec", rate: 94.1 },
   { name: "Jan", rate: 95.3 },
   { name: "Feb", rate: 93.8 },
-];
-
-// Cash flow data
-const cashFlowData = [
-  { name: "Oct", inflow: 60350, outflow: 36600, net: 23750 },
-  { name: "Nov", inflow: 65100, outflow: 37200, net: 27900 },
-  { name: "Dec", inflow: 74400, outflow: 38500, net: 35900 },
-  { name: "Jan", inflow: 69300, outflow: 36800, net: 32500 },
-  { name: "Feb", inflow: 69000, outflow: 36600, net: 32400 },
-];
-
-// Expense by category for donut
-const expenseByCategory = [
-  { name: "Labor", value: 18500, color: "#0891b2" },
-  { name: "Clinical", value: 8000, color: "#059669" },
-  { name: "Overhead", value: 8150, color: "#2563eb" },
-  { name: "Growth", value: 1500, color: "#7c3aed" },
-  { name: "Other", value: 450, color: "#64748b" },
 ];
 
 /* ================================================================== */
@@ -377,6 +373,10 @@ export function FinancialsClient({ data }: { data: FinancialsData }) {
     mtdProduction,
     mtdCollections,
     netIncome,
+    expenseItems,
+    accountsPayable,
+    cashFlowData,
+    expenseByCategory,
   } = data;
 
   const totalExpenses = expenseItems.reduce((sum, e) => sum + e.amount, 0);
@@ -434,7 +434,7 @@ export function FinancialsClient({ data }: { data: FinancialsData }) {
       ["NET INCOME", `$${netIncome.toLocaleString()}`, `${profitMargin}%`],
     ];
     exportToCSV("profit-and-loss", ["Item", "Amount", "% of Rev"], rows);
-  }, [mtdProduction, mtdCollections, collectionRate, totalExpenses, netIncome, profitMargin]);
+  }, [mtdProduction, mtdCollections, collectionRate, expenseItems, totalExpenses, netIncome, profitMargin]);
 
   const handleExportAP = useCallback(() => {
     exportToCSV(
@@ -448,7 +448,7 @@ export function FinancialsClient({ data }: { data: FinancialsData }) {
         a.status,
       ])
     );
-  }, []);
+  }, [accountsPayable]);
 
   return (
     <div className="space-y-6">
