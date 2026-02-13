@@ -77,11 +77,26 @@ interface IntegrationStatus {
   insurance_edi: string;
 }
 
+interface OfficeHoursDay {
+  day: string;
+  open: string;
+  close: string;
+  active: boolean;
+}
+
+interface SystemHealth {
+  dbLatencyMs: number;
+  connectedServices: number;
+  totalServices: number;
+  aiStatus: "active" | "inactive";
+}
+
 interface SettingsData {
   practice_info: PracticeInfo;
   ai_settings: AiSettings;
   notification_settings: NotificationSettings;
   integration_status: IntegrationStatus;
+  office_hours: OfficeHoursDay[];
 }
 
 /* ================================================================== */
@@ -306,12 +321,19 @@ async function saveSettings(key: string, value: unknown) {
 /*  Main Component                                                     */
 /* ================================================================== */
 
-export function SettingsClient({ initialSettings }: { initialSettings: SettingsData }) {
+export function SettingsClient({
+  initialSettings,
+  systemHealth,
+}: {
+  initialSettings: SettingsData;
+  systemHealth: SystemHealth;
+}) {
   const [activeTab, setActiveTab] = useState<TabId>("general");
   const [practiceInfo, setPracticeInfo] = useState<PracticeInfo>(initialSettings.practice_info);
   const [aiSettings, setAiSettings] = useState<AiSettings>(initialSettings.ai_settings);
   const [notifSettings, setNotifSettings] = useState<NotificationSettings>(initialSettings.notification_settings);
   const [integrationStatus, setIntegrationStatus] = useState<IntegrationStatus>(initialSettings.integration_status);
+  const [officeHours, setOfficeHours] = useState<OfficeHoursDay[]>(initialSettings.office_hours);
   const [saving, setSaving] = useState<string | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
   const [configuringIntegration, setConfiguringIntegration] = useState<string | null>(null);
@@ -478,28 +500,68 @@ export function SettingsClient({ initialSettings }: { initialSettings: SettingsD
             <h2 className="text-base font-semibold text-slate-900">Office Hours</h2>
           </div>
           <div className="space-y-3">
-            {[
-              { day: "Monday - Thursday", hours: "8:00 AM - 5:00 PM", active: true },
-              { day: "Friday", hours: "8:00 AM - 3:00 PM", active: true },
-              { day: "Saturday", hours: "9:00 AM - 2:00 PM", active: true },
-              { day: "Sunday", hours: "Closed", active: false },
-            ].map((schedule) => (
+            {officeHours.map((schedule, idx) => (
               <div key={schedule.day} className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50/50 p-3">
                 <div className="flex items-center gap-3">
-                  <span className={cn(
-                    "h-2 w-2 rounded-full",
-                    schedule.active ? "bg-emerald-500" : "bg-slate-300"
-                  )} />
-                  <span className="text-sm font-medium text-slate-800">{schedule.day}</span>
+                  <ToggleSwitch
+                    enabled={schedule.active}
+                    onChange={(val) => {
+                      const updated = [...officeHours];
+                      updated[idx] = { ...updated[idx], active: val };
+                      setOfficeHours(updated);
+                    }}
+                  />
+                  <span className="text-sm font-medium text-slate-800 w-24">{schedule.day}</span>
                 </div>
-                <span className={cn(
-                  "text-sm",
-                  schedule.active ? "text-slate-600" : "text-slate-400"
-                )}>
-                  {schedule.hours}
-                </span>
+                {schedule.active ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="time"
+                      value={schedule.open}
+                      onChange={(e) => {
+                        const updated = [...officeHours];
+                        updated[idx] = { ...updated[idx], open: e.target.value };
+                        setOfficeHours(updated);
+                      }}
+                      className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-700 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
+                    />
+                    <span className="text-xs text-slate-400">to</span>
+                    <input
+                      type="time"
+                      value={schedule.close}
+                      onChange={(e) => {
+                        const updated = [...officeHours];
+                        updated[idx] = { ...updated[idx], close: e.target.value };
+                        setOfficeHours(updated);
+                      }}
+                      className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-700 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
+                    />
+                  </div>
+                ) : (
+                  <span className="text-sm text-slate-400">Closed</span>
+                )}
               </div>
             ))}
+          </div>
+          <div className="mt-5 flex items-center gap-3">
+            <button
+              onClick={() => handleSave("office_hours", officeHours)}
+              disabled={saving === "office_hours"}
+              className="flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-cyan-700 disabled:opacity-50 transition-colors"
+            >
+              {saving === "office_hours" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
+              {saved === "office_hours" ? "Saved!" : "Save Hours"}
+            </button>
+            {saved === "office_hours" && (
+              <span className="flex items-center gap-1 text-xs font-medium text-emerald-600">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                Hours saved successfully
+              </span>
+            )}
           </div>
           <AiInsight variant="recommendation">
             Saturday hours generate 18% of weekly appointments. Consider extending Saturday hours or adding AI phone coverage for after-hours Saturday calls.
@@ -513,25 +575,40 @@ export function SettingsClient({ initialSettings }: { initialSettings: SettingsD
             <h2 className="text-base font-semibold text-slate-900">System Health</h2>
           </div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-center">
-              <Activity className="mx-auto h-5 w-5 text-emerald-600 mb-1" />
-              <p className="text-lg font-bold text-emerald-700">99.9%</p>
-              <p className="text-[10px] text-emerald-600 uppercase font-medium">Uptime</p>
+            <div className={cn(
+              "rounded-lg border p-4 text-center",
+              systemHealth.dbLatencyMs < 500 ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"
+            )}>
+              <Activity className={cn("mx-auto h-5 w-5 mb-1", systemHealth.dbLatencyMs < 500 ? "text-emerald-600" : "text-amber-600")} />
+              <p className={cn("text-lg font-bold", systemHealth.dbLatencyMs < 500 ? "text-emerald-700" : "text-amber-700")}>
+                {systemHealth.dbLatencyMs < 500 ? "Healthy" : "Slow"}
+              </p>
+              <p className={cn("text-[10px] uppercase font-medium", systemHealth.dbLatencyMs < 500 ? "text-emerald-600" : "text-amber-600")}>Database</p>
             </div>
-            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-center">
-              <Database className="mx-auto h-5 w-5 text-blue-600 mb-1" />
-              <p className="text-lg font-bold text-blue-700">42ms</p>
-              <p className="text-[10px] text-blue-600 uppercase font-medium">Avg Latency</p>
+            <div className={cn(
+              "rounded-lg border p-4 text-center",
+              systemHealth.dbLatencyMs < 200 ? "border-emerald-200 bg-emerald-50" : systemHealth.dbLatencyMs < 500 ? "border-blue-200 bg-blue-50" : "border-amber-200 bg-amber-50"
+            )}>
+              <Database className={cn("mx-auto h-5 w-5 mb-1", systemHealth.dbLatencyMs < 200 ? "text-emerald-600" : systemHealth.dbLatencyMs < 500 ? "text-blue-600" : "text-amber-600")} />
+              <p className={cn("text-lg font-bold", systemHealth.dbLatencyMs < 200 ? "text-emerald-700" : systemHealth.dbLatencyMs < 500 ? "text-blue-700" : "text-amber-700")}>
+                {systemHealth.dbLatencyMs}ms
+              </p>
+              <p className={cn("text-[10px] uppercase font-medium", systemHealth.dbLatencyMs < 200 ? "text-emerald-600" : systemHealth.dbLatencyMs < 500 ? "text-blue-600" : "text-amber-600")}>DB Latency</p>
             </div>
             <div className="rounded-lg border border-cyan-200 bg-cyan-50 p-4 text-center">
               <Globe className="mx-auto h-5 w-5 text-cyan-600 mb-1" />
-              <p className="text-lg font-bold text-cyan-700">{connectedCount}/{totalIntegrations}</p>
+              <p className="text-lg font-bold text-cyan-700">{systemHealth.connectedServices}/{systemHealth.totalServices}</p>
               <p className="text-[10px] text-cyan-600 uppercase font-medium">Connected</p>
             </div>
-            <div className="rounded-lg border border-purple-200 bg-purple-50 p-4 text-center">
-              <Bot className="mx-auto h-5 w-5 text-purple-600 mb-1" />
-              <p className="text-lg font-bold text-purple-700">Active</p>
-              <p className="text-[10px] text-purple-600 uppercase font-medium">AI Engine</p>
+            <div className={cn(
+              "rounded-lg border p-4 text-center",
+              systemHealth.aiStatus === "active" ? "border-purple-200 bg-purple-50" : "border-red-200 bg-red-50"
+            )}>
+              <Bot className={cn("mx-auto h-5 w-5 mb-1", systemHealth.aiStatus === "active" ? "text-purple-600" : "text-red-600")} />
+              <p className={cn("text-lg font-bold", systemHealth.aiStatus === "active" ? "text-purple-700" : "text-red-700")}>
+                {systemHealth.aiStatus === "active" ? "Active" : "Offline"}
+              </p>
+              <p className={cn("text-[10px] uppercase font-medium", systemHealth.aiStatus === "active" ? "text-purple-600" : "text-red-600")}>AI Engine</p>
             </div>
           </div>
         </div>

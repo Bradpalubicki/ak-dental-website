@@ -66,6 +66,49 @@ interface RecentDocument {
   employeeName: string;
 }
 
+interface EmployeeTimeEntry {
+  name: string;
+  role: string;
+  department: string;
+  weekHrs: number;
+  overtime: number;
+  regRate: number;
+  otRate: number;
+  status: "normal" | "near-ot" | "overtime";
+  punctuality: number;
+  adherence: number;
+  daysPresent: number;
+  daysScheduled: number;
+}
+
+interface PunchEntry {
+  name: string;
+  action: string;
+  time: string;
+  scheduled: string;
+  flag: string | null;
+}
+
+interface CredentialEntry {
+  holder: string;
+  credential: string;
+  number: string;
+  expires: string;
+  status: "current" | "warning" | "expired";
+  daysUntil: number;
+}
+
+interface WorkforceData {
+  employeeTimeData: EmployeeTimeEntry[];
+  recentPunches: PunchEntry[];
+  credentials: CredentialEntry[];
+  roleDistribution: { name: string; value: number; color: string }[];
+  payrollTrendData: { name: string; gross: number; taxes: number; net: number }[];
+  weeklyHoursData: { name: string; regular: number; overtime: number }[];
+  attendanceData: { name: string; present: number; absent: number; late: number }[];
+  laborCostTrend: { name: string; laborPct: number; revenue: number }[];
+}
+
 interface Props {
   stats: {
     activeEmployees: number;
@@ -74,11 +117,7 @@ interface Props {
     acknowledgedThisMonth: number;
   };
   recentDocuments: RecentDocument[];
-  payroll?: {
-    nextPayDate?: string;
-    currentPeriod?: string;
-    totalEstimate?: number;
-  };
+  workforce: WorkforceData;
 }
 
 /* ================================================================== */
@@ -201,218 +240,7 @@ const statusConfig: Record<string, { label: string; color: string }> = {
   disputed: { label: "Disputed", color: "bg-red-100 text-red-700" },
 };
 
-/* ================================================================== */
-/*  Demo Data                                                          */
-/* ================================================================== */
-
-const employeeTimeData = [
-  {
-    name: "Maria Santos",
-    role: "Hygienist",
-    department: "Clinical",
-    weekHrs: 38.5,
-    overtime: 0,
-    regRate: 42,
-    otRate: 63,
-    status: "near-ot" as const,
-    punctuality: 98,
-    adherence: 96,
-    daysPresent: 5,
-    daysScheduled: 5,
-  },
-  {
-    name: "Jessica Chen",
-    role: "Dental Assistant",
-    department: "Clinical",
-    weekHrs: 32.0,
-    overtime: 0,
-    regRate: 22,
-    otRate: 33,
-    status: "normal" as const,
-    punctuality: 85,
-    adherence: 90,
-    daysPresent: 4,
-    daysScheduled: 4,
-  },
-  {
-    name: "Tom Williams",
-    role: "Dental Assistant",
-    department: "Clinical",
-    weekHrs: 40.0,
-    overtime: 2.0,
-    regRate: 20,
-    otRate: 30,
-    status: "overtime" as const,
-    punctuality: 92,
-    adherence: 88,
-    daysPresent: 5,
-    daysScheduled: 5,
-  },
-  {
-    name: "Rachel Green",
-    role: "Front Desk",
-    department: "Admin",
-    weekHrs: 36.0,
-    overtime: 0,
-    regRate: 18,
-    otRate: 27,
-    status: "normal" as const,
-    punctuality: 100,
-    adherence: 100,
-    daysPresent: 5,
-    daysScheduled: 5,
-  },
-  {
-    name: "David Kim",
-    role: "Office Manager",
-    department: "Admin",
-    weekHrs: 40.0,
-    overtime: 0,
-    regRate: 28,
-    otRate: 42,
-    status: "normal" as const,
-    punctuality: 100,
-    adherence: 100,
-    daysPresent: 5,
-    daysScheduled: 5,
-  },
-];
-
-const recentPunches = [
-  {
-    name: "David Kim",
-    action: "Clock In",
-    time: "7:45 AM",
-    scheduled: "7:45 AM",
-    flag: null,
-  },
-  {
-    name: "Maria Santos",
-    action: "Clock In",
-    time: "7:58 AM",
-    scheduled: "8:00 AM",
-    flag: null,
-  },
-  {
-    name: "Rachel Green",
-    action: "Clock In",
-    time: "7:55 AM",
-    scheduled: "8:00 AM",
-    flag: null,
-  },
-  {
-    name: "Jessica Chen",
-    action: "Clock In",
-    time: "8:12 AM",
-    scheduled: "8:00 AM",
-    flag: "12 min late",
-  },
-  {
-    name: "Tom Williams",
-    action: "Clock In",
-    time: "7:50 AM",
-    scheduled: "8:00 AM",
-    flag: null,
-  },
-];
-
-const credentials = [
-  {
-    holder: "Dr. Alex Khachaturian",
-    credential: "DDS License",
-    number: "#DEN-12345",
-    expires: "Jun 2027",
-    status: "current" as const,
-    daysUntil: 510,
-  },
-  {
-    holder: "Dr. Alex Khachaturian",
-    credential: "DEA License",
-    number: "#BK1234567",
-    expires: "Mar 2026",
-    status: "warning" as const,
-    daysUntil: 49,
-  },
-  {
-    holder: "Maria Santos",
-    credential: "RDH License",
-    number: "#HYG-54321",
-    expires: "Dec 2026",
-    status: "current" as const,
-    daysUntil: 327,
-  },
-  {
-    holder: "Jessica Chen",
-    credential: "DA Certification",
-    number: "#DA-98765",
-    expires: "Aug 2026",
-    status: "current" as const,
-    daysUntil: 205,
-  },
-  {
-    holder: "All Staff",
-    credential: "CPR/BLS",
-    number: "",
-    expires: "Sep 2026",
-    status: "current" as const,
-    daysUntil: 236,
-  },
-  {
-    holder: "All Staff",
-    credential: "OSHA Training",
-    number: "",
-    expires: "Jan 2027",
-    status: "current" as const,
-    daysUntil: 358,
-  },
-  {
-    holder: "Dr. Alex Khachaturian",
-    credential: "Radiation Safety",
-    number: "",
-    expires: "Feb 2026",
-    status: "expired" as const,
-    daysUntil: -1,
-  },
-];
-
-// Chart data
-const payrollTrendData = [
-  { name: "Oct", gross: 17200, taxes: 1780, net: 15420 },
-  { name: "Nov", gross: 18100, taxes: 1874, net: 16226 },
-  { name: "Dec", gross: 19500, taxes: 2018, net: 17482 },
-  { name: "Jan", gross: 18800, taxes: 1946, net: 16854 },
-  { name: "Feb", gross: 18500, taxes: 1915, net: 16585 },
-];
-
-const weeklyHoursData = [
-  { name: "Wk 1", regular: 186, overtime: 3 },
-  { name: "Wk 2", regular: 192, overtime: 0 },
-  { name: "Wk 3", regular: 188, overtime: 5 },
-  { name: "Wk 4", regular: 190, overtime: 2 },
-  { name: "Wk 5", regular: 184, overtime: 2 },
-];
-
-const roleDistribution = [
-  { name: "Clinical", value: 3, color: "#0891b2" },
-  { name: "Admin", value: 2, color: "#2563eb" },
-];
-
-// Performance data
-const attendanceData = [
-  { name: "Mon", present: 5, absent: 0, late: 0 },
-  { name: "Tue", present: 4, absent: 0, late: 1 },
-  { name: "Wed", present: 5, absent: 0, late: 0 },
-  { name: "Thu", present: 4, absent: 1, late: 0 },
-  { name: "Fri", present: 5, absent: 0, late: 0 },
-];
-
-const laborCostTrend = [
-  { name: "Oct", laborPct: 28.5, revenue: 60350 },
-  { name: "Nov", laborPct: 27.8, revenue: 65100 },
-  { name: "Dec", laborPct: 26.2, revenue: 74400 },
-  { name: "Jan", laborPct: 27.1, revenue: 69300 },
-  { name: "Feb", laborPct: 26.8, revenue: 69000 },
-];
+/* Demo data removed — all workforce data now computed server-side from oe_employees + oe_licenses */
 
 /* ================================================================== */
 /*  Helper Components                                                  */
@@ -726,7 +554,8 @@ type TabId = (typeof tabs)[number]["id"];
 /*  Main Component                                                     */
 /* ================================================================== */
 
-export function HrClient({ stats, recentDocuments }: Props) {
+export function HrClient({ stats, recentDocuments, workforce }: Props) {
+  const { employeeTimeData, recentPunches, credentials, roleDistribution, payrollTrendData, weeklyHoursData, attendanceData, laborCostTrend } = workforce;
   const [addMenuOpen, setAddMenuOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);

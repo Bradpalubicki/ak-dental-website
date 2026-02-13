@@ -57,6 +57,16 @@ interface BillingData {
   totalOutstanding: number;
 }
 
+interface BillingAnalytics {
+  monthlyBilling: { month: string; billed: number; collected: number; denied: number }[];
+  collectionRateTrend: { month: string; rate: number }[];
+  claimsByStatus: { name: string; value: number; color: string }[];
+  carrierBreakdown: { carrier: string; claims: number; paid: number; denialRate: number; avgDays: number; volume: string }[];
+  carrierDonut: { name: string; value: number; color: string }[];
+  denialReasons: { reason: string; count: number; pct: number }[];
+  paymentTimeline: { days: string; count: number; pct: number }[];
+}
+
 /* ================================================================== */
 /*  Config                                                             */
 /* ================================================================== */
@@ -71,71 +81,7 @@ const statusConfig: Record<string, { label: string; color: string; borderColor: 
   written_off: { label: "Written Off", color: "bg-slate-50 text-slate-500", borderColor: "border-slate-200", icon: XCircle },
 };
 
-/* ================================================================== */
-/*  Demo Data                                                          */
-/* ================================================================== */
-
-const monthlyBilling = [
-  { month: "Sep", billed: 148000, collected: 132000, denied: 8200 },
-  { month: "Oct", billed: 162000, collected: 148000, denied: 6800 },
-  { month: "Nov", billed: 155000, collected: 139000, denied: 9400 },
-  { month: "Dec", billed: 138000, collected: 126000, denied: 5600 },
-  { month: "Jan", billed: 172000, collected: 158000, denied: 7200 },
-  { month: "Feb", billed: 185000, collected: 170000, denied: 6100 },
-];
-
-const collectionRateTrend = [
-  { month: "Sep", rate: 89.2 },
-  { month: "Oct", rate: 91.4 },
-  { month: "Nov", rate: 89.7 },
-  { month: "Dec", rate: 91.3 },
-  { month: "Jan", rate: 91.9 },
-  { month: "Feb", rate: 91.9 },
-];
-
-const claimsByStatus = [
-  { name: "Paid", value: 68, color: "#059669" },
-  { name: "Pending", value: 15, color: "#d97706" },
-  { name: "Submitted", value: 8, color: "#2563eb" },
-  { name: "Denied", value: 5, color: "#dc2626" },
-  { name: "Appealed", value: 3, color: "#7c3aed" },
-  { name: "Draft", value: 1, color: "#64748b" },
-];
-
-const carrierBreakdown = [
-  { carrier: "Delta Dental", claims: 42, paid: 38, denialRate: 4.8, avgDays: 18, volume: "$62,400" },
-  { carrier: "Cigna", claims: 28, paid: 25, denialRate: 7.1, avgDays: 22, volume: "$41,200" },
-  { carrier: "MetLife", claims: 22, paid: 20, denialRate: 5.5, avgDays: 16, volume: "$33,800" },
-  { carrier: "Aetna", claims: 18, paid: 15, denialRate: 11.1, avgDays: 28, volume: "$26,100" },
-  { carrier: "United HC", claims: 15, paid: 13, denialRate: 8.0, avgDays: 24, volume: "$22,500" },
-  { carrier: "Guardian", claims: 12, paid: 11, denialRate: 3.3, avgDays: 14, volume: "$18,600" },
-];
-
-const denialReasons = [
-  { reason: "Missing information", count: 12, pct: 32 },
-  { reason: "Pre-auth required", count: 8, pct: 21 },
-  { reason: "Non-covered service", count: 7, pct: 18 },
-  { reason: "Duplicate claim", count: 5, pct: 13 },
-  { reason: "Exceeded frequency", count: 4, pct: 11 },
-  { reason: "Other", count: 2, pct: 5 },
-];
-
-const paymentTimeline = [
-  { days: "0-15", count: 32, pct: 35 },
-  { days: "16-30", count: 28, pct: 30 },
-  { days: "31-45", count: 18, pct: 19 },
-  { days: "46-60", count: 8, pct: 9 },
-  { days: "60+", count: 6, pct: 7 },
-];
-
-const carrierDonut = [
-  { name: "Delta Dental", value: 42, color: "#0891b2" },
-  { name: "Cigna", value: 28, color: "#2563eb" },
-  { name: "MetLife", value: 22, color: "#059669" },
-  { name: "Aetna", value: 18, color: "#d97706" },
-  { name: "United HC", value: 15, color: "#7c3aed" },
-  { name: "Guardian", value: 12, color: "#64748b" },
-];
+/* Demo data removed — all analytics now computed server-side from oe_billing_claims */
 
 /* ================================================================== */
 /*  Sub-components                                                     */
@@ -302,8 +248,9 @@ function procedureSummary(codes: unknown): string {
 /*  Main Component                                                     */
 /* ================================================================== */
 
-export function BillingClient({ data }: { data: BillingData }) {
+export function BillingClient({ data, analytics }: { data: BillingData; analytics: BillingAnalytics }) {
   const { claims, totalBilled, totalCollected, totalOutstanding } = data;
+  const { monthlyBilling, collectionRateTrend, claimsByStatus, carrierBreakdown, carrierDonut, denialReasons, paymentTimeline } = analytics;
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [dateRange, setDateRange] = useState("this_month");
   const [claimFilter, setClaimFilter] = useState("all");
@@ -375,7 +322,7 @@ export function BillingClient({ data }: { data: BillingData }) {
       a.click();
       URL.revokeObjectURL(url);
     },
-    [claims, aging0_30, aging31_60, aging61_90, aging90plus, aging0_30Amt, aging31_60Amt, aging61_90Amt, aging90plusAmt]
+    [claims, aging0_30, aging31_60, aging61_90, aging90plus, aging0_30Amt, aging31_60Amt, aging61_90Amt, aging90plusAmt, carrierBreakdown]
   );
 
   return (
@@ -545,7 +492,7 @@ export function BillingClient({ data }: { data: BillingData }) {
                   innerRadius={45}
                   outerRadius={65}
                   centerLabel="Claims"
-                  centerValue={`${claims.length || 137}`}
+                  centerValue={`${claims.length}`}
                 />
                 <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 px-2">
                   {claimsByStatus.map((s) => (

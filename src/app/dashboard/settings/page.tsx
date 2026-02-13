@@ -25,6 +25,15 @@ const defaultIntegrationStatus = {
   pms: "not_configured",
   insurance_edi: "not_configured",
 };
+const defaultOfficeHours = [
+  { day: "Monday", open: "08:00", close: "17:00", active: true },
+  { day: "Tuesday", open: "08:00", close: "17:00", active: true },
+  { day: "Wednesday", open: "08:00", close: "17:00", active: true },
+  { day: "Thursday", open: "08:00", close: "17:00", active: true },
+  { day: "Friday", open: "08:00", close: "15:00", active: true },
+  { day: "Saturday", open: "09:00", close: "14:00", active: true },
+  { day: "Sunday", open: "", close: "", active: false },
+];
 
 export default async function SettingsPage() {
   const supabase = createServiceSupabase();
@@ -34,20 +43,42 @@ export default async function SettingsPage() {
     .select("key, value");
 
   // Build a lookup from DB rows
-  const dbSettings: Record<string, Record<string, unknown>> = {};
+  const dbSettings: Record<string, unknown> = {};
   for (const row of data || []) {
-    if (row.value && typeof row.value === "object") {
-      dbSettings[row.key] = row.value as Record<string, unknown>;
+    if (row.value != null) {
+      dbSettings[row.key] = row.value;
     }
   }
+
+  // Office hours: use DB value if it's an array, otherwise default
+  const officeHours = Array.isArray(dbSettings.office_hours)
+    ? (dbSettings.office_hours as typeof defaultOfficeHours)
+    : defaultOfficeHours;
+
+  // Compute system health from integration status
+  const intStatus = { ...defaultIntegrationStatus, ...(typeof dbSettings.integration_status === "object" && !Array.isArray(dbSettings.integration_status) ? dbSettings.integration_status : {}) } as typeof defaultIntegrationStatus;
+  const connectedServices = Object.values(intStatus).filter((s) => s === "connected" || s === "configured").length;
+  const totalServices = Object.keys(intStatus).length;
+
+  // Check DB health by measuring query latency
+  const dbStart = Date.now();
+  await supabase.from("oe_practice_settings").select("key").limit(1);
+  const dbLatency = Date.now() - dbStart;
 
   return (
     <SettingsClient
       initialSettings={{
-        practice_info: { ...defaultPracticeInfo, ...dbSettings.practice_info } as typeof defaultPracticeInfo,
-        ai_settings: { ...defaultAiSettings, ...dbSettings.ai_settings } as typeof defaultAiSettings,
-        notification_settings: { ...defaultNotifSettings, ...dbSettings.notification_settings } as typeof defaultNotifSettings,
-        integration_status: { ...defaultIntegrationStatus, ...dbSettings.integration_status } as typeof defaultIntegrationStatus,
+        practice_info: { ...defaultPracticeInfo, ...(typeof dbSettings.practice_info === "object" && !Array.isArray(dbSettings.practice_info) ? dbSettings.practice_info : {}) } as typeof defaultPracticeInfo,
+        ai_settings: { ...defaultAiSettings, ...(typeof dbSettings.ai_settings === "object" && !Array.isArray(dbSettings.ai_settings) ? dbSettings.ai_settings : {}) } as typeof defaultAiSettings,
+        notification_settings: { ...defaultNotifSettings, ...(typeof dbSettings.notification_settings === "object" && !Array.isArray(dbSettings.notification_settings) ? dbSettings.notification_settings : {}) } as typeof defaultNotifSettings,
+        integration_status: intStatus,
+        office_hours: officeHours,
+      }}
+      systemHealth={{
+        dbLatencyMs: dbLatency,
+        connectedServices,
+        totalServices,
+        aiStatus: "active" as const,
       }}
     />
   );
