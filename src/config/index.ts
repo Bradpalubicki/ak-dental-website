@@ -17,6 +17,7 @@ export {
   engineConfig,
   services,
   serviceImages,
+  serviceContentImages,
   servicePromotions,
   getPublicServices,
   getAllRenderableServices,

@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   Phone,
@@ -29,6 +30,14 @@ export const metadata: Metadata = {
     title: "Advanced Dental Technology | AK Ultimate Dental",
     description:
       "See the CEREC and CAD/CAM technology behind same-day crowns, veneers, and restorations in Las Vegas.",
+    images: [
+      {
+        url: "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=1200&h=630&fit=crop&q=80",
+        width: 1200,
+        height: 630,
+        alt: "Advanced dental technology at AK Ultimate Dental in Las Vegas",
+      },
+    ],
   },
 };
 
@@ -37,6 +46,8 @@ const equipmentItems = [
     name: "CEREC Primescan",
     category: "Intraoral Scanner",
     icon: Scan,
+    image: "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=600&h=400&fit=crop&q=80",
+    imageAlt: "CEREC Primescan digital intraoral scanner at AK Ultimate Dental Las Vegas",
     description:
       "The fastest and most accurate intraoral scanner available. Captures detailed 3D images of your teeth in minutes — replacing messy, uncomfortable impression trays with a comfortable digital scan.",
     highlights: [
@@ -50,6 +61,8 @@ const equipmentItems = [
     name: "CEREC CAD Software",
     category: "Digital Design",
     icon: Monitor,
+    image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&h=400&fit=crop&q=80",
+    imageAlt: "CEREC CAD/CAM digital design software for dental restorations Las Vegas",
     description:
       "Sophisticated computer-aided design software turns your 3D scan into a custom restoration. Dr. Khachaturian designs your crown or veneer on screen — adjusting shape, contours, and bite contact to perfection before milling begins.",
     highlights: [
@@ -63,6 +76,8 @@ const equipmentItems = [
     name: "CEREC Primemill",
     category: "Milling Unit",
     icon: Cog,
+    image: "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=600&h=400&fit=crop&q=80",
+    imageAlt: "CEREC Primemill precision milling unit for same-day dental crowns Las Vegas",
     description:
       "Our in-office milling unit carves your custom restoration from a solid block of premium dental ceramic. Both wet and dry milling capabilities handle everything from delicate veneers to ultra-strong zirconia crowns.",
     highlights: [
@@ -76,6 +91,8 @@ const equipmentItems = [
     name: "CEREC SpeedFire",
     category: "Sintering Furnace",
     icon: Flame,
+    image: "https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=600&h=400&fit=crop&q=80",
+    imageAlt: "CEREC SpeedFire sintering furnace for dental ceramic processing Las Vegas",
     description:
       "The smallest and fastest sintering furnace available. After milling, your restoration is fired in the SpeedFire to achieve final strength, translucency, and natural appearance — ready for bonding in minutes.",
     highlights: [
@@ -194,9 +211,22 @@ export default function TechnologyPage() {
         </div>
       )}
 
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-gray-900 to-gray-800 text-white py-16 md:py-24">
-        <div className="container mx-auto px-4">
+      {/* Hero Section with Background Image */}
+      <section className="relative bg-gradient-to-br from-gray-900 to-gray-800 text-white py-16 md:py-24 overflow-hidden">
+        {/* Background image overlay */}
+        <div className="absolute inset-0">
+          <Image
+            src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=1600&h=900&fit=crop&q=70"
+            alt="Advanced dental technology equipment at AK Ultimate Dental Las Vegas"
+            fill
+            className="object-cover opacity-20"
+            priority
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 to-gray-800/90" />
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <nav className="mb-6 text-sm text-gray-400">
               <Link href="/" className="hover:text-white">
@@ -258,7 +288,7 @@ export default function TechnologyPage() {
         </div>
       </section>
 
-      {/* Equipment Showcase */}
+      {/* Equipment Showcase with Images */}
       <section className="py-16 md:py-24 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -275,19 +305,23 @@ export default function TechnologyPage() {
             {equipmentItems.map((item) => (
               <Card key={item.name} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <CardContent className="p-0">
-                  <div className="bg-gradient-to-br from-primary/10 to-blue-50 p-6 border-b">
-                    <div className="flex items-start gap-4">
-                      <div className="bg-primary/10 rounded-lg p-3">
-                        <item.icon className="h-8 w-8 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium text-primary uppercase tracking-wider">
-                          {item.category}
-                        </p>
-                        <h3 className="text-xl font-bold text-gray-900">
-                          {item.name}
-                        </h3>
-                      </div>
+                  {/* Equipment Image */}
+                  <div className="relative aspect-[3/2] overflow-hidden">
+                    <Image
+                      src={item.image}
+                      alt={item.imageAlt}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                    <div className="absolute bottom-4 left-4">
+                      <p className="text-xs font-medium text-blue-300 uppercase tracking-wider">
+                        {item.category}
+                      </p>
+                      <h3 className="text-xl font-bold text-white">
+                        {item.name}
+                      </h3>
                     </div>
                   </div>
                   <div className="p-6">

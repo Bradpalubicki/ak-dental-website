@@ -6,6 +6,7 @@ export {
   siteConfig,
   services,
   serviceImages,
+  serviceContentImages,
   servicePromotions,
   getPublicServices,
   getAllRenderableServices,

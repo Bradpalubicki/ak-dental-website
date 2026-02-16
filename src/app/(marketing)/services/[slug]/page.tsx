@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Phone, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,7 +16,13 @@ import {
   ServiceSchema,
   FAQSchema,
 } from "@/components/schema/local-business";
-import { siteConfig, getAllRenderableServices, getServicePromotion } from "@/lib/config";
+import {
+  siteConfig,
+  serviceImages,
+  serviceContentImages,
+  getAllRenderableServices,
+  getServicePromotion,
+} from "@/lib/config";
 import { serviceContent } from "@/lib/service-content";
 
 interface PageProps {
@@ -27,6 +34,13 @@ export async function generateStaticParams() {
   return allServices.map((service) => ({
     slug: service.slug,
   }));
+}
+
+/** Build SEO alt text with service name and location */
+function getImageAlt(title: string, location?: string): string {
+  const base = `${title} at AK Ultimate Dental`;
+  if (location) return `${base} near ${location}, NV`;
+  return `${base} in Las Vegas, NV`;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -41,6 +55,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const allServices = getAllRenderableServices();
   const serviceInfo = allServices.find((s) => s.slug === slug);
+  const heroImage = serviceImages[slug];
 
   return {
     title: content.metaTitle,
@@ -51,6 +66,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title: content.metaTitle,
       description: content.metaDescription,
+      ...(heroImage && {
+        images: [
+          {
+            url: heroImage,
+            width: 800,
+            height: 600,
+            alt: getImageAlt(content.title, serviceInfo?.location),
+          },
+        ],
+      }),
     },
     // Preview pages should not be indexed until enabled
     ...(serviceInfo?.preview && { robots: { index: false, follow: true } }),
@@ -68,6 +93,9 @@ export default async function ServicePage({ params }: PageProps) {
   }
 
   const promotion = getServicePromotion(slug);
+  const heroImage = serviceImages[slug];
+  const contentImage = serviceContentImages[slug];
+  const imageAlt = getImageAlt(content.title, serviceInfo.location);
 
   const relatedServiceInfo = content.relatedServices
     .map((relSlug) => allServices.find((s) => s.slug === relSlug))
@@ -112,41 +140,59 @@ export default async function ServicePage({ params }: PageProps) {
         </div>
       )}
 
-      {/* Hero Section */}
+      {/* Hero Section — Split Layout with Image */}
       <section className="bg-gradient-to-br from-blue-50 to-white py-16 md:py-24">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <nav className="mb-6 text-sm text-muted-foreground">
-              <Link href="/" className="hover:text-primary">
-                Home
-              </Link>
-              <span className="mx-2">/</span>
-              <Link href="/services" className="hover:text-primary">
-                Services
-              </Link>
-              <span className="mx-2">/</span>
-              <span className="text-foreground">{content.title}</span>
-            </nav>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              {content.heroTitle}
-            </h1>
-            <p className="text-xl text-muted-foreground mb-8">
-              {content.heroDescription}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button asChild size="lg">
-                <Link href="/appointment">
-                  Schedule a Consultation
-                  <ArrowRight className="ml-2 h-5 w-5" />
+          <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+            {/* Text */}
+            <div>
+              <nav className="mb-6 text-sm text-muted-foreground">
+                <Link href="/" className="hover:text-primary">
+                  Home
                 </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <a href={siteConfig.phoneHref}>
-                  <Phone className="mr-2 h-5 w-5" />
-                  {siteConfig.phone}
-                </a>
-              </Button>
+                <span className="mx-2">/</span>
+                <Link href="/services" className="hover:text-primary">
+                  Services
+                </Link>
+                <span className="mx-2">/</span>
+                <span className="text-foreground">{content.title}</span>
+              </nav>
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                {content.heroTitle}
+              </h1>
+              <p className="text-xl text-muted-foreground mb-8">
+                {content.heroDescription}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button asChild size="lg">
+                  <Link href="/appointment">
+                    Schedule a Consultation
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg">
+                  <a href={siteConfig.phoneHref}>
+                    <Phone className="mr-2 h-5 w-5" />
+                    {siteConfig.phone}
+                  </a>
+                </Button>
+              </div>
             </div>
+
+            {/* Hero Image */}
+            {heroImage && (
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
+                <Image
+                  src={heroImage}
+                  alt={imageAlt}
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -159,9 +205,24 @@ export default async function ServicePage({ params }: PageProps) {
             <div className="lg:col-span-2">
               <div className="prose prose-lg max-w-none">
                 {content.content.map((paragraph, index) => (
-                  <p key={index} className="text-muted-foreground mb-6">
-                    {paragraph}
-                  </p>
+                  <div key={index}>
+                    <p className="text-muted-foreground mb-6">
+                      {paragraph}
+                    </p>
+                    {/* Inline content image after 2nd paragraph */}
+                    {index === 1 && contentImage && (
+                      <div className="my-8 rounded-xl overflow-hidden shadow-lg not-prose">
+                        <Image
+                          src={contentImage}
+                          alt={`${content.title} procedure — AK Ultimate Dental${serviceInfo.location ? ` near ${serviceInfo.location}` : ", Las Vegas"}`}
+                          width={800}
+                          height={500}
+                          className="w-full h-auto"
+                          sizes="(max-width: 1024px) 100vw, 66vw"
+                        />
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
 
