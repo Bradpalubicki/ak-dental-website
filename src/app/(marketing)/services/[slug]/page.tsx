@@ -15,7 +15,7 @@ import {
   ServiceSchema,
   FAQSchema,
 } from "@/components/schema/local-business";
-import { siteConfig, services } from "@/lib/config";
+import { siteConfig, getAllRenderableServices, getServicePromotion } from "@/lib/config";
 import { serviceContent } from "@/lib/service-content";
 
 interface PageProps {
@@ -23,7 +23,8 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  return services.map((service) => ({
+  const allServices = getAllRenderableServices();
+  return allServices.map((service) => ({
     slug: service.slug,
   }));
 }
@@ -38,6 +39,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  const allServices = getAllRenderableServices();
+  const serviceInfo = allServices.find((s) => s.slug === slug);
+
   return {
     title: content.metaTitle,
     description: content.metaDescription,
@@ -48,20 +52,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: content.metaTitle,
       description: content.metaDescription,
     },
+    // Preview pages should not be indexed until enabled
+    ...(serviceInfo?.preview && { robots: { index: false, follow: true } }),
   };
 }
 
 export default async function ServicePage({ params }: PageProps) {
   const { slug } = await params;
   const content = serviceContent[slug];
-  const serviceInfo = services.find((s) => s.slug === slug);
+  const allServices = getAllRenderableServices();
+  const serviceInfo = allServices.find((s) => s.slug === slug);
 
   if (!content || !serviceInfo) {
     notFound();
   }
 
+  const promotion = getServicePromotion(slug);
+
   const relatedServiceInfo = content.relatedServices
-    .map((relSlug) => services.find((s) => s.slug === relSlug))
+    .map((relSlug) => allServices.find((s) => s.slug === relSlug))
     .filter(Boolean);
 
   return (
@@ -79,6 +88,29 @@ export default async function ServicePage({ params }: PageProps) {
         url={`/services/${slug}`}
       />
       <FAQSchema faqs={content.faqs} />
+
+      {/* Preview Banner */}
+      {serviceInfo.preview && (
+        <div className="bg-amber-50 border-b border-amber-200 py-3 px-4 text-center">
+          <p className="text-sm text-amber-800 font-medium">
+            Preview Mode &mdash; This page is not yet visible to the public.{" "}
+            <span className="text-amber-600">Toggle off preview in config to go live.</span>
+          </p>
+        </div>
+      )}
+
+      {/* Promotion Banner */}
+      {promotion && (
+        <div className="bg-gradient-to-r from-primary to-blue-700 text-white py-4 px-4 text-center">
+          <p className="text-lg font-bold">{promotion.headline}</p>
+          <p className="text-sm opacity-90 mt-1">{promotion.details}</p>
+          {promotion.discount && (
+            <span className="inline-block mt-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-1 text-sm font-semibold">
+              {promotion.discount}
+            </span>
+          )}
+        </div>
+      )}
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-50 to-white py-16 md:py-24">

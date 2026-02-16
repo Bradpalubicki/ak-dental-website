@@ -2,9 +2,10 @@
 // Shared across ALL dental practices using this engine.
 // Change this file to create a new engine type (counseling, chiro, etc.)
 
-import type { EngineConfig, ServiceItem } from "./types";
+import type { EngineConfig, ServiceItem, ServicePromotion } from "./types";
 
 export const services: ServiceItem[] = [
+  // ── Core Services (enabled by default) ──────────────────────────
   {
     title: "Cleanings & Prevention",
     slug: "cleanings-prevention",
@@ -68,7 +69,136 @@ export const services: ServiceItem[] = [
     icon: "Baby",
     featured: false,
   },
+
+  // ── Standalone Procedure Pages (SEO power pages) ───────────────
+  {
+    title: "Porcelain Veneers",
+    slug: "porcelain-veneers",
+    description: "Custom porcelain veneers that transform your smile in as few as two visits. Natural-looking, stain-resistant, and long-lasting.",
+    icon: "Sparkles",
+    featured: true,
+    // preview: true,
+  },
+  {
+    title: "Dental Crowns",
+    slug: "dental-crowns",
+    description: "Restore damaged teeth with precision-crafted dental crowns. Same-day CEREC options available for your convenience.",
+    icon: "Crown",
+    featured: true,
+    // preview: true,
+  },
+  {
+    title: "Dental Bridges",
+    slug: "dental-bridges",
+    description: "Replace missing teeth with custom dental bridges that restore your smile, bite, and confidence.",
+    icon: "Crown",
+    featured: false,
+    // preview: true,
+  },
+
+  // ── Location Variant Pages (local SEO dominance) ───────────────
+  {
+    title: "Porcelain Veneers Las Vegas",
+    slug: "porcelain-veneers-las-vegas",
+    description: "Premium porcelain veneers in Las Vegas, NV. Custom smile transformations by Dr. Alex Khachaturian at AK Ultimate Dental.",
+    icon: "Sparkles",
+    featured: false,
+    // preview: true,
+    location: "Las Vegas",
+    parentSlug: "porcelain-veneers",
+  },
+  {
+    title: "Porcelain Veneers Henderson",
+    slug: "porcelain-veneers-henderson",
+    description: "Porcelain veneers near Henderson, NV. Serving Henderson patients with custom cosmetic dentistry at AK Ultimate Dental.",
+    icon: "Sparkles",
+    featured: false,
+    // preview: true,
+    location: "Henderson",
+    parentSlug: "porcelain-veneers",
+  },
+  {
+    title: "Dental Crowns Las Vegas",
+    slug: "dental-crowns-las-vegas",
+    description: "Same-day dental crowns in Las Vegas, NV. CEREC technology for permanent crowns in one visit at AK Ultimate Dental.",
+    icon: "Crown",
+    featured: false,
+    // preview: true,
+    location: "Las Vegas",
+    parentSlug: "dental-crowns",
+  },
+  {
+    title: "Dental Crowns Henderson",
+    slug: "dental-crowns-henderson",
+    description: "Dental crowns near Henderson, NV. Same-day CEREC crowns and custom restorations at AK Ultimate Dental.",
+    icon: "Crown",
+    featured: false,
+    // preview: true,
+    location: "Henderson",
+    parentSlug: "dental-crowns",
+  },
+  {
+    title: "Dental Bridges Las Vegas",
+    slug: "dental-bridges-las-vegas",
+    description: "Custom dental bridges in Las Vegas, NV. Replace missing teeth and restore your smile at AK Ultimate Dental.",
+    icon: "Crown",
+    featured: false,
+    // preview: true,
+    location: "Las Vegas",
+    parentSlug: "dental-bridges",
+  },
+  {
+    title: "Dental Bridges Henderson",
+    slug: "dental-bridges-henderson",
+    description: "Dental bridges near Henderson, NV. Expert tooth replacement solutions at AK Ultimate Dental.",
+    icon: "Crown",
+    featured: false,
+    // preview: true,
+    location: "Henderson",
+    parentSlug: "dental-bridges",
+  },
+
+  // ── Technology Page ────────────────────────────────────────────
+  {
+    title: "Same-Day Dentistry",
+    slug: "same-day-dentistry",
+    description: "Get your permanent crown, veneer, or restoration in a single visit with our advanced CEREC and CAD/CAM technology.",
+    icon: "Sparkles",
+    featured: false,
+    // preview: true,
+  },
 ];
+
+/** Active promotions for service pages */
+export const servicePromotions: ServicePromotion[] = [
+  {
+    serviceSlugs: [
+      "porcelain-veneers", "porcelain-veneers-las-vegas", "porcelain-veneers-henderson",
+      "dental-crowns", "dental-crowns-las-vegas", "dental-crowns-henderson",
+      "dental-bridges", "dental-bridges-las-vegas", "dental-bridges-henderson",
+      "crowns-bridges",
+    ],
+    headline: "Special Offer on Veneers, Crowns & Bridges",
+    details: "Ask about our dental discount program for veneers, crowns, and bridges. Flexible financing available with payments as low as $99/month.",
+    discount: "Call for Special Pricing",
+    active: true,
+  },
+];
+
+/** Helper: Get services visible in public navigation/listings */
+export function getPublicServices(): ServiceItem[] {
+  return services.filter((s) => s.enabled !== false && !s.preview && !s.parentSlug);
+}
+
+/** Helper: Get all renderable services (including preview, excluding disabled) */
+export function getAllRenderableServices(): ServiceItem[] {
+  return services.filter((s) => s.enabled !== false);
+}
+
+/** Helper: Get promotion for a service slug */
+export function getServicePromotion(slug: string): ServicePromotion | undefined {
+  return servicePromotions.find((p) => p.active && p.serviceSlugs.includes(slug));
+}
 
 export const serviceImages: Record<string, string> = {
   "cleanings-prevention": "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=800&h=600&fit=crop&q=80",
@@ -80,6 +210,18 @@ export const serviceImages: Record<string, string> = {
   "periodontics": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=800&h=600&fit=crop&q=80",
   "orthodontics": "https://images.unsplash.com/photo-1629909613807-0f474baa822b?w=800&h=600&fit=crop&q=80",
   "pediatric-dentistry": "https://images.unsplash.com/photo-1609137144813-7d9921338f24?w=800&h=600&fit=crop&q=80",
+  // Standalone procedure pages
+  "porcelain-veneers": "https://images.unsplash.com/photo-1600170311833-c2cf5280ce49?w=800&h=600&fit=crop&q=80",
+  "dental-crowns": "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=800&h=600&fit=crop&q=80",
+  "dental-bridges": "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=800&h=600&fit=crop&q=80",
+  // Location variants (share parent images)
+  "porcelain-veneers-las-vegas": "https://images.unsplash.com/photo-1600170311833-c2cf5280ce49?w=800&h=600&fit=crop&q=80",
+  "porcelain-veneers-henderson": "https://images.unsplash.com/photo-1600170311833-c2cf5280ce49?w=800&h=600&fit=crop&q=80",
+  "dental-crowns-las-vegas": "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=800&h=600&fit=crop&q=80",
+  "dental-crowns-henderson": "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=800&h=600&fit=crop&q=80",
+  "dental-bridges-las-vegas": "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=800&h=600&fit=crop&q=80",
+  "dental-bridges-henderson": "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=800&h=600&fit=crop&q=80",
+  "same-day-dentistry": "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&h=600&fit=crop&q=80",
 };
 
 export const engineConfig: EngineConfig = {

@@ -2,7 +2,7 @@
 // Import from here: import { siteConfig, services, ... } from "@/config";
 
 import { practiceConfig } from "./practice";
-import { engineConfig, services } from "./engine";
+import { engineConfig, getPublicServices } from "./engine";
 import type { SiteConfig } from "./types";
 
 // Combined site config (practice + engine)
@@ -13,12 +13,21 @@ export const siteConfig: SiteConfig = {
 
 // Re-export for convenience
 export { practiceConfig } from "./practice";
-export { engineConfig, services, serviceImages } from "./engine";
+export {
+  engineConfig,
+  services,
+  serviceImages,
+  servicePromotions,
+  getPublicServices,
+  getAllRenderableServices,
+  getServicePromotion,
+} from "./engine";
 export type {
   PracticeConfig,
   EngineConfig,
   SiteConfig,
   ServiceItem,
+  ServicePromotion,
   TeamMember,
   Testimonial,
   Stat,
@@ -31,7 +40,7 @@ export const testimonials = practiceConfig.testimonials;
 
 export const navigation = {
   main: engineConfig.navigation.main,
-  services: services.map((s) => ({ name: s.title, href: `/services/${s.slug}` })),
+  services: getPublicServices().map((s) => ({ name: s.title, href: `/services/${s.slug}` })),
 };
 
 // Helper to get the primary team member (for pages that show "the doctor")

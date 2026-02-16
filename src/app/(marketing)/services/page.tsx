@@ -4,7 +4,7 @@ import { ArrowRight, Shield, Sparkles, CircleDot, Crown, Heart, Scissors, Leaf, 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BreadcrumbSchema } from "@/components/schema/local-business";
-import { services, siteConfig } from "@/lib/config";
+import { siteConfig, getPublicServices } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "Dental Services in Las Vegas, NV",
@@ -33,6 +33,8 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export default function ServicesPage() {
+  const publicServices = getPublicServices();
+
   return (
     <>
       <BreadcrumbSchema
@@ -69,7 +71,7 @@ export default function ServicesPage() {
       <section className="py-16 md:py-24 bg-white">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service) => {
+            {publicServices.map((service) => {
               const Icon = iconMap[service.icon] || Shield;
               return (
                 <Card

@@ -177,6 +177,27 @@ export interface ServiceItem {
   icon: string;
   featured: boolean;
   image?: string;
+  /** If false, page is hidden from public navigation and service listings */
+  enabled?: boolean;
+  /** If true, page renders but shows a "Coming Soon" preview badge */
+  preview?: boolean;
+  /** Location variant (e.g., "Las Vegas" or "Henderson") */
+  location?: string;
+  /** Parent service slug for location variants */
+  parentSlug?: string;
+}
+
+export interface ServicePromotion {
+  /** Which service slugs this promotion applies to */
+  serviceSlugs: string[];
+  /** Promotion headline */
+  headline: string;
+  /** Promotion details */
+  details: string;
+  /** Optional discount amount display */
+  discount?: string;
+  /** Whether the promotion is active */
+  active: boolean;
 }
 
 export interface NavItem {
