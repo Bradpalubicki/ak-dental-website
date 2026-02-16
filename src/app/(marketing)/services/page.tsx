@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Shield, Sparkles, CircleDot, Crown, Heart, Scissors, Leaf, AlignCenter, Baby } from "lucide-react";
+import { ArrowRight, Shield, Sparkles, CircleDot, Crown, Heart, Scissors, Leaf, AlignCenter, Baby, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BreadcrumbSchema } from "@/components/schema/local-business";
@@ -64,6 +64,32 @@ export default function ServicesPage() {
               </Link>
             </Button>
           </div>
+        </div>
+      </section>
+
+      {/* Same-Day Technology Banner */}
+      <section className="bg-white border-b">
+        <div className="container mx-auto px-4 py-8">
+          <Link
+            href="/technology"
+            className="group flex flex-col md:flex-row items-center gap-6 bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-6 md:p-8 hover:shadow-xl transition-shadow"
+          >
+            <div className="bg-blue-600/20 border border-blue-500/30 rounded-xl p-4">
+              <Zap className="h-10 w-10 text-blue-400" />
+            </div>
+            <div className="text-center md:text-left flex-1">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-1">
+                Same-Day Crowns, Veneers & Restorations
+              </h2>
+              <p className="text-gray-400">
+                See our in-house CEREC digital lab — permanent restorations in a single visit.
+              </p>
+            </div>
+            <span className="text-blue-400 font-semibold group-hover:text-white transition-colors flex items-center gap-2 whitespace-nowrap">
+              View Our Technology
+              <ArrowRight className="h-5 w-5" />
+            </span>
+          </Link>
         </div>
       </section>
 
