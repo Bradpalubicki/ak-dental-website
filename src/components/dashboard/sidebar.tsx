@@ -25,6 +25,12 @@ import {
   Activity,
   Wallet,
   Award,
+  Upload,
+  ClipboardList,
+  Stethoscope,
+  UserCog,
+  Clock,
+  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -59,16 +65,28 @@ const sections: NavSection[] = [
       { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, requiredPermission: "dashboard.view" },
       { name: "Business Advisor", href: "/dashboard/advisor", icon: Sparkles, requiredPermission: "advisor.use" },
       { name: "Approvals", href: "/dashboard/approvals", icon: CheckSquare, badgeKey: "approvals", badgeColor: "bg-amber-400 text-amber-950", requiredPermission: "approvals.view" },
+      { name: "File Drop Box", href: "/dashboard/dropbox", icon: Upload, requiredPermission: "documents.view" },
+      { name: "Onboarding", href: "/dashboard/onboarding", icon: ClipboardList, requiredPermission: "settings.view" },
+    ],
+  },
+  {
+    label: "Clinical",
+    items: [
+      { name: "Patients", href: "/dashboard/patients", icon: Users, requiredPermission: "patients.view" },
+      { name: "Appointments", href: "/dashboard/appointments", icon: Calendar, badgeKey: "appointments", badgeColor: "bg-orange-400 text-orange-950", requiredPermission: "appointments.view" },
+      { name: "Clinical Notes", href: "/dashboard/clinical-notes", icon: Stethoscope, requiredPermission: "treatments.view" },
+      { name: "Treatments", href: "/dashboard/treatments", icon: FileText, requiredPermission: "treatments.view" },
+      { name: "Providers", href: "/dashboard/providers", icon: UserCog, requiredPermission: "hr.view" },
+      { name: "Waitlist", href: "/dashboard/waitlist", icon: Clock, requiredPermission: "appointments.view" },
     ],
   },
   {
     label: "Operations",
     items: [
       { name: "Leads", href: "/dashboard/leads", icon: UserPlus, badgeKey: "leads", badgeColor: "bg-emerald-400 text-emerald-950", requiredPermission: "leads.view" },
-      { name: "Patients", href: "/dashboard/patients", icon: Users, requiredPermission: "patients.view" },
-      { name: "Appointments", href: "/dashboard/appointments", icon: Calendar, badgeKey: "appointments", badgeColor: "bg-orange-400 text-orange-950", requiredPermission: "appointments.view" },
-      { name: "Treatments", href: "/dashboard/treatments", icon: FileText, requiredPermission: "treatments.view" },
       { name: "Insurance", href: "/dashboard/insurance", icon: Shield, badgeKey: "insurance", badgeColor: "bg-violet-400 text-violet-950", requiredPermission: "insurance.view" },
+      { name: "Outreach", href: "/dashboard/outreach", icon: Send, requiredPermission: "outreach.view" },
+      { name: "Calls", href: "/dashboard/calls", icon: Phone, requiredPermission: "calls.view" },
     ],
   },
   {
@@ -86,8 +104,7 @@ const sections: NavSection[] = [
       { name: "Inbox", href: "/dashboard/inbox", icon: Inbox, badgeKey: "inbox", badgeColor: "bg-blue-400 text-blue-950", requiredPermission: "inbox.view" },
       { name: "SEO", href: "/dashboard/seo", icon: Search, requiredPermission: "seo.view" },
       { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3, requiredPermission: "analytics.view" },
-      { name: "Calls", href: "/dashboard/calls", icon: Phone, requiredPermission: "calls.view" },
-      { name: "Outreach", href: "/dashboard/outreach", icon: Send, requiredPermission: "outreach.view" },
+      { name: "Compliance", href: "/dashboard/compliance", icon: ShieldCheck, requiredPermission: "settings.view" },
       { name: "Settings", href: "/dashboard/settings", icon: Settings, requiredPermission: "settings.view" },
     ],
   },

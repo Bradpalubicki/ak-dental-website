@@ -50,15 +50,16 @@ export async function POST(req: NextRequest) {
     }
 
     // Build line items from procedures
+    // HIPAA: Use generic names in Stripe. Do NOT send procedure codes, clinical descriptions, or PHI.
     const procedures = (plan.procedures || []) as Array<{ name: string; cost: number; code: string }>;
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = procedures
       .filter((p) => p.cost > 0)
-      .map((proc) => ({
+      .map((proc, index) => ({
         price_data: {
           currency: "usd",
           product_data: {
-            name: proc.name,
-            description: `Procedure ${proc.code}`,
+            name: `Dental Service ${index + 1}`,
+            // HIPAA: Generic description only - no procedure codes or clinical details
           },
           unit_amount: Math.round(proc.cost * 100),
         },
@@ -81,6 +82,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Create or find Stripe customer
+    // HIPAA: Only send email to Stripe for payment processing.
+    // Do NOT send patient name, phone, medical info, or treatment details.
     let customerId: string | undefined;
     if (patient?.email) {
       const existing = await stripe.customers.list({ email: patient.email, limit: 1 });
@@ -89,9 +92,7 @@ export async function POST(req: NextRequest) {
       } else {
         const customer = await stripe.customers.create({
           email: patient.email,
-          name: `${patient.first_name} ${patient.last_name}`,
-          phone: patient.phone || undefined,
-          metadata: { patient_id: patientId },
+          // HIPAA: Do NOT include patient name, phone, or medical metadata
         });
         customerId = customer.id;
       }
@@ -114,9 +115,9 @@ export async function POST(req: NextRequest) {
       }],
       success_url: `${origin}/dashboard/treatments/${treatmentPlanId}/present?payment=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/dashboard/treatments/${treatmentPlanId}/present?payment=cancelled`,
+      // HIPAA: Only internal reference IDs in Stripe metadata - no PHI
       metadata: {
-        treatment_plan_id: treatmentPlanId,
-        patient_id: patientId,
+        internal_ref: treatmentPlanId,
       },
       ...(coupons.length > 0 ? {
         discounts: coupons.map((coupon) => ({ coupon })),

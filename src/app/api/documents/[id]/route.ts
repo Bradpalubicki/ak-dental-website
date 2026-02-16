@@ -1,57 +1,81 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { tryAuth } from "@/lib/auth";
-import { createServiceSupabase } from "@/lib/supabase/server";
+import {
+  getDocument,
+  updateDocument,
+  archiveDocument,
+} from "@/lib/services/documents";
 
 export async function GET(
-  _request: Request,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const authResult = await tryAuth();
   if (authResult instanceof NextResponse) return authResult;
 
   const { id } = await params;
-  const supabase = createServiceSupabase();
+  const { data, error } = await getDocument(id);
 
-  const { data: doc, error } = await supabase
-    .from("oe_documents")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-  if (error || !doc) {
-    return NextResponse.json({ error: "Document not found" }, { status: 404 });
+  if (error || !data) {
+    return NextResponse.json(
+      { error: error || "Document not found" },
+      { status: 404 }
+    );
   }
 
-  // Generate a signed URL for download
-  const { data: urlData, error: urlError } = await supabase.storage
-    .from("documents")
-    .createSignedUrl(doc.storage_path, 3600); // 1 hour expiry
+  return NextResponse.json(data);
+}
 
-  if (urlError) {
-    return NextResponse.json({ error: "Failed to generate download URL" }, { status: 500 });
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const authResult = await tryAuth();
+  if (authResult instanceof NextResponse) return authResult;
+
+  const { id } = await params;
+  const body = await request.json();
+
+  const updates: Record<string, unknown> = {};
+  if (body.category !== undefined) updates.category = body.category;
+  if (body.subcategory !== undefined) updates.subcategory = body.subcategory;
+  if (body.patient_id !== undefined) updates.patient_id = body.patient_id;
+  if (body.tags !== undefined) updates.tags = body.tags;
+  if (body.notes !== undefined) updates.notes = body.notes;
+  if (body.status !== undefined) updates.status = body.status;
+  if (body.description !== undefined) updates.description = body.description;
+
+  if (Object.keys(updates).length === 0) {
+    return NextResponse.json(
+      { error: "No valid update fields provided" },
+      { status: 400 }
+    );
   }
 
-  return NextResponse.json({ ...doc, download_url: urlData.signedUrl });
+  const { data, error } = await updateDocument(id, updates);
+
+  if (error) {
+    return NextResponse.json({ error }, { status: 500 });
+  }
+
+  return NextResponse.json(data);
 }
 
 export async function DELETE(
-  _request: Request,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const authResult = await tryAuth();
   if (authResult instanceof NextResponse) return authResult;
 
   const { id } = await params;
-  const supabase = createServiceSupabase();
+  const { success, error } = await archiveDocument(id);
 
-  // Soft delete — mark as deleted
-  const { error } = await supabase
-    .from("oe_documents")
-    .update({ status: "deleted", updated_at: new Date().toISOString() })
-    .eq("id", id);
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (!success) {
+    return NextResponse.json(
+      { error: error || "Failed to archive document" },
+      { status: 500 }
+    );
   }
 
   return NextResponse.json({ success: true });

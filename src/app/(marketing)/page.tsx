@@ -89,6 +89,7 @@ export default function HomePage() {
                     src={images.team.doctor}
                     alt="Dr. Alex Khachaturian - AK Ultimate Dental"
                     fill
+                    sizes="320px"
                     className="object-cover object-top"
                     priority
                   />
@@ -162,6 +163,7 @@ export default function HomePage() {
                     src={images.services[service.slug as keyof typeof images.services] || images.services[Object.keys(images.services)[0] as keyof typeof images.services]}
                     alt={service.title}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -289,6 +291,7 @@ export default function HomePage() {
             src={images.hero.office}
             alt="AK Ultimate Dental office interior in Las Vegas"
             fill
+            sizes="100vw"
             className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-gray-900/95 via-gray-900/80 to-gray-900/60" />
@@ -474,6 +477,7 @@ export default function HomePage() {
                   src={images.lasVegas.skyline}
                   alt="Las Vegas skyline"
                   fill
+                  sizes="192px"
                   className="object-cover"
                 />
               </div>
@@ -489,6 +493,7 @@ export default function HomePage() {
             src={images.patients.smile}
             alt="Happy patient smiling at AK Ultimate Dental"
             fill
+            sizes="100vw"
             className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/95 to-blue-700/95" />

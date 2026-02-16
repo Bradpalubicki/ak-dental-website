@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { tryAuth } from "@/lib/auth";
+import { logPhiAccess } from "@/lib/audit";
 
 export async function GET(req: NextRequest) {
   const authResult = await tryAuth();
@@ -27,6 +28,9 @@ export async function GET(req: NextRequest) {
 
   const { data, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  await logPhiAccess("patients.list", "patient", undefined, { count: data?.length, status });
+
   return NextResponse.json(data);
 }
 
@@ -60,5 +64,8 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  await logPhiAccess("patients.create", "patient", data?.id);
+
   return NextResponse.json(data, { status: 201 });
 }

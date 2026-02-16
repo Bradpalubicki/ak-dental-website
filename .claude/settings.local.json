@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(if not exist \"C:\\\\Users\\\\Brad\\\\ak-ultimate-dental\\\\src\\\\lib\\\\workflows\" mkdir \"C:\\\\Users\\\\Brad\\\\ak-ultimate-dental\\\\src\\\\lib\\\\workflows\")",
+      "Bash(python3:*)",
+      "Bash(python:*)",
+      "Bash(identify:*)",
+      "Bash(powershell:*)",
+      "Bash(xcopy:*)",
+      "Bash(robocopy:*)",
+      "Bash(command -v:*)",
+      "Bash(pkill:*)",
+      "Bash(agent-browser:*)",
+      "Bash(Get-ChildItem:*)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(wc:*)",
+      "Bash(xargs -I {} sh -c 'echo \"\"=== {} ===\"\" && head -20 \"\"{}\"\"')",
+      "mcp__claude_ai_Vercel__list_deployments",
+      "Bash(tasklist:*)",
+      "Bash(taskkill:*)",
+      "mcp__claude_ai_Vercel__web_fetch_vercel_url",
+      "Bash(xargs -I {} sh -c 'echo \"\"=== {} ===\"\" && ls -la \"\"{}\"\"')",
+      "mcp__claude_ai_Vercel__get_runtime_logs",
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=8192\" npm run build:*)",
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=8192\" npx next build:*)"
+    ]
+  }
+}

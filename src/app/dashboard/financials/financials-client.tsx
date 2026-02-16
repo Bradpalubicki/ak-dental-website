@@ -98,6 +98,19 @@ interface ExpenseCategoryItem {
   color: string;
 }
 
+interface DailyCollectionItem {
+  [key: string]: unknown;
+  name: string;
+  amount: number;
+  target: number;
+}
+
+interface CollectionRateTrendItem {
+  [key: string]: unknown;
+  name: string;
+  rate: number;
+}
+
 interface FinancialsData {
   monthlyRevenue: MonthlyRevenue[];
   prodVsCollections: ProdVsCollections[];
@@ -111,6 +124,8 @@ interface FinancialsData {
   accountsPayable: APItem[];
   cashFlowData: CashFlowItem[];
   expenseByCategory: ExpenseCategoryItem[];
+  dailyCollections: DailyCollectionItem[];
+  collectionRateTrend: CollectionRateTrendItem[];
 }
 
 /* ================================================================== */
@@ -124,24 +139,7 @@ const apStatusConfig: Record<string, { label: string; color: string; border: str
   overdue: { label: "Overdue", color: "bg-red-50 text-red-700", border: "border-red-200" },
 };
 
-// Daily collections (from oe_daily_metrics - current week)
-const dailyCollections = [
-  { name: "Mon", amount: 8200, target: 7500 },
-  { name: "Tue", amount: 6800, target: 7500 },
-  { name: "Wed", amount: 9400, target: 7500 },
-  { name: "Thu", amount: 7100, target: 7500 },
-  { name: "Fri", amount: 5800, target: 7500 },
-];
-
-// Collection rate trend (derived from prodVsCollections in server)
-const collectionRateTrend = [
-  { name: "Sep", rate: 91.2 },
-  { name: "Oct", rate: 93.5 },
-  { name: "Nov", rate: 92.8 },
-  { name: "Dec", rate: 94.1 },
-  { name: "Jan", rate: 95.3 },
-  { name: "Feb", rate: 93.8 },
-];
+/* dailyCollections and collectionRateTrend are now passed as props from server */
 
 /* ================================================================== */
 /*  Helper Components                                                  */
@@ -377,6 +375,8 @@ export function FinancialsClient({ data }: { data: FinancialsData }) {
     accountsPayable,
     cashFlowData,
     expenseByCategory,
+    dailyCollections,
+    collectionRateTrend,
   } = data;
 
   const totalExpenses = expenseItems.reduce((sum, e) => sum + e.amount, 0);

@@ -18,6 +18,15 @@ const isProtectedRoute = createRouteMatcher([
   "/api/rbac(.*)",
   "/api/seo/keywords(.*)",
   "/api/seo/indexnow(.*)",
+  "/api/audit(.*)",
+  "/api/dropbox(.*)",
+  "/api/onboarding(.*)",
+  "/api/integrations(.*)",
+  "/api/clinical-notes(.*)",
+  "/api/providers(.*)",
+  "/api/waitlist(.*)",
+  "/api/benefits(.*)",
+  "/api/referrals(.*)",
 ]);
 
 // Portal routes use Supabase Auth, not Clerk

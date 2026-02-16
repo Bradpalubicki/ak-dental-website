@@ -70,6 +70,51 @@ interface AiPerformance {
   approvalRate: number;
 }
 
+interface MonthlyTrendItem {
+  [key: string]: unknown;
+  month: string;
+  production: number;
+  collections: number;
+  newPatients: number;
+}
+
+interface PatientRetentionItem {
+  [key: string]: unknown;
+  month: string;
+  active: number;
+  churned: number;
+  reactivated: number;
+}
+
+interface AppointmentTypeItem {
+  [key: string]: unknown;
+  name: string;
+  value: number;
+  color: string;
+}
+
+interface AiActionByTypeItem {
+  [key: string]: unknown;
+  type: string;
+  count: number;
+  approved: number;
+  color: string;
+}
+
+interface AiWeeklyTrendItem {
+  [key: string]: unknown;
+  week: string;
+  actions: number;
+  approvalRate: number;
+}
+
+interface ProcedureMixItem {
+  [key: string]: unknown;
+  name: string;
+  value: number;
+  color: string;
+}
+
 interface AnalyticsData {
   weeklyData: WeeklyDay[];
   monthlyMetrics: {
@@ -81,20 +126,18 @@ interface AnalyticsData {
   };
   leadSources: LeadSource[];
   aiPerformance: AiPerformance;
+  monthlyTrend: MonthlyTrendItem[];
+  patientRetention: PatientRetentionItem[];
+  appointmentTypes: AppointmentTypeItem[];
+  aiActionsByType: AiActionByTypeItem[];
+  aiWeeklyTrend: AiWeeklyTrendItem[];
+  procedureMix: ProcedureMixItem[];
+  activePatients: number;
 }
 
 /* ================================================================== */
-/*  Demo Data (supplement server data for rich visualizations)         */
+/*  Static Data (hourly traffic, reviews, funnel - no DB source yet)   */
 /* ================================================================== */
-
-const monthlyTrend = [
-  { month: "Sep", production: 142000, collections: 128000, newPatients: 18 },
-  { month: "Oct", production: 156000, collections: 141000, newPatients: 22 },
-  { month: "Nov", production: 148000, collections: 135000, newPatients: 19 },
-  { month: "Dec", production: 131000, collections: 119000, newPatients: 15 },
-  { month: "Jan", production: 165000, collections: 152000, newPatients: 24 },
-  { month: "Feb", production: 178000, collections: 163000, newPatients: 27 },
-];
 
 const hourlyTraffic = [
   { hour: "7am", appointments: 2, walkins: 0 },
@@ -108,50 +151,6 @@ const hourlyTraffic = [
   { hour: "3pm", appointments: 8, walkins: 2 },
   { hour: "4pm", appointments: 6, walkins: 1 },
   { hour: "5pm", appointments: 3, walkins: 0 },
-];
-
-const procedureMix = [
-  { name: "Cleanings", value: 32, color: "#0891b2" },
-  { name: "Crowns", value: 18, color: "#2563eb" },
-  { name: "Fillings", value: 22, color: "#059669" },
-  { name: "Implants", value: 12, color: "#7c3aed" },
-  { name: "Whitening", value: 8, color: "#d97706" },
-  { name: "Other", value: 8, color: "#64748b" },
-];
-
-const patientRetention = [
-  { month: "Sep", active: 820, churned: 15, reactivated: 8 },
-  { month: "Oct", active: 835, churned: 12, reactivated: 11 },
-  { month: "Nov", active: 840, churned: 18, reactivated: 6 },
-  { month: "Dec", active: 832, churned: 20, reactivated: 9 },
-  { month: "Jan", active: 848, churned: 10, reactivated: 14 },
-  { month: "Feb", active: 862, churned: 8, reactivated: 16 },
-];
-
-const appointmentTypes = [
-  { name: "New Patient", value: 27, color: "#2563eb" },
-  { name: "Recall/Hygiene", value: 38, color: "#0891b2" },
-  { name: "Restorative", value: 22, color: "#059669" },
-  { name: "Emergency", value: 8, color: "#dc2626" },
-  { name: "Cosmetic", value: 5, color: "#7c3aed" },
-];
-
-const aiActionsByType = [
-  { type: "Lead Follow-up", count: 45, approved: 42, color: "#0891b2" },
-  { type: "Recall Outreach", count: 38, approved: 35, color: "#2563eb" },
-  { type: "Reactivation", count: 22, approved: 18, color: "#059669" },
-  { type: "Treatment Plans", count: 15, approved: 14, color: "#7c3aed" },
-  { type: "Appointment Reminders", count: 52, approved: 51, color: "#d97706" },
-  { type: "Insurance Verification", count: 12, approved: 10, color: "#64748b" },
-];
-
-const aiWeeklyTrend = [
-  { week: "W1", actions: 32, approvalRate: 88 },
-  { week: "W2", actions: 41, approvalRate: 91 },
-  { week: "W3", actions: 38, approvalRate: 87 },
-  { week: "W4", actions: 45, approvalRate: 93 },
-  { week: "W5", actions: 52, approvalRate: 95 },
-  { week: "W6", actions: 48, approvalRate: 94 },
 ];
 
 const reviewMetrics = [
@@ -367,7 +366,19 @@ function FunnelStep({
 /* ================================================================== */
 
 export function AnalyticsClient({ data }: { data: AnalyticsData }) {
-  const { weeklyData, monthlyMetrics, leadSources, aiPerformance } = data;
+  const {
+    weeklyData,
+    monthlyMetrics,
+    leadSources,
+    aiPerformance,
+    monthlyTrend,
+    patientRetention,
+    appointmentTypes,
+    aiActionsByType,
+    aiWeeklyTrend,
+    procedureMix,
+    activePatients,
+  } = data;
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [dateRange, setDateRange] = useState("this_month");
 
@@ -972,8 +983,8 @@ export function AnalyticsClient({ data }: { data: AnalyticsData }) {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
               title="Active Patients"
-              value="862"
-              change="+14 this month"
+              value={activePatients.toString()}
+              change="Current active"
               trend="up"
               icon={Users}
               iconColor="bg-blue-50 text-blue-600"
@@ -992,8 +1003,8 @@ export function AnalyticsClient({ data }: { data: AnalyticsData }) {
             />
             <StatCard
               title="Reactivated"
-              value="16"
-              change="+14% vs last month"
+              value={patientRetention.length > 0 ? patientRetention[patientRetention.length - 1].reactivated.toString() : "0"}
+              change="This month"
               trend="up"
               icon={RefreshCw}
               iconColor="bg-purple-50 text-purple-600"

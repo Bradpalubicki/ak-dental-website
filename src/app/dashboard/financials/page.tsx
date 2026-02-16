@@ -174,6 +174,24 @@ export default async function FinancialsPage() {
   // Net income
   const netIncome = currentMonth.collections - totalExpenses;
 
+  // Daily collections (last 7 days from daily metrics)
+  const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const last7Days = (metricsResult.data || []).slice(-7);
+  const dailyCollections = last7Days.map((m) => {
+    const d = new Date(m.date + "T12:00:00");
+    return {
+      name: DAY_NAMES[d.getDay()],
+      amount: Number(m.collections || 0),
+      target: 7500,
+    };
+  });
+
+  // Collection rate trend (from monthly prod vs collections)
+  const collectionRateTrend = prodVsCollections.map((m) => ({
+    name: m.month,
+    rate: m.production > 0 ? Math.round((m.collections / m.production) * 1000) / 10 : 0,
+  }));
+
   return (
     <FinancialsClient
       data={{
@@ -189,6 +207,8 @@ export default async function FinancialsPage() {
         accountsPayable,
         cashFlowData,
         expenseByCategory,
+        dailyCollections,
+        collectionRateTrend,
       }}
     />
   );
