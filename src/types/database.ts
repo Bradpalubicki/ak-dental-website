@@ -324,3 +324,127 @@ export interface DailyMetrics {
   patient_messages_sent: number;
   patient_messages_received: number;
 }
+
+export type DocumentCategory =
+  | "eob"
+  | "insurance_card"
+  | "referral"
+  | "lab_result"
+  | "xray"
+  | "consent_form"
+  | "invoice"
+  | "receipt"
+  | "correspondence"
+  | "clinical_note"
+  | "prescription"
+  | "id_document"
+  | "other"
+  | "uncategorized";
+
+export type DocumentStatus =
+  | "active"
+  | "pending"
+  | "processing"
+  | "processed"
+  | "failed"
+  | "archived"
+  | "deleted";
+
+export interface Document {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  entity_type: string;
+  entity_id: string | null;
+  patient_id: string | null;
+  file_name: string;
+  file_type: string;
+  file_size: number;
+  storage_path: string;
+  uploaded_by: string;
+  uploaded_by_name: string | null;
+  description: string | null;
+  category: DocumentCategory;
+  subcategory: string | null;
+  ai_summary: string | null;
+  ai_extracted_data: Record<string, unknown>;
+  ai_confidence: number | null;
+  ai_processed_at: string | null;
+  status: DocumentStatus;
+  tags: string[];
+  notes: string | null;
+  version: number;
+  previous_version_id: string | null;
+  // Virtual field from API
+  download_url?: string;
+}
+
+export interface Provider {
+  id: string;
+  practice_id: string;
+  clerk_user_id: string | null;
+  first_name: string;
+  last_name: string;
+  title: string | null;
+  specialty: string | null;
+  npi_number: string | null;
+  license_number: string | null;
+  license_state: string | null;
+  email: string | null;
+  phone: string | null;
+  bio: string | null;
+  photo_url: string | null;
+  accepting_new_patients: boolean;
+  is_active: boolean;
+  color: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProviderAvailability {
+  id: string;
+  provider_id: string;
+  day_of_week: number;
+  start_time: string;
+  end_time: string;
+  is_available: boolean;
+  location: string;
+  created_at: string;
+}
+
+export interface ProviderBlock {
+  id: string;
+  provider_id: string;
+  block_type: "vacation" | "sick" | "meeting" | "lunch" | "personal" | "holiday" | "other";
+  title: string | null;
+  start_date: string;
+  end_date: string;
+  start_time: string | null;
+  end_time: string | null;
+  all_day: boolean;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface Referral {
+  id: string;
+  practice_id: string;
+  patient_id: string | null;
+  referring_provider_id: string | null;
+  referred_to_name: string;
+  referred_to_specialty: string | null;
+  referred_to_phone: string | null;
+  referred_to_fax: string | null;
+  referred_to_address: string | null;
+  reason: string;
+  urgency: "routine" | "urgent" | "emergency";
+  status: "pending" | "sent" | "accepted" | "completed" | "declined" | "cancelled";
+  notes: string | null;
+  sent_at: string | null;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+  // Virtual/joined fields
+  patient?: Patient;
+  referring_provider?: Provider;
+}
