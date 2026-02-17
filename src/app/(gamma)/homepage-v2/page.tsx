@@ -699,21 +699,10 @@ function ConnectSection() {
   );
 }
 
-// ─── Preview Banner ──────────────────────────────────────────────
-function PreviewBanner() {
-  return (
-    <div className="bg-amber-500 px-4 py-2.5 text-center text-sm font-bold text-white">
-      PREVIEW &mdash; Homepage Design V2 (Gamma) &mdash; This is a preview
-      only. The current homepage is unchanged.
-    </div>
-  );
-}
-
 // ─── Main Page ───────────────────────────────────────────────────
 export default function GammaPreviewPage() {
   return (
     <>
-      <PreviewBanner />
       <HeroSection />
       <PersonalizedCareSection />
       <MeetDoctorSection />
