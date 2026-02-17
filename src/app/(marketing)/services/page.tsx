@@ -1,10 +1,12 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Shield, Sparkles, CircleDot, Crown, Heart, Scissors, Leaf, AlignCenter, Baby, Zap } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, Shield, Sparkles, CircleDot, Crown, Heart, Scissors, Leaf, AlignCenter, Baby, Zap, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BreadcrumbSchema } from "@/components/schema/local-business";
-import { siteConfig, getPublicServices } from "@/lib/config";
+import { siteConfig, getPublicServices, serviceImages } from "@/lib/config";
+import { curatedImages } from "@/content/images";
 
 export const metadata: Metadata = {
   title: "Dental Services in Las Vegas, NV",
@@ -45,24 +47,45 @@ export default function ServicesPage() {
       />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-white py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+      <section className="relative min-h-[60vh] flex items-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={curatedImages.pages.services}
+            alt="Modern dental office with advanced equipment at AK Ultimate Dental"
+            fill
+            className="object-cover"
+            priority
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/70 to-gray-900/40" />
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-2xl">
+            <span className="inline-block text-cyan-400 font-semibold text-sm uppercase tracking-wider mb-4">
+              Our Services
+            </span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
               Comprehensive Dental Services in Las Vegas
             </h1>
-            <p className="text-xl text-muted-foreground mb-8">
+            <p className="text-xl text-gray-200 mb-8 leading-relaxed">
               From routine cleanings to advanced restorations, AK Ultimate Dental
-              provides complete dental care for your entire family. Our team
-              combines expertise with the latest technology to deliver
-              exceptional results.
+              provides complete dental care for your entire family.
             </p>
-            <Button asChild size="lg">
-              <Link href="/appointment">
-                Schedule Your Visit
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button asChild size="lg" className="h-14 px-8 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 border-0">
+                <Link href="/appointment">
+                  Schedule Your Visit
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="h-14 px-8 bg-white/10 border-white/30 text-white hover:bg-white/20">
+                <a href={siteConfig.phoneHref}>
+                  <Phone className="mr-2 h-5 w-5" />
+                  {siteConfig.phone}
+                </a>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
@@ -99,25 +122,41 @@ export default function ServicesPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {publicServices.map((service) => {
               const Icon = iconMap[service.icon] || Shield;
+              const imageUrl = serviceImages[service.slug];
               return (
                 <Card
                   key={service.slug}
-                  className="group hover:shadow-lg transition-all hover:-translate-y-1"
+                  className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
                 >
-                  <CardContent className="p-8">
-                    <div className="bg-blue-100 rounded-lg p-4 w-fit mb-6">
-                      <Icon className="h-8 w-8 text-primary" />
+                  {imageUrl && (
+                    <div className="relative h-48 overflow-hidden">
+                      <Image
+                        src={imageUrl}
+                        alt={service.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      <div className="absolute bottom-4 left-4">
+                        <div className="bg-white/20 backdrop-blur-sm rounded-lg p-2">
+                          <Icon className="h-5 w-5 text-white" />
+                        </div>
+                      </div>
                     </div>
-                    <h2 className="text-2xl font-bold mb-3 group-hover:text-primary transition-colors">
+                  )}
+                  <CardContent className="p-6">
+                    <h2 className="text-xl font-bold mb-2 group-hover:text-cyan-600 transition-colors">
                       {service.title}
                     </h2>
-                    <p className="text-muted-foreground mb-6">{service.description}</p>
-                    <Button asChild variant="outline" className="w-full">
-                      <Link href={`/services/${service.slug}`}>
-                        Learn More
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
+                    <p className="text-muted-foreground mb-4 text-sm line-clamp-2">{service.description}</p>
+                    <Link
+                      href={`/services/${service.slug}`}
+                      className="inline-flex items-center text-cyan-600 font-semibold text-sm hover:text-cyan-700 transition-colors"
+                    >
+                      Learn More
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
                   </CardContent>
                 </Card>
               );
@@ -168,29 +207,37 @@ export default function ServicesPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 md:py-24 bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+      <section className="relative py-20 md:py-32 overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src={curatedImages.lifestyle.confidentSmile}
+            alt="Happy patient smiling"
+            fill
+            sizes="100vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/95 to-blue-700/95" />
+        </div>
+        <div className="container mx-auto px-4 relative z-10 text-center">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
             Ready to Get Started?
           </h2>
-          <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
             Contact us today to schedule your appointment and experience the
             difference at AK Ultimate Dental.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" variant="secondary">
+            <Button asChild size="lg" className="h-16 px-10 text-lg bg-white text-cyan-600 hover:bg-gray-100">
               <Link href="/appointment">
-                Book Online
+                Book Free Consultation
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="bg-transparent border-white hover:bg-white/10"
-            >
-              <a href={siteConfig.phoneHref}>Call {siteConfig.phone}</a>
+            <Button asChild size="lg" className="h-16 px-10 text-lg bg-transparent border-2 border-white text-white hover:bg-white/10">
+              <a href={siteConfig.phoneHref}>
+                <Phone className="mr-2 h-5 w-5" />
+                Call {siteConfig.phone}
+              </a>
             </Button>
           </div>
         </div>

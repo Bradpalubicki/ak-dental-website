@@ -1,10 +1,12 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Phone, Mail, MapPin, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BreadcrumbSchema } from "@/components/schema/local-business";
 import { siteConfig } from "@/lib/config";
+import { curatedImages } from "@/content/images";
 
 export const metadata: Metadata = {
   title: "Contact Us | Las Vegas Dental Office",
@@ -33,22 +35,45 @@ export default function ContactPage() {
       />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-white py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+      <section className="relative min-h-[50vh] flex items-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={curatedImages.pages.contact}
+            alt="AK Ultimate Dental office in Las Vegas"
+            fill
+            className="object-cover"
+            priority
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/70 to-gray-900/40" />
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-2xl">
+            <span className="inline-block text-cyan-400 font-semibold text-sm uppercase tracking-wider mb-4">
+              Get In Touch
+            </span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
               Contact Our Las Vegas Dental Office
             </h1>
-            <p className="text-xl text-muted-foreground mb-8">
+            <p className="text-xl text-gray-200 mb-8 leading-relaxed">
               We&apos;re here to help with all your dental needs. Reach out to schedule
               an appointment or ask any questions.
             </p>
-            <Button asChild size="lg">
-              <a href={siteConfig.phoneHref}>
-                <Phone className="mr-2 h-5 w-5" />
-                Call {siteConfig.phone}
-              </a>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button asChild size="lg" className="h-14 px-8 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 border-0">
+                <a href={siteConfig.phoneHref}>
+                  <Phone className="mr-2 h-5 w-5" />
+                  Call {siteConfig.phone}
+                </a>
+              </Button>
+              <Button asChild size="lg" className="h-14 px-8 bg-white/10 border border-white/30 text-white hover:bg-white/20">
+                <Link href="/appointment">
+                  Book Online
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
@@ -203,21 +228,39 @@ export default function ContactPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 md:py-24 bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+      <section className="relative py-20 md:py-32 overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src={curatedImages.lifestyle.confidentSmile}
+            alt="Confident smile after dental treatment"
+            fill
+            sizes="100vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/95 to-blue-700/95" />
+        </div>
+        <div className="container mx-auto px-4 relative z-10 text-center">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
             Ready to Schedule Your Visit?
           </h2>
-          <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
             Book your appointment online and take the first step toward a
             healthier, more beautiful smile.
           </p>
-          <Button asChild size="lg" variant="secondary">
-            <Link href="/appointment">
-              Book Online
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button asChild size="lg" className="h-16 px-10 text-lg bg-white text-cyan-600 hover:bg-gray-100">
+              <Link href="/appointment">
+                Book Online
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+            <Button asChild size="lg" className="h-16 px-10 text-lg bg-transparent border-2 border-white text-white hover:bg-white/10">
+              <a href={siteConfig.phoneHref}>
+                <Phone className="mr-2 h-5 w-5" />
+                Call {siteConfig.phone}
+              </a>
+            </Button>
+          </div>
         </div>
       </section>
     </>

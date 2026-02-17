@@ -1,11 +1,13 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Star, ArrowRight, ExternalLink } from "lucide-react";
+import Image from "next/image";
+import { Star, ArrowRight, ExternalLink, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BreadcrumbSchema } from "@/components/schema/local-business";
 import { testimonials, siteConfig } from "@/lib/config";
 import { GoogleReviewsBadge } from "@/components/marketing/google-reviews-badge";
+import { curatedImages } from "@/content/images";
 
 export const metadata: Metadata = {
   title: "Patient Reviews & Testimonials | Las Vegas Dentist",
@@ -34,9 +36,21 @@ export default function ReviewsPage() {
       />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-white py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
+      <section className="relative min-h-[60vh] flex items-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={curatedImages.pages.reviews}
+            alt="Happy patient smiling after dental treatment"
+            fill
+            className="object-cover"
+            priority
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/75 to-gray-900/50" />
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-3xl mx-auto text-center">
             <div className="flex items-center justify-center gap-1 mb-4">
               {[...Array(5)].map((_, i) => (
                 <Star
@@ -45,18 +59,18 @@ export default function ReviewsPage() {
                 />
               ))}
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
               {siteConfig.ratings.count} Five-Star Google Reviews
             </h1>
-            <p className="text-xl text-muted-foreground mb-8">
+            <p className="text-xl text-gray-200 mb-8">
               Every single review is 5 stars. See what our Las Vegas patients are
               saying about their experience at AK Ultimate Dental.
             </p>
             <div className="flex justify-center mb-8">
-              <GoogleReviewsBadge variant="full" />
+              <GoogleReviewsBadge variant="full" className="bg-white/10 backdrop-blur-sm border border-white/20" />
             </div>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Button asChild variant="outline">
+              <Button asChild className="bg-white/10 border border-white/30 text-white hover:bg-white/20">
                 <a
                   href={siteConfig.ratings.googleReviewUrl || siteConfig.social.google}
                   target="_blank"
@@ -66,7 +80,7 @@ export default function ReviewsPage() {
                   Google Reviews
                 </a>
               </Button>
-              <Button asChild variant="outline">
+              <Button asChild className="bg-white/10 border border-white/30 text-white hover:bg-white/20">
                 <a
                   href={siteConfig.social.yelp}
                   target="_blank"
@@ -76,7 +90,7 @@ export default function ReviewsPage() {
                   Yelp Reviews
                 </a>
               </Button>
-              <Button asChild variant="outline">
+              <Button asChild className="bg-white/10 border border-white/30 text-white hover:bg-white/20">
                 <a
                   href={siteConfig.social.facebook}
                   target="_blank"
@@ -210,21 +224,39 @@ export default function ReviewsPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 md:py-24 bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+      <section className="relative py-20 md:py-32 overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src={curatedImages.lifestyle.patientCare}
+            alt="Dental care at AK Ultimate Dental"
+            fill
+            sizes="100vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/95 to-blue-700/95" />
+        </div>
+        <div className="container mx-auto px-4 relative z-10 text-center">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
             Join Our Satisfied Patients
           </h2>
-          <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
             Experience the quality care that&apos;s earned us {siteConfig.ratings.count} five-star
             reviews. Schedule your appointment today.
           </p>
-          <Button asChild size="lg" variant="secondary">
-            <Link href="/appointment">
-              Book Your Appointment
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button asChild size="lg" className="h-16 px-10 text-lg bg-white text-cyan-600 hover:bg-gray-100">
+              <Link href="/appointment">
+                Book Your Appointment
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+            <Button asChild size="lg" className="h-16 px-10 text-lg bg-transparent border-2 border-white text-white hover:bg-white/10">
+              <a href={siteConfig.phoneHref}>
+                <Phone className="mr-2 h-5 w-5" />
+                Call {siteConfig.phone}
+              </a>
+            </Button>
+          </div>
         </div>
       </section>
     </>

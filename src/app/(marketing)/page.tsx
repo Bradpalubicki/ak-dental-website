@@ -1,11 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Phone, Star, Shield, Clock, Award, CheckCircle, MapPin, ArrowRight, Zap, Heart, Smile } from "lucide-react";
+import { Phone, Star, Shield, Clock, Award, CheckCircle, MapPin, ArrowRight, Zap, Heart, Smile, Brain, BarChart3, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { siteConfig, services, testimonials } from "@/lib/config";
 import { images } from "@/lib/images";
 import { GoogleReviewsBadge } from "@/components/marketing/google-reviews-badge";
+import { DashboardPreview } from "@/components/marketing/dashboard-preview";
+import { AnimatedCounter } from "@/components/marketing/animated-counter";
 
 export default function HomePage() {
   const featuredServices = services.filter((s) => s.featured);
@@ -406,6 +408,87 @@ export default function HomePage() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* One Engine AI Platform Section */}
+      <section className="py-20 md:py-32 bg-white overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <span className="inline-block text-cyan-600 font-semibold text-sm uppercase tracking-wider mb-4">
+                Powered by One Engine AI
+              </span>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Your Practice, Supercharged by AI
+              </h2>
+              <p className="text-xl text-gray-600 mb-10">
+                One Engine is our AI operations platform that works behind the scenes
+                to automate scheduling, follow-ups, insurance verification, and
+                patient communication — so we can focus on your care.
+              </p>
+
+              <div className="space-y-6">
+                {[
+                  {
+                    icon: Brain,
+                    title: "AI-Powered Insights",
+                    description: "Proactive health reminders and personalized treatment recommendations",
+                  },
+                  {
+                    icon: BarChart3,
+                    title: "Smart Scheduling",
+                    description: "Automated appointment reminders and waitlist management",
+                  },
+                  {
+                    icon: FileText,
+                    title: "Instant Insurance Verification",
+                    description: "Your coverage verified before you even walk in the door",
+                  },
+                ].map((item) => (
+                  <div key={item.title} className="flex gap-5">
+                    <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center">
+                      <item.icon className="h-7 w-7 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-1">{item.title}</h3>
+                      <p className="text-gray-600">{item.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <DashboardPreview />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Impact Stats - Animated */}
+      <section className="py-16 bg-gradient-to-r from-gray-900 to-gray-800">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto text-center">
+            {[
+              { end: 5000, suffix: "+", label: "Patients Served", prefix: "" },
+              { end: 128, suffix: "", label: "Five-Star Reviews", prefix: "" },
+              { end: 20, suffix: "+", label: "Years Serving Las Vegas", prefix: "" },
+              { end: 98, suffix: "%", label: "Patient Satisfaction", prefix: "" },
+            ].map((stat) => (
+              <div key={stat.label}>
+                <div className="text-4xl md:text-5xl font-bold text-cyan-400 mb-2">
+                  <AnimatedCounter
+                    end={stat.end}
+                    prefix={stat.prefix}
+                    suffix={stat.suffix}
+                    duration={2500}
+                  />
+                </div>
+                <div className="text-gray-300 font-medium">{stat.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
