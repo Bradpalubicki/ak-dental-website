@@ -9,7 +9,7 @@ export async function GET() {
       return NextResponse.json({
         layouts: {},
         visible_widgets: [
-          "urgent", "kpi", "appointments", "leads", "ai_activity",
+          "kpi", "ai_insights", "appointments", "leads",
           "financials", "hr", "compliance", "insurance", "outreach",
         ],
       });
@@ -24,14 +24,24 @@ export async function GET() {
       .single();
 
     if (data) {
-      return NextResponse.json(data);
+      // Filter out removed widget IDs from old preferences
+      const validWidgets = (data.visible_widgets || []).filter(
+        (w: string) => w !== "urgent" && w !== "ai_activity"
+      );
+      return NextResponse.json({
+        ...data,
+        visible_widgets: validWidgets.length > 0 ? validWidgets : [
+          "kpi", "ai_insights", "appointments", "leads",
+          "financials", "hr", "compliance", "insurance", "outreach",
+        ],
+      });
     }
 
     // Return defaults if no saved preferences
     return NextResponse.json({
       layouts: {},
       visible_widgets: [
-        "urgent", "kpi", "appointments", "leads", "ai_activity",
+        "kpi", "ai_insights", "appointments", "leads",
         "financials", "hr", "compliance", "insurance", "outreach",
       ],
     });
@@ -39,7 +49,7 @@ export async function GET() {
     return NextResponse.json({
       layouts: {},
       visible_widgets: [
-        "urgent", "kpi", "appointments", "leads", "ai_activity",
+        "kpi", "ai_insights", "appointments", "leads",
         "financials", "hr", "compliance", "insurance", "outreach",
       ],
     });
