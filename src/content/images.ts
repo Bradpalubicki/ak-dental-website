@@ -37,7 +37,7 @@ export const curatedImages = {
     services:
       "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1920&h=1080&fit=crop&q=90",
     reviews:
-      "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=1920&h=1080&fit=crop&q=90",
+      "https://images.unsplash.com/photo-1610631066894-62452ccb927c?w=1920&h=1080&fit=crop&q=90",
     contact:
       "https://images.unsplash.com/photo-1629909615850-30d5d9d04282?w=1920&h=1080&fit=crop&q=90",
     appointment:

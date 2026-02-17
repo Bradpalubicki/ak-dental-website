@@ -51,7 +51,7 @@ export function Header() {
                 {item.name}
               </Link>
             ))}
-            <Button asChild>
+            <Button asChild className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white border-0 shadow-md">
               <Link href={engineConfig.navigation.ctaHref}>{engineConfig.navigation.ctaLabel}</Link>
             </Button>
           </nav>

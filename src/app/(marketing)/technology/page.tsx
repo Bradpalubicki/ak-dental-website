@@ -216,7 +216,7 @@ export default function TechnologyPage() {
         {/* Background image overlay */}
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=1600&h=900&fit=crop&q=70"
+            src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1920&h=1080&fit=crop&q=80"
             alt="Advanced dental technology equipment at AK Ultimate Dental Las Vegas"
             fill
             className="object-cover opacity-20"

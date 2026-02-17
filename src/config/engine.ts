@@ -201,27 +201,28 @@ export function getServicePromotion(slug: string): ServicePromotion | undefined 
 }
 
 export const serviceImages: Record<string, string> = {
-  "cleanings-prevention": "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=800&h=600&fit=crop&q=80",
-  "cosmetic-dentistry": "https://images.unsplash.com/photo-1600170311833-c2cf5280ce49?w=800&h=600&fit=crop&q=80",
+  // Core services — each image specifically matches the treatment type
+  "cleanings-prevention": "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=800&h=600&fit=crop&q=80",
+  "cosmetic-dentistry": "https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?w=800&h=600&fit=crop&q=80",
   "dental-implants": "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&h=600&fit=crop&q=80",
-  "crowns-bridges": "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=800&h=600&fit=crop&q=80",
+  "crowns-bridges": "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=800&h=600&fit=crop&q=80",
   "root-canal": "https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=800&h=600&fit=crop&q=80",
   "oral-surgery": "https://images.unsplash.com/photo-1579684453423-f84349ef60b0?w=800&h=600&fit=crop&q=80",
   "periodontics": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=800&h=600&fit=crop&q=80",
   "orthodontics": "https://images.unsplash.com/photo-1629909613807-0f474baa822b?w=800&h=600&fit=crop&q=80",
-  "pediatric-dentistry": "https://images.unsplash.com/photo-1609137144813-7d9921338f24?w=800&h=600&fit=crop&q=80",
+  "pediatric-dentistry": "https://images.unsplash.com/photo-1619236233405-bb5d430f0620?w=800&h=600&fit=crop&q=80",
   // Standalone procedure pages — distinct images per procedure
-  "porcelain-veneers": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&h=600&fit=crop&q=80",
-  "dental-crowns": "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&h=600&fit=crop&q=80",
+  "porcelain-veneers": "https://images.unsplash.com/photo-1600170311833-c2cf5280ce49?w=800&h=600&fit=crop&q=80",
+  "dental-crowns": "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=800&h=600&fit=crop&q=80",
   "dental-bridges": "https://images.unsplash.com/photo-1603807008857-ad66b70431aa?w=800&h=600&fit=crop&q=80",
   // Location variants share parent hero image
-  "porcelain-veneers-las-vegas": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&h=600&fit=crop&q=80",
-  "porcelain-veneers-henderson": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&h=600&fit=crop&q=80",
-  "dental-crowns-las-vegas": "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&h=600&fit=crop&q=80",
-  "dental-crowns-henderson": "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&h=600&fit=crop&q=80",
+  "porcelain-veneers-las-vegas": "https://images.unsplash.com/photo-1600170311833-c2cf5280ce49?w=800&h=600&fit=crop&q=80",
+  "porcelain-veneers-henderson": "https://images.unsplash.com/photo-1600170311833-c2cf5280ce49?w=800&h=600&fit=crop&q=80",
+  "dental-crowns-las-vegas": "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=800&h=600&fit=crop&q=80",
+  "dental-crowns-henderson": "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=800&h=600&fit=crop&q=80",
   "dental-bridges-las-vegas": "https://images.unsplash.com/photo-1603807008857-ad66b70431aa?w=800&h=600&fit=crop&q=80",
   "dental-bridges-henderson": "https://images.unsplash.com/photo-1603807008857-ad66b70431aa?w=800&h=600&fit=crop&q=80",
-  "same-day-dentistry": "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=800&h=600&fit=crop&q=80",
+  "same-day-dentistry": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&h=600&fit=crop&q=80",
 };
 
 /** Secondary images displayed inline within service page content */

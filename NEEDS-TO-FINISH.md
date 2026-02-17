@@ -1,6 +1,6 @@
 # AK Ultimate Dental - Needs to Finish
 
-> Last updated: 2026-02-15
+> Last updated: 2026-02-16
 > Project: AK Ultimate Dental (One Engine AI Operations Platform)
 > Live: https://ak-ultimate-dental.vercel.app
 
@@ -10,9 +10,21 @@
 
 | Item | Details | Fix |
 |------|---------|-----|
-| `/dashboard/onboarding` | Sidebar link exists, page returns 404 | Build patient onboarding wizard or remove sidebar link |
-| `/dashboard/waitlist` | Sidebar link exists, page returns 404 | Build waitlist management page or remove sidebar link |
-| Clerk Branding | Application name shows "Mindstart" in Clerk components | Update in Clerk Dashboard > Customization > Branding |
+| Clerk Branding | Application name may still show "Mindstart" in some Clerk flows | Verify in Clerk Dashboard > Customization > Branding |
+
+---
+
+## NEEDS FROM ALEX
+
+| Item | Details | Where to Update |
+|------|---------|-----------------|
+| **Instagram URL** | Instagram account URL for footer social links | `src/config/practice.ts` → `social.instagram` |
+| **TikTok URL** | TikTok account URL for footer social links | `src/config/practice.ts` → `social.tiktok` |
+| **YouTube URL** | YouTube channel URL for footer social links | `src/config/practice.ts` → `social.youtube` |
+| **Facebook page** | Verify current FB link is correct (`chireu.alexandru`) | `src/config/practice.ts` → `social.facebook` |
+
+> Currently using placeholder `#` links for Instagram, TikTok, YouTube in footer.
+> Icons are already in place — just need the real URLs.
 
 ---
 
