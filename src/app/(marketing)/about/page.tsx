@@ -88,7 +88,7 @@ export default function AboutPage() {
               <div className="relative">
                 <Image
                   src={images.team.doctor}
-                  alt="Dr. Alexandru Chireu, DDS - AK Ultimate Dental"
+                  alt="Dr. Alex Khachaturian, DDS - AK Ultimate Dental"
                   width={500}
                   height={600}
                   className="rounded-2xl shadow-2xl"
@@ -117,7 +117,7 @@ export default function AboutPage() {
             <div className="relative">
               <Image
                 src={images.team.graduation}
-                alt="Dr. Alexandru Chireu - UNLV School of Dental Medicine graduation with family"
+                alt="Dr. Alex Khachaturian - UNLV School of Dental Medicine graduation with family"
                 width={600}
                 height={450}
                 className="rounded-2xl shadow-xl object-cover"

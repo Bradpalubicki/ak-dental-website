@@ -139,13 +139,13 @@ function MeetDoctorSection() {
           Meet Our Doctor
         </p>
         <h2 className="mt-2 font-serif text-3xl font-bold text-gray-900 sm:text-4xl">
-          Meet Dr. Alexandru: Skilled Care with a Personal Touch
+          Meet Dr. Alex: Skilled Care with a Personal Touch
         </h2>
         <div className="mt-10 grid items-start gap-10 lg:grid-cols-2">
           <div className="overflow-hidden rounded-2xl border border-stone-300/50 bg-white shadow-lg">
             <Image
               src="/gamma/3_Meet-Our-Doctor.png"
-              alt="Dr. Alexandru Chireu"
+              alt="Dr. Alex Khachaturian"
               width={600}
               height={500}
               className="h-auto w-full object-cover"
@@ -157,7 +157,7 @@ function MeetDoctorSection() {
                 Education &amp; Training
               </h3>
               <p className="mt-2 text-gray-600 leading-relaxed">
-                Dr. Alexandru&apos;s journey began with rigorous training in Romania
+                Dr. Alex&apos;s journey began with rigorous training in Romania
                 before advancing his expertise in the United States, where he
                 continuously pursues the latest techniques and technologies in
                 modern dentistry.
@@ -169,13 +169,13 @@ function MeetDoctorSection() {
               </h3>
               <p className="mt-2 text-gray-600 leading-relaxed">
                 Known for thorough communication and attentive follow-up care,
-                Dr. Alexandru ensures every patient feels heard, understood, and
+                Dr. Alex ensures every patient feels heard, understood, and
                 comfortable throughout their treatment journey.
               </p>
             </div>
             <blockquote className="border-l-4 border-stone-400 pl-5 italic text-gray-600">
               <p>
-                &ldquo;Dr. Alexandru called me hours after my visit to check on
+                &ldquo;Dr. Alex called me hours after my visit to check on
                 my comfort and answer questions. That level of care is
                 extraordinary.&rdquo;
               </p>

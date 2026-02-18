@@ -47,7 +47,7 @@ export function Footer() {
     { name: "YouTube", href: siteConfig.social.youtube, icon: YouTubeIcon },
     { name: "Yelp", href: siteConfig.social.yelp, icon: YelpIcon },
     { name: "Google", href: siteConfig.ratings.googleReviewUrl || siteConfig.social.google, icon: GoogleIcon },
-  ].filter((l) => l.href);
+  ].filter((l) => l.href && l.href !== "#");
 
   return (
     <footer className="bg-gray-900 text-gray-300">

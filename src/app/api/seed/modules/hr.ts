@@ -28,7 +28,7 @@ export async function seedHr(supabase: SupabaseClient) {
       content: "On February 3, 2026, Tyler was observed not following the full instrument sterilization protocol between patients. This was addressed immediately. Tyler acknowledged the oversight and committed to following the complete protocol going forward.\n\nAction Required: Tyler will complete a refresher on sterilization procedures by February 14, 2026.",
       severity: "info",
       status: "acknowledged",
-      created_by: "Dr. Alexandru Chireu",
+      created_by: "Dr. Alex Khachaturian",
     },
     {
       employee_id: employees[3].id,
@@ -37,7 +37,7 @@ export async function seedHr(supabase: SupabaseClient) {
       content: "This is a formal written warning regarding repeated tardiness.\n\nBrandon has been late on:\n- January 15, 2026 — 12 minutes late\n- January 22, 2026 — 8 minutes late\n- January 29, 2026 — 15 minutes late\n- February 5, 2026 — 20 minutes late\n\nContinued tardiness may result in further disciplinary action up to and including termination.",
       severity: "warning",
       status: "pending_signature",
-      created_by: "Dr. Alexandru Chireu",
+      created_by: "Dr. Alex Khachaturian",
     },
     {
       employee_id: employees[0].id,
@@ -46,7 +46,7 @@ export async function seedHr(supabase: SupabaseClient) {
       content: "Employee: Jessica Ramirez\nRole: Hygienist\nOverall Rating: Exceeds Expectations\n\nStrengths:\n- Patient satisfaction scores consistently above 95%\n- Completed additional CE credits\n- Outstanding team collaboration\n\nGoals for 2026:\n- Mentor new hygienist during onboarding\n- Pursue advanced periodontal certification",
       severity: "info",
       status: "acknowledged",
-      created_by: "Dr. Alexandru Chireu",
+      created_by: "Dr. Alex Khachaturian",
     },
   ];
 

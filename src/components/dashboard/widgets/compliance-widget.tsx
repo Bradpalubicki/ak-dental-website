@@ -11,8 +11,8 @@ interface ComplianceItem {
 }
 
 const items: ComplianceItem[] = [
-  { label: "DEA Registration", holder: "Dr. Alexandru", category: "provider", days: 49, status: "warning" },
-  { label: "Radiation Safety Cert", holder: "Dr. Alexandru", category: "provider", days: -3, status: "expired" },
+  { label: "DEA Registration", holder: "Dr. Alex", category: "provider", days: 49, status: "warning" },
+  { label: "Radiation Safety Cert", holder: "Dr. Alex", category: "provider", days: -3, status: "expired" },
   { label: "Business License", holder: "Practice", category: "facility", days: 143, status: "ok" },
   { label: "CPR/BLS (All Staff)", holder: "Team", category: "team", days: 220, status: "ok" },
 ];

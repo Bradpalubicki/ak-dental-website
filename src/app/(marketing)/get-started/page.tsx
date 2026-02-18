@@ -265,8 +265,8 @@ export default function GetStartedPage() {
                   And many more plans accepted. Call to verify your coverage.
                 </p>
                 <Button asChild variant="outline" className="border-cyan-600 text-cyan-600 hover:bg-cyan-50">
-                  <Link href="/insurance">
-                    View All Insurance & Payment Options
+                  <Link href="/contact">
+                    Questions About Insurance? Contact Us
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>

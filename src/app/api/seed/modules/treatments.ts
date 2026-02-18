@@ -11,7 +11,7 @@ export async function seedTreatments(supabase: SupabaseClient) {
     {
       id: "c0000001-0000-0000-0000-000000000001",
       patient_id: "a0000001-0000-0000-0000-000000000006",
-      provider_name: "Dr. Alexandru Chireu",
+      provider_name: "Dr. Alex Khachaturian",
       title: "Crown Restoration - Tooth #14",
       status: "presented",
       procedures: [
@@ -27,7 +27,7 @@ export async function seedTreatments(supabase: SupabaseClient) {
     {
       id: "c0000001-0000-0000-0000-000000000002",
       patient_id: "a0000001-0000-0000-0000-000000000002",
-      provider_name: "Dr. Alexandru Chireu",
+      provider_name: "Dr. Alex Khachaturian",
       title: "Single Tooth Implant - Tooth #8",
       status: "draft",
       procedures: [
@@ -45,7 +45,7 @@ export async function seedTreatments(supabase: SupabaseClient) {
     {
       id: "c0000001-0000-0000-0000-000000000003",
       patient_id: "a0000001-0000-0000-0000-000000000003",
-      provider_name: "Dr. Alexandru Chireu",
+      provider_name: "Dr. Alex Khachaturian",
       title: "Cosmetic Veneer Package - Upper Front 6",
       status: "presented",
       procedures: [
@@ -61,7 +61,7 @@ export async function seedTreatments(supabase: SupabaseClient) {
     {
       id: "c0000001-0000-0000-0000-000000000004",
       patient_id: "a0000001-0000-0000-0000-000000000005",
-      provider_name: "Dr. Alexandru Chireu",
+      provider_name: "Dr. Alex Khachaturian",
       title: "Orthodontic Treatment - Clear Aligners",
       status: "presented",
       procedures: [

@@ -544,7 +544,7 @@ export default function HomePage() {
             <div className="relative">
               <div className="aspect-video rounded-2xl overflow-hidden shadow-2xl">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3223.5!2d-115.284!3d36.144!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c8c0f9b8c8f9b9%3A0x0!2s7480%20W%20Sahara%20Ave%2C%20Las%20Vegas%2C%20NV%2089117!5e0!3m2!1sen!2sus!4v1234567890"
+                  src="https://www.google.com/maps?q=AK+Ultimate+Dental+7480+W+Sahara+Ave+Las+Vegas+NV+89117&output=embed"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
