@@ -12,7 +12,6 @@ import {
   CheckCircle2,
   XCircle,
   AlertCircle,
-  RefreshCw,
   Loader2,
   Users,
   ArrowRight,

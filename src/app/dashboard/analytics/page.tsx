@@ -163,9 +163,9 @@ export default async function AnalyticsPage() {
     .slice(-6)
     .map(([key, val], idx) => ({
       month: MONTH_NAMES[parseInt(key.split("-")[1])],
-      active: activePatients - (5 - idx) * Math.round(Math.random() * 5 + 3), // simulate growth
+      active: activePatients - (5 - idx) * (idx * 2 + 4), // deterministic growth simulation
       churned: val.noShows,
-      reactivated: Math.round(val.newPatients * 0.3),
+      reactivated: ((val.newPatients * 0.3 + 0.5) | 0),
     }));
 
   // --- Appointment types breakdown ---

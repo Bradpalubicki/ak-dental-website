@@ -10,7 +10,6 @@ export default async function PortalPage() {
   if (!patient) redirect("/portal/login");
 
   const supabase = createServiceSupabase();
-  const now = new Date().toISOString();
 
   const [appointmentsResult, treatmentsResult, messagesResult] = await Promise.all([
     supabase

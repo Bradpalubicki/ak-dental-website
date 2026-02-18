@@ -39,7 +39,6 @@ export async function seedDashboard(supabase: SupabaseClient) {
   const inserted: Record<string, number> = {};
   const errors: string[] = [];
   const now = new Date();
-  const today = now.toISOString().split("T")[0];
 
   // 1. Billing Claims
   await supabase.from("oe_billing_claims").delete().neq("id", "00000000-0000-0000-0000-000000000000");

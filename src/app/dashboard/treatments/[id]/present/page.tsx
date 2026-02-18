@@ -61,26 +61,31 @@ export default function TreatmentPresentationPage() {
   const { id } = useParams();
   const [plan, setPlan] = useState<TreatmentPlan | null>(null);
   const [loading, setLoading] = useState(true);
-  const [currentStep, setCurrentStep] = useState<Step>("welcome");
+  // Derive initial state from URL payment redirect params
+  const [currentStep, setCurrentStep] = useState<Step>(() => {
+    if (typeof window === "undefined") return "welcome";
+    const p = new URLSearchParams(window.location.search).get("payment");
+    if (p === "success") return "thankyou";
+    if (p === "cancelled") return "payment";
+    return "welcome";
+  });
   const [selectedPayment, setSelectedPayment] = useState<"card" | "financing" | null>(null);
-  const [cardSubmitted, setCardSubmitted] = useState(false);
+  const [cardSubmitted] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return new URLSearchParams(window.location.search).get("payment") === "success";
+  });
   const [financingSubmitted, setFinancingSubmitted] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
-  // Check for payment success from Stripe redirect
+  // Verify payment server-side after Stripe redirect
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("payment") === "success") {
-      setCardSubmitted(true);
-      setCurrentStep("thankyou");
-      // Verify payment server-side
       const sessionId = params.get("session_id");
       if (sessionId) {
         fetch(`/api/payments/success?session_id=${sessionId}`).catch(() => {});
       }
-    } else if (params.get("payment") === "cancelled") {
-      setCurrentStep("payment");
     }
   }, []);
 

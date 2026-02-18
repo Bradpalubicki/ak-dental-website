@@ -591,7 +591,7 @@ export function HrClient({ stats, recentDocuments, workforce }: Props) {
         roleFilter === "all" || emp.department === roleFilter;
       return nameMatch && roleMatch;
     });
-  }, [employeeFilter, roleFilter]);
+  }, [employeeFilter, roleFilter, employeeTimeData]);
 
   // Compute summary stats
   const totalHours = employeeTimeData.reduce((s, e) => s + e.weekHrs, 0);
@@ -714,7 +714,7 @@ export function HrClient({ stats, recentDocuments, workforce }: Props) {
         e.status,
       ])
     );
-  }, []);
+  }, [employeeTimeData]);
 
   const handleExportCredentials = useCallback(() => {
     exportToCSV(
@@ -729,7 +729,7 @@ export function HrClient({ stats, recentDocuments, workforce }: Props) {
         String(c.daysUntil),
       ])
     );
-  }, []);
+  }, [credentials]);
 
   function handleDeleteClick(docId: string) {
     setPendingDeleteId(docId);

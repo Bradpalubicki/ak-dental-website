@@ -38,12 +38,12 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json().catch(() => ({}));
-    const module = (body.module || "all") as SeedModule;
+    const seedModule = (body.module || "all") as SeedModule;
 
     const supabase = createServiceSupabase();
     const results: Record<string, { inserted: Record<string, number>; errors: string[] }> = {};
 
-    if (module === "all") {
+    if (seedModule === "all") {
       // Run in order: demo first (creates patients), then everything else
       const order: (keyof typeof SEED_MODULES)[] = [
         "demo", "treatments", "providers", "hr", "licensing", "dashboard", "calls", "outreach",
@@ -51,11 +51,11 @@ export async function POST(req: Request) {
       for (const mod of order) {
         results[mod] = await SEED_MODULES[mod](supabase);
       }
-    } else if (SEED_MODULES[module]) {
-      results[module] = await SEED_MODULES[module](supabase);
+    } else if (SEED_MODULES[seedModule]) {
+      results[seedModule] = await SEED_MODULES[seedModule](supabase);
     } else {
       return NextResponse.json(
-        { error: `Invalid module: ${module}. Valid: ${Object.keys(SEED_MODULES).join(", ")}, all` },
+        { error: `Invalid module: ${seedModule}. Valid: ${Object.keys(SEED_MODULES).join(", ")}, all` },
         { status: 400 }
       );
     }
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: allErrors.length === 0,
-      module,
+      module: seedModule,
       inserted: totalInserted,
       errors: allErrors,
     });

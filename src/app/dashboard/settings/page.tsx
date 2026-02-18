@@ -61,8 +61,10 @@ export default async function SettingsPage() {
   const totalServices = Object.keys(intStatus).length;
 
   // Check DB health by measuring query latency
+  // eslint-disable-next-line react-hooks/purity -- server component: measuring latency requires Date.now()
   const dbStart = Date.now();
   await supabase.from("oe_practice_settings").select("key").limit(1);
+  // eslint-disable-next-line react-hooks/purity -- server component: measuring latency requires Date.now()
   const dbLatency = Date.now() - dbStart;
 
   return (

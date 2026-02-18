@@ -412,7 +412,7 @@ export function AnalyticsClient({ data }: { data: AnalyticsData }) {
       a.click();
       URL.revokeObjectURL(url);
     },
-    []
+    [monthlyTrend, patientRetention, aiActionsByType]
   );
 
   /* -------------------------------------------------------------- */

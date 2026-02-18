@@ -6,7 +6,6 @@ import {
   DollarSign,
   CheckCircle2,
   Clock,
-  AlertCircle,
   ChevronDown,
   ChevronUp,
   Shield,

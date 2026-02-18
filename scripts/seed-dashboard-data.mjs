@@ -17,7 +17,6 @@ const supabase = createClient(
 );
 
 const now = new Date();
-const today = now.toISOString().split("T")[0];
 
 function daysAgo(d) {
   return new Date(now.getTime() - d * 86400000).toISOString().split("T")[0];

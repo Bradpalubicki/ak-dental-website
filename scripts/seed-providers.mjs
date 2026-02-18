@@ -159,11 +159,6 @@ const timeOffBlocks = [
   { providerName: "Sarah Chen", block_type: "vacation", title: "Spring Break", start_date: "2026-04-06", end_date: "2026-04-10", all_day: true },
 ];
 
-const referralSpecialties = [
-  "Orthodontics", "Endodontics", "Periodontics", "Oral Surgery",
-  "Pediatric Dentistry", "Prosthodontics", "Oral Pathology",
-];
-
 const referralReasons = [
   "Complex root canal treatment needed",
   "Wisdom teeth extraction referral",

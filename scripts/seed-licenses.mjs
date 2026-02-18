@@ -58,7 +58,7 @@ async function seed() {
     };
   });
 
-  const { error, count } = await supabase.from("oe_licenses").insert(rows);
+  const { error } = await supabase.from("oe_licenses").insert(rows);
   if (error) {
     console.error("Error:", error.message);
   } else {

@@ -12,6 +12,7 @@ export default async function CompliancePage() {
     .limit(50);
 
   // Get PHI access count (last 24h)
+  // eslint-disable-next-line react-hooks/purity -- server component: Date.now() is valid here
   const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const { count: phiAccessCount } = await supabase
     .from("audit_log")
