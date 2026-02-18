@@ -11,37 +11,69 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { siteConfig } from "@/lib/config";
 import { curatedImages } from "@/content/images";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const appointmentSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().min(1, "Email is required").email("Please enter a valid email"),
+  phone: z.string().min(1, "Phone number is required"),
+  preferredDate: z.string().optional(),
+  preferredTime: z.enum(["", "morning", "afternoon"]).optional(),
+  visitReason: z.string().min(1, "Please select a reason for your visit"),
+  patientType: z.string().min(1, "Please select patient type"),
+  message: z.string().optional(),
+});
+
+type AppointmentFormValues = z.infer<typeof appointmentSchema>;
 
 export default function AppointmentPage() {
-  const [formState, setFormState] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [pageState, setPageState] = useState<"idle" | "submitting" | "success" | "error">("idle");
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setFormState("submitting");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<AppointmentFormValues>({
+    resolver: zodResolver(appointmentSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      preferredDate: "",
+      preferredTime: "",
+      visitReason: "",
+      patientType: "",
+      message: "",
+    },
+  });
 
-    const form = e.currentTarget;
-    const data = new FormData(form);
+  const onSubmit = async (data: AppointmentFormValues) => {
+    setPageState("submitting");
 
     try {
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          first_name: data.get("firstName"),
-          last_name: data.get("lastName"),
-          email: data.get("email"),
-          phone: data.get("phone"),
+          first_name: data.firstName,
+          last_name: data.lastName,
+          email: data.email,
+          phone: data.phone,
           source: "website",
-          inquiry_type: data.get("visitReason"),
-          message: data.get("message") || `Preferred date: ${data.get("preferredDate") || "Flexible"}, Time: ${data.get("preferredTime") || "Flexible"}. Patient type: ${data.get("patientType")}.`,
-          urgency: data.get("visitReason") === "emergency" || data.get("visitReason") === "toothache" ? "high" : "medium",
+          inquiry_type: data.visitReason,
+          message: data.message || `Preferred date: ${data.preferredDate || "Flexible"}, Time: ${data.preferredTime || "Flexible"}. Patient type: ${data.patientType}.`,
+          urgency: data.visitReason === "emergency" || data.visitReason === "toothache" ? "high" : "medium",
         }),
       });
 
       if (!res.ok) throw new Error("Failed to submit");
-      setFormState("success");
+      setPageState("success");
     } catch {
-      setFormState("error");
+      setPageState("error");
     }
   };
 
@@ -102,7 +134,7 @@ export default function AppointmentPage() {
           <div className="grid lg:grid-cols-3 gap-12">
             {/* Form */}
             <div className="lg:col-span-2">
-              {formState === "error" ? (
+              {pageState === "error" ? (
                 <Card>
                   <CardContent className="p-8 text-center">
                     <div className="bg-red-100 rounded-full p-4 w-fit mx-auto mb-6">
@@ -118,12 +150,12 @@ export default function AppointmentPage() {
                       </a>
                       .
                     </p>
-                    <Button onClick={() => setFormState("idle")}>
+                    <Button onClick={() => setPageState("idle")}>
                       Try Again
                     </Button>
                   </CardContent>
                 </Card>
-              ) : formState === "success" ? (
+              ) : pageState === "success" ? (
                 <Card>
                   <CardContent className="p-8 text-center">
                     <div className="bg-green-100 rounded-full p-4 w-fit mx-auto mb-6">
@@ -152,25 +184,29 @@ export default function AppointmentPage() {
                     <h2 className="text-2xl font-bold mb-6">
                       Appointment Request Form
                     </h2>
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                       <div className="grid md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                           <Label htmlFor="firstName">First Name *</Label>
                           <Input
                             id="firstName"
-                            name="firstName"
-                            required
                             placeholder="John"
+                            {...register("firstName")}
                           />
+                          {errors.firstName && (
+                            <p className="text-sm text-red-600">{errors.firstName.message}</p>
+                          )}
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="lastName">Last Name *</Label>
                           <Input
                             id="lastName"
-                            name="lastName"
-                            required
                             placeholder="Smith"
+                            {...register("lastName")}
                           />
+                          {errors.lastName && (
+                            <p className="text-sm text-red-600">{errors.lastName.message}</p>
+                          )}
                         </div>
                       </div>
 
@@ -179,21 +215,25 @@ export default function AppointmentPage() {
                           <Label htmlFor="email">Email *</Label>
                           <Input
                             id="email"
-                            name="email"
                             type="email"
-                            required
                             placeholder="john@example.com"
+                            {...register("email")}
                           />
+                          {errors.email && (
+                            <p className="text-sm text-red-600">{errors.email.message}</p>
+                          )}
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="phone">Phone *</Label>
                           <Input
                             id="phone"
-                            name="phone"
                             type="tel"
-                            required
                             placeholder="(702) 555-0123"
+                            {...register("phone")}
                           />
+                          {errors.phone && (
+                            <p className="text-sm text-red-600">{errors.phone.message}</p>
+                          )}
                         </div>
                       </div>
 
@@ -202,16 +242,16 @@ export default function AppointmentPage() {
                           <Label htmlFor="preferredDate">Preferred Date</Label>
                           <Input
                             id="preferredDate"
-                            name="preferredDate"
                             type="date"
+                            {...register("preferredDate")}
                           />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="preferredTime">Preferred Time</Label>
                           <select
                             id="preferredTime"
-                            name="preferredTime"
                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            {...register("preferredTime")}
                           >
                             <option value="">Select a time</option>
                             <option value="morning">Morning (8AM - 12PM)</option>
@@ -224,9 +264,8 @@ export default function AppointmentPage() {
                         <Label htmlFor="visitReason">Reason for Visit *</Label>
                         <select
                           id="visitReason"
-                          name="visitReason"
-                          required
                           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          {...register("visitReason")}
                         >
                           <option value="">Select a reason</option>
                           <option value="cleaning">Cleaning & Exam</option>
@@ -236,29 +275,34 @@ export default function AppointmentPage() {
                           <option value="toothache">Toothache/Pain</option>
                           <option value="other">Other</option>
                         </select>
+                        {errors.visitReason && (
+                          <p className="text-sm text-red-600">{errors.visitReason.message}</p>
+                        )}
                       </div>
 
                       <div className="space-y-2">
                         <Label htmlFor="patientType">Patient Type *</Label>
                         <select
                           id="patientType"
-                          name="patientType"
-                          required
                           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          {...register("patientType")}
                         >
                           <option value="">Select patient type</option>
                           <option value="new">New Patient</option>
                           <option value="existing">Existing Patient</option>
                         </select>
+                        {errors.patientType && (
+                          <p className="text-sm text-red-600">{errors.patientType.message}</p>
+                        )}
                       </div>
 
                       <div className="space-y-2">
                         <Label htmlFor="message">Additional Information</Label>
                         <Textarea
                           id="message"
-                          name="message"
                           rows={4}
                           placeholder="Please share any additional details about your dental needs..."
+                          {...register("message")}
                         />
                       </div>
 
@@ -266,9 +310,9 @@ export default function AppointmentPage() {
                         type="submit"
                         size="lg"
                         className="w-full"
-                        disabled={formState === "submitting"}
+                        disabled={pageState === "submitting"}
                       >
-                        {formState === "submitting" ? "Submitting..." : "Request Appointment"}
+                        {pageState === "submitting" ? "Submitting..." : "Request Appointment"}
                       </Button>
 
                       <p className="text-sm text-muted-foreground text-center">

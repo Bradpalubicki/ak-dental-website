@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, CheckCircle, Heart, Users, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -209,10 +210,14 @@ export default function DrMillerRetirementPage() {
               </Button>
             </div>
             <div className="order-1 lg:order-2">
-              <div className="aspect-square bg-gray-200 rounded-2xl overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                  <span className="text-blue-400 text-lg">Our New Dentist</span>
-                </div>
+              <div className="aspect-square bg-gray-200 rounded-2xl overflow-hidden relative">
+                <Image
+                  src="/dr-alex-headshot.jpg"
+                  alt="Dr. Alex Khachaturian, DDS - AK Ultimate Dental Las Vegas"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
               </div>
             </div>
           </div>

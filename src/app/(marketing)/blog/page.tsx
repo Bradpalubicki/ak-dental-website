@@ -121,24 +121,9 @@ export default function BlogPage() {
                 Be the first to read our articles. We will never spam you or share
                 your email.
               </p>
-              <form
-                className="flex flex-col sm:flex-row gap-3"
-                action="#"
-              >
-                <input
-                  type="email"
-                  placeholder="Your email address"
-                  className="flex-1 h-12 px-4 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                  required
-                />
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="h-12 px-6 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold"
-                >
-                  Subscribe
-                </Button>
-              </form>
+              <p className="text-sm text-slate-500 italic">
+                Newsletter signup coming soon. In the meantime, follow us on social media for updates.
+              </p>
             </div>
           </div>
         </div>

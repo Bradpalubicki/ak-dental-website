@@ -64,16 +64,18 @@ export default function UsersSettingsPage() {
   useEffect(() => {
     async function load() {
       try {
-        // Fetch all permissions
-        const permsRes = await fetch("/api/rbac/permissions", { method: "OPTIONS" });
+        // Fetch all permissions and authority levels in parallel
+        const [permsRes, usersRes, levelsRes] = await Promise.all([
+          fetch("/api/rbac/permissions", { method: "OPTIONS" }),
+          fetch("/api/hr/employees?status=active"),
+          fetch("/api/rbac/authority-levels"),
+        ]);
         const permsData = await permsRes.json();
         setPermissions(permsData.permissions || []);
 
-        // Fetch staff users with their permissions
-        const usersRes = await fetch("/api/hr/employees?status=active");
         const usersData = await usersRes.json();
+        const levelsData: Record<string, string> = levelsRes.ok ? await levelsRes.json() : {};
 
-        // For each user, fetch their permissions
         const staffUsers: StaffUser[] = (usersData || []).map((emp: Record<string, string>) => ({
           id: emp.id,
           clerk_user_id: emp.clerk_user_id || "",
@@ -81,7 +83,9 @@ export default function UsersSettingsPage() {
           first_name: emp.first_name || "",
           last_name: emp.last_name || "",
           role: emp.role || "staff",
-          authority_level: "staff" as AuthorityLevel,
+          authority_level: (emp.clerk_user_id && levelsData[emp.clerk_user_id]
+            ? levelsData[emp.clerk_user_id]
+            : "staff") as AuthorityLevel,
           permissions: {},
         }));
 

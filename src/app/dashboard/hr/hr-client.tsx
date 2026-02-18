@@ -41,6 +41,7 @@ import {
   UserCheck,
 } from "lucide-react";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { DemoBanner } from "@/components/dashboard/demo-banner";
 import { AlertBanner } from "@/components/dashboard/alert-banner";
 import type { AlertItem } from "@/components/dashboard/alert-banner";
 import {
@@ -1063,6 +1064,7 @@ export function HrClient({ stats, recentDocuments, workforce }: Props) {
       {/* ============================================================ */}
       {activeTab === "overview" && (
         <div className="space-y-6">
+          <DemoBanner module="Payroll, time tracking, and attendance data" />
           {/* Charts Row */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             {/* Payroll Trend */}
@@ -1185,7 +1187,7 @@ export function HrClient({ stats, recentDocuments, workforce }: Props) {
                 </div>
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-medium text-emerald-700">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Synced with ADP
+                  Demo Data
                 </span>
               </div>
               <div className="p-6 space-y-4">

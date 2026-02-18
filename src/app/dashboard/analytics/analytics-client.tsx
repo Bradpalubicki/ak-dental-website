@@ -37,6 +37,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { DemoBanner } from "@/components/dashboard/demo-banner";
 import {
   TrendLine,
   TrendArea,
@@ -425,6 +426,7 @@ export function AnalyticsClient({ data }: { data: AnalyticsData }) {
 
   return (
     <div className="space-y-6">
+      <DemoBanner module="Some analytics metrics (hourly traffic, conversion funnel, review metrics)" />
       {/* ============================================================ */}
       {/*  Header                                                       */}
       {/* ============================================================ */}

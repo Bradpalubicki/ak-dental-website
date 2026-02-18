@@ -36,6 +36,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { DemoBanner } from "@/components/dashboard/demo-banner";
 import {
   TrendLine,
   TrendArea,
@@ -327,6 +328,7 @@ export function BillingClient({ data, analytics }: { data: BillingData; analytic
 
   return (
     <div className="space-y-6">
+      <DemoBanner module="Billing claims and payment data" />
       {/* ============================================================ */}
       {/*  Header                                                       */}
       {/* ============================================================ */}
