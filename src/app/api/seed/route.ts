@@ -8,8 +8,9 @@ import { seedTreatments } from "./modules/treatments";
 import { seedProviders } from "./modules/providers";
 import { seedDashboard } from "./modules/dashboard";
 import { seedLicensing } from "./modules/licensing";
+import { seedBenefits } from "./modules/benefits";
 
-type SeedModule = "demo" | "calls" | "outreach" | "hr" | "treatments" | "providers" | "dashboard" | "licensing" | "all";
+type SeedModule = "demo" | "calls" | "outreach" | "hr" | "treatments" | "providers" | "dashboard" | "licensing" | "benefits" | "all";
 
 const SEED_MODULES: Record<string, (supabase: ReturnType<typeof createServiceSupabase>) => Promise<{ inserted: Record<string, number>; errors: string[] }>> = {
   demo: seedDemo,
@@ -20,6 +21,7 @@ const SEED_MODULES: Record<string, (supabase: ReturnType<typeof createServiceSup
   providers: seedProviders,
   dashboard: seedDashboard,
   licensing: seedLicensing,
+  benefits: seedBenefits,
 };
 
 export async function POST(req: Request) {
@@ -46,7 +48,7 @@ export async function POST(req: Request) {
     if (seedModule === "all") {
       // Run in order: demo first (creates patients), then everything else
       const order: (keyof typeof SEED_MODULES)[] = [
-        "demo", "treatments", "providers", "hr", "licensing", "dashboard", "calls", "outreach",
+        "demo", "treatments", "providers", "hr", "licensing", "benefits", "dashboard", "calls", "outreach",
       ];
       for (const mod of order) {
         results[mod] = await SEED_MODULES[mod](supabase);
