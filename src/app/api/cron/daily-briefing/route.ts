@@ -47,6 +47,18 @@ export async function GET(req: NextRequest) {
       aiActionsOvernight: 4,
     });
 
+    // Upsert daily metrics row — this is what keeps cronHealthy = true in agency status
+    await supabase.from("oe_daily_metrics").upsert({
+      date: today,
+      new_leads: newLeads.length,
+      appointments_scheduled: appointments.length,
+      appointments_completed: appointments.filter((a) => a.status === "completed").length,
+      no_shows: appointments.filter((a) => a.status === "no_show").length,
+      cancellations: appointments.filter((a) => a.status === "cancelled").length,
+      ai_actions_taken: 0,
+      ai_actions_approved: 0,
+    }, { onConflict: "date" });
+
     if (briefing) {
       // Send email briefing
       await sendEmail({
