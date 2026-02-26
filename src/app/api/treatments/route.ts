@@ -1,6 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { tryAuth } from "@/lib/auth";
+
+const CreateTreatmentSchema = z.object({
+  patient_id: z.string().uuid(),
+  provider_name: z.string().max(200).default("AK Ultimate Dental"),
+  title: z.string().min(1).max(200),
+  status: z.enum(["draft", "presented", "accepted", "declined", "completed"]).default("draft"),
+  procedures: z.array(z.unknown()).default([]),
+  total_cost: z.number().min(0).default(0),
+  insurance_estimate: z.number().min(0).default(0),
+  patient_estimate: z.number().min(0).default(0),
+  ai_summary: z.string().max(5000).optional().nullable(),
+  notes: z.string().max(5000).optional().nullable(),
+});
 
 export async function GET(req: NextRequest) {
   const authResult = await tryAuth();
@@ -35,23 +49,15 @@ export async function POST(req: NextRequest) {
   const authResult = await tryAuth();
   if (authResult instanceof NextResponse) return authResult;
 
-  const supabase = createServiceSupabase();
-  const body = await req.json();
+  const parsed = CreateTreatmentSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
+  }
 
+  const supabase = createServiceSupabase();
   const { data, error } = await supabase
     .from("oe_treatment_plans")
-    .insert({
-      patient_id: body.patient_id,
-      provider_name: body.provider_name || "AK Ultimate Dental",
-      title: body.title,
-      status: body.status || "draft",
-      procedures: body.procedures || [],
-      total_cost: body.total_cost || 0,
-      insurance_estimate: body.insurance_estimate || 0,
-      patient_estimate: body.patient_estimate || 0,
-      ai_summary: body.ai_summary || null,
-      notes: body.notes || null,
-    })
+    .insert(parsed.data)
     .select()
     .single();
 

@@ -1,7 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { tryAuth } from "@/lib/auth";
 import { logPhiAccess } from "@/lib/audit";
+
+const CreatePatientSchema = z.object({
+  first_name: z.string().min(1).max(100),
+  last_name: z.string().min(1).max(100),
+  email: z.string().email().max(254).optional().nullable(),
+  phone: z.string().max(20).optional().nullable(),
+  date_of_birth: z.string().optional().nullable(),
+  address: z.string().max(200).optional().nullable(),
+  city: z.string().max(100).optional().nullable(),
+  state: z.string().max(50).optional().nullable(),
+  zip: z.string().max(10).optional().nullable(),
+  insurance_provider: z.string().max(200).optional().nullable(),
+  insurance_member_id: z.string().max(100).optional().nullable(),
+  insurance_group_number: z.string().max(100).optional().nullable(),
+  status: z.enum(["active", "inactive", "prospect"]).default("active"),
+  notes: z.string().max(5000).optional().nullable(),
+  tags: z.array(z.string()).default([]),
+});
 
 export async function GET(req: NextRequest) {
   const authResult = await tryAuth();
@@ -38,28 +57,15 @@ export async function POST(req: NextRequest) {
   const authResult = await tryAuth();
   if (authResult instanceof NextResponse) return authResult;
 
-  const supabase = createServiceSupabase();
-  const body = await req.json();
+  const parsed = CreatePatientSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
+  }
 
+  const supabase = createServiceSupabase();
   const { data, error } = await supabase
     .from("oe_patients")
-    .insert({
-      first_name: body.first_name,
-      last_name: body.last_name,
-      email: body.email || null,
-      phone: body.phone || null,
-      date_of_birth: body.date_of_birth || null,
-      address: body.address || null,
-      city: body.city || null,
-      state: body.state || null,
-      zip: body.zip || null,
-      insurance_provider: body.insurance_provider || null,
-      insurance_member_id: body.insurance_member_id || null,
-      insurance_group_number: body.insurance_group_number || null,
-      status: body.status || "active",
-      notes: body.notes || null,
-      tags: body.tags || [],
-    })
+    .insert(parsed.data)
     .select()
     .single();
 

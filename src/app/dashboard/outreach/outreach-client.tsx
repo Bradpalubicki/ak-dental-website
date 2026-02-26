@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { toast } from "sonner";
 import {
   Plus,
   Play,
@@ -354,6 +355,7 @@ export function OutreachClient({ initialWorkflows, analytics }: { initialWorkflo
     { channel: "email", delay_days: 0, subject: "", body: "" },
   ]);
   const [saving, setSaving] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   const openCreate = () => {
     setEditingWorkflow(null);
@@ -411,8 +413,9 @@ export function OutreachClient({ initialWorkflows, analytics }: { initialWorkflo
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this workflow? This cannot be undone.")) return;
     await fetch(`/api/outreach?id=${id}`, { method: "DELETE" });
+    setPendingDeleteId(null);
+    toast.success("Workflow deleted.");
     window.location.reload();
   };
 
@@ -1494,12 +1497,30 @@ export function OutreachClient({ initialWorkflows, analytics }: { initialWorkflo
             {/* Footer */}
             <div className="sticky bottom-0 flex items-center justify-between border-t border-slate-200 bg-white px-6 py-4 rounded-b-xl">
               {editingWorkflow && (
-                <button
-                  onClick={() => { setShowModal(false); handleDelete(editingWorkflow.id); }}
-                  className="text-xs font-medium text-red-500 hover:text-red-700"
-                >
-                  Delete Workflow
-                </button>
+                pendingDeleteId === editingWorkflow.id ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-600">Delete this workflow?</span>
+                    <button
+                      onClick={() => { setShowModal(false); handleDelete(editingWorkflow.id); }}
+                      className="text-xs font-semibold text-red-600 hover:text-red-800"
+                    >
+                      Yes, delete
+                    </button>
+                    <button
+                      onClick={() => setPendingDeleteId(null)}
+                      className="text-xs font-medium text-slate-500 hover:text-slate-700"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setPendingDeleteId(editingWorkflow.id)}
+                    className="text-xs font-medium text-red-500 hover:text-red-700"
+                  >
+                    Delete Workflow
+                  </button>
+                )
               )}
               <div className={cn("flex items-center gap-3", !editingWorkflow && "ml-auto")}>
                 <button

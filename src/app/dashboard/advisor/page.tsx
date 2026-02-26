@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { toast } from "sonner";
 import {
   Send,
   Loader2,
@@ -227,7 +228,7 @@ export default function AdvisorPage() {
       );
       setShowSaveDialog(false);
     } catch {
-      alert("Failed to save to employee record. Please try again.");
+      toast.error("Failed to save to employee record. Please try again.");
     } finally {
       setIsSaving(false);
     }

@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { tryAuth } from "@/lib/auth";
+
+const CreateEmployeeSchema = z.object({
+  first_name: z.string().min(1).max(100),
+  last_name: z.string().min(1).max(100),
+  email: z.string().email().max(254).optional().nullable(),
+  phone: z.string().max(20).optional().nullable(),
+  role: z.string().max(100).default("staff"),
+  hire_date: z.string().optional().nullable(),
+  status: z.enum(["active", "inactive", "terminated"]).default("active"),
+  notes: z.string().max(5000).optional().nullable(),
+});
 
 export async function GET(req: NextRequest) {
   const authResult = await tryAuth();
@@ -31,21 +43,15 @@ export async function POST(req: NextRequest) {
   const authResult = await tryAuth();
   if (authResult instanceof NextResponse) return authResult;
 
-  const supabase = createServiceSupabase();
-  const body = await req.json();
+  const parsed = CreateEmployeeSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
+  }
 
+  const supabase = createServiceSupabase();
   const { data, error } = await supabase
     .from("oe_employees")
-    .insert({
-      first_name: body.first_name,
-      last_name: body.last_name,
-      email: body.email || null,
-      phone: body.phone || null,
-      role: body.role || "staff",
-      hire_date: body.hire_date || null,
-      status: body.status || "active",
-      notes: body.notes || null,
-    })
+    .insert(parsed.data)
     .select()
     .single();
 

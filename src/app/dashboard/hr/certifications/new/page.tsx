@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -99,7 +100,7 @@ export default function NewCertificationPage() {
 
       router.push("/dashboard/hr");
     } catch {
-      alert("Failed to create certification. Please try again.");
+      toast.error("Failed to create certification. Please try again.");
     } finally {
       setLoading(false);
     }

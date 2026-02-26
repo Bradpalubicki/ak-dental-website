@@ -1,6 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { tryAuth } from "@/lib/auth";
+
+const CreateInsuranceSchema = z.object({
+  patient_id: z.string().uuid(),
+  appointment_id: z.string().uuid().optional().nullable(),
+  insurance_provider: z.string().min(1).max(200),
+  member_id: z.string().min(1).max(100),
+  group_number: z.string().max(100).optional().nullable(),
+  status: z.enum(["pending", "verified", "failed", "expired"]).default("pending"),
+  coverage_type: z.string().max(100).optional().nullable(),
+  deductible: z.number().min(0).optional().nullable(),
+  deductible_met: z.number().min(0).optional().nullable(),
+  annual_maximum: z.number().min(0).optional().nullable(),
+  annual_used: z.number().min(0).optional().nullable(),
+  preventive_coverage: z.number().min(0).max(100).optional().nullable(),
+  basic_coverage: z.number().min(0).max(100).optional().nullable(),
+  major_coverage: z.number().min(0).max(100).optional().nullable(),
+  flags: z.array(z.string()).default([]),
+  notes: z.string().max(5000).optional().nullable(),
+});
 
 export async function GET(req: NextRequest) {
   const authResult = await tryAuth();
@@ -37,29 +57,15 @@ export async function POST(req: NextRequest) {
   const authResult = await tryAuth();
   if (authResult instanceof NextResponse) return authResult;
 
-  const supabase = createServiceSupabase();
-  const body = await req.json();
+  const parsed = CreateInsuranceSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
+  }
 
+  const supabase = createServiceSupabase();
   const { data, error } = await supabase
     .from("oe_insurance_verifications")
-    .insert({
-      patient_id: body.patient_id,
-      appointment_id: body.appointment_id || null,
-      insurance_provider: body.insurance_provider,
-      member_id: body.member_id,
-      group_number: body.group_number || null,
-      status: body.status || "pending",
-      coverage_type: body.coverage_type || null,
-      deductible: body.deductible || null,
-      deductible_met: body.deductible_met || null,
-      annual_maximum: body.annual_maximum || null,
-      annual_used: body.annual_used || null,
-      preventive_coverage: body.preventive_coverage || null,
-      basic_coverage: body.basic_coverage || null,
-      major_coverage: body.major_coverage || null,
-      flags: body.flags || [],
-      notes: body.notes || null,
-    })
+    .insert(parsed.data)
     .select()
     .single();
 

@@ -11,6 +11,7 @@ import {
   Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface Message {
   id: string;
@@ -72,7 +73,7 @@ export function MessagesClient({
         setComposed(false);
       }, 2000);
     } catch {
-      alert("Failed to send message. Please try again or call the office.");
+      toast.error("Failed to send message. Please try again or call the office.");
     } finally {
       setComposing(false);
     }

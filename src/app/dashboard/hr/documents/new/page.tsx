@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -234,7 +235,7 @@ export default function NewDocumentPage() {
   async function handleAiLookup() {
     const selectedEmployee = employees.find((e) => e.id === employeeId);
     if (!selectedEmployee && !title) {
-      alert("Please select an employee and/or enter a title to help AI find relevant information.");
+      toast.error("Please select an employee and/or enter a title to help AI find relevant information.");
       return;
     }
 
@@ -277,7 +278,7 @@ export default function NewDocumentPage() {
         );
       }
     } catch {
-      alert("AI lookup failed. Please enter information manually.");
+      toast.error("AI lookup failed. Please enter information manually.");
     } finally {
       setAiLoading(false);
     }
@@ -345,7 +346,7 @@ export default function NewDocumentPage() {
         router.push("/dashboard/hr");
       }
     } catch {
-      alert("Failed to create document. Please try again.");
+      toast.error("Failed to create document. Please try again.");
     } finally {
       setLoading(false);
     }

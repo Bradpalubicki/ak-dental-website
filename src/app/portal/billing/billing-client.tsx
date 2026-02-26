@@ -9,6 +9,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface Treatment {
   id: string;
@@ -76,7 +77,7 @@ export function BillingClient({
               className="rounded-xl bg-cyan-600 px-5 py-3 text-sm font-semibold text-white hover:bg-cyan-700 transition-colors"
               onClick={() => {
                 // Stripe payment flow will be wired here
-                alert("Online payments coming soon! Please call the office to make a payment.");
+                toast.info("Online payments coming soon! Please call the office to make a payment.");
               }}
             >
               <CreditCard className="inline h-4 w-4 mr-2" />

@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { tryAuth } from "@/lib/auth";
+
+const CreateAppointmentSchema = z.object({
+  patient_id: z.string().uuid(),
+  appointment_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  appointment_time: z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/),
+  duration_minutes: z.number().int().min(5).max(480).default(60),
+  type: z.string().min(1).max(100),
+  provider_name: z.string().max(200).default("AK Ultimate Dental"),
+  notes: z.string().max(5000).optional().nullable(),
+});
 
 // GET /api/appointments
 export async function GET(req: NextRequest) {
@@ -47,35 +58,15 @@ export async function POST(req: NextRequest) {
   if (authResult instanceof NextResponse) return authResult;
 
   try {
-    const body = await req.json();
-    const supabase = createServiceSupabase();
-
-    const {
-      patient_id,
-      appointment_date,
-      appointment_time,
-      duration_minutes,
-      type,
-      provider_name,
-      notes,
-    } = body;
-
-    if (!patient_id || !appointment_date || !appointment_time || !type) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    const parsed = CreateAppointmentSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
     }
 
+    const supabase = createServiceSupabase();
     const { data, error } = await supabase
       .from("oe_appointments")
-      .insert({
-        patient_id,
-        appointment_date,
-        appointment_time,
-        duration_minutes: duration_minutes || 60,
-        type,
-        provider_name: provider_name || "AK Ultimate Dental",
-        notes: notes || null,
-        status: "scheduled",
-      })
+      .insert({ ...parsed.data, status: "scheduled" })
       .select()
       .single();
 

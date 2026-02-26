@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { tryAuth } from "@/lib/auth";
+
+const UpdateSettingSchema = z.object({
+  key: z.string().min(1).max(200),
+  value: z.unknown(),
+});
 
 export async function GET() {
   try {
@@ -33,15 +39,12 @@ export async function PUT(request: NextRequest) {
     const authResult = await tryAuth();
     if (authResult instanceof NextResponse) return authResult;
 
-    const body = await request.json();
-    const { key, value } = body;
-
-    if (!key || value === undefined) {
-      return NextResponse.json(
-        { error: "key and value are required" },
-        { status: 400 }
-      );
+    const parsed = UpdateSettingSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
     }
+
+    const { key, value } = parsed.data;
 
     const supabase = createServiceSupabase();
     const { error } = await supabase

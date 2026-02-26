@@ -1,6 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { verifyPortalApiAuth } from "@/lib/portal-auth";
+
+const UpdateProfileSchema = z.object({
+  first_name: z.string().min(1).max(100).optional(),
+  last_name: z.string().min(1).max(100).optional(),
+  phone: z.string().max(20).optional().nullable(),
+  date_of_birth: z.string().optional().nullable(),
+  address: z.string().max(200).optional().nullable(),
+  city: z.string().max(100).optional().nullable(),
+  state: z.string().max(50).optional().nullable(),
+  zip: z.string().max(10).optional().nullable(),
+  insurance_provider: z.string().max(200).optional().nullable(),
+  insurance_member_id: z.string().max(100).optional().nullable(),
+  insurance_group_number: z.string().max(100).optional().nullable(),
+}).refine((data) => Object.keys(data).length > 0, {
+  message: "At least one field must be provided",
+});
 
 export async function PUT(request: NextRequest) {
   try {
@@ -9,25 +26,23 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
-
-    // Only allow updating specific fields
-    const allowedUpdates: Record<string, unknown> = {};
-    const allowed = ["first_name", "last_name", "phone", "date_of_birth", "address", "city", "state", "zip", "insurance_provider", "insurance_member_id", "insurance_group_number"];
-    for (const key of allowed) {
-      if (body[key] !== undefined) {
-        allowedUpdates[key] = body[key];
-      }
+    const parsed = UpdateProfileSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
     }
 
-    if (Object.keys(allowedUpdates).length === 0) {
+    const updates = Object.fromEntries(
+      Object.entries(parsed.data).filter(([, v]) => v !== undefined)
+    );
+
+    if (Object.keys(updates).length === 0) {
       return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
     }
 
     const supabase = createServiceSupabase();
     const { error } = await supabase
       .from("oe_patients")
-      .update(allowedUpdates)
+      .update(updates)
       .eq("id", patient.id);
 
     if (error) throw error;
