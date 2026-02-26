@@ -151,6 +151,48 @@ export function WebSiteSchema() {
   );
 }
 
+export function ArticleSchema({
+  title,
+  description,
+  url,
+  image,
+  datePublished,
+  author,
+}: {
+  title: string;
+  description: string;
+  url: string;
+  image: string;
+  datePublished: string;
+  author: string;
+}) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    description,
+    url: `${siteConfig.url}${url}`,
+    image,
+    datePublished,
+    author: { "@type": "Organization", name: author },
+    publisher: {
+      "@type": "Organization",
+      name: siteConfig.name,
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteConfig.url}/ak-logo-header.png`,
+      },
+    },
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
 export function OrganizationSchema() {
   const schema = {
     "@context": "https://schema.org",
