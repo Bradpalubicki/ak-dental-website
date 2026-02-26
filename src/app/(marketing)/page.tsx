@@ -383,8 +383,22 @@ export default function HomePage() {
             <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
               Every single review is 5 stars. See what our patients are saying.
             </p>
-            <div className="flex justify-center">
+            <div className="flex flex-wrap justify-center gap-4">
               <GoogleReviewsBadge variant="full" />
+              <a
+                href="https://www.yelp.com/biz/ak-ultimate-dental-las-vegas"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-5 py-3 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <span className="text-[#d32323] font-extrabold text-lg leading-none">yelp</span>
+                <div className="flex gap-0.5">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-[#d32323] text-[#d32323]" />
+                  ))}
+                </div>
+                <span className="text-sm font-semibold text-gray-700">5-Star Rated</span>
+              </a>
             </div>
           </div>
 

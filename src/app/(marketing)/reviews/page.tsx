@@ -25,6 +25,38 @@ export const metadata: Metadata = {
   ],
 };
 
+function YelpLogo({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="#FF1A1A">
+      <path d="M20.16 12.73l-4.703 1.14c-.48.116-.913-.32-.778-.794l1.524-5.355c.143-.498.78-.617 1.084-.2l3.179 4.214c.298.394.088.907-.306.995zM13.67 9.082l-1.856-4.927c-.19-.503.243-.997.762-.878l5.34 1.22c.52.12.69.775.296 1.124L14.5 9.14c-.392.35-.985.165-1.168-.325zm-5.51 11.3l2.07-4.85c.21-.492.862-.563 1.173-.12l3.027 4.3c.306.438-.01 1.03-.543 1.03H8.65c-.532 0-.85-.59-.49-1.025zM7.037 9.63L2.23 11.2c-.506.17-.67.82-.29 1.214l3.77 3.857c.384.393 1.006.215 1.152-.282l1.04-3.68c.148-.52-.354-1.02-.866-.88zm-1.19-5.297l4.498 2.59c.46.265.476.92.03 1.204L5.83 11.01c-.45.285-1.02.01-1.1-.52L3.88 5.04c-.078-.53.476-.914.964-.63z"/>
+    </svg>
+  );
+}
+
+function YelpBadge() {
+  return (
+    <a
+      href="https://www.yelp.com/biz/ak-ultimate-dental-las-vegas"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-4 bg-white rounded-2xl shadow-lg border border-gray-100 px-6 py-5 hover:shadow-xl transition-shadow"
+    >
+      <YelpLogo className="h-10 w-10 flex-shrink-0" />
+      <div>
+        <div className="flex gap-1 mb-1">
+          {[...Array(5)].map((_, i) => (
+            <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+          ))}
+          <span className="ml-2 text-lg font-bold text-gray-900">5.0</span>
+        </div>
+        <p className="text-gray-600">
+          <span className="font-semibold text-gray-900">Rated 5 Stars</span> on Yelp
+        </p>
+      </div>
+    </a>
+  );
+}
+
 export default function ReviewsPage() {
   return (
     <>
@@ -182,6 +214,34 @@ export default function ReviewsPage() {
                   </CardContent>
                 </Card>
               ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Find Us On Section */}
+      <section className="py-16 bg-slate-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-slate-900 text-center mb-4">Find Our Reviews On</h2>
+            <p className="text-slate-600 text-center mb-10">Read what our patients say across all platforms</p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <GoogleReviewsBadge variant="full" />
+              <YelpBadge />
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
+              <Button asChild size="lg" variant="outline" className="border-2">
+                <a href="https://share.google/y4QOijKzxJN97403L" target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Leave a Google Review
+                </a>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="border-2 border-[#FF1A1A] text-[#FF1A1A] hover:bg-red-50">
+                <a href="https://www.yelp.com/biz/ak-ultimate-dental-las-vegas" target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  View Yelp Reviews
+                </a>
+              </Button>
             </div>
           </div>
         </div>

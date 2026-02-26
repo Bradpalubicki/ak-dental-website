@@ -31,7 +31,10 @@ export function LocalBusinessSchema() {
         closes: "17:00",
       },
     ],
-    sameAs: Object.values(siteConfig.social).filter(Boolean),
+    sameAs: [
+      ...Object.values(siteConfig.social).filter(Boolean),
+      "https://www.yelp.com/biz/ak-ultimate-dental-las-vegas",
+    ].filter((v, i, arr) => arr.indexOf(v) === i),
     priceRange: "$$",
     aggregateRating: {
       "@type": "AggregateRating",
