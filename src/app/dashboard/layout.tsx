@@ -11,7 +11,7 @@ export const metadata = {
   description: "AI Operations Platform for AK Ultimate Dental",
 };
 
-const isReviewMode = process.env.PUBLIC_REVIEW_MODE === "true";
+const isReviewMode = process.env.PUBLIC_REVIEW_MODE?.trim() === "true";
 
 export default async function DashboardLayout({
   children,
