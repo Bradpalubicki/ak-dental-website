@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { BreadcrumbSchema } from "@/components/schema/local-business";
 import { siteConfig } from "@/lib/config";
 import { images } from "@/lib/images";
+import { curatedImages } from "@/content/images";
 import { GoogleReviewsBadge } from "@/components/marketing/google-reviews-badge";
 
 export const metadata: Metadata = {
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
     title: "About Our Team | AK Ultimate Dental Las Vegas",
     description:
       "Meet the team at AK Ultimate Dental - your trusted Las Vegas dentist with comprehensive training in European and American dental methodologies.",
+    images: [{ url: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1200&h=630&fit=crop&q=80", width: 1200, height: 630, alt: "AK Ultimate Dental team Las Vegas" }],
   },
 };
 
@@ -37,8 +39,8 @@ export default function AboutPage() {
       <section className="relative min-h-[70vh] flex items-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
-            src={images.hero.office}
-            alt="AK Ultimate Dental office"
+            src={curatedImages.pages.about}
+            alt="AK Ultimate Dental team Las Vegas"
             fill
             className="object-cover"
             priority

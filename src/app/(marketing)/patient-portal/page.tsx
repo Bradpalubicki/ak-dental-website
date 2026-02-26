@@ -10,6 +10,11 @@ export const metadata: Metadata = {
   title: "Patient Portal | AK Ultimate Dental",
   description:
     "Access the AK Ultimate Dental patient portal to schedule appointments, complete forms, view treatment plans, and manage billing.",
+  openGraph: {
+    title: "Patient Portal | AK Ultimate Dental Las Vegas",
+    description: "Access your dental records, appointments, treatment plans, and billing online. Secure patient portal for AK Ultimate Dental patients.",
+    images: [{ url: "https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=1200&h=630&fit=crop&q=80", width: 1200, height: 630, alt: "Patient portal dental care" }],
+  },
 };
 
 export default function PatientPortalPage() {

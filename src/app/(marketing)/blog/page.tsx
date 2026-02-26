@@ -16,6 +16,11 @@ export const metadata: Metadata = {
   title: "Blog | AK Ultimate Dental | Las Vegas, NV",
   description:
     "Dental health articles, oral care tips, and wellness insights from AK Ultimate Dental in Las Vegas, NV. Coming soon.",
+  openGraph: {
+    title: "Dental Health Blog | AK Ultimate Dental Las Vegas",
+    description: "Expert dental health tips, oral care guides, and practice news from AK Ultimate Dental in Las Vegas, NV.",
+    images: [{ url: "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=1200&h=630&fit=crop&q=80", width: 1200, height: 630, alt: "Dental health blog" }],
+  },
 };
 
 const placeholderArticles = [

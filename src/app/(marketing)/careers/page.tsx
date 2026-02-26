@@ -9,6 +9,11 @@ export const metadata: Metadata = {
   title: "Careers | Join Our Team | AK Ultimate Dental",
   description:
     "Join AK Ultimate Dental in Las Vegas, NV. We are hiring skilled, compassionate dental professionals and support staff.",
+  openGraph: {
+    title: "Dental Careers in Las Vegas | Join AK Ultimate Dental",
+    description: "Join a top-rated dental team in Las Vegas. Competitive pay, great culture, growth opportunities. View open positions at AK Ultimate Dental.",
+    images: [{ url: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=1200&h=630&fit=crop&q=80", width: 1200, height: 630, alt: "Dental team careers Las Vegas" }],
+  },
 };
 
 export default function CareersPage() {

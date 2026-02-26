@@ -15,6 +15,11 @@ export const metadata: Metadata = {
   title: "FAQs | AK Ultimate Dental | Las Vegas, NV",
   description:
     "Frequently asked questions about dental care at AK Ultimate Dental. Learn about appointments, insurance, treatments, and more.",
+  openGraph: {
+    title: "Dental FAQs | AK Ultimate Dental Las Vegas",
+    description: "Answers to common questions about dental care, insurance, appointments, and treatments at AK Ultimate Dental in Las Vegas.",
+    images: [{ url: "https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?w=1200&h=630&fit=crop&q=80", width: 1200, height: 630, alt: "Dental care FAQ" }],
+  },
 };
 
 const faqs = [

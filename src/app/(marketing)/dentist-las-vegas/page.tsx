@@ -13,6 +13,7 @@ import {
 import { BreadcrumbSchema, FAQSchema } from "@/components/schema/local-business";
 import { siteConfig, services, testimonials } from "@/lib/config";
 import { images } from "@/lib/images";
+import { curatedImages } from "@/content/images";
 
 export const metadata: Metadata = {
   title: "Best Dentist in Las Vegas, NV | Top-Rated Dental Care | AK Ultimate Dental",
@@ -36,7 +37,7 @@ export const metadata: Metadata = {
     title: "Best Dentist in Las Vegas, NV | AK Ultimate Dental",
     description:
       "Top-rated Las Vegas dentist offering comprehensive dental care. 20+ years serving the community. Book your appointment today!",
-    images: [images.hero.main],
+    images: [{ url: curatedImages.pages.dentistLasVegas, width: 1200, height: 630, alt: "Best dentist in Las Vegas NV - AK Ultimate Dental" }],
   },
 };
 
@@ -103,8 +104,8 @@ export default function DentistLasVegasPage() {
       <section className="relative min-h-[80vh] flex items-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
-            src={images.lasVegas.skyline}
-            alt="Las Vegas skyline"
+            src={curatedImages.pages.dentistLasVegas}
+            alt="Best dentist in Las Vegas - AK Ultimate Dental on West Sahara"
             fill
             className="object-cover"
             priority
@@ -198,8 +199,8 @@ export default function DentistLasVegasPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="relative">
               <Image
-                src={images.hero.office}
-                alt="AK Ultimate Dental office in Las Vegas"
+                src={curatedImages.lifestyle.patientConsultation}
+                alt="AK Ultimate Dental dentist consulting with patient in Las Vegas"
                 width={600}
                 height={400}
                 className="rounded-2xl shadow-2xl"
@@ -464,8 +465,8 @@ export default function DentistLasVegasPage() {
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src={images.lasVegas.strip}
-            alt="Las Vegas at night"
+            src={curatedImages.lifestyle.confidentSmile}
+            alt="Happy patient after dental treatment at AK Ultimate Dental Las Vegas"
             fill
             className="object-cover"
           />

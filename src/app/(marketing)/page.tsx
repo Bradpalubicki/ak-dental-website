@@ -9,6 +9,21 @@ import { GoogleReviewsBadge } from "@/components/marketing/google-reviews-badge"
 import { DashboardPreview } from "@/components/marketing/dashboard-preview";
 import { AnimatedCounter } from "@/components/marketing/animated-counter";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "AK Ultimate Dental | Dentist in Las Vegas, NV",
+  description:
+    "Top-rated dental care in Las Vegas, NV. General, cosmetic, and implant dentistry. Same-day CEREC crowns. Accepting new patients. Call (702) 935-4395.",
+  alternates: { canonical: siteConfig.url },
+  openGraph: {
+    title: "AK Ultimate Dental | Dentist in Las Vegas, NV",
+    description:
+      "Top-rated dental care in Las Vegas. Cosmetic dentistry, implants, same-day CEREC crowns. 128 five-star reviews. Call (702) 935-4395.",
+    images: [{ url: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1200&h=630&fit=crop&q=80", width: 1200, height: 630, alt: "AK Ultimate Dental Las Vegas" }],
+  },
+};
+
 export default function HomePage() {
   const featuredServices = services.filter((s) => s.featured);
 
