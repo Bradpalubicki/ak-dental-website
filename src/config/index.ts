@@ -58,3 +58,25 @@ export function getImage(
   if (cat && key in cat) return cat[key];
   return practiceConfig.images.backgrounds.office;
 }
+
+// ─── Vertical Config System ─────────────────────────────────────────────────
+// Used by clinical-notes, scheduling, and PMS layer
+export { getVerticalConfig, dentalVertical } from "./verticals";
+export type {
+  VerticalConfig,
+  VerticalType,
+  VerticalTerminology,
+  NoteType,
+  NoteSection,
+  NoteTemplate,
+  SchedulingConfig,
+  ComplianceConfig,
+  AssessmentConfig,
+  AiPromptConfig,
+  InsuranceConfig,
+  SmsTemplateConfig,
+  DashboardNavItem,
+  NavigationConfig,
+  RoleConfig,
+  ServiceCategory,
+} from "./vertical";

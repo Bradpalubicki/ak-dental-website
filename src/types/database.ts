@@ -448,3 +448,401 @@ export interface Referral {
   patient?: Patient;
   referring_provider?: Provider;
 }
+
+// ─── RBAC ────────────────────────────────────────────────────────────────────
+
+export interface Role {
+  id: string;
+  name: string;
+  display_name: string;
+  description: string | null;
+  is_system: boolean;
+  created_at: string;
+}
+
+export interface UserRole {
+  id: string;
+  clerk_user_id: string;
+  role_id: string;
+  assigned_by: string | null;
+  created_at: string;
+}
+
+export interface RolePermission {
+  id: string;
+  role_id: string;
+  module: string;
+  can_view: boolean;
+  can_edit: boolean;
+  can_delete: boolean;
+  can_admin: boolean;
+}
+
+export type RoleName =
+  | "global_admin"
+  | "admin"
+  | "manager"
+  | "dentist"
+  | "hygienist"
+  | "dental_assistant"
+  | "front_desk"
+  | "biller"
+  | "staff";
+
+export type ModuleName =
+  | "dashboard"
+  | "advisor"
+  | "approvals"
+  | "leads"
+  | "clients"
+  | "patients"
+  | "intake_forms"
+  | "insurance"
+  | "financials"
+  | "billing"
+  | "hr"
+  | "benefits"
+  | "licensing"
+  | "inbox"
+  | "analytics"
+  | "calls"
+  | "outreach"
+  | "settings"
+  | "scheduling"
+  | "providers"
+  | "clinical_notes"
+  | "assessments"
+  | "consent_forms"
+  | "waitlist"
+  | "resources"
+  | "recall"
+  | "documents"
+  | "training"
+  | "lab_cases"
+  | "dental_charts"
+  | "cdt_codes"
+  | "appointment_types";
+
+// ─── Provider (v2 schema — dental-engine style) ──────────────────────────────
+// Note: The Provider type above is the v1 schema (from migration 022).
+// ProviderV2 matches the dental-engine schema used by scheduling lib.
+
+export interface ProviderV2 {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  clerk_user_id: string | null;
+  first_name: string;
+  last_name: string;
+  credentials: string | null;
+  title: string | null;
+  npi: string | null;
+  license_number: string | null;
+  license_state: string | null;
+  license_expiry: string | null;
+  specialty: string | null;
+  bio: string | null;
+  image_url: string | null;
+  email: string | null;
+  phone: string | null;
+  telehealth_enabled: boolean;
+  calendar_color: string;
+  max_daily_patients: number;
+  status: "active" | "inactive" | "on_leave";
+  metadata: Json;
+}
+
+export interface ProviderTimeOff {
+  id: string;
+  created_at: string;
+  provider_id: string;
+  start_datetime: string;
+  end_datetime: string;
+  type: "pto" | "sick" | "personal" | "conference" | "block" | "holiday";
+  reason: string | null;
+  all_day: boolean;
+  recurring: boolean;
+  recurrence_rule: string | null;
+  approved_by: string | null;
+  status: "pending" | "approved" | "denied";
+}
+
+// ─── Scheduling ──────────────────────────────────────────────────────────────
+
+export interface AppointmentType {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  name: string;
+  code: string | null;
+  description: string | null;
+  category: string | null;
+  duration_minutes: number;
+  buffer_after_minutes: number;
+  default_fee: number;
+  color: string;
+  online_bookable: boolean;
+  requires_provider: boolean;
+  requires_resource: boolean;
+  max_per_day_per_provider: number | null;
+  provider_restrictions: string[] | null;
+  active: boolean;
+  sort_order: number;
+}
+
+export interface Resource {
+  id: string;
+  created_at: string;
+  name: string;
+  type: "room" | "operatory" | "equipment" | "virtual";
+  description: string | null;
+  capacity: number;
+  color: string;
+  active: boolean;
+}
+
+export interface WaitlistEntry {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  patient_id: string;
+  preferred_provider_id: string | null;
+  appointment_type_id: string | null;
+  preferred_days: number[] | null;
+  preferred_time_start: string | null;
+  preferred_time_end: string | null;
+  urgency: "low" | "normal" | "high" | "urgent";
+  status: "waiting" | "offered" | "scheduled" | "cancelled" | "expired";
+  notes: string | null;
+  offered_at: string | null;
+  expires_at: string | null;
+  scheduled_appointment_id: string | null;
+}
+
+export interface TimeSlot {
+  start: string; // ISO datetime
+  end: string;
+  provider_id: string;
+  provider_name: string;
+  resource_id?: string;
+  resource_name?: string;
+  appointment_type_id?: string;
+  available: boolean;
+}
+
+// ─── Clinical Notes (v2 schema — dental-engine style) ────────────────────────
+// Note: ak-dental-website has simpler oe_clinical_notes from migration 021.
+// These types match the dental-engine extended schema.
+
+export type ClinicalNoteType =
+  | "soap"
+  | "dap"
+  | "birp"
+  | "dental_soap"
+  | "dental_charting"
+  | "intake"
+  | "discharge"
+  | "free_form";
+
+export type ClinicalNoteStatus =
+  | "draft"
+  | "pending_cosign"
+  | "signed"
+  | "locked"
+  | "amended";
+
+export interface ClinicalNote {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  patient_id: string;
+  provider_id: string;
+  appointment_id: string | null;
+  note_type: ClinicalNoteType;
+  template_id: string | null;
+  content: Record<string, string>;
+  plain_text: string | null;
+  ai_summary: string | null;
+  ai_patient_summary: string | null;
+  diagnosis_codes: string[] | null;
+  procedure_codes: string[] | null;
+  status: ClinicalNoteStatus;
+  signed_by: string | null;
+  signed_at: string | null;
+  cosigner_id: string | null;
+  cosigned_at: string | null;
+  locked_at: string | null;
+  amendment_of: string | null;
+  amendment_reason: string | null;
+  word_count: number;
+  metadata: Json;
+}
+
+export interface NoteTemplateRow {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  name: string;
+  note_type: string;
+  description: string | null;
+  sections: Json;
+  default_for_codes: string[] | null;
+  created_by: string | null;
+  is_system: boolean;
+  active: boolean;
+}
+
+// ─── Assessments ─────────────────────────────────────────────────────────────
+
+export interface AssessmentDefinition {
+  id: string;
+  created_at: string;
+  name: string;
+  abbreviation: string;
+  description: string | null;
+  questions: Json;
+  scoring_method: "sum" | "average" | "custom";
+  severity_ranges: Json;
+  frequency: string | null;
+  vertical_types: string[];
+  active: boolean;
+}
+
+export interface AssessmentResult {
+  id: string;
+  created_at: string;
+  patient_id: string;
+  provider_id: string | null;
+  definition_id: string;
+  appointment_id: string | null;
+  responses: Json;
+  total_score: number | null;
+  severity: string | null;
+  notes: string | null;
+  administered_at: string;
+}
+
+// ─── Consent Forms ────────────────────────────────────────────────────────────
+
+export interface ConsentForm {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  name: string;
+  description: string | null;
+  content: string;
+  version: number;
+  effective_date: string;
+  required_for: string;
+  required_service_codes: string[] | null;
+  active: boolean;
+}
+
+export interface ConsentSignature {
+  id: string;
+  created_at: string;
+  consent_form_id: string;
+  patient_id: string;
+  form_version: number;
+  signature_data: string | null;
+  signature_type: "typed" | "drawn" | "electronic";
+  ip_address: string | null;
+  user_agent: string | null;
+  signed_at: string;
+}
+
+// ─── Recall Rules ─────────────────────────────────────────────────────────────
+
+export interface RecallRule {
+  id: string;
+  created_at: string;
+  name: string;
+  description: string | null;
+  trigger_codes: string[] | null;
+  interval_days: number;
+  reminder_schedule: Json;
+  message_template: string | null;
+  active: boolean;
+  applies_to: string;
+}
+
+// ─── Dental-Specific ──────────────────────────────────────────────────────────
+
+export type DentalChartStatus = "active" | "planned" | "completed";
+
+export interface DentalChart {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  patient_id: string;
+  provider_id: string | null;
+  chart_date: string;
+  tooth_number: number | null;
+  surface: string | null;
+  condition: string | null;
+  treatment: string | null;
+  notes: string | null;
+  status: DentalChartStatus;
+  metadata: Json;
+}
+
+export interface CdtCode {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  code: string;
+  category:
+    | "diagnostic"
+    | "preventive"
+    | "restorative"
+    | "endodontics"
+    | "periodontics"
+    | "prosthodontics"
+    | "oral_surgery"
+    | "orthodontics"
+    | "adjunctive"
+    | "emergency";
+  description: string;
+  fee_schedule: number | null;
+  insurance_typical: number | null;
+  duration_minutes: number;
+  is_active: boolean;
+}
+
+export type LabCaseStatus =
+  | "pending"
+  | "sent"
+  | "in_progress"
+  | "received"
+  | "fitted"
+  | "completed";
+
+export type LabCaseType =
+  | "crown"
+  | "bridge"
+  | "denture"
+  | "implant"
+  | "orthodontic"
+  | "nightguard"
+  | "other";
+
+export interface LabCase {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  patient_id: string;
+  provider_id: string | null;
+  lab_name: string | null;
+  case_type: LabCaseType;
+  material: string | null;
+  shade: string | null;
+  tooth_numbers: number[] | null;
+  sent_date: string | null;
+  expected_return: string | null;
+  actual_return: string | null;
+  status: LabCaseStatus;
+  tracking_number: string | null;
+  lab_fee: number | null;
+  notes: string | null;
+  metadata: Json;
+}

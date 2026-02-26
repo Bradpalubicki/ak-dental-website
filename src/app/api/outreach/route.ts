@@ -1,6 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { tryAuth } from "@/lib/auth";
+
+const CreateWorkflowSchema = z.object({
+  name: z.string().min(1).max(200),
+  type: z.string().min(1).max(100),
+  steps: z.array(z.unknown()).default([]),
+  trigger_conditions: z.record(z.string(), z.unknown()).default({}),
+});
+
+const UpdateWorkflowSchema = z.object({
+  id: z.string().uuid(),
+  status: z.enum(["active", "paused", "draft"]).optional(),
+  name: z.string().min(1).max(200).optional(),
+  type: z.string().min(1).max(100).optional(),
+  steps: z.array(z.unknown()).optional(),
+  trigger_conditions: z.record(z.string(), z.unknown()).optional(),
+});
 
 export async function GET() {
   try {
@@ -26,25 +43,15 @@ export async function POST(request: NextRequest) {
     const authResult = await tryAuth();
     if (authResult instanceof NextResponse) return authResult;
 
-    const body = await request.json();
-    const { name, type, steps, trigger_conditions } = body;
-
-    if (!name || !type) {
-      return NextResponse.json({ error: "name and type are required" }, { status: 400 });
+    const parsed = CreateWorkflowSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
     }
 
     const supabase = createServiceSupabase();
     const { data, error } = await supabase
       .from("oe_outreach_workflows")
-      .insert({
-        name,
-        type,
-        status: "draft",
-        steps: steps || [],
-        trigger_conditions: trigger_conditions || {},
-        enrolled_count: 0,
-        completed_count: 0,
-      })
+      .insert({ ...parsed.data, status: "draft", enrolled_count: 0, completed_count: 0 })
       .select()
       .single();
 
@@ -61,20 +68,15 @@ export async function PUT(request: NextRequest) {
     const authResult = await tryAuth();
     if (authResult instanceof NextResponse) return authResult;
 
-    const body = await request.json();
-    const { id, ...updates } = body;
-
-    if (!id) {
-      return NextResponse.json({ error: "id is required" }, { status: 400 });
+    const parsed = UpdateWorkflowSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
     }
 
-    // Only allow updating specific fields
-    const allowedFields: Record<string, unknown> = {};
-    if (updates.status !== undefined) allowedFields.status = updates.status;
-    if (updates.name !== undefined) allowedFields.name = updates.name;
-    if (updates.type !== undefined) allowedFields.type = updates.type;
-    if (updates.steps !== undefined) allowedFields.steps = updates.steps;
-    if (updates.trigger_conditions !== undefined) allowedFields.trigger_conditions = updates.trigger_conditions;
+    const { id, ...updates } = parsed.data;
+    const allowedFields = Object.fromEntries(
+      Object.entries(updates).filter(([, v]) => v !== undefined)
+    );
 
     if (Object.keys(allowedFields).length === 0) {
       return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
@@ -102,12 +104,11 @@ export async function DELETE(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
-    if (!id) {
-      return NextResponse.json({ error: "id is required" }, { status: 400 });
+    if (!id || !z.string().uuid().safeParse(id).success) {
+      return NextResponse.json({ error: "Valid id is required" }, { status: 400 });
     }
 
     const supabase = createServiceSupabase();
-    // Soft delete
     const { error } = await supabase
       .from("oe_outreach_workflows")
       .update({ deleted_at: new Date().toISOString() })

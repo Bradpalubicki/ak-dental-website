@@ -1,7 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { logPhiAccess } from "@/lib/audit";
 import { auth } from "@clerk/nextjs/server";
+
+const CreateNoteSchema = z.object({
+  patient_id: z.string().uuid(),
+  appointment_id: z.string().uuid().optional().nullable(),
+  provider_name: z.string().min(1).max(200),
+  note_type: z.enum(["progress", "exam", "treatment", "consultation", "emergency", "followup"]).default("progress"),
+  chief_complaint: z.string().max(2000).optional().nullable(),
+  subjective: z.string().max(5000).optional().nullable(),
+  objective: z.string().max(5000).optional().nullable(),
+  assessment: z.string().max(5000).optional().nullable(),
+  plan: z.string().max(5000).optional().nullable(),
+  tooth_numbers: z.array(z.number().int().min(1).max(32)).default([]),
+  procedure_codes: z.array(z.string()).default([]),
+  medications: z.array(z.unknown()).default([]),
+  vitals: z.record(z.string(), z.unknown()).default({}),
+  status: z.enum(["draft", "signed", "amended"]).default("draft"),
+  template_id: z.string().uuid().optional().nullable(),
+});
 
 // GET /api/clinical-notes - List notes with filters
 export async function GET(req: NextRequest) {
@@ -60,34 +79,18 @@ export async function GET(req: NextRequest) {
 // POST /api/clinical-notes - Create new note
 export async function POST(req: NextRequest) {
   try {
-    const supabase = createServiceSupabase();
-    const body = await req.json();
     const { userId } = await auth();
-
-    const {
-      patient_id,
-      appointment_id,
-      provider_name,
-      note_type = "progress",
-      chief_complaint,
-      subjective,
-      objective,
-      assessment,
-      plan,
-      tooth_numbers,
-      procedure_codes,
-      medications,
-      vitals,
-      status = "draft",
-      template_id,
-    } = body;
-
-    if (!patient_id || !provider_name) {
-      return NextResponse.json(
-        { error: "patient_id and provider_name are required" },
-        { status: 400 }
-      );
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const parsed = CreateNoteSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
+    }
+
+    const { template_id, ...noteFields } = parsed.data;
+    const supabase = createServiceSupabase();
 
     // If template_id provided, load template data as defaults
     let templateDefaults: Record<string, unknown> = {};
@@ -104,21 +107,13 @@ export async function POST(req: NextRequest) {
     }
 
     const noteData = {
-      patient_id,
-      appointment_id: appointment_id || null,
-      provider_name,
+      ...noteFields,
       provider_id: userId,
-      note_type,
-      chief_complaint: chief_complaint || (templateDefaults.chief_complaint as string) || null,
-      subjective: subjective || (templateDefaults.subjective as string) || null,
-      objective: objective || (templateDefaults.objective as string) || null,
-      assessment: assessment || (templateDefaults.assessment as string) || null,
-      plan: plan || (templateDefaults.plan as string) || null,
-      tooth_numbers: tooth_numbers || [],
-      procedure_codes: procedure_codes || [],
-      medications: medications || [],
-      vitals: vitals || {},
-      status,
+      chief_complaint: noteFields.chief_complaint || (templateDefaults.chief_complaint as string) || null,
+      subjective: noteFields.subjective || (templateDefaults.subjective as string) || null,
+      objective: noteFields.objective || (templateDefaults.objective as string) || null,
+      assessment: noteFields.assessment || (templateDefaults.assessment as string) || null,
+      plan: noteFields.plan || (templateDefaults.plan as string) || null,
     };
 
     const { data, error } = await supabase
@@ -132,9 +127,9 @@ export async function POST(req: NextRequest) {
     }
 
     await logPhiAccess("clinical_notes.create", "clinical_note", data.id, {
-      patientId: patient_id,
-      noteType: note_type,
-      provider: provider_name,
+      patientId: noteFields.patient_id,
+      noteType: noteFields.note_type,
+      provider: noteFields.provider_name,
     });
 
     return NextResponse.json(data, { status: 201 });
