@@ -2,33 +2,29 @@ import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// PUBLIC_REVIEW_MODE=true skips auth for /dashboard/* (NOT /admin/*).
-// Useful for sharing preview deployments without Clerk credentials.
+// PUBLIC_REVIEW_MODE=true bypasses Clerk entirely for /dashboard/* (NOT /admin/*).
+// Clerk dev-mode does a dev-browser check before our code runs, so we must
+// bypass the entire clerkMiddleware wrapper to avoid the redirect loop.
 const isReviewMode = process.env.PUBLIC_REVIEW_MODE === "true";
 
-export default clerkMiddleware(async (auth, req: NextRequest) => {
-  // Review mode: skip auth for dashboard (admin stays protected)
-  if (isReviewMode && !req.nextUrl.pathname.startsWith("/admin")) {
-    return NextResponse.next();
-  }
-
-  // All routes that reach this middleware need Clerk protection
+const clerkProtectedMiddleware = clerkMiddleware(async (auth, req: NextRequest) => {
   await auth.protect({
     unauthenticatedUrl: new URL("/sign-in", req.url).toString(),
   });
 });
 
-// Only run Clerk middleware on routes that actually need auth.
-// Marketing pages, portal routes, static assets, and public APIs
-// never hit this middleware — no Clerk handshake, no redirects.
+export default function middleware(req: NextRequest) {
+  if (isReviewMode && !req.nextUrl.pathname.startsWith("/admin")) {
+    return NextResponse.next();
+  }
+  return clerkProtectedMiddleware(req, {} as never);
+}
+
 export const config = {
   matcher: [
-    // Dashboard pages
     "/dashboard/:path*",
-    // Sign-in / sign-up (Clerk needs to handle these)
     "/sign-in/:path*",
     "/sign-up/:path*",
-    // Protected API routes
     "/api/approvals/:path*",
     "/api/settings/:path*",
     "/api/outreach/:path*",
