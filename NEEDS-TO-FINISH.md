@@ -1,6 +1,6 @@
 # AK Ultimate Dental - Needs to Finish
 
-> Last updated: 2026-02-27
+> Last updated: 2026-02-27 (clinical notes detail page complete)
 > Project: AK Ultimate Dental (One Engine AI Operations Platform)
 > Live: https://ak-ultimate-dental.vercel.app
 
@@ -63,7 +63,7 @@
 
 | Feature | Details | Location |
 |---------|---------|----------|
-| Clinical Notes detail page | Can list notes but can't drill into `/clinical-notes/[id]` | Needs new page |
+| ~~Clinical Notes detail page~~ | ~~Can list notes but can't drill into `/clinical-notes/[id]`~~ | ✅ Done 2026-02-27 |
 | Accounting settings UI | Backend service exists but no user-facing page | `src/lib/services/accounting-integration.ts` |
 | SEO Dashboard tabs | Keywords, Audit, Vitals, Reports tabs mostly empty | `src/app/dashboard/seo/` |
 | Blog | Static "Coming soon" placeholder | `src/app/(marketing)/blog/` |
@@ -106,7 +106,7 @@ MESSAGE_ENCRYPTION_KEY=          # PHI encryption for SMS
 - [x] Patient Portal (login, dashboard, appointments, treatments, billing, messages, profile)
 - [x] HIPAA Compliance (audit logging, consent management, TCPA, PHI encryption, data retention)
 - [x] AI File Drop Box (upload, AI categorization/extraction, document management)
-- [x] Clinical Notes (SOAP format, templates, AI assist, electronic signing)
+- [x] Clinical Notes (SOAP format, templates, AI assist, electronic signing, detail page `/[id]`)
 - [x] Provider Directory (profiles, availability, time-off, referral tracking)
 - [x] Dashboard data wiring (billing, analytics, financials, licensing)
 - [x] Leads management with AI drafts + approval queue
