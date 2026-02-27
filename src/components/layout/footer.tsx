@@ -196,9 +196,11 @@ export function Footer() {
             © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
           </p>
           <div className="flex items-center gap-4 text-sm">
-            <Link href="/faqs" className="hover:text-white transition-colors">FAQs</Link>
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
             <span className="text-gray-700">|</span>
-            <Link href="/careers" className="hover:text-white transition-colors">Careers</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+            <span className="text-gray-700">|</span>
+            <Link href="/faqs" className="hover:text-white transition-colors">FAQs</Link>
             <span className="text-gray-700">|</span>
             <Link href="/patient-portal" className="hover:text-white transition-colors">Patient Portal</Link>
           </div>

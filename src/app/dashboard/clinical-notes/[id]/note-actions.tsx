@@ -6,7 +6,6 @@ import {
   PenLine,
   Sparkles,
   Loader2,
-  CheckCircle2,
   AlertTriangle,
   ChevronDown,
   ChevronUp,

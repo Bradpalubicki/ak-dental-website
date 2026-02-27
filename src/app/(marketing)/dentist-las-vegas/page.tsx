@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/accordion";
 import { BreadcrumbSchema, FAQSchema } from "@/components/schema/local-business";
 import { siteConfig, services, testimonials } from "@/lib/config";
-import { images } from "@/lib/images";
 import { curatedImages } from "@/content/images";
 
 export const metadata: Metadata = {

@@ -496,12 +496,6 @@ export function ClinicalNotesClient({ initialNotes, stats, patients }: Props) {
     loadTemplates("progress");
   }
 
-  /* ---- View note detail ---- */
-  function viewNote(note: ClinicalNote) {
-    setSelectedNote(note);
-    setShowDetail(true);
-  }
-
   /* ---------------------------------------------------------------- */
   /*  RENDER                                                           */
   /* ---------------------------------------------------------------- */
