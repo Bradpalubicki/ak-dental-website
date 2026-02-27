@@ -20,6 +20,7 @@ import {
   Bot,
   ShieldCheck,
 } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { StatCard } from "@/components/dashboard/stat-card";
 
@@ -727,13 +728,13 @@ export function ClinicalNotesClient({ initialNotes, stats, patients }: Props) {
                     </td>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => viewNote(note)}
-                          className="rounded-lg p-1.5 text-slate-400 hover:bg-cyan-50 hover:text-cyan-600 transition-colors"
+                        <Link
+                          href={`/dashboard/clinical-notes/${note.id}`}
+                          className="rounded-lg p-1.5 text-slate-400 hover:bg-cyan-50 hover:text-cyan-600 transition-colors inline-flex"
                           title="View Note"
                         >
                           <Eye className="h-4 w-4" />
-                        </button>
+                        </Link>
                         {note.status === "draft" && (
                           <button
                             onClick={() => handleDelete(note.id)}
