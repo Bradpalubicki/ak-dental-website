@@ -31,6 +31,8 @@ import {
   UserCog,
   Clock,
   ShieldCheck,
+  CalendarDays,
+  GraduationCap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -67,12 +69,14 @@ const sections: NavSection[] = [
       { name: "Approvals", href: "/dashboard/approvals", icon: CheckSquare, badgeKey: "approvals", badgeColor: "bg-amber-400 text-amber-950", requiredPermission: "approvals.view" },
       { name: "File Drop Box", href: "/dashboard/dropbox", icon: Upload, requiredPermission: "documents.view" },
       { name: "Onboarding", href: "/dashboard/onboarding", icon: ClipboardList, requiredPermission: "settings.view" },
+      { name: "Training", href: "/dashboard/training", icon: GraduationCap, requiredPermission: "settings.view" },
     ],
   },
   {
     label: "Clinical",
     items: [
       { name: "Patients", href: "/dashboard/patients", icon: Users, requiredPermission: "patients.view" },
+      { name: "Schedule", href: "/dashboard/schedule", icon: CalendarDays, requiredPermission: "appointments.view" },
       { name: "Appointments", href: "/dashboard/appointments", icon: Calendar, badgeKey: "appointments", badgeColor: "bg-orange-400 text-orange-950", requiredPermission: "appointments.view" },
       { name: "Clinical Notes", href: "/dashboard/clinical-notes", icon: Stethoscope, requiredPermission: "treatments.view" },
       { name: "Treatments", href: "/dashboard/treatments", icon: FileText, requiredPermission: "treatments.view" },
