@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, startTransition } from "react";
 
 const ENGINE_KEY = "ak-dental";
 
@@ -45,9 +45,7 @@ export function useOnboarding() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    setMounted(true);
 
-    const wizardSeen = localStorage.getItem(STORAGE.wizardSeen) === "true";
     const wizCompleted = localStorage.getItem(STORAGE.wizardCompleted) === "true";
     const loginCount = parseInt(localStorage.getItem(STORAGE.loginCount) || "0", 10) + 1;
     const steps: string[] = JSON.parse(localStorage.getItem(STORAGE.setupSteps) || "[]");
@@ -58,15 +56,18 @@ export function useOnboarding() {
     // Increment login count
     localStorage.setItem(STORAGE.loginCount, String(loginCount));
 
-    setWizardCompleted(wizCompleted);
-    setSetupSteps(steps);
-    setBannerDismissed(bannerOff);
-    setTourDismissed(tourOff);
-    setWizardDataState(savedWizardData);
+    // Batch all state updates together
+    startTransition(() => {
+      setWizardCompleted(wizCompleted);
+      setSetupSteps(steps);
+      setBannerDismissed(bannerOff);
+      setTourDismissed(tourOff);
+      setWizardDataState(savedWizardData);
+      setMounted(true);
+    });
 
     // Show wizard: first 3 logins until completed
     if (!wizCompleted && loginCount <= 3) {
-      // Small delay so dashboard renders first
       setTimeout(() => setShowWizard(true), 800);
       localStorage.setItem(STORAGE.wizardSeen, "true");
     }

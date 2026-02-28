@@ -70,10 +70,17 @@ export function GuidedTour({ sections, onClose }: GuidedTourProps) {
     }
   }, [sectionIdx, currentSection?.route, router]);
 
+  const handleClose = useCallback(() => {
+    setVisible(false);
+    setTimeout(onClose, 250);
+  }, [onClose]);
+
+  const currentSectionStepCount = currentSection?.steps.length ?? 0;
+
   const goNext = useCallback(() => {
     if (transitioning) return;
 
-    if (stepIdx < currentSection.steps.length - 1) {
+    if (stepIdx < currentSectionStepCount - 1) {
       setStepIdx((s) => s + 1);
     } else if (sectionIdx < sections.length - 1) {
       setTransitioning(true);
@@ -85,7 +92,7 @@ export function GuidedTour({ sections, onClose }: GuidedTourProps) {
     } else {
       handleClose();
     }
-  }, [transitioning, stepIdx, currentSection?.steps.length, sectionIdx, sections.length]);
+  }, [transitioning, stepIdx, currentSectionStepCount, sectionIdx, sections.length, handleClose]);
 
   const goBack = useCallback(() => {
     if (transitioning) return;
@@ -97,11 +104,6 @@ export function GuidedTour({ sections, onClose }: GuidedTourProps) {
       setStepIdx(prevSection.steps.length - 1);
     }
   }, [transitioning, stepIdx, sectionIdx, sections]);
-
-  function handleClose() {
-    setVisible(false);
-    setTimeout(onClose, 250);
-  }
 
   // Auto-play timer
   useEffect(() => {
