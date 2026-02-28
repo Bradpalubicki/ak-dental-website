@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { AiCommandBar } from "@/components/dashboard/ai-command-bar";
+import { OnboardingProvider } from "@/components/onboarding/onboarding-provider";
 import { createServiceSupabase } from "@/lib/supabase/server";
 
 export const metadata = {
@@ -76,7 +77,10 @@ export default async function DashboardLayout({
       <Sidebar badges={badges} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <DashboardHeader />
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-6">
+          <OnboardingProvider />
+          {children}
+        </main>
       </div>
       <AiCommandBar />
     </div>
