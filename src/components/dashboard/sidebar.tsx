@@ -59,12 +59,14 @@ interface NavItem {
 
 interface NavSection {
   label: string;
+  accent: string;   // tailwind text color for the section label
   items: NavItem[];
 }
 
 const sections: NavSection[] = [
   {
     label: "Command Center",
+    accent: "text-slate-400",
     items: [
       { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, requiredPermission: "dashboard.view" },
       { name: "Business Advisor", href: "/dashboard/advisor", icon: Sparkles, requiredPermission: "advisor.use" },
@@ -76,6 +78,7 @@ const sections: NavSection[] = [
   },
   {
     label: "Clinical",
+    accent: "text-cyan-400",
     items: [
       { name: "Patients", href: "/dashboard/patients", icon: Users, requiredPermission: "patients.view" },
       { name: "Schedule", href: "/dashboard/schedule", icon: CalendarDays, requiredPermission: "appointments.view" },
@@ -88,6 +91,7 @@ const sections: NavSection[] = [
   },
   {
     label: "Operations",
+    accent: "text-violet-400",
     items: [
       { name: "Leads", href: "/dashboard/leads", icon: UserPlus, badgeKey: "leads", badgeColor: "bg-emerald-400 text-emerald-950", requiredPermission: "leads.view" },
       { name: "Insurance", href: "/dashboard/insurance", icon: Shield, badgeKey: "insurance", badgeColor: "bg-violet-400 text-violet-950", requiredPermission: "insurance.view" },
@@ -97,6 +101,7 @@ const sections: NavSection[] = [
   },
   {
     label: "Business Hub",
+    accent: "text-amber-400",
     items: [
       { name: "Financials", href: "/dashboard/financials", icon: Wallet, requiredPermission: "financials.view" },
       { name: "Billing", href: "/dashboard/billing", icon: DollarSign, requiredPermission: "billing.view" },
@@ -107,6 +112,7 @@ const sections: NavSection[] = [
   },
   {
     label: "Intelligence",
+    accent: "text-blue-400",
     items: [
       { name: "Inbox", href: "/dashboard/inbox", icon: Inbox, badgeKey: "inbox", badgeColor: "bg-blue-400 text-blue-950", requiredPermission: "inbox.view" },
       { name: "SEO", href: "/dashboard/seo", icon: Search, requiredPermission: "seo.view" },
@@ -171,9 +177,12 @@ export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadg
           return (
           <div key={section.label}>
             {!collapsed && (
-              <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-500">
-                {section.label}
-              </p>
+              <div className="mb-2 flex items-center gap-2 px-3">
+                <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", section.accent.replace("text-", "bg-"))} />
+                <p className={cn("text-[10px] font-bold uppercase tracking-[0.15em]", section.accent)}>
+                  {section.label}
+                </p>
+              </div>
             )}
             {collapsed && <div className="mb-1 mx-auto h-px w-6 bg-white/[0.06]" />}
             <ul className="space-y-0.5">
