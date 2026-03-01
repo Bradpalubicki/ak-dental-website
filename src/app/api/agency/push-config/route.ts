@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
     const raw = await req.json();
     payload = PrefillPayloadSchema.parse(raw);
   } catch (err) {
-    const message = err instanceof z.ZodError ? JSON.stringify(err.errors) : "Invalid request body";
+    const message = err instanceof z.ZodError ? JSON.stringify(err.issues) : "Invalid request body";
     return NextResponse.json({ error: message }, { status: 400 });
   }
 
