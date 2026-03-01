@@ -93,6 +93,7 @@ function DocumentCard({
   const [isPending, startTransition] = useTransition();
   const [localStatus, setLocalStatus] = useState(doc.status);
   const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
 
   function handleMarkSent() {
     startTransition(async () => {
@@ -105,9 +106,13 @@ function DocumentCard({
 
   async function handleDownload() {
     setDownloading(true);
+    setDownloadError(null);
     try {
       const res = await fetch(`/api/documents/generate?agreement=${encodeURIComponent(doc.agreement_number)}`);
-      if (!res.ok) throw new Error("Generation failed");
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: `Server error ${res.status}` }));
+        throw new Error(err.error || `Server error ${res.status}`);
+      }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -117,11 +122,15 @@ function DocumentCard({
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
-    } catch {
-      // silently fail — user will see no download
+    } catch (e) {
+      setDownloadError(e instanceof Error ? e.message : "Download failed");
     } finally {
       setDownloading(false);
     }
+  }
+
+  async function handleView() {
+    window.open(`/api/documents/generate?agreement=${encodeURIComponent(doc.agreement_number)}&view=1`, "_blank");
   }
 
   const categoryLabel = CATEGORY_LABELS[doc.category] ?? doc.category;
@@ -226,6 +235,10 @@ function DocumentCard({
         <div className="flex flex-col items-end gap-2 shrink-0">
           <StatusBadge status={localStatus} />
 
+          {downloadError && (
+            <p className="text-[11px] text-red-600 max-w-[200px] text-right">{downloadError}</p>
+          )}
+
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -241,14 +254,10 @@ function DocumentCard({
               )}
               {downloading ? "Generating…" : "Download PDF"}
             </Button>
-            {doc.document_url && (
-              <a href={doc.document_url} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" size="sm" className="h-7 gap-1.5 text-xs">
-                  <ExternalLink className="h-3 w-3" />
-                  View
-                </Button>
-              </a>
-            )}
+            <Button variant="outline" size="sm" className="h-7 gap-1.5 text-xs" onClick={handleView}>
+              <ExternalLink className="h-3 w-3" />
+              View
+            </Button>
             {localStatus === "pending" && !isInternal && (
               <Button
                 size="sm"

@@ -18,6 +18,7 @@ const FILE_NAMES: Record<string, string> = {
 
 export async function GET(req: NextRequest) {
   const agreementNumber = req.nextUrl.searchParams.get("agreement");
+  const viewMode = req.nextUrl.searchParams.get("view") === "1";
 
   if (!agreementNumber) {
     return NextResponse.json({ error: "Missing agreement parameter" }, { status: 400 });
@@ -49,7 +50,7 @@ export async function GET(req: NextRequest) {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${fileName}"`,
+        "Content-Disposition": viewMode ? `inline; filename="${fileName}"` : `attachment; filename="${fileName}"`,
         "Content-Length": pdfBuffer.length.toString(),
         "Cache-Control": "no-store",
       },
