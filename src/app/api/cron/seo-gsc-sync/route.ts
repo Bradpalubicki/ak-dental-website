@@ -26,14 +26,9 @@ export async function GET(request: NextRequest) {
       .toISOString()
       .split("T")[0];
 
-    console.log(`GSC Sync: Fetching data from ${startDate} to ${endDate}`);
-
     const gscData = await fetchSearchAnalytics(startDate, endDate);
 
     if (gscData.length === 0) {
-      console.log(
-        "GSC Sync: No data returned (GSC may not be configured)"
-      );
       return NextResponse.json({
         success: true,
         message: "No GSC data available",
@@ -106,10 +101,6 @@ export async function GET(request: NextRequest) {
         }
       }
     }
-
-    console.log(
-      `GSC Sync complete: ${gscData.length} rows, ${keywords?.length || 0} keywords updated`
-    );
 
     return NextResponse.json({
       success: true,

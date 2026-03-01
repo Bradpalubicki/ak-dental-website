@@ -111,7 +111,6 @@ async function sendEmailReport(report: HealthReport): Promise<boolean> {
     process.env.SEO_ALERT_EMAIL || "brad@nustack.com";
 
   if (!apiKey) {
-    console.log("RESEND_API_KEY not set - skipping email");
     return false;
   }
 

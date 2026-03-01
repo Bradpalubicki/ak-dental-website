@@ -33,7 +33,6 @@ interface SearchAnalyticsResult {
 async function getAccessToken(): Promise<string | null> {
   const keyJson = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
   if (!keyJson) {
-    console.log("GOOGLE_SERVICE_ACCOUNT_KEY not set");
     return null;
   }
 
@@ -50,11 +49,7 @@ async function getAccessToken(): Promise<string | null> {
 
     // Note: RS256 signing requires a crypto library in production
     // This is a placeholder — use googleapis package for real implementation
-    console.log(
-      "GSC: Service account auth configured for",
-      key.client_email
-    );
-    console.log("GSC: JWT header + claim prepared, RS256 signing needed");
+    void key; // googleapis RS256 signing pending — install google-auth-library
 
     // Return null until googleapis is installed
     return null;
@@ -74,9 +69,6 @@ export async function fetchSearchAnalytics(
   const accessToken = await getAccessToken();
 
   if (!accessToken || !GSC_SITE_URL) {
-    console.log(
-      "GSC not configured — skipping search analytics fetch"
-    );
     return [];
   }
 

@@ -25,6 +25,10 @@ const SEED_MODULES: Record<string, (supabase: ReturnType<typeof createServiceSup
 };
 
 export async function POST(req: Request) {
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Seed endpoint disabled in production" }, { status: 403 });
+  }
+
   try {
     // Auth: require CRON_SECRET or valid Clerk admin session
     const authHeader = req.headers.get("authorization");

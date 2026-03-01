@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     const sitemapResult = await submitSitemapToBing();
     results.bing.sitemapSubmitted = sitemapResult.success;
 
-    console.log("Deploy webhook: URL submission complete", results);
+    void results; // URL submission complete
 
     return NextResponse.json({
       success: true,

@@ -480,7 +480,7 @@ export async function pushNoteToPms(
 ): Promise<{ success: boolean; error?: string }> {
   // Mock implementation — in production, this would call Sikka ONE API
   // to push the note content back to Dentrix
-  console.log(`[PMS Mock] Would push note ${noteId} to Dentrix`);
+  void noteId; // mock — Sikka ONE API integration pending
   return { success: true };
 }
 

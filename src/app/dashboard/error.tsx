@@ -11,7 +11,9 @@ export default function DashboardError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("[Dashboard Error]", error.message);
+    if (process.env.NODE_ENV === "production") {
+      // TODO: send to Sentry when configured
+    }
   }, [error]);
 
   return (

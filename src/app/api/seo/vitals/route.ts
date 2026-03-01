@@ -35,10 +35,7 @@ export async function POST(request: Request) {
         page: metric.page,
       });
     } catch {
-      // Table may not exist yet — log as fallback
-      console.log(
-        `[WebVital] ${metric.name}: ${metric.value.toFixed(2)} (${metric.page})`
-      );
+      // Table may not exist yet — silently skip
     }
 
     return NextResponse.json({ received: true });

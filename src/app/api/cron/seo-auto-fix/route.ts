@@ -148,9 +148,6 @@ async function createGitHubIssue(
   const githubRepo = process.env.GITHUB_REPO; // e.g. "owner/repo"
 
   if (!githubToken || !githubRepo) {
-    console.log(
-      "GITHUB_TOKEN or GITHUB_REPO not set - skipping GitHub issue creation"
-    );
     return null;
   }
 
@@ -210,7 +207,6 @@ async function sendFixNotification(report: AutoFixReport): Promise<boolean> {
     process.env.SEO_ALERT_EMAIL || "brad@nustack.com";
 
   if (!apiKey) {
-    console.log("RESEND_API_KEY not set - skipping email");
     return false;
   }
 
@@ -329,10 +325,7 @@ export async function GET(request: NextRequest) {
   if (!auth.valid) return auth.response!;
 
   try {
-    console.log("Starting SEO auto-fix scan...");
     const report = await runAutoFix();
-
-    console.log(`SEO auto-fix complete: ${report.issuesFound} issues found`);
 
     if (report.issuesFound > 0) {
       await sendFixNotification(report);

@@ -179,7 +179,7 @@ export async function GET(request: NextRequest) {
           .eq("id", reportRow.id);
       }
 
-      console.log(`Monthly SEO report sent for ${monthStr}`);
+      void monthStr; // report sent
     }
 
     return NextResponse.json({

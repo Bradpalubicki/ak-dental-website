@@ -8,6 +8,10 @@ import { sendEmail } from "@/lib/services/resend";
  * Body: { to: string }
  */
 export async function POST(req: NextRequest) {
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Test endpoint disabled in production" }, { status: 403 });
+  }
+
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
