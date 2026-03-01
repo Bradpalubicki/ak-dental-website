@@ -844,6 +844,13 @@ export function HrClient({ stats, recentDocuments, workforce }: Props) {
             <Users className="h-4 w-4" />
             <span className="hidden sm:inline">Team Directory</span>
           </Link>
+          <Link
+            href="/dashboard/hr/jobs"
+            className="flex items-center gap-2 rounded-lg border border-cyan-200 bg-cyan-50 px-4 py-2 text-sm font-medium text-cyan-700 hover:bg-cyan-100 transition-colors"
+          >
+            <Zap className="h-4 w-4" />
+            <span className="hidden sm:inline">Jobs & Payroll</span>
+          </Link>
           <div className="relative" ref={addMenuRef}>
             <button
               onClick={() => setAddMenuOpen(!addMenuOpen)}
