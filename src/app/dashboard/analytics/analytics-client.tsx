@@ -116,7 +116,7 @@ interface ProcedureMixItem {
   color: string;
 }
 
-interface HourlyTrafficItem {
+interface HourlyTrafficItem extends Record<string, unknown> {
   hour: string;
   appointments: number;
   walkins: number;
