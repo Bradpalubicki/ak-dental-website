@@ -17,6 +17,9 @@ import {
   X,
   Edit3,
   Send,
+  Sparkles,
+  Loader2,
+  CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StatCard } from "@/components/dashboard/stat-card";
@@ -166,6 +169,14 @@ export function ProvidersClient({ initialProviders, initialReferrals, stats }: P
   const [referralForm, setReferralForm] = useState(emptyReferralForm);
   const [saving, setSaving] = useState(false);
   const [referralStatusFilter, setReferralStatusFilter] = useState("all");
+  // NPI Lookup
+  const [npiLookupProvider, setNpiLookupProvider] = useState<Provider | null>(null);
+  const [npiResults, setNpiResults] = useState<Array<{ npi: string; first_name: string; last_name: string; credential: string | null; license_number: string | null; license_state: string | null; taxonomy: string | null; city: string | null; state: string | null }>>([]);
+  const [npiLooking, setNpiLooking] = useState(false);
+  const [npiError, setNpiError] = useState<string | null>(null);
+  const [npiSelected, setNpiSelected] = useState<typeof npiResults[0] | null>(null);
+  const [npiSaving, setNpiSaving] = useState(false);
+
   const [showBlockForm, setShowBlockForm] = useState<string | null>(null);
   const [blockForm, setBlockForm] = useState({
     block_type: "vacation",
@@ -318,6 +329,56 @@ export function ProvidersClient({ initialProviders, initialReferrals, stats }: P
     }
   }
 
+  /* ---- NPI Lookup ---- */
+  async function handleNpiLookup(provider: Provider) {
+    setNpiLookupProvider(provider);
+    setNpiResults([]);
+    setNpiSelected(null);
+    setNpiError(null);
+    setNpiLooking(true);
+    try {
+      const params = new URLSearchParams({
+        first_name: provider.first_name,
+        last_name: provider.last_name,
+        state: provider.license_state || "NV",
+      });
+      const res = await fetch(`/api/providers/npi-lookup?${params}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Lookup failed");
+      setNpiResults(data.results || []);
+      if (!data.results?.length) setNpiError("No NPI records found for this provider. Try editing their name and searching again.");
+    } catch (e) {
+      setNpiError(e instanceof Error ? e.message : "Lookup failed");
+    } finally {
+      setNpiLooking(false);
+    }
+  }
+
+  async function handleNpiConfirm() {
+    if (!npiSelected || !npiLookupProvider) return;
+    setNpiSaving(true);
+    try {
+      const res = await fetch(`/api/providers/${npiLookupProvider.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          npi_number: npiSelected.npi,
+          license_number: npiSelected.license_number || npiLookupProvider.license_number,
+          license_state: npiSelected.license_state || npiLookupProvider.license_state || "NV",
+        }),
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setProviders((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+        setNpiLookupProvider(null);
+        setNpiSelected(null);
+        setNpiResults([]);
+      }
+    } finally {
+      setNpiSaving(false);
+    }
+  }
+
   /* ---- Block CRUD ---- */
   async function handleBlockSubmit(e: React.FormEvent, providerId: string) {
     e.preventDefault();
@@ -461,6 +522,20 @@ export function ProvidersClient({ initialProviders, initialReferrals, stats }: P
                       <Shield className="h-3 w-3 text-slate-400" />
                       License: {provider.license_number} ({provider.license_state})
                     </p>
+                  )}
+                  {(!provider.npi_number || !provider.license_number) && (
+                    <button
+                      onClick={() => handleNpiLookup(provider)}
+                      disabled={npiLooking}
+                      className="flex items-center gap-1.5 text-xs text-cyan-600 hover:text-cyan-700 font-medium mt-1 disabled:opacity-50"
+                    >
+                      {npiLooking && npiLookupProvider?.id === provider.id ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <Sparkles className="h-3 w-3" />
+                      )}
+                      Auto-lookup NPI &amp; License
+                    </button>
                   )}
                 </div>
 
@@ -1342,6 +1417,102 @@ export function ProvidersClient({ initialProviders, initialReferrals, stats }: P
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* NPI Lookup Confirm Modal */}
+      {npiLookupProvider && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-lg rounded-xl bg-white shadow-xl">
+            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+              <div>
+                <h2 className="text-base font-semibold text-slate-900">NPI Registry Results</h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Select the correct provider to auto-fill license information
+                </p>
+              </div>
+              <button
+                onClick={() => { setNpiLookupProvider(null); setNpiResults([]); setNpiSelected(null); setNpiError(null); }}
+                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="px-6 py-4">
+              {npiError && (
+                <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+                  {npiError}
+                </div>
+              )}
+
+              {npiResults.length === 0 && !npiError && (
+                <div className="py-6 text-center text-sm text-slate-500">
+                  No matching providers found in the NPI registry. Try editing the provider name and searching again.
+                </div>
+              )}
+
+              <div className="space-y-2 max-h-72 overflow-y-auto">
+                {npiResults.map((result) => (
+                  <button
+                    key={result.npi}
+                    onClick={() => setNpiSelected(result)}
+                    className={cn(
+                      "w-full rounded-lg border px-4 py-3 text-left transition-colors",
+                      npiSelected?.npi === result.npi
+                        ? "border-cyan-500 bg-cyan-50"
+                        : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                    )}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <p className="text-sm font-medium text-slate-900">
+                          {result.first_name} {result.last_name}
+                          {result.credential && <span className="text-slate-500 font-normal">, {result.credential}</span>}
+                        </p>
+                        <p className="text-xs text-slate-500 mt-0.5">{result.taxonomy}</p>
+                        {result.license_number && (
+                          <p className="text-xs text-slate-600 mt-1">
+                            License: <span className="font-medium">{result.license_number}</span>
+                            {result.license_state && ` (${result.license_state})`}
+                          </p>
+                        )}
+                        {result.city && (
+                          <p className="text-xs text-slate-500">
+                            {result.city}{result.state && `, ${result.state}`}
+                          </p>
+                        )}
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <p className="text-xs text-slate-400">NPI</p>
+                        <p className="text-xs font-mono text-slate-600">{result.npi}</p>
+                        {npiSelected?.npi === result.npi && (
+                          <CheckCircle2 className="h-4 w-4 text-cyan-600 mt-1 ml-auto" />
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 border-t border-slate-100 px-6 py-4">
+              <button
+                onClick={() => { setNpiLookupProvider(null); setNpiResults([]); setNpiSelected(null); setNpiError(null); }}
+                className="rounded-lg border border-slate-200 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleNpiConfirm}
+                disabled={!npiSelected || npiSaving}
+                className="flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700 disabled:opacity-50"
+              >
+                {npiSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                {npiSaving ? "Saving..." : "Confirm & Save"}
+              </button>
+            </div>
           </div>
         </div>
       )}
