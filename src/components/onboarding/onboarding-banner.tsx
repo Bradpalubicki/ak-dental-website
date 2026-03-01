@@ -77,8 +77,7 @@ export function OnboardingBanner({ completedSteps, onDismiss, onReopenWizard }: 
             Setup Wizard
           </button>
           <Link
-            href="#"
-            onClick={(e) => { e.preventDefault(); }}
+            href="/dashboard/onboarding"
             className="inline-flex items-center gap-1 text-xs text-cyan-600 hover:text-cyan-800 transition-colors"
           >
             <CheckCircle2 className="h-3 w-3" />

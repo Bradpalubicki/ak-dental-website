@@ -37,8 +37,7 @@ function YelpBadge() {
   return (
     <a
       href="https://www.yelp.com/biz/ak-ultimate-dental-las-vegas"
-      target="_blank"
-      rel="noopener noreferrer"
+      target="_blank" rel="noopener noreferrer"
       className="flex items-center gap-4 bg-white rounded-2xl shadow-lg border border-gray-100 px-6 py-5 hover:shadow-xl transition-shadow"
     >
       <YelpLogo className="h-10 w-10 flex-shrink-0" />
@@ -105,8 +104,7 @@ export default function ReviewsPage() {
               <Button asChild className="bg-white/10 border border-white/30 text-white hover:bg-white/20">
                 <a
                   href={siteConfig.ratings.googleReviewUrl || siteConfig.social.google}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  target="_blank" rel="noopener noreferrer"
                 >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   Google Reviews
@@ -115,8 +113,7 @@ export default function ReviewsPage() {
               <Button asChild className="bg-white/10 border border-white/30 text-white hover:bg-white/20">
                 <a
                   href={siteConfig.social.yelp}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  target="_blank" rel="noopener noreferrer"
                 >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   Yelp Reviews
@@ -125,8 +122,7 @@ export default function ReviewsPage() {
               <Button asChild className="bg-white/10 border border-white/30 text-white hover:bg-white/20">
                 <a
                   href={siteConfig.social.facebook}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  target="_blank" rel="noopener noreferrer"
                 >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   Facebook
@@ -261,8 +257,7 @@ export default function ReviewsPage() {
               <Button asChild>
                 <a
                   href={siteConfig.social.google}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  target="_blank" rel="noopener noreferrer"
                 >
                   Leave a Google Review
                   <ExternalLink className="ml-2 h-4 w-4" />
@@ -271,8 +266,7 @@ export default function ReviewsPage() {
               <Button asChild variant="outline">
                 <a
                   href={siteConfig.social.yelp}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  target="_blank" rel="noopener noreferrer"
                 >
                   Leave a Yelp Review
                   <ExternalLink className="ml-2 h-4 w-4" />
