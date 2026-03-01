@@ -14,6 +14,8 @@ import {
   ExternalLink,
   Lock,
   Info,
+  Download,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { markDocumentSent } from "./actions";
@@ -90,6 +92,7 @@ function DocumentCard({
 }) {
   const [isPending, startTransition] = useTransition();
   const [localStatus, setLocalStatus] = useState(doc.status);
+  const [downloading, setDownloading] = useState(false);
 
   function handleMarkSent() {
     startTransition(async () => {
@@ -98,6 +101,27 @@ function DocumentCard({
         setLocalStatus("sent");
       }
     });
+  }
+
+  async function handleDownload() {
+    setDownloading(true);
+    try {
+      const res = await fetch(`/api/documents/generate?agreement=${encodeURIComponent(doc.agreement_number)}`);
+      if (!res.ok) throw new Error("Generation failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${doc.agreement_number}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      // silently fail — user will see no download
+    } finally {
+      setDownloading(false);
+    }
   }
 
   const categoryLabel = CATEGORY_LABELS[doc.category] ?? doc.category;
@@ -203,6 +227,20 @@ function DocumentCard({
           <StatusBadge status={localStatus} />
 
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 gap-1.5 text-xs"
+              onClick={handleDownload}
+              disabled={downloading}
+            >
+              {downloading ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <Download className="h-3 w-3" />
+              )}
+              {downloading ? "Generating…" : "Download PDF"}
+            </Button>
             {doc.document_url && (
               <a href={doc.document_url} target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" size="sm" className="h-7 gap-1.5 text-xs">
