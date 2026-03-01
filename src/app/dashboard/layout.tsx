@@ -33,7 +33,7 @@ export default async function DashboardLayout({
   const today = new Date().toISOString().split("T")[0];
   const todayStart = `${today}T00:00:00.000Z`;
 
-  const [approvalsRes, leadsRes, inboxRes, insuranceRes, appointmentsRes, hrPendingRes] =
+  const [approvalsRes, leadsRes, inboxRes, insuranceRes, appointmentsRes, hrPendingRes, pendingDocsRes] =
     await Promise.all([
       supabase
         .from("oe_ai_actions")
@@ -61,6 +61,11 @@ export default async function DashboardLayout({
         .from("oe_hr_documents")
         .select("id", { count: "exact", head: true })
         .eq("status", "pending_signature"),
+      supabase
+        .from("de_legal_documents")
+        .select("id", { count: "exact", head: true })
+        .in("status", ["pending", "sent"])
+        .is("deleted_at", null),
     ]);
 
   const badges = {
@@ -70,6 +75,7 @@ export default async function DashboardLayout({
     insurance: insuranceRes.count || 0,
     appointments: appointmentsRes.count || 0,
     hrPending: hrPendingRes.count || 0,
+    pendingDocs: pendingDocsRes.count || 0,
   };
 
   return (

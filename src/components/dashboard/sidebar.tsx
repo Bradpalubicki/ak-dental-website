@@ -33,6 +33,7 @@ import {
   ShieldCheck,
   CalendarDays,
   GraduationCap,
+  FolderOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -44,6 +45,7 @@ export interface SidebarBadges {
   insurance: number;
   appointments: number;
   hrPending: number;
+  pendingDocs: number;
 }
 
 interface NavItem {
@@ -100,6 +102,7 @@ const sections: NavSection[] = [
       { name: "Billing", href: "/dashboard/billing", icon: DollarSign, requiredPermission: "billing.view" },
       { name: "HR & Payroll", href: "/dashboard/hr", icon: UsersRound, badgeKey: "hrPending", badgeColor: "bg-rose-400 text-rose-950", requiredPermission: "hr.view" },
       { name: "Licensing", href: "/dashboard/licensing", icon: Award, requiredPermission: "licensing.view" },
+      { name: "Documents", href: "/dashboard/documents", icon: FolderOpen, badgeKey: "pendingDocs", badgeColor: "bg-amber-400 text-amber-950", requiredPermission: "settings.view" },
     ],
   },
   {
