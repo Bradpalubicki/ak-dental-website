@@ -36,6 +36,7 @@ import {
   X,
   Eye,
   EyeOff,
+  Send,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -340,6 +341,9 @@ export function SettingsClient({
   const [showSecrets, setShowSecrets] = useState<Record<string, boolean>>({});
   const [testingConnection, setTestingConnection] = useState(false);
   const [connectionTestResult, setConnectionTestResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [testEmailTo, setTestEmailTo] = useState(initialSettings.practice_info?.email || "");
+  const [sendingTestEmail, setSendingTestEmail] = useState(false);
+  const [testEmailResult, setTestEmailResult] = useState<{ success: boolean; message: string } | null>(null);
 
   const handleSave = async (key: string, value: unknown) => {
     setSaving(key);
@@ -988,17 +992,63 @@ export function SettingsClient({
             <h2 className="text-base font-semibold text-slate-900">Notification Channels</h2>
           </div>
           <div className="space-y-3">
-            <div className="flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50/50 p-4">
-              <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-emerald-600" />
-                <div>
-                  <p className="text-sm font-medium text-slate-900">Email (Resend)</p>
-                  <p className="text-[10px] text-slate-500">Primary notification channel</p>
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50/50 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Mail className="h-5 w-5 text-emerald-600" />
+                  <div>
+                    <p className="text-sm font-medium text-slate-900">Email (Resend)</p>
+                    <p className="text-[10px] text-slate-500">Primary notification channel</p>
+                  </div>
                 </div>
+                <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-medium text-emerald-700">
+                  <CheckCircle2 className="h-3 w-3" /> Active
+                </span>
               </div>
-              <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-medium text-emerald-700">
-                <CheckCircle2 className="h-3 w-3" /> Active
-              </span>
+              {/* Test email form */}
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="email"
+                  value={testEmailTo}
+                  onChange={(e) => { setTestEmailTo(e.target.value); setTestEmailResult(null); }}
+                  placeholder="Send test to…"
+                  className="flex-1 rounded-md border border-emerald-200 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                />
+                <button
+                  onClick={async () => {
+                    if (!testEmailTo.trim()) return;
+                    setSendingTestEmail(true);
+                    setTestEmailResult(null);
+                    try {
+                      const res = await fetch("/api/test/send-email", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ to: testEmailTo.trim() }),
+                      });
+                      const data = await res.json();
+                      if (res.ok) {
+                        setTestEmailResult({ success: true, message: `Sent! Check ${testEmailTo}` });
+                      } else {
+                        setTestEmailResult({ success: false, message: data.error || "Failed to send" });
+                      }
+                    } catch {
+                      setTestEmailResult({ success: false, message: "Network error" });
+                    } finally {
+                      setSendingTestEmail(false);
+                    }
+                  }}
+                  disabled={sendingTestEmail || !testEmailTo.trim()}
+                  className="flex items-center gap-1.5 rounded-md bg-cyan-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {sendingTestEmail ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
+                  {sendingTestEmail ? "Sending…" : "Send Test"}
+                </button>
+              </div>
+              {testEmailResult && (
+                <p className={cn("text-[11px] font-medium", testEmailResult.success ? "text-emerald-700" : "text-red-600")}>
+                  {testEmailResult.success ? "✓" : "✗"} {testEmailResult.message}
+                </p>
+              )}
             </div>
             <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50/50 p-4">
               <div className="flex items-center gap-3">
