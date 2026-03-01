@@ -178,6 +178,13 @@ const typeConfig: Record<
 
 const addNewItems = [
   {
+    label: "New Employee",
+    description: "Add a new team member directly",
+    icon: UserCheck,
+    color: "text-emerald-600 bg-emerald-50",
+    href: "/dashboard/hr/onboarding",
+  },
+  {
     label: "Write-Up",
     description: "Disciplinary or coaching write-up",
     icon: AlertTriangle,
@@ -857,6 +864,13 @@ export function HrClient({ stats, recentDocuments, workforce }: Props) {
           >
             <UserCheck className="h-4 w-4" />
             <span className="hidden sm:inline">Offers & Onboarding</span>
+          </Link>
+          <Link
+            href="/dashboard/hr/onboarding"
+            className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-2 text-sm font-medium text-white hover:from-emerald-600 hover:to-teal-600 shadow-sm hover:shadow-md transition-all"
+          >
+            <UserCheck className="h-4 w-4" />
+            <span>New Employee</span>
           </Link>
           <div className="relative" ref={addMenuRef}>
             <button

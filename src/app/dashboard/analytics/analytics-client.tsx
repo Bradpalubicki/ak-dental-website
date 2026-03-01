@@ -116,6 +116,18 @@ interface ProcedureMixItem {
   color: string;
 }
 
+interface HourlyTrafficItem {
+  hour: string;
+  appointments: number;
+  walkins: number;
+}
+
+interface FunnelItem {
+  stage: string;
+  count: number;
+  pct: number;
+}
+
 interface AnalyticsData {
   weeklyData: WeeklyDay[];
   monthlyMetrics: {
@@ -134,25 +146,15 @@ interface AnalyticsData {
   aiWeeklyTrend: AiWeeklyTrendItem[];
   procedureMix: ProcedureMixItem[];
   activePatients: number;
+  hourlyTrafficData: HourlyTrafficItem[];
+  conversionFunnelData: FunnelItem[];
+  hasLiveHourlyData: boolean;
+  hasLiveFunnelData: boolean;
 }
 
 /* ================================================================== */
-/*  Static Data (hourly traffic, reviews, funnel - no DB source yet)   */
+/*  Static fallback — review metrics only (no DB source yet)           */
 /* ================================================================== */
-
-const hourlyTraffic = [
-  { hour: "7am", appointments: 2, walkins: 0 },
-  { hour: "8am", appointments: 6, walkins: 1 },
-  { hour: "9am", appointments: 8, walkins: 2 },
-  { hour: "10am", appointments: 10, walkins: 3 },
-  { hour: "11am", appointments: 9, walkins: 2 },
-  { hour: "12pm", appointments: 4, walkins: 1 },
-  { hour: "1pm", appointments: 7, walkins: 2 },
-  { hour: "2pm", appointments: 9, walkins: 3 },
-  { hour: "3pm", appointments: 8, walkins: 2 },
-  { hour: "4pm", appointments: 6, walkins: 1 },
-  { hour: "5pm", appointments: 3, walkins: 0 },
-];
 
 const reviewMetrics = [
   { month: "Sep", google: 4.6, internal: 4.8, count: 12 },
@@ -161,15 +163,6 @@ const reviewMetrics = [
   { month: "Dec", google: 4.8, internal: 4.9, count: 18 },
   { month: "Jan", google: 4.7, internal: 4.8, count: 14 },
   { month: "Feb", google: 4.9, internal: 5.0, count: 20 },
-];
-
-const conversionFunnel = [
-  { stage: "Website Visits", count: 3420, pct: 100 },
-  { stage: "Appointment Page", count: 890, pct: 26 },
-  { stage: "Form Started", count: 412, pct: 12 },
-  { stage: "Form Submitted", count: 186, pct: 5.4 },
-  { stage: "Booked", count: 142, pct: 4.2 },
-  { stage: "Showed Up", count: 128, pct: 3.7 },
 ];
 
 /* ================================================================== */
@@ -379,6 +372,10 @@ export function AnalyticsClient({ data }: { data: AnalyticsData }) {
     aiWeeklyTrend,
     procedureMix,
     activePatients,
+    hourlyTrafficData,
+    conversionFunnelData,
+    hasLiveHourlyData,
+    hasLiveFunnelData,
   } = data;
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [dateRange, setDateRange] = useState("this_month");
@@ -627,7 +624,7 @@ export function AnalyticsClient({ data }: { data: AnalyticsData }) {
                 <span className="text-[10px] text-slate-400 uppercase tracking-wider">This Month</span>
               </div>
               <div className="p-6 space-y-2">
-                {conversionFunnel.map((step, i) => {
+                {conversionFunnelData.map((step, i) => {
                   const colors = ["#0891b2", "#2563eb", "#7c3aed", "#059669", "#d97706", "#dc2626"];
                   return (
                     <FunnelStep
@@ -637,12 +634,15 @@ export function AnalyticsClient({ data }: { data: AnalyticsData }) {
                       pct={step.pct}
                       maxPct={100}
                       color={colors[i % colors.length]}
-                      isLast={i === conversionFunnel.length - 1}
+                      isLast={i === conversionFunnelData.length - 1}
                     />
                   );
                 })}
               </div>
               <div className="border-t border-slate-100 px-6 py-3">
+                {!hasLiveFunnelData && (
+                  <p className="mb-2 text-[10px] text-amber-600 font-medium">Demo data — add leads to see real funnel</p>
+                )}
                 <AiInsight
                   text="Conversion from form start to submission is 45%. Adding a progress indicator and reducing form fields from 8 to 5 could improve this by 20-30%."
                   variant="recommendation"
@@ -751,8 +751,11 @@ export function AnalyticsClient({ data }: { data: AnalyticsData }) {
                 <span className="text-[10px] text-slate-400 uppercase tracking-wider">Today</span>
               </div>
               <div className="p-6">
+                {!hasLiveHourlyData && (
+                  <p className="mb-2 text-[10px] text-amber-600 font-medium">Demo data — showing projected traffic pattern</p>
+                )}
                 <BarChartFull
-                  data={hourlyTraffic}
+                  data={hourlyTrafficData}
                   bars={[
                     { key: "appointments", color: COLORS.cyan, label: "Scheduled", stackId: "a" },
                     { key: "walkins", color: COLORS.amber, label: "Walk-ins", stackId: "a" },
@@ -1184,7 +1187,10 @@ export function AnalyticsClient({ data }: { data: AnalyticsData }) {
             </div>
             <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-2">
-                {conversionFunnel.map((step, i) => {
+                {!hasLiveFunnelData && (
+                  <p className="mb-1 text-[10px] text-amber-600 font-medium">Demo data — add leads to see real funnel</p>
+                )}
+                {conversionFunnelData.map((step, i) => {
                   const colors = ["#0891b2", "#2563eb", "#7c3aed", "#059669", "#d97706", "#dc2626"];
                   return (
                     <FunnelStep
@@ -1194,7 +1200,7 @@ export function AnalyticsClient({ data }: { data: AnalyticsData }) {
                       pct={step.pct}
                       maxPct={100}
                       color={colors[i % colors.length]}
-                      isLast={i === conversionFunnel.length - 1}
+                      isLast={i === conversionFunnelData.length - 1}
                     />
                   );
                 })}

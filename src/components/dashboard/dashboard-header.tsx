@@ -1,8 +1,9 @@
 "use client";
 
-import { Bell, Search, Command, Zap } from "lucide-react";
+import { Search, Command, Zap } from "lucide-react";
 import { useState } from "react";
 import { UserButton, useUser } from "@clerk/nextjs";
+import { NotificationBell } from "./notification-bell";
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -84,12 +85,7 @@ export function DashboardHeader() {
         </div>
 
         {/* Notifications */}
-        <button className="relative rounded-lg p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-colors">
-          <Bell className="h-4 w-4" />
-          <span className="absolute right-1 top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-rose-600 text-[9px] font-bold text-white shadow-sm">
-            4
-          </span>
-        </button>
+        <NotificationBell />
 
         {/* Clerk User Button / Avatar */}
         {isLoaded && user ? (
