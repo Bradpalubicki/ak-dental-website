@@ -248,7 +248,7 @@ function exportCSV(rows: Record<string, unknown>[], filename: string) {
 /*  Main Component                                                     */
 /* ================================================================== */
 
-export function CallsClient({ initialCalls, analytics }: { initialCalls: Call[]; analytics: CallsAnalytics }) {
+export function CallsClient({ initialCalls, analytics, vapiConfigured = false }: { initialCalls: Call[]; analytics: CallsAnalytics; vapiConfigured?: boolean }) {
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -582,7 +582,7 @@ export function CallsClient({ initialCalls, analytics }: { initialCalls: Call[];
           <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-12 text-center">
             <Phone className="mx-auto h-10 w-10 text-slate-300" />
             <h3 className="mt-3 text-sm font-semibold text-slate-900">No calls recorded yet</h3>
-            <p className="mt-1 text-xs text-slate-500">Calls will appear here once Vapi/Twilio is configured.</p>
+            <p className="mt-1 text-xs text-slate-500">{vapiConfigured ? "No calls have been recorded yet." : "Add your VAPI_API_KEY to Vercel environment variables to enable AI call handling."}</p>
           </div>
         ) : filteredCalls.length === 0 ? (
           <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-12 text-center">
@@ -1082,7 +1082,12 @@ export function CallsClient({ initialCalls, analytics }: { initialCalls: Call[];
           <p className="mt-1 text-sm text-slate-500">AI-powered call handling, transcription &amp; analytics</p>
         </div>
         <div className="flex items-center gap-3">
-          <SyncIndicator />
+          {vapiConfigured ? <SyncIndicator /> : (
+            <div className="flex items-center gap-1.5 rounded-full bg-slate-100 border border-slate-200 px-3 py-1">
+              <span className="h-2 w-2 rounded-full bg-slate-400 flex-shrink-0" />
+              <span className="text-[11px] font-medium text-slate-500">Vapi Not Configured</span>
+            </div>
+          )}
           <button
             onClick={() =>
               exportCSV(

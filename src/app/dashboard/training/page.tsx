@@ -533,16 +533,21 @@ export default function TrainingPage() {
             <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 transition-transform group-hover:translate-x-1 group-hover:text-emerald-500" />
           </a>
 
-          <div className="group flex items-center gap-4 rounded-xl border border-slate-200/80 bg-white p-5 opacity-75">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100">
-              <BookOpen className="h-5 w-5 text-slate-500" />
+          <a
+            href="https://support.henryscheinone.com/hc/en-us"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-4 rounded-xl border border-slate-200/80 bg-white p-5 hover:border-cyan-300 hover:shadow-sm transition-all"
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50">
+              <BookOpen className="h-5 w-5 text-cyan-600" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold text-slate-900">Documentation</p>
-              <p className="text-[11px] text-slate-500">Detailed guides and reference docs — coming soon</p>
+              <p className="text-sm font-bold text-slate-900">Henry Schein Support Docs</p>
+              <p className="text-[11px] text-slate-500">Official Dentrix / Henry Schein One support knowledge base</p>
             </div>
-            <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-400">Soon</span>
-          </div>
+            <span className="shrink-0 rounded-full bg-cyan-50 border border-cyan-200 px-2 py-0.5 text-[10px] font-medium text-cyan-600">External</span>
+          </a>
         </div>
       </div>
     </div>

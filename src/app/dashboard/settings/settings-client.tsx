@@ -1233,10 +1233,10 @@ export function SettingsClient({
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {[
-              { name: "ADP Workforce Now", desc: "Real-time payroll & time tracking sync", eta: "Q2 2026" },
-              { name: "QuickBooks Online", desc: "Automated financial reconciliation", eta: "Q2 2026" },
-              { name: "Vapi Voice AI", desc: "AI phone receptionist for inbound calls", eta: "Q1 2026" },
-              { name: "Carrier APIs", desc: "Real-time insurance eligibility checks", eta: "Q3 2026" },
+              { name: "Sikka OneAPI / Dentrix", desc: "Full practice mgmt sync — patients, appointments, clinical, financial", eta: "Coming Soon" },
+              { name: "ADP Workforce Now", desc: "Real-time payroll & time tracking sync", eta: "Coming Soon" },
+              { name: "QuickBooks Online", desc: "Automated financial reconciliation", eta: "Coming Soon" },
+              { name: "Vapi Voice AI", desc: "AI phone receptionist for inbound calls", eta: "Coming Soon" },
             ].map((item) => (
               <div key={item.name} className="flex items-center gap-3 rounded-lg border border-dashed border-slate-200 bg-slate-50/30 p-3">
                 <span className="h-2.5 w-2.5 rounded-full bg-purple-300 flex-shrink-0" />

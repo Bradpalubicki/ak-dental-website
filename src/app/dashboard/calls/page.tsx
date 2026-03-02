@@ -200,6 +200,7 @@ export default async function CallsPage() {
         aiMonthlyPerformance,
         avgCallDurationByIntent,
       }}
+      vapiConfigured={!!(process.env.VAPI_API_KEY && process.env.VAPI_API_KEY.length > 10)}
     />
   );
 }

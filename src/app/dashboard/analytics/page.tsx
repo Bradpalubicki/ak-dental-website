@@ -180,7 +180,7 @@ export default async function AnalyticsPage() {
     .slice(-6)
     .map(([key, val], idx) => ({
       month: MONTH_NAMES[parseInt(key.split("-")[1])],
-      active: activePatients - (5 - idx) * (idx * 2 + 4), // deterministic growth simulation
+      active: Math.max(0, activePatients - Math.round((5 - idx) * (activePatients * 0.02))),
       churned: val.noShows,
       reactivated: ((val.newPatients * 0.3 + 0.5) | 0),
     }));

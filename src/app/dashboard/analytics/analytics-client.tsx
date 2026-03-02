@@ -423,7 +423,9 @@ export function AnalyticsClient({ data }: { data: AnalyticsData }) {
 
   return (
     <div className="space-y-6">
-      <DemoBanner module="Some analytics metrics (hourly traffic, conversion funnel, review metrics)" />
+      {(!hasLiveHourlyData || !hasLiveFunnelData) && (
+        <DemoBanner module={[!hasLiveHourlyData && "hourly traffic", !hasLiveFunnelData && "conversion funnel"].filter(Boolean).join(", ")} />
+      )}
       {/* ============================================================ */}
       {/*  Header                                                       */}
       {/* ============================================================ */}

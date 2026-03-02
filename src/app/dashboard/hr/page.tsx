@@ -193,7 +193,7 @@ export default async function HrPage() {
     const mi = (nowMonth - 4 + i + 12) % 12;
     const weeklyGross = employeeTimeData.reduce((s, e) =>
       s + (e.weekHrs - e.overtime) * e.regRate + e.overtime * e.otRate, 0);
-    const biWeeklyGross = Math.round(weeklyGross * 2 * (0.95 + (i * 0.025)));
+    const biWeeklyGross = Math.round(weeklyGross * 2);
     const taxes = Math.round(biWeeklyGross * 0.1035);
     return { name: MONTH_NAMES[mi], gross: biWeeklyGross, taxes, net: biWeeklyGross - taxes };
   });
@@ -203,17 +203,17 @@ export default async function HrPage() {
   const totalOT = Math.round(employeeTimeData.reduce((s, e) => s + e.overtime, 0));
   const weeklyHoursData = Array.from({ length: 5 }, (_, i) => ({
     name: `Wk ${i + 1}`,
-    regular: totalRegular + ((i * 7) % 10) - 4,
-    overtime: Math.max(0, totalOT + ((i * 3) % 5) - 2),
+    regular: totalRegular,
+    overtime: totalOT,
   }));
 
-  // --- Attendance (estimated) ---
+  // --- Attendance (estimated from employee count — real data requires ADP) ---
   const empCount = employees.length || 5;
-  const attendanceData = ["Mon", "Tue", "Wed", "Thu", "Fri"].map((name, i) => ({
+  const attendanceData = ["Mon", "Tue", "Wed", "Thu", "Fri"].map((name) => ({
     name,
-    present: Math.max(0, empCount - (i === 3 ? 1 : 0)),
-    absent: i === 3 ? 1 : 0,
-    late: i === 1 ? 1 : 0,
+    present: empCount,
+    absent: 0,
+    late: 0,
   }));
 
   // --- Labor Cost Trend ---
