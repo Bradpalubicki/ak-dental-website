@@ -170,9 +170,9 @@ const integrationFields: Record<string, IntegrationField[]> = {
     { key: "service_role_key", label: "Service Role Key", placeholder: "eyJhbGciOiJIUzI1NiIs...", type: "password", helpText: "Found in Settings > API > service_role key" },
   ],
   insurance_edi: [
-    { key: "username", label: "Username", placeholder: "your-vyne-username", type: "text", helpText: "Vyne Dental Trellis portal username" },
-    { key: "password", label: "Password", placeholder: "your-vyne-password", type: "password", helpText: "Vyne Dental Trellis portal password" },
-    { key: "payer_id", label: "Payer ID", placeholder: "VYNEXXXXX", type: "text", helpText: "Your practice payer identifier" },
+    { key: "username", label: "DentalXChange Username", placeholder: "your-dentalxchange-username", type: "text", helpText: "DentalXChange / eClaims portal username (provided after Dentrix eClaims activation)" },
+    { key: "password", label: "DentalXChange Password", placeholder: "••••••••", type: "password", helpText: "DentalXChange portal password" },
+    { key: "payer_id", label: "Payer ID / NPI", placeholder: "1234567890", type: "text", helpText: "Your practice NPI or DentalXChange payer identifier" },
   ],
 };
 
@@ -181,7 +181,7 @@ const integrationSetupNotes: Record<string, string> = {
   resend: "Resend handles transactional emails: appointment confirmations, daily briefings, and outreach campaigns. Sign up at resend.com and verify your sending domain.",
   stripe: "Stripe processes patient payments for treatments and services. Sign up at stripe.com and use test keys (sk_test_*) for development.",
   pms: "Supabase is already connected as your primary database. Only reconfigure if you need to point to a different project instance.",
-  insurance_edi: "Vyne Dental (formerly Trellis) automates insurance verification and claims. Contact Vyne Dental for API credentials and payer enrollment.",
+  insurance_edi: "Dentrix eClaims (via DentalXChange) enables electronic claim submission and ERA auto-posting. Activate eClaims by calling Henry Schein One: 800.734.5561. Credentials are provided after activation.",
 };
 
 /* ================================================================== */

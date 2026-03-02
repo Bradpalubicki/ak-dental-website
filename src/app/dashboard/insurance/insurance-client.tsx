@@ -558,7 +558,7 @@ export function InsuranceClient({ initialVerifications }: Props) {
                 <ExternalLink className="h-5 w-5 text-cyan-600 mt-0.5 shrink-0" />
                 <div>
                   <p className="text-sm font-semibold text-cyan-900">Carrier API Integration</p>
-                  <p className="text-xs text-cyan-700/70 mt-1">One Engine can connect directly to carrier portals for real-time eligibility verification, automated claim submissions, and payment posting. Currently planning integration with Vyne Dental Trellis for batch processing.</p>
+                  <p className="text-xs text-cyan-700/70 mt-1">One Engine connects directly to Dentrix eClaims (DentalXChange) for real-time eligibility verification, electronic claim submission, and ERA auto-posting. Activate in Settings → Integrations.</p>
                 </div>
               </div>
             </div>

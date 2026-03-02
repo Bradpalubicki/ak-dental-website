@@ -224,7 +224,7 @@ export const CDT_CATEGORIES: Record<string, string[]> = {
 
 // Given a D-code string like "D2140 - Amalgam - 1 Surface", extract the code
 export function extractDCode(codeString: string): string {
-  return codeString.split(" ")[0] ?? "";
+  return (codeString.split(" ")[0] ?? "").toUpperCase();
 }
 
 // Get template for a given D-code string (may include description)
