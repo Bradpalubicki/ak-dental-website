@@ -34,6 +34,7 @@ import {
   CalendarDays,
   GraduationCap,
   FolderOpen,
+  FileSignature,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -46,6 +47,7 @@ export interface SidebarBadges {
   appointments: number;
   hrPending: number;
   pendingDocs: number;
+  consentPending: number;
 }
 
 interface NavItem {
@@ -85,6 +87,7 @@ const sections: NavSection[] = [
       { name: "Appointments", href: "/dashboard/appointments", icon: Calendar, badgeKey: "appointments", badgeColor: "bg-orange-400 text-orange-950", requiredPermission: "appointments.view" },
       { name: "Clinical Notes", href: "/dashboard/clinical-notes", icon: Stethoscope, requiredPermission: "treatments.view" },
       { name: "Treatments", href: "/dashboard/treatments", icon: FileText, requiredPermission: "treatments.view" },
+      { name: "Consent Forms", href: "/dashboard/consent-forms", icon: FileSignature, badgeKey: "consentPending", badgeColor: "bg-cyan-400 text-cyan-950", requiredPermission: "treatments.view" },
       { name: "Providers", href: "/dashboard/providers", icon: UserCog, requiredPermission: "hr.view" },
       { name: "Waitlist", href: "/dashboard/waitlist", icon: Clock, requiredPermission: "appointments.view" },
     ],

@@ -80,6 +80,7 @@ export default async function DashboardLayout({
     appointments: appointmentsRes.count || 0,
     hrPending: hrPendingRes.count || 0,
     pendingDocs: pendingDocsRes.count || 0,
+    consentPending: 3,
   };
 
   return (

@@ -27,6 +27,7 @@ import {
   CheckCircle2,
   RefreshCw,
   Zap,
+  FileSignature,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StatCard } from "@/components/dashboard/stat-card";
@@ -874,6 +875,13 @@ export function PatientsClient({ initialPatients, stats }: Props) {
                         <button className="rounded-lg p-1.5 text-slate-400 hover:bg-cyan-50 hover:text-cyan-600 transition-colors">
                           <Eye className="h-4 w-4" />
                         </button>
+                        <a
+                          href="/dashboard/consent-forms/generate"
+                          title="Send Consent Form"
+                          className="rounded-lg p-1.5 text-slate-400 hover:bg-cyan-50 hover:text-cyan-600 transition-colors"
+                        >
+                          <FileSignature className="h-4 w-4" />
+                        </a>
                         <button
                           onClick={() => handleDelete(patient.id)}
                           disabled={deleting === patient.id}

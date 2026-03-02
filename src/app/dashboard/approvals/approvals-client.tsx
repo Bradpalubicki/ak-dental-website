@@ -9,6 +9,8 @@ import {
   Loader2,
   ChevronDown,
   ChevronUp,
+  FileSignature,
+  RotateCcw,
 } from "lucide-react";
 
 interface PendingAction {
@@ -196,6 +198,40 @@ export function ApprovalsClient({ pendingActions, recentActions }: Props) {
             <kbd className="ml-2 rounded border border-slate-300 bg-white px-1.5 py-0.5 font-mono">j/k</kbd>
             navigate
           </div>
+        </div>
+      </div>
+
+      {/* Consent Form Pending Items */}
+      <div className="rounded-xl border border-cyan-200 bg-cyan-50/40">
+        <div className="flex items-center gap-3 px-6 py-4 border-b border-cyan-100">
+          <FileSignature className="h-5 w-5 text-cyan-600" />
+          <h2 className="text-base font-semibold text-slate-900">Consent Forms Pending</h2>
+          <span className="ml-auto rounded-full bg-cyan-100 px-2.5 py-0.5 text-xs font-bold text-cyan-700">2</span>
+        </div>
+        <div className="divide-y divide-cyan-100">
+          {[
+            { patient: "Sarah Mitchell", treatment: "Dental Implant Procedure", sentAgo: "2 days ago" },
+            { patient: "David Park", treatment: "Dental Implant Procedure", sentAgo: "1 hour ago" },
+          ].map((item) => (
+            <div key={item.patient} className="flex items-center gap-4 px-6 py-4">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-cyan-100 shrink-0">
+                <FileSignature className="h-4 w-4 text-cyan-600" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-slate-900">Consent Form Pending</p>
+                <p className="text-xs text-slate-500">
+                  {item.patient} &middot; {item.treatment} &middot; Sent {item.sentAgo}
+                </p>
+              </div>
+              <a
+                href="/dashboard/consent-forms"
+                className="flex items-center gap-1.5 rounded-lg border border-cyan-200 bg-white px-3 py-1.5 text-xs font-medium text-cyan-700 hover:bg-cyan-50 transition-colors"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Resend Link
+              </a>
+            </div>
+          ))}
         </div>
       </div>
 
