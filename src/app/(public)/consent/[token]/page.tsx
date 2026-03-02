@@ -43,7 +43,7 @@ const PRACTICE_ADDRESS = '7480 West Sahara Avenue, Las Vegas, NV 89117'
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
-function PageHeader({ title, senderName }: { title: string; senderName: string }) {
+function PageHeader({ title, senderName: _senderName }: { title: string; senderName: string }) {
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm">
       <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
@@ -500,7 +500,7 @@ export default function ConsentSignPage({ params }: { params: Promise<{ token: s
 
   // Progress calculation — count required fields that are filled
   const requiredFields = request?.fields.filter((f) => f.required) ?? []
-  const filledRequired = requiredFields.filter((f, _) => {
+  const filledRequired = requiredFields.filter((f) => {
     const idx = request?.fields.indexOf(f) ?? -1
     const val = responses[String(idx)] ?? ''
     return val.trim().length > 0 && val !== ''
