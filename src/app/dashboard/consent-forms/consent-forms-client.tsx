@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import {
   FileSignature,
   FileText,
@@ -68,7 +69,7 @@ const DEMO_FORMS: ConsentForm[] = [
     id: "1",
     patient: "Sarah Mitchell",
     treatment: "Dental Implant Procedure",
-    state: "WI",
+    state: "NV",
     status: "pending",
     sentAgo: "2 days ago",
     dob: "1984-03-12",
@@ -77,7 +78,7 @@ const DEMO_FORMS: ConsentForm[] = [
     id: "2",
     patient: "James Kowalski",
     treatment: "Root Canal Treatment",
-    state: "WI",
+    state: "NV",
     status: "signed",
     signedAt: "Mar 1, 2026",
     dob: "1971-07-22",
@@ -86,7 +87,7 @@ const DEMO_FORMS: ConsentForm[] = [
     id: "3",
     patient: "Maria Gonzalez",
     treatment: "Tooth Extraction",
-    state: "WI",
+    state: "NV",
     status: "signed",
     signedAt: "Feb 28, 2026",
     dob: "1995-11-05",
@@ -95,7 +96,7 @@ const DEMO_FORMS: ConsentForm[] = [
     id: "4",
     patient: "Robert Chen",
     treatment: "Dental Crown Placement",
-    state: "WI",
+    state: "NV",
     status: "pending",
     sentAgo: "5 hours ago",
     dob: "1968-09-30",
@@ -104,7 +105,7 @@ const DEMO_FORMS: ConsentForm[] = [
     id: "5",
     patient: "Lisa Thompson",
     treatment: "Teeth Whitening",
-    state: "WI",
+    state: "NV",
     status: "draft",
     createdAt: "Today",
     dob: "1990-04-15",
@@ -113,7 +114,7 @@ const DEMO_FORMS: ConsentForm[] = [
     id: "6",
     patient: "David Park",
     treatment: "Dental Implant Procedure",
-    state: "WI",
+    state: "NV",
     status: "pending",
     sentAgo: "1 hour ago",
     dob: "1979-08-19",
@@ -138,7 +139,7 @@ const DEMO_FORMS: ConsentForm[] = [
     id: "9",
     patient: null,
     treatment: "Anesthesia Consent",
-    state: "WI",
+    state: "NV",
     status: "template",
     uses: 18,
   },
@@ -416,14 +417,54 @@ function ConsentFormRow({ form }: { form: ConsentForm }) {
 // -----------------------------------------------------------------------
 
 function ActionButtons({ form }: { form: ConsentForm }) {
+  const [sending, setSending] = useState(false);
+
+  function notifyConsentEngine(message: string) {
+    toast.info(message, { description: "Configure consent engine key in Settings → Integrations" });
+  }
+
+  async function handleResend() {
+    setSending(true);
+    try {
+      const res = await fetch(`/api/consent-forms?action=send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: form.treatment,
+          recipients: form.patient ? [{ name: form.patient, email: "" }] : [],
+        }),
+      });
+      if (res.ok) {
+        toast.success("Signature link resent successfully");
+      } else {
+        notifyConsentEngine("Consent engine not connected — resend unavailable");
+      }
+    } catch {
+      notifyConsentEngine("Consent engine not connected — resend unavailable");
+    } finally {
+      setSending(false);
+    }
+  }
+
   if (form.status === "pending") {
     return (
       <>
-        <Button variant="outline" size="sm" className="gap-1.5">
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5"
+          disabled={sending}
+          onClick={handleResend}
+        >
           <Send className="h-3.5 w-3.5" />
-          Resend Link
+          {sending ? "Sending…" : "Resend Link"}
         </Button>
-        <Button variant="outline" size="sm" className="gap-1.5">
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5"
+          onClick={() => notifyConsentEngine("Form viewer — connect consent engine key to view")}
+        >
           <FileSignature className="h-3.5 w-3.5" />
           View Form
         </Button>
@@ -434,11 +475,21 @@ function ActionButtons({ form }: { form: ConsentForm }) {
   if (form.status === "signed") {
     return (
       <>
-        <Button variant="outline" size="sm" className="gap-1.5">
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5"
+          onClick={() => notifyConsentEngine("Signed document viewer — connect consent engine key to view")}
+        >
           <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
           View Signed
         </Button>
-        <Button variant="outline" size="sm" className="gap-1.5">
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5"
+          onClick={() => notifyConsentEngine("PDF download — connect consent engine key to download")}
+        >
           <Download className="h-3.5 w-3.5" />
           Download
         </Button>
@@ -449,13 +500,19 @@ function ActionButtons({ form }: { form: ConsentForm }) {
   if (form.status === "draft") {
     return (
       <>
-        <Button variant="outline" size="sm" className="gap-1.5">
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5"
+          onClick={() => notifyConsentEngine("Form editor — connect consent engine key to edit")}
+        >
           <Edit className="h-3.5 w-3.5" />
           Edit
         </Button>
         <Button
           size="sm"
           className="gap-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-700 hover:to-blue-700 border-0"
+          onClick={() => notifyConsentEngine("E-signature send — connect consent engine key to send")}
         >
           <Send className="h-3.5 w-3.5" />
           Send for Signature
@@ -474,7 +531,12 @@ function ActionButtons({ form }: { form: ConsentForm }) {
           <Copy className="h-3.5 w-3.5" />
           Use Template
         </Link>
-        <Button variant="outline" size="sm" className="gap-1.5">
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5"
+          onClick={() => notifyConsentEngine("Template editor — connect consent engine key to edit")}
+        >
           <Edit className="h-3.5 w-3.5" />
           Edit
         </Button>
