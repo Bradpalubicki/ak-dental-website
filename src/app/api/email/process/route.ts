@@ -168,6 +168,20 @@ ${extractionInput.substring(0, 3000)}`,
   // Step 3: Draft a reply for inquiry emails
   if (classification === "inquiry") {
     try {
+      // Pull style profile if available
+      const { data: styleProfile } = await supabase
+        .from("oe_email_style")
+        .select("style_summary, tone_keywords, example_openers, example_closings")
+        .eq("id", "00000000-0000-0000-0000-000000000001")
+        .single();
+
+      const styleContext = styleProfile?.style_summary && styleProfile.style_summary !== "No style profile yet — send some emails to generate one."
+        ? `\n\nVoice profile (based on past sent emails): ${styleProfile.style_summary}
+Tone keywords: ${(styleProfile.tone_keywords as string[] || []).join(", ")}
+Common openers: ${(styleProfile.example_openers as string[] || []).join(" | ")}
+Common closings: ${(styleProfile.example_closings as string[] || []).join(" | ")}`
+        : "";
+
       const draftRes = await anthropic.messages.create({
         model: "claude-sonnet-4-6",
         max_tokens: 400,
@@ -175,7 +189,7 @@ ${extractionInput.substring(0, 3000)}`,
 Write in this voice: professional, direct, warm. Short sentences. No fluff.
 Start with "Hi [name]," — use the sender's first name if available.
 Sign off with "Dr. Alex & Team, AK Ultimate Dental".
-Reply in plain text only. Do not use markdown.`,
+Reply in plain text only. Do not use markdown.${styleContext}`,
         messages: [
           {
             role: "user",
