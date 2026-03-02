@@ -416,7 +416,8 @@ export function HrOnboardingClient({ initialOffers, recentEmployees, onboardingT
             {offers.map((offer) => {
               const sc = STATUS_CONFIG[offer.status] ?? STATUS_CONFIG.draft;
               const Icon = sc.icon;
-              const isExpiringSoon = offer.expires_at && new Date(offer.expires_at) < new Date(Date.now() + 86400000 * 2) && !["signed","declined","expired","withdrawn"].includes(offer.status);
+              const twoDaysFromNow = new Date(); twoDaysFromNow.setDate(twoDaysFromNow.getDate() + 2);
+              const isExpiringSoon = offer.expires_at && new Date(offer.expires_at) < twoDaysFromNow && !["signed","declined","expired","withdrawn"].includes(offer.status);
 
               return (
                 <div key={offer.id} className="rounded-xl border border-slate-200 bg-white p-5">

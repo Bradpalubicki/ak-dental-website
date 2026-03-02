@@ -72,6 +72,14 @@ export async function POST(req: NextRequest) {
 
     if (error) throw error;
 
+    // Fire notification (non-blocking)
+    void supabase.from("oe_notifications").insert({
+      type: "appointment",
+      title: "Appointment Scheduled",
+      body: `New appointment scheduled for ${data.appointment_date ? new Date(data.appointment_date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "upcoming date"}`,
+      link: "/dashboard/appointments",
+    });
+
     return NextResponse.json({ appointment: data }, { status: 201 });
   } catch (error) {
     const msg = error instanceof Error ? error.message : "Unknown error";

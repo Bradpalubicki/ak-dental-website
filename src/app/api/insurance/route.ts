@@ -70,5 +70,14 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // Fire notification (non-blocking)
+  void supabase.from("oe_notifications").insert({
+    type: "insurance",
+    title: "Insurance Verification Queued",
+    body: `New insurance verification request submitted`,
+    link: "/dashboard/insurance",
+  });
+
   return NextResponse.json(data, { status: 201 });
 }

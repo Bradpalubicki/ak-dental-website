@@ -26,7 +26,6 @@ import {
   ChevronRight,
   CheckCircle2,
   RefreshCw,
-  MapPin,
   Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -198,30 +197,6 @@ const acquisitionData = [
   { month: "Feb", referral: 15, website: 19, walkIn: 4, insurance: 7 },
 ];
 
-const insuranceMix = [
-  { name: "Delta Dental", value: 142, color: "#2563eb" },
-  { name: "MetLife", value: 89, color: "#059669" },
-  { name: "Cigna", value: 64, color: "#d97706" },
-  { name: "Aetna", value: 48, color: "#7c3aed" },
-  { name: "Self-Pay", value: 31, color: "#dc2626" },
-  { name: "Other", value: 15, color: "#64748b" },
-];
-
-const ageDistribution = [
-  { range: "0-17", count: 42, color: "#0891b2" },
-  { range: "18-34", count: 98, color: "#2563eb" },
-  { range: "35-49", count: 124, color: "#059669" },
-  { range: "50-64", count: 87, color: "#d97706" },
-  { range: "65+", count: 38, color: "#7c3aed" },
-];
-
-const visitFrequencyData = [
-  { freq: "Monthly", patients: 45, pct: 11.6 },
-  { freq: "Quarterly", patients: 128, pct: 32.9 },
-  { freq: "Bi-Annual", patients: 156, pct: 40.1 },
-  { freq: "Annual", patients: 42, pct: 10.8 },
-  { freq: "Lapsed (>1yr)", patients: 18, pct: 4.6 },
-];
 
 const retentionTrend = [
   { month: "Sep", rate: 88.2, target: 92 },
@@ -268,6 +243,78 @@ export function PatientsClient({ initialPatients, stats }: Props) {
       return matchesSearch && matchesStatus;
     });
   }, [patients, search, statusFilter]);
+
+  /* ---- Computed demographics from real patient data ---- */
+  const demographics = useMemo(() => {
+    const total = patients.length || 1;
+    const now = new Date();
+
+    // Age distribution
+    const ageBuckets = { "0-17": 0, "18-34": 0, "35-49": 0, "50-64": 0, "65+": 0 };
+    for (const p of patients) {
+      if (!p.date_of_birth) continue;
+      const dob = new Date(p.date_of_birth);
+      const age = Math.floor((now.getTime() - dob.getTime()) / (1000 * 60 * 60 * 24 * 365.25));
+      if (age < 18) ageBuckets["0-17"]++;
+      else if (age < 35) ageBuckets["18-34"]++;
+      else if (age < 50) ageBuckets["35-49"]++;
+      else if (age < 65) ageBuckets["50-64"]++;
+      else ageBuckets["65+"]++;
+    }
+    const ageColors: Record<string, string> = { "0-17": "#0891b2", "18-34": "#2563eb", "35-49": "#059669", "50-64": "#d97706", "65+": "#7c3aed" };
+    const ageDistributionLive = Object.entries(ageBuckets).map(([range, count]) => ({ range, count, color: ageColors[range] }));
+
+    // Insurance distribution
+    const insuranceMap = new Map<string, number>();
+    for (const p of patients) {
+      const carrier = p.insurance_provider?.trim() || "Self-Pay";
+      insuranceMap.set(carrier, (insuranceMap.get(carrier) || 0) + 1);
+    }
+    const insColors = ["#2563eb", "#059669", "#d97706", "#7c3aed", "#dc2626", "#0891b2", "#64748b"];
+    const insuranceMixLive = Array.from(insuranceMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 7)
+      .map(([name, value], i) => ({ name, value, color: insColors[i] || "#64748b" }));
+
+    // Data completeness
+    const hasEmail = patients.filter((p) => p.email).length;
+    const hasPhone = patients.filter((p) => p.phone).length;
+    const hasAddress = patients.filter((p) => p.address).length;
+    const hasInsurance = patients.filter((p) => p.insurance_provider).length;
+    const hasDOB = patients.filter((p) => p.date_of_birth).length;
+    const completeness = [
+      { label: "Email on file", value: Math.round((hasEmail / total) * 100), color: "bg-emerald-500" },
+      { label: "Phone on file", value: Math.round((hasPhone / total) * 100), color: "bg-cyan-500" },
+      { label: "Address on file", value: Math.round((hasAddress / total) * 100), color: "bg-blue-500" },
+      { label: "Insurance on file", value: Math.round((hasInsurance / total) * 100), color: "bg-purple-500" },
+      { label: "DOB on file", value: Math.round((hasDOB / total) * 100), color: "bg-amber-500" },
+    ];
+
+    // Visit frequency from last_visit_date
+    const freq = { monthly: 0, quarterly: 0, biannual: 0, annual: 0, lapsed: 0, never: 0 };
+    for (const p of patients) {
+      if (!p.last_visit) { freq.never++; continue; }
+      const days = (now.getTime() - new Date(p.last_visit).getTime()) / (1000 * 60 * 60 * 24);
+      if (days <= 35) freq.monthly++;
+      else if (days <= 100) freq.quarterly++;
+      else if (days <= 200) freq.biannual++;
+      else if (days <= 400) freq.annual++;
+      else freq.lapsed++;
+    }
+    const visitFrequencyLive = [
+      { freq: "Monthly (≤35d)", patients: freq.monthly, pct: Math.round((freq.monthly / total) * 100) },
+      { freq: "Quarterly (≤100d)", patients: freq.quarterly, pct: Math.round((freq.quarterly / total) * 100) },
+      { freq: "Bi-Annual (≤200d)", patients: freq.biannual, pct: Math.round((freq.biannual / total) * 100) },
+      { freq: "Annual (≤400d)", patients: freq.annual, pct: Math.round((freq.annual / total) * 100) },
+      { freq: "Lapsed (>400d)", patients: freq.lapsed + freq.never, pct: Math.round(((freq.lapsed + freq.never) / total) * 100) },
+    ];
+
+    const lapsedCount = freq.lapsed + freq.never;
+    const largestAgeGroup = ageDistributionLive.reduce((a, b) => (a.count > b.count ? a : b));
+    const insuranceVerifiedPct = Math.round((hasInsurance / total) * 100);
+
+    return { ageDistributionLive, insuranceMixLive, completeness, visitFrequencyLive, lapsedCount, largestAgeGroup, insuranceVerifiedPct, total };
+  }, [patients]);
 
   /* ---- CRUD handlers (preserved) ---- */
   async function handleSubmit(e: React.FormEvent) {
@@ -482,15 +529,15 @@ export function PatientsClient({ initialPatients, stats }: Props) {
           </div>
           <div className="flex items-center gap-6">
             <DonutChart
-              data={insuranceMix}
+              data={demographics.insuranceMixLive}
               height={200}
               innerRadius={55}
               outerRadius={80}
               centerLabel="carriers"
-              centerValue="6"
+              centerValue={String(demographics.insuranceMixLive.length)}
             />
             <div className="space-y-2.5 flex-1">
-              {insuranceMix.map((ins) => (
+              {demographics.insuranceMixLive.map((ins) => (
                 <div key={ins.name} className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: ins.color }} />
                   <span className="text-xs text-slate-600 flex-1">{ins.name}</span>
@@ -856,11 +903,14 @@ export function PatientsClient({ initialPatients, stats }: Props) {
   /* ---------------------------------------------------------------- */
   /*  DEMOGRAPHICS TAB                                                 */
   /* ---------------------------------------------------------------- */
-  const renderDemographics = () => (
+  const renderDemographics = () => {
+    const { ageDistributionLive, insuranceMixLive, completeness, visitFrequencyLive, lapsedCount, largestAgeGroup, insuranceVerifiedPct, total } = demographics;
+    const maxAge = Math.max(...ageDistributionLive.map((a) => a.count), 1);
+    return (
     <div className="space-y-6">
       <AiInsight variant="default">
-        <strong>Demographic Intelligence:</strong> Your largest patient segment is age 35-49 (32% of base).
-        71% have verified insurance. Geographic analysis shows 84% within 10 miles of practice.
+        <strong>Demographic Intelligence:</strong> Your largest patient segment is age {largestAgeGroup.range} ({Math.round((largestAgeGroup.count / total) * 100)}% of base).
+        {insuranceVerifiedPct}% have insurance on file. Based on {total} patient records.
       </AiInsight>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -873,19 +923,19 @@ export function PatientsClient({ initialPatients, stats }: Props) {
             </div>
           </div>
           <div className="space-y-3">
-            {ageDistribution.map((age) => (
+            {ageDistributionLive.map((age) => (
               <div key={age.range} className="flex items-center gap-3">
                 <span className="text-xs text-slate-600 w-12 shrink-0 font-medium">{age.range}</span>
                 <div className="flex-1 h-7 rounded-lg bg-slate-50 overflow-hidden">
                   <div
                     className="h-full rounded-lg transition-all duration-700 flex items-center"
-                    style={{ width: `${(age.count / 124) * 100}%`, backgroundColor: age.color }}
+                    style={{ width: `${(age.count / maxAge) * 100}%`, backgroundColor: age.color }}
                   >
-                    <span className="text-[10px] font-bold text-white ml-2">{age.count}</span>
+                    {age.count > 0 && <span className="text-[10px] font-bold text-white ml-2">{age.count}</span>}
                   </div>
                 </div>
                 <span className="text-[10px] text-slate-500 w-10 text-right">
-                  {Math.round((age.count / 389) * 100)}%
+                  {Math.round((age.count / total) * 100)}%
                 </span>
               </div>
             ))}
@@ -901,14 +951,14 @@ export function PatientsClient({ initialPatients, stats }: Props) {
             </div>
           </div>
           <div className="space-y-3">
-            {visitFrequencyData.map((freq) => (
+            {visitFrequencyLive.map((freq) => (
               <div key={freq.freq} className="flex items-center gap-3">
-                <span className="text-xs text-slate-600 w-28 shrink-0">{freq.freq}</span>
+                <span className="text-xs text-slate-600 w-32 shrink-0">{freq.freq}</span>
                 <div className="flex-1">
                   <ProgressBar
                     value={freq.pct}
                     max={100}
-                    color={freq.freq === "Lapsed (>1yr)" ? "bg-red-500" : "bg-cyan-500"}
+                    color={freq.freq.startsWith("Lapsed") ? "bg-red-500" : "bg-cyan-500"}
                     showLabel={false}
                     size="md"
                   />
@@ -920,9 +970,11 @@ export function PatientsClient({ initialPatients, stats }: Props) {
               </div>
             ))}
           </div>
-          <AiInsight variant="alert">
-            18 patients have lapsed beyond 1 year. Automated reactivation sequences have been triggered for 15 of them.
-          </AiInsight>
+          {lapsedCount > 0 && (
+            <AiInsight variant="alert">
+              {lapsedCount} patient{lapsedCount !== 1 ? "s" : ""} have not visited in over 400 days. Consider triggering a reactivation sequence.
+            </AiInsight>
+          )}
         </div>
       </div>
 
@@ -937,15 +989,15 @@ export function PatientsClient({ initialPatients, stats }: Props) {
           </div>
           <div className="flex items-center gap-6">
             <DonutChart
-              data={insuranceMix}
+              data={insuranceMixLive}
               height={200}
               innerRadius={55}
               outerRadius={80}
               centerLabel="patients"
-              centerValue="389"
+              centerValue={String(total)}
             />
             <div className="space-y-2 flex-1">
-              {insuranceMix.map((ins) => (
+              {insuranceMixLive.map((ins) => (
                 <div key={ins.name} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: ins.color }} />
@@ -953,7 +1005,7 @@ export function PatientsClient({ initialPatients, stats }: Props) {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-semibold text-slate-900">{ins.value}</span>
-                    <span className="text-[10px] text-slate-400">({Math.round((ins.value / 389) * 100)}%)</span>
+                    <span className="text-[10px] text-slate-400">({Math.round((ins.value / total) * 100)}%)</span>
                   </div>
                 </div>
               ))}
@@ -961,18 +1013,11 @@ export function PatientsClient({ initialPatients, stats }: Props) {
           </div>
         </div>
 
-        {/* Geographic & Contact Info */}
+        {/* Data Completeness */}
         <div className="rounded-xl border border-slate-200/80 bg-white p-5">
           <h3 className="text-sm font-semibold text-slate-900 mb-4">Data Completeness</h3>
           <div className="space-y-4">
-            {[
-              { label: "Email on file", value: 82, color: "bg-emerald-500" },
-              { label: "Phone on file", value: 94, color: "bg-cyan-500" },
-              { label: "Address on file", value: 71, color: "bg-blue-500" },
-              { label: "Insurance verified", value: 74, color: "bg-purple-500" },
-              { label: "DOB on file", value: 88, color: "bg-amber-500" },
-              { label: "Emergency contact", value: 42, color: "bg-red-500" },
-            ].map((item) => (
+            {completeness.map((item) => (
               <ProgressBar
                 key={item.label}
                 value={item.value}
@@ -983,37 +1028,35 @@ export function PatientsClient({ initialPatients, stats }: Props) {
               />
             ))}
           </div>
-          <AiInsight variant="recommendation">
-            Emergency contact information is only 42% complete. Consider adding this to the intake form workflow.
-          </AiInsight>
+          {completeness.length > 0 && completeness.some((c) => c.value < 60) && (
+            <AiInsight variant="recommendation">
+              {completeness.filter((c) => c.value < 60).map((c) => c.label).join(", ")} {completeness.filter((c) => c.value < 60).length === 1 ? "is" : "are"} below 60% complete. Consider prompting patients to update their records.
+            </AiInsight>
+          )}
         </div>
       </div>
 
-      {/* Geographic breakdown */}
+      {/* Geographic breakdown — based on city/state since no lat/lng */}
       <div className="rounded-xl border border-slate-200/80 bg-white p-5">
-        <h3 className="text-sm font-semibold text-slate-900 mb-1">Geographic Distribution</h3>
-        <p className="text-xs text-slate-500 mb-4">Patient distance from practice (89108)</p>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <h3 className="text-sm font-semibold text-slate-900 mb-1">Patient Base Summary</h3>
+        <p className="text-xs text-slate-500 mb-4">Overview of your {total} active patients</p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            { range: "< 3 miles", count: 124, pct: 31.9, color: "#059669" },
-            { range: "3-5 miles", count: 108, pct: 27.8, color: "#0891b2" },
-            { range: "5-10 miles", count: 96, pct: 24.7, color: "#2563eb" },
-            { range: "10-20 miles", count: 42, pct: 10.8, color: "#d97706" },
-            { range: "20+ miles", count: 19, pct: 4.9, color: "#7c3aed" },
-          ].map((geo) => (
-            <div key={geo.range} className="rounded-lg border border-slate-200 p-3 text-center hover:shadow-sm transition-all">
-              <div className="flex h-10 w-10 mx-auto items-center justify-center rounded-full mb-2" style={{ backgroundColor: `${geo.color}15` }}>
-                <MapPin className="h-4 w-4" style={{ color: geo.color }} />
-              </div>
-              <p className="text-lg font-bold text-slate-900">{geo.count}</p>
-              <p className="text-[10px] text-slate-500">{geo.range}</p>
-              <p className="text-[10px] font-medium" style={{ color: geo.color }}>{geo.pct}%</p>
+            { label: "Total Patients", count: total, color: "#0891b2", icon: "👥" },
+            { label: "Active", count: patients.filter((p) => p.status === "active").length, color: "#059669", icon: "✅" },
+            { label: "Prospects", count: patients.filter((p) => p.status === "prospect").length, color: "#2563eb", icon: "🔵" },
+            { label: "Lapsed", count: lapsedCount, color: "#d97706", icon: "⚠️" },
+          ].map((item) => (
+            <div key={item.label} className="rounded-lg border border-slate-200 p-4 text-center hover:shadow-sm transition-all">
+              <p className="text-2xl font-bold text-slate-900">{item.count}</p>
+              <p className="text-xs text-slate-500 mt-1">{item.label}</p>
             </div>
           ))}
         </div>
       </div>
     </div>
   );
+  };
 
   /* ---------------------------------------------------------------- */
   /*  AI & RETENTION TAB                                               */

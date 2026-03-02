@@ -97,6 +97,14 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Fire notification (non-blocking)
+    void supabase.from("oe_notifications").insert({
+      type: "lead",
+      title: "New Lead",
+      body: `${first_name} ${last_name} submitted a ${inquiry_type || "General"} inquiry (${urgency} urgency)`,
+      link: "/dashboard/leads",
+    });
+
     return NextResponse.json({ lead, ai_draft: aiResponse?.content || null }, { status: 201 });
   } catch (error) {
     const msg = error instanceof Error ? error.message : "Unknown error";

@@ -126,6 +126,7 @@ interface FinancialsData {
   expenseByCategory: ExpenseCategoryItem[];
   dailyCollections: DailyCollectionItem[];
   collectionRateTrend: CollectionRateTrendItem[];
+  dailyTarget: number;
 }
 
 /* ================================================================== */
@@ -377,6 +378,7 @@ export function FinancialsClient({ data }: { data: FinancialsData }) {
     expenseByCategory,
     dailyCollections,
     collectionRateTrend,
+    dailyTarget,
   } = data;
 
   const totalExpenses = expenseItems.reduce((sum, e) => sum + e.amount, 0);
@@ -888,9 +890,9 @@ export function FinancialsClient({ data }: { data: FinancialsData }) {
                     <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">
                       vs Target
                     </p>
-                    <p className={`text-sm font-bold ${avgDailyCollections >= 7500 ? "text-emerald-700" : "text-amber-700"}`}>
-                      {avgDailyCollections >= 7500 ? "+" : ""}
-                      {((avgDailyCollections / 7500 - 1) * 100).toFixed(1)}%
+                    <p className={`text-sm font-bold ${avgDailyCollections >= dailyTarget ? "text-emerald-700" : "text-amber-700"}`}>
+                      {avgDailyCollections >= dailyTarget ? "+" : ""}
+                      {((avgDailyCollections / dailyTarget - 1) * 100).toFixed(1)}%
                     </p>
                   </div>
                 </div>
@@ -930,7 +932,7 @@ export function FinancialsClient({ data }: { data: FinancialsData }) {
             </div>
             <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-6 flex flex-col items-center">
               <GaugeRing
-                value={Math.min(Math.round((mtdCollections / 75000) * 100), 100)}
+                value={Math.min(Math.round((mtdCollections / (dailyTarget * 20)) * 100), 100)}
                 label="Revenue Goal"
                 color="#0891b2"
               />

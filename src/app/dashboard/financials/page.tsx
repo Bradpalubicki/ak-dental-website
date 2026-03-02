@@ -20,7 +20,7 @@ export default async function FinancialsPage() {
   const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1).toISOString().split("T")[0];
   const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
 
-  const [metricsResult, claimsResult, expensesResult, apResult] = await Promise.all([
+  const [metricsResult, claimsResult, expensesResult, apResult, settingsResult] = await Promise.all([
     // Last 6 months of daily metrics for revenue charts
     supabase
       .from("oe_daily_metrics")
@@ -48,6 +48,13 @@ export default async function FinancialsPage() {
       .select("*")
       .neq("status", "paid")
       .order("due_date", { ascending: true }),
+
+    // Daily collection target from practice settings
+    supabase
+      .from("oe_practice_settings")
+      .select("value")
+      .eq("key", "daily_collection_target")
+      .single(),
   ]);
 
   // Build monthly revenue from daily metrics
@@ -171,6 +178,9 @@ export default async function FinancialsPage() {
     };
   });
 
+  // Daily collection target from settings (default 7500)
+  const dailyTarget = settingsResult.data?.value ? Number(settingsResult.data.value) : 7500;
+
   // Net income
   const netIncome = currentMonth.collections - totalExpenses;
 
@@ -182,7 +192,7 @@ export default async function FinancialsPage() {
     return {
       name: DAY_NAMES[d.getDay()],
       amount: Number(m.collections || 0),
-      target: 7500,
+      target: dailyTarget,
     };
   });
 
@@ -209,6 +219,7 @@ export default async function FinancialsPage() {
         expenseByCategory,
         dailyCollections,
         collectionRateTrend,
+        dailyTarget,
       }}
     />
   );
