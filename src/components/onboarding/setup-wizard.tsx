@@ -694,6 +694,29 @@ export function SetupWizard({
                   </p>
                 </div>
               )}
+
+              {data.priorities?.includes("billing") && (
+                <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-left">
+                  <p className="text-xs font-semibold text-amber-800 mb-2">💰 Activate Dentrix Billing (you selected Billing as a priority)</p>
+                  <p className="text-[11px] text-amber-700 mb-2">
+                    You use Dentrix — activate these eServices to enable electronic claims and real-time eligibility:
+                  </p>
+                  {[
+                    { label: "eClaims", detail: "Electronic claim submission + ERA auto-posting via DentalXChange" },
+                    { label: "Eligibility Essentials", detail: "Real-time insurance eligibility at scheduling" },
+                    { label: "QuickBill Premium", detail: "Patient statements via text, email, and mail" },
+                    { label: "Sikka OneAPI", detail: "Connects Dentrix to this dashboard" },
+                  ].map((step) => (
+                    <div key={step.label} className="flex items-start gap-2 py-0.5">
+                      <div className="h-1.5 w-1.5 rounded-full bg-amber-500 mt-1.5 shrink-0" />
+                      <p className="text-[11px] text-amber-700"><span className="font-semibold">{step.label}</span> — {step.detail}</p>
+                    </div>
+                  ))}
+                  <p className="text-[10px] text-amber-500 mt-2">
+                    Call Henry Schein One: 800.734.5561 · Find full setup in Settings → Integrations
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>

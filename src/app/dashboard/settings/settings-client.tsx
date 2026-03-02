@@ -128,7 +128,7 @@ const integrationDefs: Integration[] = [
   { name: "Resend", description: "Transactional email", icon: Mail, statusKey: "resend", category: "Communication", details: { connected: "Connected — sending emails", configured: "Connected — sending emails", not_configured: "Add API key to enable email delivery", error: "Connection error" } },
   { name: "Stripe", description: "Patient payments", icon: CreditCard, statusKey: "stripe", category: "Payments", details: { connected: "Connected — payments active", not_configured: "Add API credentials to enable patient payments", error: "Connection error" } },
   { name: "Supabase", description: "PostgreSQL database", icon: Database, statusKey: "pms", category: "Infrastructure", details: { connected: "Connected to production database", not_configured: "Database not configured", error: "Connection error" } },
-  { name: "Vyne Dental", description: "Insurance EDI", icon: Shield, statusKey: "insurance_edi", category: "Insurance", details: { connected: "Connected — real-time eligibility active", not_configured: "Add credentials for insurance automation", error: "Connection error" } },
+  { name: "Dentrix eClaims (DentalXChange)", description: "Insurance EDI & ERA", icon: Shield, statusKey: "insurance_edi", category: "Insurance", details: { connected: "Connected — real-time eligibility + ERA posting active", not_configured: "Activate Dentrix eServices to enable electronic claims", error: "Connection error" } },
 ];
 
 const integrationStatusConfig = {
@@ -358,6 +358,12 @@ export function SettingsClient({
   const [recentEntries, setRecentEntries] = useState<Array<{ id: string; entry_date: string; entry_type: string; description: string; amount: number; debit_account: string; credit_account: string }>>([]);
   const [loadingEntries, setLoadingEntries] = useState(false);
 
+  // Dentrix activation state
+  const [dentrixSetup, setDentrixSetup] = useState<{ eclaims: boolean; eligibility: boolean; quickbill: boolean; sikka: boolean }>(
+    (initialSettings as Record<string, unknown> & typeof initialSettings & { dentrix_billing_setup?: { eclaims: boolean; eligibility: boolean; quickbill: boolean; sikka: boolean } }).dentrix_billing_setup ?? { eclaims: false, eligibility: false, quickbill: false, sikka: false }
+  );
+  const [savingDentrix, setSavingDentrix] = useState<string | null>(null);
+
   const handleSave = async (key: string, value: unknown) => {
     setSaving(key);
     setSaved(null);
@@ -369,6 +375,17 @@ export function SettingsClient({
       // Could add error toast here
     } finally {
       setSaving(null);
+    }
+  };
+
+  const toggleDentrixStep = async (step: keyof typeof dentrixSetup) => {
+    const updated = { ...dentrixSetup, [step]: !dentrixSetup[step] };
+    setDentrixSetup(updated);
+    setSavingDentrix(step);
+    try {
+      await saveSettings("dentrix_billing_setup", updated);
+    } finally {
+      setSavingDentrix(null);
     }
   };
 
@@ -1089,9 +1106,104 @@ export function SettingsClient({
   /* ---------------------------------------------------------------- */
   function renderIntegrations() {
     const categories = [...new Set(integrationDefs.map((i) => i.category))];
+    const dentrixSteps = [
+      {
+        key: "eclaims" as const,
+        label: "eClaims",
+        detail: "Electronic claim submission + ERA auto-posting via DentalXChange",
+        action: "Call 800.734.5561",
+      },
+      {
+        key: "eligibility" as const,
+        label: "Eligibility Essentials",
+        detail: "Real-time insurance eligibility checks at scheduling — available on the same call",
+        action: "Same call",
+      },
+      {
+        key: "quickbill" as const,
+        label: "QuickBill Premium",
+        detail: "Patient statements via text, email, and mail with online payment link",
+        action: "Same call",
+      },
+      {
+        key: "sikka" as const,
+        label: "Sikka OneAPI",
+        detail: "Installs a Windows agent at the practice — reads Dentrix and syncs to this dashboard",
+        action: "sikka.ai/oneapi",
+      },
+    ];
+    const dentrixComplete = Object.values(dentrixSetup).filter(Boolean).length;
+    const allDentrixDone = dentrixComplete === 4;
 
     return (
       <div className="space-y-6">
+
+        {/* Dentrix eServices Activation Card */}
+        <div className={`rounded-xl border ${allDentrixDone ? "border-emerald-200 bg-emerald-50/40" : "border-amber-200 bg-amber-50/40"} p-6`}>
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Shield className={`h-5 w-5 ${allDentrixDone ? "text-emerald-600" : "text-amber-600"}`} />
+              <h2 className="text-sm font-semibold text-slate-900">Dentrix eServices Setup</h2>
+              {allDentrixDone && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 border border-emerald-200 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                  <CheckCircle2 className="h-3 w-3" /> Fully Activated
+                </span>
+              )}
+            </div>
+            <span className={`text-xs font-semibold ${allDentrixDone ? "text-emerald-700" : "text-amber-700"}`}>
+              {dentrixComplete} / 4 complete
+            </span>
+          </div>
+
+          {/* Progress bar */}
+          <div className="h-1.5 w-full rounded-full bg-slate-200 mb-5">
+            <div
+              className={`h-full rounded-full transition-all duration-500 ${allDentrixDone ? "bg-emerald-500" : "bg-amber-500"}`}
+              style={{ width: `${(dentrixComplete / 4) * 100}%` }}
+            />
+          </div>
+
+          <p className="text-[11px] text-slate-500 mb-4">
+            Alex uses Dentrix Desktop. These eServices are add-ons — call Henry Schein One to activate. We handle the reporting; Dentrix handles the billing.
+          </p>
+
+          <div className="space-y-3">
+            {dentrixSteps.map((s) => (
+              <div key={s.key} className={`flex items-start gap-3 rounded-lg border p-3 transition-colors ${dentrixSetup[s.key] ? "border-emerald-200 bg-emerald-50/60" : "border-slate-200 bg-white"}`}>
+                <button
+                  onClick={() => toggleDentrixStep(s.key)}
+                  disabled={savingDentrix === s.key}
+                  className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+                    dentrixSetup[s.key]
+                      ? "border-emerald-500 bg-emerald-500 text-white"
+                      : "border-slate-300 hover:border-cyan-400"
+                  }`}
+                >
+                  {dentrixSetup[s.key] && <CheckCircle2 className="h-3 w-3" />}
+                </button>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className={`text-xs font-semibold ${dentrixSetup[s.key] ? "text-emerald-700 line-through" : "text-slate-900"}`}>{s.label}</p>
+                    <span className="text-[9px] text-slate-400 border border-slate-200 rounded px-1.5 py-0.5">{s.action}</span>
+                  </div>
+                  <p className="text-[10px] text-slate-500 mt-0.5">{s.detail}</p>
+                </div>
+                <button
+                  onClick={() => toggleDentrixStep(s.key)}
+                  disabled={savingDentrix === s.key}
+                  className={`shrink-0 rounded-md px-2 py-1 text-[10px] font-semibold transition-colors ${
+                    dentrixSetup[s.key]
+                      ? "bg-slate-100 text-slate-500 hover:bg-red-50 hover:text-red-600"
+                      : "bg-amber-100 text-amber-800 hover:bg-amber-200"
+                  }`}
+                >
+                  {savingDentrix === s.key ? "..." : dentrixSetup[s.key] ? "Undo" : "Mark Done"}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Integration Summary */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-center">
@@ -1233,10 +1345,10 @@ export function SettingsClient({
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {[
-              { name: "Sikka OneAPI / Dentrix", desc: "Full practice mgmt sync — patients, appointments, clinical, financial", eta: "Coming Soon" },
-              { name: "ADP Workforce Now", desc: "Real-time payroll & time tracking sync", eta: "Coming Soon" },
-              { name: "QuickBooks Online", desc: "Automated financial reconciliation", eta: "Coming Soon" },
-              { name: "Vapi Voice AI", desc: "AI phone receptionist for inbound calls", eta: "Coming Soon" },
+              { name: "Sikka OneAPI / Dentrix", desc: "Full practice mgmt sync — patients, appointments, clinical, financial", eta: dentrixSetup.sikka ? "Pending Connection" : "Activate in Setup Above", etaColor: dentrixSetup.sikka ? "bg-amber-50 border-amber-200 text-amber-700" : "bg-slate-50 border-slate-200 text-slate-600" },
+              { name: "ADP Workforce Now", desc: "Real-time payroll & time tracking sync", eta: "Coming Soon", etaColor: "bg-purple-50 border-purple-200 text-purple-700" },
+              { name: "QuickBooks Online", desc: "Automated financial reconciliation", eta: "Coming Soon", etaColor: "bg-purple-50 border-purple-200 text-purple-700" },
+              { name: "Vapi Voice AI", desc: "AI phone receptionist for inbound calls", eta: "Coming Soon", etaColor: "bg-purple-50 border-purple-200 text-purple-700" },
             ].map((item) => (
               <div key={item.name} className="flex items-center gap-3 rounded-lg border border-dashed border-slate-200 bg-slate-50/30 p-3">
                 <span className="h-2.5 w-2.5 rounded-full bg-purple-300 flex-shrink-0" />
@@ -1244,7 +1356,7 @@ export function SettingsClient({
                   <p className="text-xs font-medium text-slate-800">{item.name}</p>
                   <p className="text-[10px] text-slate-500">{item.desc}</p>
                 </div>
-                <span className="ml-auto rounded-full bg-purple-50 border border-purple-200 px-2 py-0.5 text-[9px] font-bold text-purple-700 whitespace-nowrap">
+                <span className={`ml-auto rounded-full border px-2 py-0.5 text-[9px] font-bold whitespace-nowrap ${item.etaColor}`}>
                   {item.eta}
                 </span>
               </div>

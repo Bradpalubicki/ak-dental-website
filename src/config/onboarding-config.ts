@@ -61,6 +61,13 @@ export const SETUP_STEPS: SetupStep[] = [
     category: "essential",
   },
   {
+    id: "dentrix-billing",
+    label: "Activate Dentrix billing",
+    description: "Enable eClaims, Eligibility, and QuickBill in Dentrix",
+    href: "/dashboard/settings?tab=integrations",
+    category: "essential",
+  },
+  {
     id: "insurance-setup",
     label: "Configure insurance carriers",
     description: "Add the insurance plans you accept",
