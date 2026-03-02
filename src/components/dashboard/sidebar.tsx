@@ -35,6 +35,7 @@ import {
   GraduationCap,
   FolderOpen,
   FileSignature,
+  MailOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -118,6 +119,7 @@ const sections: NavSection[] = [
     accent: "text-blue-400",
     items: [
       { name: "Inbox", href: "/dashboard/inbox", icon: Inbox, badgeKey: "inbox", badgeColor: "bg-blue-400 text-blue-950", requiredPermission: "inbox.view" },
+      { name: "Email Intelligence", href: "/dashboard/email", icon: MailOpen, requiredPermission: "inbox.view" },
       { name: "SEO", href: "/dashboard/seo", icon: Search, requiredPermission: "seo.view" },
       { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3, requiredPermission: "analytics.view" },
       { name: "Compliance", href: "/dashboard/compliance", icon: ShieldCheck, requiredPermission: "settings.view" },
