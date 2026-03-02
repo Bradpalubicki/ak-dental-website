@@ -33,6 +33,13 @@ export interface SetupStep {
 
 export const SETUP_STEPS: SetupStep[] = [
   {
+    id: "sign-documents",
+    label: "Sign platform agreements",
+    description: "Sign the MPA, Technology Services Authorization, and NV Addendum to activate your account",
+    href: "/dashboard/documents",
+    category: "essential",
+  },
+  {
     id: "practice-profile",
     label: "Complete practice profile",
     description: "Add your hours, address, and contact details",
@@ -66,6 +73,13 @@ export const SETUP_STEPS: SetupStep[] = [
     description: "Enable eClaims, Eligibility, and QuickBill in Dentrix",
     href: "/dashboard/settings?tab=integrations",
     category: "essential",
+  },
+  {
+    id: "first-clinical-note",
+    label: "Create your first clinical note",
+    description: "Add a procedure code and watch SOAP fields auto-fill from your Dentrix workflow",
+    href: "/dashboard/clinical-notes",
+    category: "recommended",
   },
   {
     id: "insurance-setup",

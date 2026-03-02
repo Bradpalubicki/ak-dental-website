@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   FileText,
@@ -16,6 +15,8 @@ import {
   Info,
   Download,
   Loader2,
+  Mail,
+  UserCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { markDocumentSent } from "./actions";
@@ -298,6 +299,178 @@ function DocumentCard({
   );
 }
 
+// ─── Alex Onboarding E-Sign Panel ────────────────────────────────────────────
+
+const DOC_LABELS: Record<string, string> = {
+  master_platform_agreement: "Master Platform Agreement (+ BAA)",
+  technology_services_authorization: "Technology Services Authorization",
+  state_addendum: "Nevada SB370 Processing Addendum",
+};
+
+function AlexOnboardingPanel() {
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [docs, setDocs] = useState<
+    Array<{ document_type: string; sign_token: string; status: string }>
+  >([]);
+  const [inviteStatus, setInviteStatus] = useState<{
+    allSigned: boolean;
+    invited?: boolean;
+  } | null>(null);
+  const [checkingInvite, setCheckingInvite] = useState(false);
+
+  async function handleSend() {
+    setSending(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/onboarding/send-documents", { method: "POST" });
+      const data = (await res.json()) as {
+        documents?: Array<{ document_type: string; sign_token: string; status: string }>;
+        error?: string;
+      };
+      if (!res.ok) throw new Error(data.error ?? "Failed");
+      setDocs(data.documents ?? []);
+      setSent(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Error sending documents");
+    } finally {
+      setSending(false);
+    }
+  }
+
+  async function handleCheckInvite() {
+    setCheckingInvite(true);
+    try {
+      const res = await fetch("/api/onboarding/send-invite", { method: "POST" });
+      const data = (await res.json()) as { allSigned: boolean; invited?: boolean };
+      setInviteStatus(data);
+    } catch {
+      setError("Failed to check invite status");
+    } finally {
+      setCheckingInvite(false);
+    }
+  }
+
+  const baseUrl =
+    typeof window !== "undefined" ? window.location.origin : "";
+
+  return (
+    <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-5">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold text-indigo-900">
+            Alex&apos;s Onboarding — Document Signing
+          </p>
+          <p className="mt-0.5 text-xs text-indigo-600">
+            Send MPA + TSA + NV Addendum to{" "}
+            <strong>info@akultimatedental.com</strong> for e-signature. Dashboard
+            invite sends automatically after all 3 are signed.
+          </p>
+        </div>
+        <div className="flex gap-2 shrink-0">
+          {!sent ? (
+            <Button
+              size="sm"
+              className="gap-1.5 bg-indigo-600 hover:bg-indigo-700"
+              onClick={handleSend}
+              disabled={sending}
+            >
+              {sending ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Mail className="h-3.5 w-3.5" />
+              )}
+              {sending ? "Sending…" : "Send to Alex"}
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5 border-indigo-300 text-indigo-700"
+              onClick={handleCheckInvite}
+              disabled={checkingInvite}
+            >
+              {checkingInvite ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <UserCheck className="h-3.5 w-3.5" />
+              )}
+              Check & Send Invite
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {error && (
+        <p className="mt-3 text-xs text-red-600 font-medium">{error}</p>
+      )}
+
+      {sent && docs.length > 0 && (
+        <div className="mt-4 space-y-2">
+          <p className="text-xs font-semibold text-indigo-700">Sign links generated — copy and share with Alex:</p>
+          {docs.map((doc) => (
+            <div
+              key={doc.document_type}
+              className="flex items-center justify-between rounded-lg border border-indigo-200 bg-white px-3 py-2"
+            >
+              <div>
+                <p className="text-xs font-medium text-slate-800">
+                  {DOC_LABELS[doc.document_type] ?? doc.document_type}
+                </p>
+                <p className="text-[10px] text-slate-400 mt-0.5 font-mono truncate max-w-[300px]">
+                  {baseUrl}/offer/{doc.sign_token}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                {doc.status === "signed" ? (
+                  <span className="text-[10px] font-semibold text-emerald-600 flex items-center gap-1">
+                    <CheckCircle2 className="h-3 w-3" /> Signed
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-semibold text-blue-600 flex items-center gap-1">
+                    <Clock className="h-3 w-3" /> Awaiting
+                  </span>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-6 text-[10px] gap-1 px-2"
+                  onClick={() =>
+                    window.open(`${baseUrl}/offer/${doc.sign_token}`, "_blank")
+                  }
+                >
+                  <ExternalLink className="h-2.5 w-2.5" />
+                  Open
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {inviteStatus && (
+        <div
+          className={cn(
+            "mt-3 rounded-lg border px-3 py-2 text-xs font-medium",
+            inviteStatus.allSigned && inviteStatus.invited
+              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+              : inviteStatus.allSigned
+                ? "border-blue-200 bg-blue-50 text-blue-700"
+                : "border-amber-200 bg-amber-50 text-amber-700"
+          )}
+        >
+          {inviteStatus.allSigned && inviteStatus.invited
+            ? "✅ All documents signed — Clerk invite sent to info@akultimatedental.com"
+            : inviteStatus.allSigned
+              ? "✅ All signed — invite already sent or Alex is already a member"
+              : "⏳ Not all documents signed yet — invite will send automatically when complete"}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function DocumentsClient({
   documents,
   error,
@@ -353,6 +526,8 @@ export function DocumentsClient({
           </div>
         ))}
       </div>
+
+      <AlexOnboardingPanel />
 
       {internalDocs.some((d) => d.status === "pending") && (
         <div className="flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3">

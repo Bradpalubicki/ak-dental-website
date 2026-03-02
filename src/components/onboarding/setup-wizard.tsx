@@ -695,6 +695,29 @@ export function SetupWizard({
                 </div>
               )}
 
+              {data.priorities?.includes("clinical") && (
+                <div className="mt-4 rounded-xl border border-cyan-200 bg-cyan-50 px-4 py-3 text-left">
+                  <p className="text-xs font-semibold text-cyan-800 mb-2">📋 Clinical Notes — Smart Templates Active</p>
+                  <p className="text-[11px] text-cyan-700 mb-2">
+                    You selected Clinical Notes as a priority. Your dashboard auto-fills SOAP note fields when you add a procedure code:
+                  </p>
+                  {[
+                    { label: "Select a patient + tooth number", detail: "From the tooth chart (1–32)" },
+                    { label: "Add a CDT procedure code", detail: "e.g. D2740 — Crown, D3310 — Root Canal" },
+                    { label: "SOAP fields auto-fill", detail: "Chief complaint, subjective, objective, assessment, plan — all pre-populated from your workflow" },
+                    { label: "Edit and sign", detail: "Review, customize, and sign electronically in under 60 seconds" },
+                  ].map((step) => (
+                    <div key={step.label} className="flex items-start gap-2 py-0.5">
+                      <div className="h-1.5 w-1.5 rounded-full bg-cyan-500 mt-1.5 shrink-0" />
+                      <p className="text-[11px] text-cyan-700"><span className="font-semibold">{step.label}</span> — {step.detail}</p>
+                    </div>
+                  ))}
+                  <p className="text-[10px] text-cyan-500 mt-2">
+                    Go to Clinical Notes → New Note to try it · 20+ CDT templates built in
+                  </p>
+                </div>
+              )}
+
               {data.priorities?.includes("billing") && (
                 <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-left">
                   <p className="text-xs font-semibold text-amber-800 mb-2">💰 Activate Dentrix Billing (you selected Billing as a priority)</p>

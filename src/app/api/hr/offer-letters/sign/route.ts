@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createServiceSupabase } from "@/lib/supabase/server";
+import { sendClerkInviteIfAllSigned } from "@/lib/onboarding/send-clerk-invite";
 
 const SignSchema = z.object({
   token:          z.string().min(10),
@@ -85,7 +86,14 @@ export async function POST(req: NextRequest) {
     signed_ip: ip,
   }).eq("id", offer.id);
 
-  // Create employee record
+  // Legal documents (MPA, TSA, NV addendum) — skip employee creation, trigger invite check instead
+  if (offer.document_type) {
+    // Non-blocking — check if all 3 are signed and fire Clerk invite if so
+    void sendClerkInviteIfAllSigned().catch(() => null);
+    return NextResponse.json({ status: "signed", document_type: offer.document_type });
+  }
+
+  // Create employee record (employment offers only)
   const { data: employee } = await supabase
     .from("oe_employees")
     .insert({

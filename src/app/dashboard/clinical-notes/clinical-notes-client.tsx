@@ -23,6 +23,7 @@ import {
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { getTemplateForCode } from "@/config/note-templates";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                               */
@@ -178,6 +179,8 @@ export function ClinicalNotesClient({ initialNotes, stats, patients }: Props) {
   const [cdtInput, setCdtInput] = useState("");
   const [showCdtSuggestions, setShowCdtSuggestions] = useState(false);
 
+  const [templateFilled, setTemplateFilled] = useState<string | null>(null);
+
   // Detail/view state
   const [selectedNote, setSelectedNote] = useState<ClinicalNote | null>(null);
   const [showDetail, setShowDetail] = useState(false);
@@ -254,15 +257,37 @@ export function ClinicalNotesClient({ initialNotes, stats, patients }: Props) {
     }));
   }
 
-  /* ---- Add procedure code ---- */
+  /* ---- Add procedure code + auto-fill SOAP template ---- */
   function addProcedureCode(code: string) {
     const codeOnly = code.split(" - ")[0];
-    if (!form.procedure_codes.includes(codeOnly)) {
-      setForm((prev) => ({
-        ...prev,
-        procedure_codes: [...prev.procedure_codes, codeOnly],
-      }));
+    if (form.procedure_codes.includes(codeOnly)) {
+      setCdtInput("");
+      setShowCdtSuggestions(false);
+      return;
     }
+
+    const template = getTemplateForCode(code);
+    setForm((prev) => {
+      const updates: Partial<typeof prev> = {
+        procedure_codes: [...prev.procedure_codes, codeOnly],
+      };
+      // Auto-fill SOAP fields only if they are currently empty and a template exists
+      if (template) {
+        if (!prev.chief_complaint) updates.chief_complaint = template.chief_complaint;
+        if (!prev.subjective) updates.subjective = template.subjective;
+        if (!prev.objective) updates.objective = template.objective;
+        if (!prev.assessment) updates.assessment = template.assessment;
+        if (!prev.plan) updates.plan = template.plan;
+        if (prev.note_type === "progress") updates.note_type = template.note_type;
+      }
+      return { ...prev, ...updates };
+    });
+
+    if (template) {
+      setTemplateFilled(codeOnly);
+      setTimeout(() => setTemplateFilled(null), 3000);
+    }
+
     setCdtInput("");
     setShowCdtSuggestions(false);
   }
@@ -926,6 +951,18 @@ export function ClinicalNotesClient({ initialNotes, stats, patients }: Props) {
                   className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
                 />
               </div>
+
+              {/* Template auto-fill notification */}
+              {templateFilled && (
+                <div className="flex items-center gap-2 rounded-lg border border-cyan-200 bg-cyan-50 px-3 py-2 text-sm text-cyan-800">
+                  <Sparkles className="h-4 w-4 shrink-0 text-cyan-600" />
+                  <span>
+                    SOAP template auto-filled from{" "}
+                    <strong>{templateFilled}</strong> — review and edit as
+                    needed.
+                  </span>
+                </div>
+              )}
 
               {/* SOAP Sections */}
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
