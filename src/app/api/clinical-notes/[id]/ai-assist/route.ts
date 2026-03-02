@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { logPhiAccess } from "@/lib/audit";
+import { tryAuth } from "@/lib/auth";
 import Anthropic from "@anthropic-ai/sdk";
 
 const anthropic =
@@ -14,6 +15,8 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authResult = await tryAuth();
+  if (authResult instanceof NextResponse) return authResult;
   try {
     const { id } = await params;
     const supabase = createServiceSupabase();

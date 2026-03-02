@@ -123,7 +123,7 @@ export function GuidedTour({ sections, onClose }: GuidedTourProps) {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [goNext, goBack]);
+  }, [goNext, goBack, handleClose]);
 
   if (!currentStep) return null;
 

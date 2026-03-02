@@ -45,6 +45,8 @@ export default async function AppointmentsPage() {
     }
   }
 
+  const now = new Date().getTime();
+
   /* eslint-disable @typescript-eslint/no-explicit-any */
   const appointments = (data || []).map((apt: any) => {
     const patientId = apt.patient?.id as string | undefined;
@@ -53,7 +55,7 @@ export default async function AppointmentsPage() {
     let eligibilityStatus: "verified" | "expired" | "unverified" = "unverified";
     if (verif) {
       if (verif.status === "verified" && verif.verified_at) {
-        const age = Date.now() - new Date(verif.verified_at).getTime();
+        const age = now - new Date(verif.verified_at).getTime();
         eligibilityStatus = age > THIRTY_DAYS_MS ? "expired" : "verified";
       } else if (verif.status === "verified") {
         eligibilityStatus = "verified";

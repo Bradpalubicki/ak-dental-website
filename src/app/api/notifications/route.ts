@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
+import { tryAuth } from "@/lib/auth";
 
 // GET /api/notifications — fetch recent notifications + unread count
 export async function GET() {
+  const authResult = await tryAuth();
+  if (authResult instanceof NextResponse) return authResult;
   const supabase = createServiceSupabase();
 
   const { data, error } = await supabase
@@ -19,6 +22,8 @@ export async function GET() {
 
 // PATCH /api/notifications — mark one or all as read
 export async function PATCH(req: NextRequest) {
+  const authResult = await tryAuth();
+  if (authResult instanceof NextResponse) return authResult;
   const supabase = createServiceSupabase();
   const { id, markAll } = await req.json() as { id?: string; markAll?: boolean };
 

@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
+import { tryAuth } from "@/lib/auth";
 
 // GET /api/appointment-types - List appointment types
 export async function GET() {
+  const authResult = await tryAuth();
+  if (authResult instanceof NextResponse) return authResult;
   try {
     const supabase = createServiceSupabase();
 
@@ -26,6 +29,8 @@ export async function GET() {
 
 // POST /api/appointment-types - Create appointment type
 export async function POST(req: NextRequest) {
+  const authResult = await tryAuth();
+  if (authResult instanceof NextResponse) return authResult;
   try {
     const body = await req.json();
     const supabase = createServiceSupabase();

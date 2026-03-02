@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
+import { tryAuth } from "@/lib/auth";
 
 // GET /api/clinical-notes/templates - List available templates
 export async function GET(req: NextRequest) {
+  const authResult = await tryAuth();
+  if (authResult instanceof NextResponse) return authResult;
   try {
     const supabase = createServiceSupabase();
     const { searchParams } = new URL(req.url);

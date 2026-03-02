@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { logPhiAccess } from "@/lib/audit";
+import { tryAuth } from "@/lib/auth";
 
 // GET /api/clinical-notes/[id] - Get single note
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authResult = await tryAuth();
+  if (authResult instanceof NextResponse) return authResult;
   try {
     const { id } = await params;
     const supabase = createServiceSupabase();
@@ -39,6 +42,8 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authResult = await tryAuth();
+  if (authResult instanceof NextResponse) return authResult;
   try {
     const { id } = await params;
     const supabase = createServiceSupabase();
@@ -119,6 +124,8 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authResult = await tryAuth();
+  if (authResult instanceof NextResponse) return authResult;
   try {
     const { id } = await params;
     const supabase = createServiceSupabase();

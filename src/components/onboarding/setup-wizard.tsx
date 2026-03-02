@@ -73,7 +73,7 @@ interface Bar1Item {
 
 function buildBar1Items(prefill: PrefillData, wizData: WizardData): Bar1Item[] {
   const pi = prefill.practiceInfo;
-  const ci = prefill.contactInfo;
+  void prefill.contactInfo; // reserved for future Bar1 items
 
   return [
     {
