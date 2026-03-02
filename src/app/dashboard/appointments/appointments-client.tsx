@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useRealtimeAppointments } from "@/hooks/use-realtime-appointments";
 import {
   Calendar,
   Clock,
@@ -25,6 +26,7 @@ interface AppointmentRow {
   status: string;
   provider: string;
   insuranceVerified: boolean;
+  eligibilityStatus: "verified" | "expired" | "unverified";
   confirmationSent: boolean;
   reminderSent: boolean;
   notes: string;
@@ -98,6 +100,30 @@ export function AppointmentsClient({ initialAppointments, today }: Props) {
   const [trashItems, setTrashItems] = useState<AppointmentRow[]>([]);
   const [deleting, setDeleting] = useState<string | null>(null);
 
+  // Realtime: live updates from Supabase postgres_changes
+  const handleRealtimeInsert = useCallback((row: AppointmentRow) => {
+    setAppointments((prev) => {
+      if (prev.some((a) => a.id === row.id)) return prev;
+      return [row, ...prev];
+    });
+  }, []);
+
+  const handleRealtimeUpdate = useCallback((row: AppointmentRow) => {
+    setAppointments((prev) =>
+      prev.map((a) => (a.id === row.id ? { ...a, ...row } : a))
+    );
+  }, []);
+
+  const handleRealtimeDelete = useCallback((id: string) => {
+    setAppointments((prev) => prev.filter((a) => a.id !== id));
+  }, []);
+
+  useRealtimeAppointments({
+    onInsert: handleRealtimeInsert,
+    onUpdate: handleRealtimeUpdate,
+    onDelete: handleRealtimeDelete,
+  });
+
   const todayAppointments = appointments.filter((a) => a.date === today);
   const futureAppointments = appointments.filter((a) => a.date > today);
 
@@ -138,6 +164,7 @@ export function AppointmentsClient({ initialAppointments, today }: Props) {
           status: appointment.status,
           provider: appointment.provider_name,
           insuranceVerified: appointment.insurance_verified,
+          eligibilityStatus: "unverified" as const,
           confirmationSent: appointment.confirmation_sent,
           reminderSent: appointment.reminder_24h_sent,
           notes: appointment.notes || "",
@@ -178,6 +205,7 @@ export function AppointmentsClient({ initialAppointments, today }: Props) {
         status: apt.status as string,
         provider: apt.provider_name as string,
         insuranceVerified: apt.insurance_verified as boolean,
+        eligibilityStatus: "unverified" as const,
         confirmationSent: false,
         reminderSent: false,
         notes: (apt.notes || "") as string,
@@ -393,10 +421,22 @@ export function AppointmentsClient({ initialAppointments, today }: Props) {
                       <p className="text-sm font-medium text-slate-900">
                         {apt.patientName}
                       </p>
-                      {!apt.insuranceVerified && (
+                      {apt.eligibilityStatus === "verified" && (
+                        <span className="flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700">
+                          <CheckCircle2 className="h-3 w-3" />
+                          Verified
+                        </span>
+                      )}
+                      {apt.eligibilityStatus === "expired" && (
                         <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs text-amber-600">
                           <AlertCircle className="h-3 w-3" />
-                          Insurance
+                          Ins. Expired
+                        </span>
+                      )}
+                      {apt.eligibilityStatus === "unverified" && (
+                        <span className="flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500">
+                          <AlertCircle className="h-3 w-3" />
+                          Unverified
                         </span>
                       )}
                     </div>
