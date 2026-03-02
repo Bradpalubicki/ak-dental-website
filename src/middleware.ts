@@ -11,7 +11,12 @@ function isCaptureRequest(req: NextRequest): boolean {
 }
 
 export default clerkMiddleware(async (auth, req) => {
-  if (isCaptureRequest(req)) return NextResponse.next();
+  if (isCaptureRequest(req)) {
+    // Forward a header so layout.tsx can also skip server-side auth()
+    const res = NextResponse.next();
+    res.headers.set("x-capture-bypass", "1");
+    return res;
+  }
   if (isProtectedRoute(req)) {
     await auth.protect();
   }

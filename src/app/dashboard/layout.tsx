@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { auth } from "@clerk/nextjs/server";
+import { headers } from "next/headers";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { AiCommandBar } from "@/components/dashboard/ai-command-bar";
@@ -13,15 +14,18 @@ export const metadata = {
 };
 
 const isReviewMode = process.env.PUBLIC_REVIEW_MODE?.trim() === "true";
+const CAPTURE_TOKEN = process.env.SCREENSHOT_CAPTURE_TOKEN;
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // In review mode (Clerk dev keys), skip auth entirely to avoid ClerkMiddlewareRequestError.
-  // Production Clerk keys (pk_live_) restore full auth enforcement.
-  if (!isReviewMode) {
+  // Check capture token bypass — reads x-capture-token header set by middleware
+  const hdrs = await headers();
+  const isCaptureRequest = CAPTURE_TOKEN && hdrs.get("x-capture-bypass") === "1";
+
+  if (!isReviewMode && !isCaptureRequest) {
     const { userId } = await auth();
     if (!userId) {
       const { redirect } = await import("next/navigation");
