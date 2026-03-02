@@ -15,6 +15,7 @@ import {
   Trash2,
   RotateCcw,
   X,
+  ChevronRight,
 } from "lucide-react";
 
 interface Treatment {
@@ -63,6 +64,7 @@ export function TreatmentsClient({ treatments: initialTreatments }: Props) {
   const [showTrash, setShowTrash] = useState(false);
   const [trashItems, setTrashItems] = useState<Treatment[]>([]);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [advancing, setAdvancing] = useState<string | null>(null);
 
   const totalValue = treatments.reduce((sum, p) => sum + p.totalCost, 0);
   const acceptedValue = treatments.filter((p) => p.status === "accepted" || p.status === "completed").reduce((sum, p) => sum + p.totalCost, 0);
@@ -146,6 +148,32 @@ export function TreatmentsClient({ treatments: initialTreatments }: Props) {
       setTrashItems(items);
     }
     setShowTrash(true);
+  }
+
+  const NEXT_STATUS: Record<string, string> = {
+    draft: "presented",
+    presented: "accepted",
+    accepted: "completed",
+  };
+
+  async function advanceStatus(id: string, currentStatus: string) {
+    const nextStatus = NEXT_STATUS[currentStatus];
+    if (!nextStatus) return;
+    setAdvancing(id);
+    try {
+      const res = await fetch(`/api/treatments/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: nextStatus }),
+      });
+      if (res.ok) {
+        setTreatments((prev) =>
+          prev.map((t) => (t.id === id ? { ...t, status: nextStatus } : t))
+        );
+      }
+    } finally {
+      setAdvancing(null);
+    }
   }
 
   async function handleRestore(id: string) {
@@ -311,6 +339,31 @@ export function TreatmentsClient({ treatments: initialTreatments }: Props) {
         </div>
       </div>
 
+      {/* Pipeline Progress */}
+      {treatments.length > 0 && (
+        <div className="rounded-xl border border-slate-200 bg-white p-4">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Pipeline</p>
+          <div className="flex items-stretch gap-1">
+            {[
+              { key: "draft", label: "Draft", color: "bg-slate-100 text-slate-600" },
+              { key: "presented", label: "Presented", color: "bg-blue-100 text-blue-700" },
+              { key: "accepted", label: "Accepted", color: "bg-emerald-100 text-emerald-700" },
+              { key: "partially_accepted", label: "Partial", color: "bg-amber-100 text-amber-700" },
+              { key: "declined", label: "Declined", color: "bg-red-100 text-red-700" },
+              { key: "completed", label: "Completed", color: "bg-green-100 text-green-700" },
+            ].map((stage) => {
+              const count = treatments.filter((t) => t.status === stage.key).length;
+              return (
+                <div key={stage.key} className="flex-1 rounded-lg bg-slate-50 p-2 text-center">
+                  <p className={`text-lg font-bold ${count > 0 ? stage.color.split(" ")[1] : "text-slate-300"}`}>{count}</p>
+                  <p className="text-[10px] text-slate-500 mt-0.5">{stage.label}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Treatment Plans List */}
       <div className="space-y-4">
         {treatments.length === 0 ? (
@@ -380,7 +433,7 @@ export function TreatmentsClient({ treatments: initialTreatments }: Props) {
                 )}
 
                 {/* Actions */}
-                <div className="mt-4 flex items-center justify-end gap-2">
+                <div className="mt-4 flex items-center justify-between gap-2">
                   <button
                     onClick={() => handleDelete(plan.id)}
                     disabled={deleting === plan.id}
@@ -388,13 +441,31 @@ export function TreatmentsClient({ treatments: initialTreatments }: Props) {
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
-                  <Link
-                    href={`/dashboard/treatments/${plan.id}/present`}
-                    className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 px-4 py-2 text-sm font-medium text-white hover:from-cyan-700 hover:to-blue-700 transition-all shadow-sm"
-                  >
-                    <Monitor className="h-4 w-4" />
-                    Present on Tablet
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    {NEXT_STATUS[plan.status] && (
+                      <button
+                        onClick={() => advanceStatus(plan.id, plan.status)}
+                        disabled={advancing === plan.id}
+                        className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                      >
+                        {advancing === plan.id ? (
+                          <span className="text-xs">Saving…</span>
+                        ) : (
+                          <>
+                            <ChevronRight className="h-4 w-4" />
+                            Mark {statusConfig[NEXT_STATUS[plan.status]]?.label ?? NEXT_STATUS[plan.status]}
+                          </>
+                        )}
+                      </button>
+                    )}
+                    <Link
+                      href={`/dashboard/treatments/${plan.id}/present`}
+                      className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 px-4 py-2 text-sm font-medium text-white hover:from-cyan-700 hover:to-blue-700 transition-all shadow-sm"
+                    >
+                      <Monitor className="h-4 w-4" />
+                      Present on Tablet
+                    </Link>
+                  </div>
                 </div>
               </div>
             );

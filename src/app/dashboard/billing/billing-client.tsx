@@ -891,7 +891,25 @@ export function BillingClient({ data, analytics }: { data: BillingData; analytic
       {/* ============================================================ */}
       {activeTab === "aging" && (
         <div className="space-y-6">
-          {/* KPI Row */}
+          {unpaid.length === 0 && (
+            <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amber-50">
+                <CalendarClock className="h-7 w-7 text-amber-500" />
+              </div>
+              <h3 className="text-base font-semibold text-slate-900">No outstanding claims</h3>
+              <p className="mt-1.5 text-sm text-slate-500 max-w-sm mx-auto">
+                Connect Sikka OneAPI to Dentrix to automatically sync claims and populate AR aging data.
+              </p>
+              <a
+                href="/dashboard/settings?tab=integrations"
+                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700 transition-colors"
+              >
+                Set Up Sikka
+              </a>
+            </div>
+          )}
+          {unpaid.length > 0 && (
+          <>{/* KPI Row */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
               title="Total Outstanding"
@@ -1078,6 +1096,7 @@ export function BillingClient({ data, analytics }: { data: BillingData; analytic
               </div>
             </div>
           </div>
+          </>)}
         </div>
       )}
 

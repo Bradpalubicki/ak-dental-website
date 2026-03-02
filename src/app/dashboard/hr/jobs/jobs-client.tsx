@@ -314,6 +314,8 @@ export function HrJobsClient({ initialJobs, gustoConnection }: Props) {
   const [showNewForm, setShowNewForm] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [exportMsg, setExportMsg] = useState<string | null>(null);
+  const [submittingJobId, setSubmittingJobId] = useState<string | null>(null);
+  const [submittedJobIds, setSubmittedJobIds] = useState<Set<string>>(new Set());
 
   const reload = async () => {
     const res = await fetch("/api/hr/jobs");
@@ -330,6 +332,20 @@ export function HrJobsClient({ initialJobs, gustoConnection }: Props) {
     });
     await reload();
     setUpdatingId(null);
+  };
+
+  const submitToGoogle = async (job: JobPosting) => {
+    setSubmittingJobId(job.id);
+    try {
+      await fetch("/api/hr/jobs/submit-google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobId: job.id, title: job.title, slug: job.slug }),
+      });
+      setSubmittedJobIds((prev) => new Set(prev).add(job.id));
+    } finally {
+      setSubmittingJobId(null);
+    }
   };
 
   const activeCount = jobs.filter((j) => j.status === "active").length;
@@ -450,6 +466,26 @@ export function HrJobsClient({ initialJobs, gustoConnection }: Props) {
                       <ExternalLink className="h-3 w-3" />
                       View
                     </Link>
+                  )}
+                  {job.status === "active" && (
+                    submittedJobIds.has(job.id) ? (
+                      <span className="flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-xs font-medium text-emerald-700">
+                        <CheckCircle2 className="h-3 w-3" /> Submitted
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => void submitToGoogle(job)}
+                        disabled={submittingJobId === job.id}
+                        className="flex items-center gap-1 rounded-lg border border-cyan-200 bg-cyan-50 px-2.5 py-1.5 text-xs font-medium text-cyan-700 hover:bg-cyan-100 transition-colors disabled:opacity-50"
+                      >
+                        {submittingJobId === job.id ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <RefreshCw className="h-3 w-3" />
+                        )}
+                        Submit to Google
+                      </button>
+                    )
                   )}
                   {isUpdating ? (
                     <Loader2 className="h-4 w-4 animate-spin text-slate-400" />

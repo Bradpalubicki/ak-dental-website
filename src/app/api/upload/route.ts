@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { put } from "@vercel/blob";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { tryAuth } from "@/lib/auth";
 
@@ -53,8 +54,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const supabase = createServiceSupabase();
-
   // Generate unique filename
   const ext = file.name.split(".").pop() || "bin";
   const timestamp = Date.now();
@@ -62,19 +61,36 @@ export async function POST(req: NextRequest) {
     .replace(/\.[^/.]+$/, "")
     .replace(/[^a-zA-Z0-9_-]/g, "_")
     .slice(0, 50);
-  const path = `${folder}/${timestamp}_${safeName}.${ext}`;
+  const blobPath = `${folder}/${timestamp}_${safeName}.${ext}`;
 
+  // Use Vercel Blob if token is configured, otherwise fall back to Supabase
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const blob = await put(blobPath, file, {
+      access: "public",
+      contentType: file.type,
+    });
+
+    return NextResponse.json({
+      path: blob.pathname,
+      url: blob.url,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+    });
+  }
+
+  // Fallback: Supabase Storage
+  const supabase = createServiceSupabase();
   const buffer = Buffer.from(await file.arrayBuffer());
 
   const { data, error } = await supabase.storage
     .from("documents")
-    .upload(path, buffer, {
+    .upload(blobPath, buffer, {
       contentType: file.type,
       upsert: false,
     });
 
   if (error) {
-    // If bucket doesn't exist, return helpful error
     if (error.message?.includes("not found") || error.message?.includes("Bucket")) {
       return NextResponse.json(
         { error: "Storage bucket 'documents' not configured. Create it in Supabase dashboard." },
@@ -84,7 +100,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  // Get public URL
   const { data: urlData } = supabase.storage
     .from("documents")
     .getPublicUrl(data.path);

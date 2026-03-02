@@ -100,6 +100,7 @@ export function InsuranceClient({ initialVerifications }: Props) {
   const [showTrash, setShowTrash] = useState(false);
   const [trashItems, setTrashItems] = useState<Verification[]>([]);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [verifying, setVerifying] = useState<string | null>(null);
   const [docRefreshKey, setDocRefreshKey] = useState(0);
 
   const filtered = verifications.filter(
@@ -199,6 +200,26 @@ export function InsuranceClient({ initialVerifications }: Props) {
       setTrashItems(items);
     }
     setShowTrash(true);
+  }
+
+  async function handleVerify(id: string) {
+    setVerifying(id);
+    try {
+      const res = await fetch(`/api/insurance/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "verified" }),
+      });
+      if (res.ok) {
+        setVerifications((prev) =>
+          prev.map((v) =>
+            v.id === id ? { ...v, status: "verified", verifiedAt: new Date().toISOString() } : v
+          )
+        );
+      }
+    } finally {
+      setVerifying(null);
+    }
   }
 
   async function handleRestore(id: string) {
@@ -458,7 +479,13 @@ export function InsuranceClient({ initialVerifications }: Props) {
 
                       <div className="flex items-center gap-2">
                         {v.status === "pending" && (
-                          <button className="rounded-lg bg-cyan-50 px-3 py-1.5 text-xs font-medium text-cyan-700 hover:bg-cyan-100">Verify Now</button>
+                          <button
+                            onClick={() => void handleVerify(v.id)}
+                            disabled={verifying === v.id}
+                            className="rounded-lg bg-cyan-50 px-3 py-1.5 text-xs font-medium text-cyan-700 hover:bg-cyan-100 disabled:opacity-50"
+                          >
+                            {verifying === v.id ? "Verifying..." : "Verify Now"}
+                          </button>
                         )}
                         {v.status === "issues" && (
                           <button className="rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-100">Review</button>
