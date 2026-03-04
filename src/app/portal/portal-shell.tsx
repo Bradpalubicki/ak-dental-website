@@ -15,6 +15,7 @@ import {
   Menu,
   X,
   ChevronRight,
+  ClipboardList,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -25,6 +26,7 @@ const NAV_ITEMS = [
   { href: "/portal/treatments", label: "Treatment Plans", icon: FileText },
   { href: "/portal/billing", label: "Billing & Payments", icon: CreditCard },
   { href: "/portal/messages", label: "Messages", icon: MessageSquare },
+  { href: "/portal/intake", label: "Intake Forms", icon: ClipboardList },
   { href: "/portal/profile", label: "My Profile", icon: User },
 ];
 
