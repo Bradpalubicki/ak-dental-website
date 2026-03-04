@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { verifyCronSecret } from "@/lib/cron-auth";
-import { downloadAttachment } from "@/lib/services/nylas";
+import { downloadAttachment as _downloadAttachment } from "@/lib/services/nylas";
 import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
 
@@ -89,7 +89,7 @@ Respond with valid JSON matching: { "classification": "...", "confidence": 0.0-1
 
   // Step 2: Invoice processing
   if (classification === "invoice") {
-    let extractionInput = message.body_html || message.body_text || "";
+    const extractionInput = message.body_html || message.body_text || "";
 
     // Try to download PDF attachment if present
     if (

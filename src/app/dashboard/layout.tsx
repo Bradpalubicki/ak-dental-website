@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/dashboard/sidebar";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { AiCommandBar } from "@/components/dashboard/ai-command-bar";
 import { OnboardingProvider } from "@/components/onboarding/onboarding-provider";
+import { TestModeBanner } from "@/components/dashboard/test-mode-banner";
 import { createServiceSupabase } from "@/lib/supabase/server";
 
 export const metadata = {
@@ -85,6 +86,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-slate-50 to-cyan-50/30">
+      <TestModeBanner />
       <Sidebar badges={badges} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <DashboardHeader />

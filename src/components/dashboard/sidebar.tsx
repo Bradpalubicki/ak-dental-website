@@ -37,6 +37,7 @@ import {
   FileSignature,
   MailOpen,
   MessageSquare,
+  Rocket,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -78,6 +79,7 @@ const sections: NavSection[] = [
       { name: "File Drop Box", href: "/dashboard/dropbox", icon: Upload, requiredPermission: "documents.view" },
       { name: "Onboarding", href: "/dashboard/onboarding", icon: ClipboardList, requiredPermission: "settings.view" },
       { name: "Training", href: "/dashboard/training", icon: GraduationCap, requiredPermission: "settings.view" },
+      { name: "Launch Checklist", href: "/dashboard/launch-checklist", icon: Rocket, requiredPermission: "settings.view" },
     ],
   },
   {

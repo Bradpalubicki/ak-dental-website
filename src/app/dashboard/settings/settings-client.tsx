@@ -103,7 +103,7 @@ interface SettingsData {
 /*  Constants & Configs                                                */
 /* ================================================================== */
 
-const TABS = ["general", "ai-automation", "notifications", "integrations", "accounting"] as const;
+const TABS = ["general", "ai-automation", "notifications", "integrations", "accounting", "go-live"] as const;
 type TabId = (typeof TABS)[number];
 
 const TAB_META: Record<TabId, { label: string; icon: typeof Settings }> = {
@@ -112,6 +112,7 @@ const TAB_META: Record<TabId, { label: string; icon: typeof Settings }> = {
   notifications: { label: "Notifications", icon: Bell },
   integrations: { label: "Integrations", icon: Key },
   accounting: { label: "Accounting", icon: CreditCard },
+  "go-live": { label: "Go-Live Settings", icon: Zap },
 };
 
 interface Integration {
@@ -345,6 +346,113 @@ export function SettingsClient({
   const [testEmailTo, setTestEmailTo] = useState(initialSettings.practice_info?.email || "");
   const [sendingTestEmail, setSendingTestEmail] = useState(false);
   const [testEmailResult, setTestEmailResult] = useState<{ success: boolean; message: string } | null>(null);
+
+  // Go-Live Settings state
+  const [testModeEnabled, setTestModeEnabled] = useState(false);
+  const [testPhone, setTestPhone] = useState("");
+  const [testEmail, setTestEmailAddr] = useState("");
+  const [savingTestMode, setSavingTestMode] = useState(false);
+  const [testModeLoaded, setTestModeLoaded] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/settings/test-mode")
+      .then((r) => r.json())
+      .then((d) => {
+        setTestModeEnabled(d.enabled);
+        setTestPhone(d.testPhone || "");
+        setTestEmailAddr(d.testEmail || "");
+        setTestModeLoaded(true);
+      })
+      .catch(() => setTestModeLoaded(true));
+  }, []);
+
+  async function handleSaveTestMode() {
+    setSavingTestMode(true);
+    try {
+      await fetch("/api/settings/test-mode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enabled: testModeEnabled, testPhone, testEmail }),
+      });
+    } finally {
+      setSavingTestMode(false);
+    }
+  }
+
+  function renderGoLive() {
+    return (
+      <div className="space-y-6 max-w-2xl">
+        <div>
+          <h2 className="text-base font-semibold text-slate-900 mb-1">Go-Live Settings</h2>
+          <p className="text-sm text-slate-500">Control test mode and configure safe testing contacts before going live with patients.</p>
+        </div>
+
+        {/* Test Mode Toggle */}
+        <div className="rounded-xl border border-slate-200 bg-white p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-slate-900">Test Mode</p>
+              <p className="text-xs text-slate-500 mt-0.5">When on, all automated SMS and email sends go to your test contacts — never to patients.</p>
+            </div>
+            <button
+              onClick={() => setTestModeEnabled(!testModeEnabled)}
+              className={cn(
+                "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
+                testModeEnabled ? "bg-amber-500" : "bg-slate-200"
+              )}
+            >
+              <span className={cn("inline-block h-4 w-4 rounded-full bg-white shadow transition-transform", testModeEnabled ? "translate-x-6" : "translate-x-1")} />
+            </button>
+          </div>
+
+          {testModeEnabled && (
+            <div className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800 flex items-start gap-2">
+              <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+              Test mode is active. Patients will NOT receive any automated messages.
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs font-medium text-slate-700 mb-1 block">Test Phone Number</label>
+              <input
+                type="tel"
+                value={testPhone}
+                onChange={(e) => setTestPhone(e.target.value)}
+                placeholder="+1 (555) 000-0000"
+                className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-slate-700 mb-1 block">Test Email Address</label>
+              <input
+                type="email"
+                value={testEmail}
+                onChange={(e) => setTestEmailAddr(e.target.value)}
+                placeholder="brad@nustack.digital"
+                className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+            <a href="/dashboard/launch-checklist" className="text-xs text-cyan-600 hover:underline flex items-center gap-1">
+              <Zap className="h-3.5 w-3.5" />
+              View Launch Checklist
+            </a>
+            <button
+              onClick={handleSaveTestMode}
+              disabled={savingTestMode || !testModeLoaded}
+              className="flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-xs font-medium text-white hover:bg-cyan-700 disabled:opacity-50 transition-colors"
+            >
+              {savingTestMode ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Accounting tab state
   const [accountingSystem, setAccountingSystem] = useState<string>(
@@ -1703,6 +1811,7 @@ export function SettingsClient({
       {activeTab === "notifications" && renderNotifications()}
       {activeTab === "integrations" && renderIntegrations()}
       {activeTab === "accounting" && renderAccounting()}
+      {activeTab === "go-live" && renderGoLive()}
 
       {/* Integration Configuration Modal */}
       {configuringIntegration && (() => {

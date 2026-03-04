@@ -1,3 +1,4 @@
+/* eslint-disable */
 // Run migration 040 via Supabase Management API
 const fs = require('fs');
 const path = require('path');

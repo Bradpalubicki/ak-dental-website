@@ -77,6 +77,17 @@ const TABS: { id: TabId; label: string; icon: typeof GraduationCap }[] = [
   { id: "reporting", label: "Board Reporting", icon: FileCheck },
 ];
 
+// Platform training shortcuts (rendered above tabs)
+const PLATFORM_TRAINING = [
+  { label: "HIPAA Quiz", href: "/dashboard/training/hipaa", color: "bg-blue-50 border-blue-200 text-blue-700", required: true },
+  { label: "OSHA Quiz", href: "/dashboard/training/osha", color: "bg-orange-50 border-orange-200 text-orange-700", required: true, clinical: true },
+  { label: "Scheduling & Insurance", href: "/dashboard/training/scheduling-insurance", color: "bg-slate-50 border-slate-200 text-slate-700", required: false },
+  { label: "Clinical Documentation", href: "/dashboard/training/clinical-documentation", color: "bg-slate-50 border-slate-200 text-slate-700", required: false, clinical: true },
+  { label: "Treatment Presentation", href: "/dashboard/training/treatment-presentation", color: "bg-slate-50 border-slate-200 text-slate-700", required: false, clinical: true },
+  { label: "Collections & Financials", href: "/dashboard/training/collections-financials", color: "bg-slate-50 border-slate-200 text-slate-700", required: false },
+  { label: "Staff Training Tracker", href: "/dashboard/training/staff", color: "bg-emerald-50 border-emerald-200 text-emerald-700", required: false },
+];
+
 const CE_COURSES: CECourse[] = [
   {
     id: "c1",
@@ -447,6 +458,23 @@ export default function TrainingPage() {
           <p className="text-sm text-slate-500">
             Continuing education, staff tracking, compliance training &amp; board reporting
           </p>
+        </div>
+      </div>
+
+      {/* Platform Training Quick Links */}
+      <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-3">
+        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Platform & Compliance Training</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+          {PLATFORM_TRAINING.map((t) => (
+            <a
+              key={t.href}
+              href={t.href}
+              className={`flex items-center justify-between border rounded-lg px-3 py-2 text-xs font-medium hover:opacity-80 transition-opacity ${t.color}`}
+            >
+              <span>{t.label}</span>
+              {t.required && <span className="ml-1 text-[10px] bg-white/70 rounded px-1 py-0.5">Required</span>}
+            </a>
+          ))}
         </div>
       </div>
 
