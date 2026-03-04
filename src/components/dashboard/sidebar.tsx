@@ -36,6 +36,7 @@ import {
   FolderOpen,
   FileSignature,
   MailOpen,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -100,6 +101,7 @@ const sections: NavSection[] = [
       { name: "Leads", href: "/dashboard/leads", icon: UserPlus, badgeKey: "leads", badgeColor: "bg-emerald-400 text-emerald-950", requiredPermission: "leads.view" },
       { name: "Insurance", href: "/dashboard/insurance", icon: Shield, badgeKey: "insurance", badgeColor: "bg-violet-400 text-violet-950", requiredPermission: "insurance.view" },
       { name: "Outreach", href: "/dashboard/outreach", icon: Send, requiredPermission: "outreach.view" },
+      { name: "Message Templates", href: "/dashboard/message-templates", icon: MessageSquare, requiredPermission: "outreach.view" },
       { name: "Calls", href: "/dashboard/calls", icon: Phone, requiredPermission: "calls.view" },
     ],
   },
