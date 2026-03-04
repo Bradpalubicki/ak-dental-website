@@ -137,6 +137,61 @@ export async function POST(req: NextRequest) {
               .eq("vapi_call_id", call.id);
           }
         }
+
+        // Create a lead if caller intent was booking and they're not an existing patient
+        const intent = parseIntent(call.analysis?.structuredData?.intent);
+        if (intent === "appointment") {
+          const callerPhone = call.customer?.number || null;
+          const callerName = call.analysis?.structuredData?.patientName || call.customer?.name || null;
+
+          // Only create lead if we couldn't match to existing patient
+          const existingPatientPhone = callerPhone?.replace(/\D/g, "").slice(-10);
+          const { data: existingPatient } = existingPatientPhone
+            ? await supabase
+                .from("oe_patients")
+                .select("id")
+                .or(`phone.ilike.%${existingPatientPhone}%,mobile.ilike.%${existingPatientPhone}%`)
+                .limit(1)
+                .single()
+            : { data: null };
+
+          if (!existingPatient) {
+            const { data: newLead } = await supabase
+              .from("oe_leads")
+              .insert({
+                name: callerName,
+                phone: callerPhone,
+                source: "vapi_call",
+                status: "new",
+                notes: call.analysis?.summary || "Inbound call — requested appointment",
+              })
+              .select("id")
+              .single();
+
+            if (newLead) {
+              await supabase
+                .from("oe_calls")
+                .update({ lead_id: newLead.id })
+                .eq("vapi_call_id", call.id);
+            }
+          }
+        }
+
+        // Create a front-desk task if intent was cancellation
+        if (intent === "cancellation") {
+          await supabase.from("oe_ai_actions").insert({
+            action_type: "cancellation_request",
+            module: "scheduling",
+            description: `Caller requested cancellation via AI receptionist. Phone: ${call.customer?.number || "unknown"}`,
+            input_data: {
+              caller_phone: call.customer?.number,
+              summary: call.analysis?.summary,
+              transcript: call.transcript?.slice(0, 500),
+            },
+            status: "pending_approval",
+          });
+        }
+
         break;
       }
 

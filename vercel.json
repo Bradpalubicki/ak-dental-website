@@ -43,6 +43,14 @@
     {
       "path": "/api/cron/email-alerts",
       "schedule": "0 9 * * 1-5"
+    },
+    {
+      "path": "/api/cron/reminders",
+      "schedule": "0 20 * * *"
+    },
+    {
+      "path": "/api/cron/no-show",
+      "schedule": "*/30 13-20 * * 1-6"
     }
   ]
 }
