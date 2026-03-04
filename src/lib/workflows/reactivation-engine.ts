@@ -1,5 +1,6 @@
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { generateLeadResponse } from "@/lib/services/ai";
+import { getTemplateBody } from "@/lib/services/message-template";
 
 /**
  * Patient Reactivation Engine
@@ -259,36 +260,39 @@ export async function processReactivationSequences(): Promise<{
       let smsContent: string;
       let emailContent: string | null = null;
 
+      // Priority: oe_sms_templates → oe_message_templates → AI fallback
       if (template) {
         smsContent = template.body.replace(/\{\{first_name\}\}/g, patient.first_name);
       } else {
-        const lastVisitDate = patient.last_visit
-          ? new Date(patient.last_visit).toLocaleDateString("en-US", { month: "long", year: "numeric" })
-          : "a while";
+        // Map reactivation type to message template type
+        const templateTypeMap: Record<string, string> = {
+          recall: "recall_6mo",
+          lapsed: "recall_overdue",
+          missed_appointment: "no_show_recovery_24h",
+          incomplete_treatment: "treatment_followup",
+        };
+        const msgTemplateType = templateTypeMap[seq.reactivation_type] || "recall_6mo";
+        const msgTemplate = await getTemplateBody(msgTemplateType, { patient_name: patient.first_name });
 
-        const aiResponse = await generateLeadResponse({
-          patientName: `${patient.first_name} ${patient.last_name}`,
-          inquiry: `Reactivation - ${seq.reactivation_type}`,
-          message: `Patient last visited ${lastVisitDate}. Generate a warm ${seq.reactivation_type} message.`,
-          source: "reactivation_sequence",
-          urgency: "medium",
-        });
-        smsContent = aiResponse?.content || `Hi ${patient.first_name}, it's time to schedule your next visit! Call AK Ultimate Dental at (702) 935-4395.`;
+        if (msgTemplate) {
+          smsContent = msgTemplate.body;
+        } else {
+          const lastVisitDate = patient.last_visit
+            ? new Date(patient.last_visit).toLocaleDateString("en-US", { month: "long", year: "numeric" })
+            : "a while";
+          const aiResponse = await generateLeadResponse({
+            patientName: `${patient.first_name} ${patient.last_name}`,
+            inquiry: `Reactivation - ${seq.reactivation_type}`,
+            message: `Patient last visited ${lastVisitDate}. Generate a warm ${seq.reactivation_type} message.`,
+            source: "reactivation_sequence",
+            urgency: "medium",
+          });
+          smsContent = aiResponse?.content || `Hi ${patient.first_name}, it's time to schedule your next visit! Call AK Ultimate Dental at (702) 935-4395.`;
+        }
       }
 
       if (stepDef.channel === "email" || stepDef.channel === "both") {
-        const lastVisitDate = patient.last_visit
-          ? new Date(patient.last_visit).toLocaleDateString("en-US", { month: "long", year: "numeric" })
-          : "a while";
-
-        const aiEmail = await generateLeadResponse({
-          patientName: `${patient.first_name} ${patient.last_name}`,
-          inquiry: `Reactivation - ${seq.reactivation_type}`,
-          message: `Reactivation step ${seq.current_step}: Patient last visited ${lastVisitDate}.`,
-          source: "reactivation_email",
-          urgency: "medium",
-        });
-        emailContent = aiEmail?.content || smsContent;
+        emailContent = smsContent; // Use same copy for email body — already approved from templates
       }
 
       // Queue for approval

@@ -17,6 +17,7 @@ export default async function DashboardPage() {
     recentAiActionsRes,
     pendingInsuranceRes,
     emergencyLeadsRes,
+    pendingIntakeRes,
   ] = await Promise.all([
     supabase.from("oe_patients").select("id", { count: "exact", head: true }),
     supabase
@@ -54,6 +55,13 @@ export default async function DashboardPage() {
       .eq("status", "new")
       .order("created_at", { ascending: false })
       .limit(5),
+    // New patients without intake submissions (joined upcoming appts in last 30 days)
+    supabase
+      .from("oe_appointments")
+      .select("patient_id", { count: "exact", head: true })
+      .gte("appointment_date", today)
+      .lte("appointment_date", new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0])
+      .in("status", ["scheduled", "confirmed"]),
   ]);
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -130,6 +138,17 @@ export default async function DashboardPage() {
       label: `${pendingIns} Pending Insurance Verification${pendingIns !== 1 ? "s" : ""}`,
       detail: "Verify before patient appointments",
       href: "/dashboard/insurance",
+      level: "info",
+    });
+  }
+
+  const upcomingApptCount = pendingIntakeRes.count || 0;
+  if (upcomingApptCount > 0) {
+    urgentItems.push({
+      type: "intake",
+      label: `${upcomingApptCount} Appointment${upcomingApptCount !== 1 ? "s" : ""} in Next 14 Days`,
+      detail: "Send intake form links to new patients before their visit",
+      href: "/dashboard/patients",
       level: "info",
     });
   }

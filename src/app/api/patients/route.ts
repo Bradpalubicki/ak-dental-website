@@ -3,6 +3,10 @@ import { z } from "zod";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { tryAuth } from "@/lib/auth";
 import { logPhiAccess } from "@/lib/audit";
+import { sendEmail } from "@/lib/services/resend";
+import { sendSms } from "@/lib/services/twilio";
+import { getTestMode, logTestSend } from "@/lib/services/test-mode";
+import { getTemplateBody } from "@/lib/services/message-template";
 
 const CreatePatientSchema = z.object({
   first_name: z.string().min(1).max(100),
@@ -72,6 +76,51 @@ export async function POST(req: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   await logPhiAccess("patients.create", "patient", data?.id);
+
+  // Fire welcome email + intake SMS (non-blocking)
+  if (data) {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://akultimatedental.com";
+    const intakeLink = `${baseUrl}/portal/intake`;
+    const mergeFields = { patient_name: parsed.data.first_name, intake_link: intakeLink };
+
+    void (async () => {
+      try {
+        const testMode = await getTestMode();
+
+        // Welcome email
+        if (parsed.data.email) {
+          const emailTemplate = await getTemplateBody("new_patient_welcome", mergeFields);
+          const subject = emailTemplate?.subject || "Welcome to AK Ultimate Dental!";
+          const body = emailTemplate?.body || `Hi ${parsed.data.first_name}, welcome to AK Ultimate Dental! We're excited to have you as a patient. Complete your intake forms here: ${intakeLink}`;
+          const emailTo = testMode.enabled ? testMode.testEmail : parsed.data.email;
+          if (emailTo) {
+            const html = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px">
+              <h2 style="color:#0891b2">Welcome to AK Ultimate Dental!</h2>
+              ${testMode.enabled ? '<p style="background:#fef08a;padding:8px;border-radius:4px"><strong>[TEST MODE]</strong></p>' : ""}
+              <p>${body.replace(/\n/g, "<br>")}</p>
+              <p style="margin-top:20px"><a href="${intakeLink}" style="background:#0891b2;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold">Complete Intake Forms</a></p>
+              <p style="color:#64748b;font-size:12px;margin-top:24px">AK Ultimate Dental — 7480 West Sahara Ave, Las Vegas, NV 89117</p>
+            </div>`;
+            await sendEmail({ to: emailTo, subject: testMode.enabled ? `[TEST] ${subject}` : subject, html });
+            if (testMode.enabled) await logTestSend({ type: "email", channel: "new_patient_welcome", recipient: emailTo, templateType: "new_patient_welcome", messagePreview: subject });
+          }
+        }
+
+        // Intake forms SMS
+        if (parsed.data.phone) {
+          const smsTemplate = await getTemplateBody("intake_forms", mergeFields);
+          const smsBody = smsTemplate?.body || `Hi ${parsed.data.first_name}! Please complete your new patient forms before your visit: ${intakeLink} — AK Ultimate Dental`;
+          const smsTo = testMode.enabled ? testMode.testPhone : parsed.data.phone;
+          if (smsTo) {
+            await sendSms({ to: smsTo, body: testMode.enabled ? `[TEST] ${smsBody}` : smsBody });
+            if (testMode.enabled) await logTestSend({ type: "sms", channel: "intake_forms", recipient: smsTo, templateType: "intake_forms", messagePreview: smsBody.slice(0, 100) });
+          }
+        }
+      } catch {
+        // Non-blocking — don't fail patient creation if messaging fails
+      }
+    })();
+  }
 
   return NextResponse.json(data, { status: 201 });
 }
