@@ -64,7 +64,7 @@ const equipmentItems = [
     image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&h=400&fit=crop&q=80",
     imageAlt: "CEREC CAD/CAM digital design software for dental restorations Las Vegas",
     description:
-      "Sophisticated computer-aided design software turns your 3D scan into a custom restoration. Dr. Khachaturian designs your crown or veneer on screen — adjusting shape, contours, and bite contact to perfection before milling begins.",
+      "Sophisticated computer-aided design software turns your 3D scan into a custom restoration. Dr. Chireau designs your crown or veneer on screen — adjusting shape, contours, and bite contact to perfection before milling begins.",
     highlights: [
       "Custom-designed to match your natural teeth",
       "See your restoration designed in real-time",
@@ -110,7 +110,7 @@ const processSteps = [
     title: "Digital Scan",
     duration: "5 minutes",
     description:
-      "Dr. Khachaturian scans your tooth with the Primescan camera. A detailed 3D model appears on screen instantly. No messy impressions — just a quick, comfortable scan.",
+      "Dr. Chireau scans your tooth with the Primescan camera. A detailed 3D model appears on screen instantly. No messy impressions — just a quick, comfortable scan.",
     icon: Scan,
   },
   {

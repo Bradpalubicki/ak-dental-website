@@ -108,7 +108,7 @@ export default function HomePage() {
                 <div className="relative w-80 h-96 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10">
                   <Image
                     src={images.team.doctor}
-                    alt="Dr. Alex Khachaturian - AK Ultimate Dental"
+                    alt="Dr. Alex Chireau, DDS - AK Ultimate Dental Las Vegas"
                     fill
                     sizes="320px"
                     className="object-cover object-top"
