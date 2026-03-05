@@ -1,12 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Phone, Star, Shield, Clock, Award, CheckCircle, MapPin, ArrowRight, Zap, Heart, Smile, Brain, BarChart3, FileText } from "lucide-react";
+import { Phone, Star, Shield, Clock, Award, CheckCircle, MapPin, ArrowRight, Zap, Heart, Smile, Bell, Calendar, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { siteConfig, services, testimonials } from "@/lib/config";
 import { images } from "@/lib/images";
 import { GoogleReviewsBadge } from "@/components/marketing/google-reviews-badge";
-import { DashboardPreview } from "@/components/marketing/dashboard-preview";
 import { AnimatedCounter } from "@/components/marketing/animated-counter";
 
 import type { Metadata } from "next";
@@ -121,7 +120,7 @@ export default function HomePage() {
                   <p className="text-sm text-gray-600 italic mb-2">
                     &ldquo;Your smile is my passion. Let&apos;s create something beautiful together.&rdquo;
                   </p>
-                  <p className="text-xs font-semibold text-gray-900">— Dr. Alex Khachaturian, DDS</p>
+                  <p className="text-xs font-semibold text-gray-900">— Dr. Alex Chireau, DDS</p>
                 </div>
                 {/* Decorative accent */}
                 <div className="absolute -top-4 -right-4 w-24 h-24 bg-cyan-500/20 rounded-full blur-2xl" />
@@ -360,31 +359,31 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-white">
               <span className="inline-block text-cyan-400 font-semibold text-sm uppercase tracking-wider mb-4">
-                Meet Your Dental Team
+                Meet Your Dentist
               </span>
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                Our Dental Team
+                Dr. Alex Chireau, DDS
               </h2>
               <p className="text-xl text-gray-300 mb-6">
-                Doctor of Dental Surgery
+                Doctor of Dental Surgery — General, Cosmetic & Implant Dentistry
               </p>
               <p className="text-lg text-gray-300 mb-8 leading-relaxed">
-                With over a decade of advanced dental training spanning European and
-                American methodologies, our team brings a unique blend of precision,
-                artistry, and compassion to every patient interaction. Our commitment
-                to continued education ensures you receive the most current,
-                effective treatments available.
+                Dr. Chireau brings over a decade of advanced dental training spanning
+                European and American methodologies — including graduate training at
+                the University of Nevada Las Vegas School of Dental Medicine. His
+                approach combines precision, artistry, and genuine compassion to
+                deliver results you&apos;ll be proud to show off.
               </p>
               <div className="flex flex-wrap gap-4 mb-8">
-                {["DDS Certified", "10+ Years Experience", "Advanced Training", "Multilingual"].map((badge) => (
+                {["DDS — UNLV SDM", "10+ Years Experience", "Cosmetic & Implants", "Multilingual"].map((badge) => (
                   <span key={badge} className="bg-white/10 border border-white/20 text-white px-4 py-2 rounded-full text-sm">
                     {badge}
                   </span>
                 ))}
               </div>
               <Button asChild size="lg" className="h-14 px-8 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 border-0">
-                <Link href="/about">
-                  Learn More About Us
+                <Link href="/team/dr-alex-chireau">
+                  Meet Dr. Chireau
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -394,7 +393,7 @@ export default function HomePage() {
               <div className="relative">
                 <Image
                   src={images.team.doctor}
-                  alt="AK Ultimate Dental team"
+                  alt="Dr. Alex Chireau, DDS — AK Ultimate Dental Las Vegas"
                   width={500}
                   height={600}
                   className="rounded-2xl shadow-2xl"
@@ -404,7 +403,7 @@ export default function HomePage() {
                   <p className="text-gray-600 italic mb-3">
                     &ldquo;Every patient deserves a smile they&apos;re proud to share with the world.&rdquo;
                   </p>
-                  <p className="text-sm font-semibold text-gray-900">— AK Ultimate Dental</p>
+                  <p className="text-sm font-semibold text-gray-900">— Dr. Alex Chireau, DDS</p>
                 </div>
               </div>
             </div>
@@ -482,57 +481,71 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* One Engine AI Platform Section */}
+      {/* Patient Experience Section */}
       <section className="py-20 md:py-32 bg-white overflow-hidden">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <span className="inline-block text-cyan-600 font-semibold text-sm uppercase tracking-wider mb-4">
-                Powered by One Engine AI
-              </span>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Your Practice, Supercharged by AI
-              </h2>
-              <p className="text-xl text-gray-600 mb-10">
-                One Engine is our AI operations platform that works behind the scenes
-                to automate scheduling, follow-ups, insurance verification, and
-                patient communication — so we can focus on your care.
-              </p>
+          <div className="text-center mb-16">
+            <span className="inline-block text-cyan-600 font-semibold text-sm uppercase tracking-wider mb-4">
+              Effortless From Start to Finish
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              We Handle the Details — You Focus on Your Smile
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              From the moment you book to the day of your appointment, we&apos;ve streamlined
+              every step so visiting the dentist is actually stress-free.
+            </p>
+          </div>
 
-              <div className="space-y-6">
-                {[
-                  {
-                    icon: Brain,
-                    title: "AI-Powered Insights",
-                    description: "Proactive health reminders and personalized treatment recommendations",
-                  },
-                  {
-                    icon: BarChart3,
-                    title: "Smart Scheduling",
-                    description: "Automated appointment reminders and waitlist management",
-                  },
-                  {
-                    icon: FileText,
-                    title: "Instant Insurance Verification",
-                    description: "Your coverage verified before you even walk in the door",
-                  },
-                ].map((item) => (
-                  <div key={item.title} className="flex gap-5">
-                    <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center">
-                      <item.icon className="h-7 w-7 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-gray-900 mb-1">{item.title}</h3>
-                      <p className="text-gray-600">{item.description}</p>
-                    </div>
-                  </div>
-                ))}
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {[
+              {
+                icon: Bell,
+                title: "Automatic Reminders",
+                description: "We send appointment reminders via text and email so you never miss a visit — and rescheduling takes one tap.",
+                color: "from-cyan-500 to-blue-600",
+              },
+              {
+                icon: Shield,
+                title: "Insurance Handled for You",
+                description: "We verify your benefits before your visit and file all claims directly — so there are no surprise bills.",
+                color: "from-blue-500 to-indigo-600",
+              },
+              {
+                icon: Calendar,
+                title: "Same-Day Appointments",
+                description: "Dental emergencies and last-minute openings happen. Call us and we&apos;ll find a slot that works for your schedule.",
+                color: "from-indigo-500 to-purple-600",
+              },
+              {
+                icon: MessageSquare,
+                title: "Easy Communication",
+                description: "Questions between visits? Reach us by phone or text. Our team responds quickly — no endless hold music.",
+                color: "from-purple-500 to-pink-600",
+              },
+              {
+                icon: Heart,
+                title: "Personalized Care Plans",
+                description: "We track your dental history and proactively recommend what&apos;s next — preventive care that keeps you out of the chair.",
+                color: "from-pink-500 to-rose-600",
+              },
+              {
+                icon: CheckCircle,
+                title: "No Surprises, Ever",
+                description: "We review your treatment plan and costs with you upfront. Financing available for any budget.",
+                color: "from-rose-500 to-orange-600",
+              },
+            ].map((item) => (
+              <div key={item.title} className="flex gap-5">
+                <div className={`flex-shrink-0 w-14 h-14 bg-gradient-to-br ${item.color} rounded-xl flex items-center justify-center`}>
+                  <item.icon className="h-7 w-7 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{item.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{item.description}</p>
+                </div>
               </div>
-            </div>
-
-            <div>
-              <DashboardPreview />
-            </div>
+            ))}
           </div>
         </div>
       </section>
