@@ -472,18 +472,57 @@ export function ProposalClient({ proposal, items, token, expired }: Props) {
                   <span className="flex items-center gap-1">✓ 60-second application</span>
                 </div>
                 <a
-                  href="https://www.withcherry.com/patient"
+                  href="https://withcherry.com/apply"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-emerald-700 hover:bg-emerald-50 transition-colors w-full mt-3"
                 >
-                  Apply with Cherry →
+                  Apply with Cherry — 60 seconds →
+                </a>
+                <p className="text-[10px] text-emerald-200 text-center">
+                  Tell them you&apos;re applying for AK Ultimate Dental in Las Vegas, NV
+                </p>
+              </div>
+            )}
+
+            {proposal.financing_provider === "sunbit" && (
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-2 text-xs text-emerald-100">
+                  <span className="flex items-center gap-1">✓ 85%+ approval rate</span>
+                  <span className="flex items-center gap-1">✓ Soft credit check only</span>
+                  <span className="flex items-center gap-1">✓ 3–72 month terms</span>
+                </div>
+                <a
+                  href="https://sunbit.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-emerald-700 hover:bg-emerald-50 transition-colors w-full mt-3"
+                >
+                  Apply with Sunbit →
+                </a>
+              </div>
+            )}
+
+            {proposal.financing_provider === "carecredit" && (
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-2 text-xs text-emerald-100">
+                  <span className="flex items-center gap-1">✓ 270,000+ provider network</span>
+                  <span className="flex items-center gap-1">✓ 6–24 month options</span>
+                  <span className="flex items-center gap-1">✓ Accepted here</span>
+                </div>
+                <a
+                  href="https://www.carecredit.com/apply/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-emerald-700 hover:bg-emerald-50 transition-colors w-full mt-3"
+                >
+                  Apply for CareCredit →
                 </a>
               </div>
             )}
 
             <p className="text-[10px] text-emerald-200 mt-3">
-              Also accepted: CareCredit · Sunbit · All major cards
+              Also accepted: CareCredit · Sunbit · Cherry · All major cards · HSA/FSA
             </p>
           </div>
         )}
