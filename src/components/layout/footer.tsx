@@ -151,6 +151,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/why-ak-dental" className="hover:text-white transition-colors">
+                  Why AK Dental
+                </Link>
+              </li>
+              <li>
                 <Link href="/emergency-dentist-las-vegas" className="hover:text-white transition-colors">
                   Emergency Dental
                 </Link>
@@ -158,6 +163,16 @@ export function Footer() {
               <li>
                 <Link href="/sedation-dentistry-las-vegas" className="hover:text-white transition-colors">
                   Sedation Dentistry
+                </Link>
+              </li>
+              <li>
+                <Link href="/dental-implants-las-vegas" className="hover:text-white transition-colors">
+                  Implants Las Vegas
+                </Link>
+              </li>
+              <li>
+                <Link href="/cosmetic-dentistry-las-vegas" className="hover:text-white transition-colors">
+                  Cosmetic Dentistry
                 </Link>
               </li>
               <li>

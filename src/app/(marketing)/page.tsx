@@ -76,7 +76,7 @@ export default function HomePage() {
                 compassionate care, and stunning results—all in one place.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <div className="flex flex-col sm:flex-row gap-4 mb-4">
                 <Button asChild size="lg" className="text-lg h-14 px-8 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 border-0">
                   <Link href="/appointment">
                     Book Free Consultation
@@ -89,6 +89,14 @@ export default function HomePage() {
                     {siteConfig.phone}
                   </a>
                 </Button>
+              </div>
+              <div className="flex flex-wrap gap-4 mb-6">
+                {["Free consultation", "No commitment", "Same-day appointments available"].map((item) => (
+                  <span key={item} className="text-sm text-gray-300 flex items-center gap-1.5">
+                    <CheckCircle className="h-4 w-4 text-green-400 flex-shrink-0" />
+                    {item}
+                  </span>
+                ))}
               </div>
 
               {/* Quick Stats */}
@@ -673,7 +681,7 @@ export default function HomePage() {
             Join thousands of happy patients who&apos;ve discovered their best smile at
             AK Ultimate Dental. Your journey starts with a free consultation.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
             <Button asChild size="lg" className="h-16 px-10 text-lg bg-white text-cyan-600 hover:bg-gray-100">
               <Link href="/appointment">
                 Book Free Consultation
@@ -686,6 +694,14 @@ export default function HomePage() {
                 Call {siteConfig.phone}
               </a>
             </Button>
+          </div>
+          <div className="flex flex-wrap justify-center gap-6">
+            {["Free consultation", "No commitment", "128+ five-star reviews"].map((item) => (
+              <span key={item} className="text-sm text-white/80 flex items-center gap-1.5">
+                <CheckCircle className="h-4 w-4 text-green-300 flex-shrink-0" />
+                {item}
+              </span>
+            ))}
           </div>
         </div>
       </section>

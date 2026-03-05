@@ -82,8 +82,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/dentist-las-vegas`,
       lastModified: new Date(),
       changeFrequency: "monthly",
-      priority: 0.8,
+      priority: 0.9,
     },
+    // Neighborhood SEO pages
+    { url: `${baseUrl}/dentist-summerlin`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
+    { url: `${baseUrl}/dentist-henderson`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
+    { url: `${baseUrl}/dentist-spring-valley`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
+    { url: `${baseUrl}/dentist-north-las-vegas`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
+    // High-intent location + service pages
+    { url: `${baseUrl}/dental-implants-las-vegas`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.9 },
+    { url: `${baseUrl}/porcelain-veneers-las-vegas`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.9 },
+    { url: `${baseUrl}/cosmetic-dentistry-las-vegas`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.9 },
+    // Specialty conversion pages
+    { url: `${baseUrl}/emergency-dentist-las-vegas`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.9 },
+    { url: `${baseUrl}/sedation-dentistry-las-vegas`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
+    // Trust / comparison pages
+    { url: `${baseUrl}/team/dr-alex-chireau`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
+    { url: `${baseUrl}/insurance`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
+    { url: `${baseUrl}/smile-gallery`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 },
+    { url: `${baseUrl}/why-ak-dental`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
     {
       url: `${baseUrl}/dr-scott-miller-retirement`,
       lastModified: new Date(),

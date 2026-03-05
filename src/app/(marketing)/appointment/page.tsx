@@ -110,7 +110,7 @@ export default function AppointmentPage() {
               Fill out the form below and our team will contact you to confirm
               your appointment. For immediate assistance, call us directly.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 mb-5">
               <Button asChild size="lg" className="h-14 px-8 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 border-0">
                 <a href={siteConfig.phoneHref}>
                   <Phone className="mr-2 h-5 w-5" />
@@ -123,6 +123,14 @@ export default function AppointmentPage() {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </a>
               </Button>
+            </div>
+            <div className="flex flex-wrap gap-4">
+              {["Free consultation", "We call within 2 business hours", "All insurance accepted"].map((item) => (
+                <span key={item} className="text-sm text-gray-300 flex items-center gap-1.5">
+                  <CheckCircle className="h-4 w-4 text-green-400 flex-shrink-0" />
+                  {item}
+                </span>
+              ))}
             </div>
           </div>
         </div>

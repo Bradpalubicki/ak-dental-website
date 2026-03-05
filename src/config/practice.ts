@@ -69,11 +69,11 @@ export const practiceConfig: PracticeConfig = {
   // Team
   team: [
     {
-      name: "Our Dental Team",
+      name: "Dr. Alex Chireau, DDS",
       title: "Doctor of Dental Surgery",
       credentials: "DDS",
-      experience: "Years of dental education and hands-on experience",
-      bio: "With over a decade of comprehensive dental education spanning both European and American methodologies, our dental team brings a unique perspective to modern dentistry—combining precision, artistry, and genuine compassion for every patient.",
+      experience: "10+ years of advanced dental training — UNLV SDM + Romanian Dental School",
+      bio: "Dr. Alex Chireau, DDS brings over a decade of advanced dental training spanning both European and American methodologies — including graduate training at the University of Nevada Las Vegas School of Dental Medicine. His approach combines precision, artistry, and genuine compassion to deliver results patients are proud to show off.",
       image: "/dr-alex-headshot.jpg",
       specialties: [
         "General Dentistry",
@@ -82,9 +82,9 @@ export const practiceConfig: PracticeConfig = {
         "CEREC Same-Day Crowns",
       ],
       badges: [
-        "DDS Certified",
+        "DDS — UNLV SDM",
         "10+ Years Experience",
-        "European & American Training",
+        "Cosmetic & Implant Specialist",
       ],
     },
   ],
@@ -142,7 +142,7 @@ export const practiceConfig: PracticeConfig = {
   testimonials: [
     {
       name: "Carey K.",
-      text: "Dr. Miller has been my dentist for over 20 years. The care and attention to detail is exceptional. The entire staff makes you feel like family.",
+      text: "Dr. Chireau has been my dentist for years. The care and attention to detail is exceptional. The entire staff makes you feel like family.",
       rating: 5,
     },
     {
