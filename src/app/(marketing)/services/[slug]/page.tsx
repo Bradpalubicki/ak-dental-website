@@ -17,6 +17,7 @@ import {
   ServiceSchema,
   FAQSchema,
 } from "@/components/schema/local-business";
+import { ProviderByline } from "@/components/marketing/provider-byline";
 import {
   siteConfig,
   serviceImages,
@@ -158,9 +159,12 @@ export default async function ServicePage({ params }: PageProps) {
                 <span className="mx-2">/</span>
                 <span className="text-foreground">{content.title}</span>
               </nav>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
                 {content.heroTitle}
               </h1>
+              <div className="mb-4">
+                <ProviderByline variant="compact" />
+              </div>
               <p className="text-xl text-muted-foreground mb-8">
                 {content.heroDescription}
               </p>
@@ -319,6 +323,47 @@ export default async function ServicePage({ params }: PageProps) {
           </div>
         </div>
       </section>
+
+      {/* Financing Callout — shown for high-ticket services */}
+      {["dental-implants", "porcelain-veneers", "cosmetic-dentistry", "dental-crowns", "orthodontics", "oral-surgery"].includes(slug) && (
+        <section className="py-12 bg-gradient-to-r from-cyan-50 to-blue-50 border-y border-cyan-100">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-8">
+              <div className="flex-shrink-0 bg-white rounded-2xl shadow-md p-5 text-center min-w-[180px]">
+                <p className="text-4xl font-bold text-cyan-600 mb-1">0%</p>
+                <p className="text-sm font-semibold text-gray-700">Interest Options</p>
+                <p className="text-xs text-gray-500">Cherry · CareCredit · Sunbit</p>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  Flexible Financing Available
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Don&apos;t let cost delay the treatment you need. We offer 0% interest financing through
+                  Cherry, CareCredit, and Sunbit — with approvals in as little as 60 seconds.
+                  Over 80% of applicants are approved.
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <a
+                    href="https://withcherry.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-pink-600 hover:bg-pink-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors"
+                  >
+                    Check Eligibility — Cherry
+                  </a>
+                  <Link
+                    href="/insurance"
+                    className="inline-flex items-center gap-2 bg-white border border-gray-200 hover:border-cyan-400 text-gray-700 font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors"
+                  >
+                    View All Financing Options
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* FAQ Section */}
       <section className="py-16 md:py-24 bg-gray-50">

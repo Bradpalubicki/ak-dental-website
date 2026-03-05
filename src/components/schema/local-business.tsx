@@ -177,7 +177,14 @@ export function ArticleSchema({
     url: `${siteConfig.url}${url}`,
     image,
     datePublished,
-    author: { "@type": "Organization", name: author },
+    author: {
+      "@type": "Person",
+      name: author,
+      jobTitle: "Doctor of Dental Surgery",
+      honorificSuffix: "DDS",
+      url: `${siteConfig.url}/team/dr-alex-chireau`,
+      worksFor: { "@type": "Dentist", name: siteConfig.name },
+    },
     publisher: {
       "@type": "Organization",
       name: siteConfig.name,
@@ -186,6 +193,57 @@ export function ArticleSchema({
         url: `${siteConfig.url}/ak-logo-header.png`,
       },
     },
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+export function ProviderSchema() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Dr. Alex Chireau",
+    jobTitle: "Doctor of Dental Surgery",
+    honorificSuffix: "DDS",
+    description:
+      "Dr. Alex Chireau, DDS is a Las Vegas dentist with over a decade of dental training spanning Romanian and American methodologies. He earned his DDS from UNLV School of Dental Medicine and specializes in cosmetic dentistry, dental implants, and comprehensive general dentistry.",
+    url: `${siteConfig.url}/team/dr-alex-chireau`,
+    image: `${siteConfig.url}/dr-alex-headshot.jpg`,
+    worksFor: {
+      "@type": "Dentist",
+      name: siteConfig.name,
+      url: siteConfig.url,
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: siteConfig.address.street,
+        addressLocality: siteConfig.address.city,
+        addressRegion: siteConfig.address.stateAbbr,
+        postalCode: siteConfig.address.zip,
+        addressCountry: "US",
+      },
+    },
+    alumniOf: [
+      { "@type": "CollegeOrUniversity", name: "UNLV School of Dental Medicine", addressLocality: "Las Vegas", addressRegion: "NV" },
+      { "@type": "CollegeOrUniversity", name: "Romanian Dental School" },
+    ],
+    knowsAbout: [
+      "General Dentistry",
+      "Cosmetic Dentistry",
+      "Dental Implants",
+      "CEREC Same-Day Crowns",
+      "Porcelain Veneers",
+      "Teeth Whitening",
+      "Oral Surgery",
+    ],
+    sameAs: [
+      siteConfig.social.facebook,
+      siteConfig.social.instagram,
+    ].filter(Boolean),
   };
 
   return (

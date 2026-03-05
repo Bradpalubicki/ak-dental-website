@@ -45,19 +45,25 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Text Content */}
             <div className="text-white">
-              {/* Trust Badge - 128 Five-Star Reviews */}
-              <a
-                href={siteConfig.ratings.googleReviewUrl || siteConfig.social.google}
-                target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-4 hover:bg-white/20 transition-colors"
-              >
-                <div className="flex -space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <span className="text-sm font-medium">{siteConfig.ratings.count} Five-Star Google Reviews</span>
-              </a>
+              {/* Trust Badges Row */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                <a
+                  href={siteConfig.ratings.googleReviewUrl || siteConfig.social.google}
+                  target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 hover:bg-white/20 transition-colors"
+                >
+                  <div className="flex -space-x-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  <span className="text-sm font-medium">{siteConfig.ratings.count} Five-Star Google Reviews</span>
+                </a>
+                <span className="inline-flex items-center gap-2 bg-green-500/20 border border-green-400/40 text-green-300 rounded-full px-4 py-2 text-sm font-semibold">
+                  <CheckCircle className="h-4 w-4" />
+                  Accepting New Patients
+                </span>
+              </div>
 
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight">
                 Your Dream Smile
@@ -147,6 +153,44 @@ export default function HomePage() {
                 <span className="font-medium">{item.text}</span>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Insurance Acceptance Strip */}
+      <section className="bg-white py-8 border-b">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
+            <p className="text-center text-sm font-semibold text-gray-500 uppercase tracking-wider mb-5">
+              We Accept Most Major Insurance Plans
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              {[
+                { name: "Delta Dental", color: "bg-blue-600" },
+                { name: "Cigna", color: "bg-blue-800" },
+                { name: "Aetna", color: "bg-purple-700" },
+                { name: "MetLife", color: "bg-blue-500" },
+                { name: "Guardian", color: "bg-green-700" },
+                { name: "United Concordia", color: "bg-teal-700" },
+                { name: "BlueCross", color: "bg-blue-700" },
+                { name: "Humana", color: "bg-green-600" },
+                { name: "Most PPO Plans", color: "bg-cyan-600" },
+              ].map((plan) => (
+                <span key={plan.name} className={`${plan.color} text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm`}>
+                  {plan.name}
+                </span>
+              ))}
+            </div>
+            <p className="text-center text-sm text-gray-500 mt-4">
+              Don&apos;t see yours?{" "}
+              <a href={siteConfig.phoneHref} className="text-cyan-600 font-semibold hover:underline">
+                Call {siteConfig.phone}
+              </a>{" "}
+              — we&apos;ll verify your benefits for free.{" "}
+              <Link href="/insurance" className="text-cyan-600 font-semibold hover:underline">
+                View all insurance info →
+              </Link>
+            </p>
           </div>
         </div>
       </section>

@@ -12,6 +12,7 @@ import {
   FAQSchema,
   ArticleSchema,
 } from '@/components/schema/local-business';
+import { ProviderByline } from '@/components/marketing/provider-byline';
 import { siteConfig } from '@/lib/config';
 import {
   getAllPosts,
@@ -249,20 +250,15 @@ export default async function BlogPostPage({ params }: Props) {
             {/* Main Content */}
             <article>
               {/* Byline */}
-              <div className="flex items-center gap-4 pb-8 mb-8 border-b border-slate-100">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-cyan-700 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                  AK
-                </div>
-                <div>
-                  <p className="font-semibold text-slate-900 text-sm">{post.author}</p>
-                  <div className="flex items-center gap-3 text-xs text-slate-400">
-                    <span className="flex items-center gap-1">
-                      <CalendarDays className="h-3 w-3" />
-                      {formattedDate}
-                    </span>
-                    <span>·</span>
-                    <span>{post.readTime}</span>
-                  </div>
+              <div className="pb-8 mb-8 border-b border-slate-100">
+                <ProviderByline variant="full" className="mb-3" />
+                <div className="flex items-center gap-3 text-xs text-slate-400 pl-1 mt-2">
+                  <span className="flex items-center gap-1">
+                    <CalendarDays className="h-3 w-3" />
+                    {formattedDate}
+                  </span>
+                  <span>·</span>
+                  <span>{post.readTime}</span>
                 </div>
               </div>
 

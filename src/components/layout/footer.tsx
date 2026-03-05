@@ -141,6 +141,26 @@ export function Footer() {
                 </li>
               ))}
               <li>
+                <Link href="/smile-gallery" className="hover:text-white transition-colors">
+                  Smile Gallery
+                </Link>
+              </li>
+              <li>
+                <Link href="/team/dr-alex-chireau" className="hover:text-white transition-colors">
+                  Meet Dr. Chireau
+                </Link>
+              </li>
+              <li>
+                <Link href="/emergency-dentist-las-vegas" className="hover:text-white transition-colors">
+                  Emergency Dental
+                </Link>
+              </li>
+              <li>
+                <Link href="/sedation-dentistry-las-vegas" className="hover:text-white transition-colors">
+                  Sedation Dentistry
+                </Link>
+              </li>
+              <li>
                 <Link href={engineConfig.navigation.ctaHref} className="hover:text-white transition-colors">
                   {engineConfig.navigation.ctaLabel}
                 </Link>
