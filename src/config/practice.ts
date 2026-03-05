@@ -61,7 +61,7 @@ export const practiceConfig: PracticeConfig = {
     facebook: "https://www.facebook.com/chireu.alexandru/",
     yelp: "https://www.yelp.com/biz/ak-ultimate-dental-las-vegas",
     google: "https://share.google/y4QOijKzxJN97403L",
-    instagram: "", // Not found on existing site — confirm with Alex
+    instagram: "https://www.instagram.com/dr.chireu/",
     tiktok: "",   // Not found on existing site — confirm with Alex
     youtube: "",  // Not found on existing site — confirm with Alex
   },
