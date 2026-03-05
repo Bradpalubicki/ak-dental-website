@@ -5,8 +5,10 @@ import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
 
 export default async function DashboardPage() {
   const supabase = createServiceSupabase();
-  const today = new Date().toISOString().split("T")[0];
+  const now = new Date();
+  const today = now.toISOString().split("T")[0];
   const todayStart = `${today}T00:00:00.000Z`;
+  const fourteenDaysOut = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 14).toISOString().split("T")[0];
 
   const [
     patientsRes,
@@ -60,7 +62,7 @@ export default async function DashboardPage() {
       .from("oe_appointments")
       .select("patient_id", { count: "exact", head: true })
       .gte("appointment_date", today)
-      .lte("appointment_date", new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0])
+      .lte("appointment_date", fourteenDaysOut)
       .in("status", ["scheduled", "confirmed"]),
   ]);
 
