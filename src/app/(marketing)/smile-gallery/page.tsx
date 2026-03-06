@@ -169,7 +169,7 @@ export default async function SmileGalleryPage() {
   const supabase = createServiceSupabase();
   const { data: publishedPhotos } = await supabase
     .from("media_assets")
-    .select("id, blob_url, service_category, before_or_after, caption, ai_description, is_featured, paired_with_id, story_headline, story_body, story_caption, story_treatment_summary")
+    .select("id, blob_url, service_category, before_or_after, caption, ai_description, ai_quality, is_featured, paired_with_id, story_headline, story_body, story_caption, story_treatment_summary")
     .eq("practice_id", "ak-ultimate-dental")
     .eq("status", "published")
     .eq("photo_type", "patient_result")
@@ -257,15 +257,16 @@ export default async function SmileGalleryPage() {
                 <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
                   {publishedPhotos.map((photo) => {
                     const headline = photo.story_headline;
-                    const body = photo.story_body;
-                    const caption = photo.story_caption ?? photo.caption;
+                    // Fallback chain: story_body → ai_description → caption
+                    const description = photo.story_body ?? photo.ai_description ?? photo.story_caption ?? photo.caption;
                     const treatmentSummary = photo.story_treatment_summary;
+                    const altText = headline ?? description ?? `${photo.service_category ?? "Patient result"} — AK Ultimate Dental Las Vegas`;
                     return (
                       <div key={photo.id} className="group rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 bg-white flex flex-col">
                         <div className="relative aspect-[4/3]">
                           <Image
                             src={photo.blob_url}
-                            alt={caption ?? `${photo.service_category ?? "Patient result"} — AK Ultimate Dental Las Vegas`}
+                            alt={altText}
                             fill
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                             className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -288,11 +289,8 @@ export default async function SmileGalleryPage() {
                           {headline && (
                             <h3 className="font-bold text-gray-900 leading-snug">{headline}</h3>
                           )}
-                          {body && (
-                            <p className="text-sm text-gray-600 leading-relaxed">{body}</p>
-                          )}
-                          {!headline && caption && (
-                            <p className="text-sm text-gray-700">{caption}</p>
+                          {description && (
+                            <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
                           )}
                           {treatmentSummary && (
                             <p className="text-xs text-gray-400 mt-auto pt-2 border-t border-gray-100">{treatmentSummary}</p>
