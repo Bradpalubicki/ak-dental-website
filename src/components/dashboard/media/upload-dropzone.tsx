@@ -5,7 +5,7 @@ import { Upload, X, ImageIcon } from "lucide-react";
 import Image from "next/image";
 
 interface UploadDropzoneProps {
-  onFilesSelected: (files: File[]) => void;
+  onFilesSelected: (files: File[], previewUrls: string[]) => void;
   maxFiles?: number;
 }
 
@@ -21,15 +21,16 @@ export function UploadDropzone({ onFilesSelected, maxFiles = 10 }: UploadDropzon
       .slice(0, maxFiles);
 
     const newPreviews = valid.map((f) => ({ file: f, url: URL.createObjectURL(f) }));
-    setPreviews((prev) => [...prev, ...newPreviews].slice(0, maxFiles));
-    onFilesSelected(valid);
+    const next = [...previews, ...newPreviews].slice(0, maxFiles);
+    setPreviews(next);
+    onFilesSelected(next.map(p => p.file), next.map(p => p.url));
   };
 
   const removeFile = (idx: number) => {
     setPreviews((prev) => {
       URL.revokeObjectURL(prev[idx].url);
       const next = prev.filter((_, i) => i !== idx);
-      onFilesSelected(next.map((p) => p.file));
+      onFilesSelected(next.map((p) => p.file), next.map(p => p.url));
       return next;
     });
   };

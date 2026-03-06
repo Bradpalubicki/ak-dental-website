@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { CheckCircle, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -30,10 +31,11 @@ const OFFICE_TYPES = [
 
 export function UploadClient() {
   const [files, setFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
   const [step, setStep] = useState<Step>("drop");
   const [photoType, setPhotoType] = useState<PhotoType | null>(null);
   const [consentConfirmed, setConsentConfirmed] = useState(false);
-  const [serviceCategory, setServiceCategory] = useState("");
+  const [serviceCategories, setServiceCategories] = useState<string[]>([]);
   const [beforeOrAfter, setBeforeOrAfter] = useState("");
   const [caseNotes, setCaseNotes] = useState("");
   const [caption, setCaption] = useState("");
@@ -68,18 +70,24 @@ export function UploadClient() {
       if (photoType === "patient_result") {
         meta.consent_confirmed = consentConfirmed;
         meta.consent_type = "written_on_file";
-        meta.service_category = serviceCategory.toLowerCase().replace(/\s*\/.*/, "").trim();
+        meta.service_category = serviceCategories.map(s => s.toLowerCase().replace(/\s*\/.*/, "").trim()).join(", ");
         meta.before_or_after = beforeOrAfter || "na";
         meta.case_notes = caseNotes || undefined;
       } else {
         meta.service_category = officeType;
       }
 
-      await fetch(`/api/media/${data.assetId}`, {
+      const metaRes = await fetch(`/api/media/${data.assetId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(meta),
       });
+      if (!metaRes.ok) {
+        const metaData = await metaRes.json();
+        setError(metaData.error || "Failed to save record");
+        setUploading(false);
+        return;
+      }
 
       out.push({ assetId: data.assetId, blobUrl: data.blobUrl, fileName: file.name });
     }
@@ -100,7 +108,7 @@ export function UploadClient() {
           {results.length} photo{results.length !== 1 ? "s" : ""} uploaded and queued for review.
           We&apos;ll publish within 24 hours.
         </p>
-        <Button className="mt-6" onClick={() => { setStep("drop"); setFiles([]); setResults([]); setPhotoType(null); setConsentConfirmed(false); setServiceCategory(""); setBeforeOrAfter(""); setCaseNotes(""); setCaption(""); setOfficeType(""); }}>
+        <Button className="mt-6" onClick={() => { setStep("drop"); setFiles([]); setPreviews([]); setResults([]); setPhotoType(null); setConsentConfirmed(false); setServiceCategories([]); setBeforeOrAfter(""); setCaseNotes(""); setCaption(""); setOfficeType(""); }}>
           Upload More Photos
         </Button>
         <Button variant="outline" className="mt-3 ml-3" asChild>
@@ -129,7 +137,7 @@ export function UploadClient() {
             <h2 className="text-lg font-semibold">Upload Photos</h2>
             <p className="text-sm text-gray-500">Select up to 10 photos. All will go through the same review questions.</p>
           </div>
-          <UploadDropzone onFilesSelected={setFiles} maxFiles={10} />
+          <UploadDropzone onFilesSelected={(f, urls) => { setFiles(f); setPreviews(urls); }} maxFiles={10} />
           <Button disabled={files.length === 0} onClick={() => setStep("type")} className="w-full">
             Continue with {files.length} photo{files.length !== 1 ? "s" : ""} →
           </Button>
@@ -193,22 +201,28 @@ export function UploadClient() {
               <div>
                 <h2 className="text-lg font-semibold">What treatment or service is shown?</h2>
               </div>
+              <p className="text-sm text-gray-500">Select all that apply.</p>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {SERVICE_CATEGORIES.map((cat) => (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => setServiceCategory(cat)}
-                    className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-colors
-                      ${serviceCategory === cat ? "border-cyan-500 bg-cyan-50 text-cyan-700" : "border-gray-200 text-gray-700 hover:border-cyan-300"}`}
-                  >
-                    {cat}
-                  </button>
-                ))}
+                {SERVICE_CATEGORIES.map((cat) => {
+                  const selected = serviceCategories.includes(cat);
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setServiceCategories(prev =>
+                        selected ? prev.filter(s => s !== cat) : [...prev, cat]
+                      )}
+                      className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-colors
+                        ${selected ? "border-cyan-500 bg-cyan-50 text-cyan-700" : "border-gray-200 text-gray-700 hover:border-cyan-300"}`}
+                    >
+                      {cat}
+                    </button>
+                  );
+                })}
               </div>
               <div className="flex gap-3">
                 <Button variant="outline" onClick={() => setStep("consent")}>Back</Button>
-                <Button disabled={!serviceCategory} onClick={() => setStep("before_after")} className="flex-1">
+                <Button disabled={serviceCategories.length === 0} onClick={() => setStep("before_after")} className="flex-1">
                   Continue →
                 </Button>
               </div>
@@ -262,6 +276,16 @@ export function UploadClient() {
           <div>
             <h2 className="text-lg font-semibold">Is this a before or after photo?</h2>
           </div>
+          {/* Photo previews */}
+          {previews.length > 0 && (
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+              {previews.map((url, i) => (
+                <div key={i} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                  <Image src={url} alt={`Photo ${i + 1}`} fill className="object-cover" />
+                </div>
+              ))}
+            </div>
+          )}
           <div className="grid grid-cols-3 gap-3">
             {[
               { value: "before", label: "BEFORE", emoji: "◀️" },
