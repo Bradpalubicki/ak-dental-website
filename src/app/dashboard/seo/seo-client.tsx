@@ -20,6 +20,9 @@ import {
   Mail,
   PlayCircle,
   Loader2,
+  Gauge,
+  Monitor,
+  Smartphone,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -76,6 +79,36 @@ interface Report {
   sent_to_client: boolean;
   sent_at: string | null;
   created_at: string;
+}
+
+interface PageSpeedOpportunity {
+  id: string;
+  title: string;
+  displayValue: string;
+  numericValue: number;
+}
+
+interface PageSpeedScore {
+  id: string;
+  url: string;
+  strategy: "mobile" | "desktop";
+  performance_score: number | null;
+  lcp: number | null;
+  cls: number | null;
+  inp: number | null;
+  fcp: number | null;
+  ttfb: number | null;
+  speed_index: number | null;
+  opportunities: PageSpeedOpportunity[] | null;
+  created_at: string;
+}
+
+interface PageSpeedData {
+  mobile: PageSpeedScore | null;
+  desktop: PageSpeedScore | null;
+  cached: boolean;
+  cachedAt?: string;
+  needsRun?: boolean;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -138,6 +171,60 @@ function formatVitalValue(name: string, value: number | null): string {
   return String(value);
 }
 
+// ─── PageSpeed Gauge ──────────────────────────────────────────────────────────
+
+function PSGauge({ score, label }: { score: number | null; label: string }) {
+  if (score === null) {
+    return (
+      <div className="flex flex-col items-center gap-2">
+        <div className="relative w-24 h-24 flex items-center justify-center rounded-full border-4 border-slate-200">
+          <span className="text-slate-400 text-sm">--</span>
+        </div>
+        <span className="text-xs font-medium text-slate-500">{label}</span>
+      </div>
+    );
+  }
+  const color =
+    score >= 90 ? "#22c55e" : score >= 50 ? "#f59e0b" : "#ef4444";
+  const label90 = score >= 90 ? "Fast" : score >= 50 ? "Needs Work" : "Slow";
+  const circumference = 2 * Math.PI * 38;
+  const progress = (score / 100) * circumference;
+
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <div className="relative w-24 h-24">
+        <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+          <circle cx="50" cy="50" r="38" fill="none" stroke="#e2e8f0" strokeWidth="8" />
+          <circle
+            cx="50"
+            cy="50"
+            r="38"
+            fill="none"
+            stroke={color}
+            strokeWidth="8"
+            strokeLinecap="round"
+            strokeDasharray={`${progress} ${circumference}`}
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-2xl font-bold" style={{ color }}>{score}</span>
+        </div>
+      </div>
+      <div className="text-center">
+        <p className="text-xs font-semibold text-slate-700">{label}</p>
+        <p className="text-xs text-slate-400">{label90}</p>
+      </div>
+    </div>
+  );
+}
+
+function psMetricRow(name: string, value: number | null, good: string, unit: "ms" | "s" | "raw") {
+  const fmt = unit === "s" ? (v: number) => `${(v / 1000).toFixed(2)}s`
+    : unit === "ms" ? (v: number) => `${Math.round(v)}ms`
+    : (v: number) => v.toFixed(3);
+  return { name, display: value !== null ? fmt(value) : "--", raw: value, good };
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function SEODashboardClient() {
@@ -150,6 +237,12 @@ export function SEODashboardClient() {
   // Vitals
   const [vitals, setVitals] = useState<VitalsSummary | null>(null);
   const [vitalsLoading, setVitalsLoading] = useState(false);
+
+  // PageSpeed
+  const [pageSpeed, setPageSpeed] = useState<PageSpeedData | null>(null);
+  const [psLoading, setPsLoading] = useState(false);
+  const [psRunning, setPsRunning] = useState(false);
+  const [psError, setPsError] = useState<string | null>(null);
 
   // Audit
   const [audit, setAudit] = useState<AuditData | null>(null);
@@ -184,6 +277,34 @@ export function SEODashboardClient() {
     }
   }, []);
 
+  const fetchPageSpeed = useCallback(async () => {
+    setPsLoading(true);
+    setPsError(null);
+    try {
+      const res = await fetch("/api/seo/pagespeed");
+      if (res.ok) setPageSpeed(await res.json());
+    } catch {
+      // noop
+    } finally {
+      setPsLoading(false);
+    }
+  }, []);
+
+  const runPageSpeed = useCallback(async () => {
+    setPsRunning(true);
+    setPsError(null);
+    try {
+      const res = await fetch("/api/seo/pagespeed", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "PageSpeed test failed");
+      setPageSpeed(data);
+    } catch (err) {
+      setPsError(err instanceof Error ? err.message : "Test failed");
+    } finally {
+      setPsRunning(false);
+    }
+  }, []);
+
   const fetchAudit = useCallback(async () => {
     setAuditLoading(true);
     try {
@@ -212,12 +333,12 @@ export function SEODashboardClient() {
     fetchKeywords();
   }, [fetchKeywords]);
 
-  // Lazy-load tabs
   useEffect(() => {
     if (activeTab === "vitals" && !vitals) fetchVitals();
+    if (activeTab === "vitals" && !pageSpeed) fetchPageSpeed();
     if (activeTab === "audit" && !audit) fetchAudit();
     if (activeTab === "reports" && reports.length === 0) fetchReports();
-  }, [activeTab, vitals, audit, reports.length, fetchVitals, fetchAudit, fetchReports]);
+  }, [activeTab, vitals, pageSpeed, audit, reports.length, fetchVitals, fetchPageSpeed, fetchAudit, fetchReports]);
 
   const addKeyword = async () => {
     if (!newKeyword.trim()) return;
@@ -265,7 +386,21 @@ export function SEODashboardClient() {
   const avgRank =
     rankedKeywords.length > 0
       ? (rankedKeywords.reduce((sum, k) => sum + (k.current_rank || 0), 0) / rankedKeywords.length).toFixed(1)
-      : "--";
+      : null;
+  const top10Count = keywords.filter((k) => k.current_rank && k.current_rank <= 10).length;
+
+  // Derive site health label from latest audit
+  const siteHealthScore = audit?.latest?.overall_score ?? null;
+  const siteHealth =
+    siteHealthScore === null ? "Unknown"
+    : siteHealthScore >= 80 ? "Good"
+    : siteHealthScore >= 60 ? "Fair"
+    : "Needs Work";
+  const siteHealthColor =
+    siteHealthScore === null ? "text-slate-400"
+    : siteHealthScore >= 80 ? "text-emerald-600"
+    : siteHealthScore >= 60 ? "text-amber-500"
+    : "text-red-500";
 
   return (
     <div className="space-y-6">
@@ -274,7 +409,7 @@ export function SEODashboardClient() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">SEO Dashboard</h1>
           <p className="text-sm text-slate-500 mt-1">
-            Monitor search performance, keyword rankings, and site health
+            Track how patients find you online and how fast your site loads
           </p>
         </div>
         <Button
@@ -282,7 +417,7 @@ export function SEODashboardClient() {
           size="sm"
           onClick={() => {
             fetchKeywords();
-            if (activeTab === "vitals") fetchVitals();
+            if (activeTab === "vitals") { fetchVitals(); fetchPageSpeed(); }
             if (activeTab === "audit") fetchAudit();
             if (activeTab === "reports") fetchReports();
           }}
@@ -298,72 +433,100 @@ export function SEODashboardClient() {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="keywords">Keywords</TabsTrigger>
           <TabsTrigger value="audit">Audit</TabsTrigger>
-          <TabsTrigger value="vitals">Vitals</TabsTrigger>
+          <TabsTrigger value="vitals">Speed & Vitals</TabsTrigger>
           <TabsTrigger value="reports">Reports</TabsTrigger>
         </TabsList>
 
         {/* ── Overview ──────────────────────────────────────────────────────── */}
         <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card>
+          {/* Plain-English narrative cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card className="border-l-4 border-l-cyan-500">
               <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-500">Tracked Keywords</p>
-                    <p className="text-3xl font-bold text-slate-900">{keywords.length}</p>
-                  </div>
-                  <div className="h-12 w-12 rounded-xl bg-cyan-50 flex items-center justify-center">
+                <div className="flex items-start gap-4">
+                  <div className="h-12 w-12 rounded-xl bg-cyan-50 flex items-center justify-center shrink-0">
                     <Search className="h-6 w-6 text-cyan-600" />
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-slate-500">Avg. Position</p>
-                    <p className="text-3xl font-bold text-slate-900">{avgRank}</p>
-                  </div>
-                  <div className="h-12 w-12 rounded-xl bg-emerald-50 flex items-center justify-center">
-                    <TrendingUp className="h-6 w-6 text-emerald-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-500">Top 10 Rankings</p>
-                    <p className="text-3xl font-bold text-slate-900">
-                      {keywords.filter((k) => k.current_rank && k.current_rank <= 10).length}
+                    <p className="text-2xl font-bold text-slate-900">{keywords.length}</p>
+                    <p className="text-sm font-medium text-slate-700 mt-0.5">
+                      {keywords.length === 0
+                        ? "No keywords tracked yet"
+                        : keywords.length === 1
+                        ? "Search phrase tracked"
+                        : "Search phrases tracked"}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      {keywords.length === 0
+                        ? "Add keywords below to start monitoring your rankings"
+                        : `We watch ${keywords.length} terms to see where you appear in Google`}
                     </p>
                   </div>
-                  <div className="h-12 w-12 rounded-xl bg-amber-50 flex items-center justify-center">
-                    <CheckCircle2 className="h-6 w-6 text-amber-600" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-l-4 border-l-emerald-500">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <div className="h-12 w-12 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+                    <TrendingUp className="h-6 w-6 text-emerald-600" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-slate-900">
+                      {avgRank ? `#${avgRank}` : "--"}
+                    </p>
+                    <p className="text-sm font-medium text-slate-700 mt-0.5">Average Google position</p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      {avgRank
+                        ? `Your practice appears around position ${avgRank} on average`
+                        : "Position data updates as rankings are tracked"}
+                    </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-l-4 border-l-amber-500">
               <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-500">Site Health</p>
-                    <p className="text-3xl font-bold text-emerald-600">Good</p>
+                <div className="flex items-start gap-4">
+                  <div className="h-12 w-12 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="h-6 w-6 text-amber-600" />
                   </div>
-                  <div className="h-12 w-12 rounded-xl bg-emerald-50 flex items-center justify-center">
-                    <Activity className="h-6 w-6 text-emerald-600" />
+                  <div>
+                    <p className="text-2xl font-bold text-slate-900">{top10Count}</p>
+                    <p className="text-sm font-medium text-slate-700 mt-0.5">Keywords on page 1</p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      {top10Count === 0
+                        ? "No keywords in top 10 yet — keep building!"
+                        : `${top10Count} ${top10Count === 1 ? "search term" : "search terms"} where patients can find you on the first page`}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-l-4 border-l-violet-500">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <div className="h-12 w-12 rounded-xl bg-violet-50 flex items-center justify-center shrink-0">
+                    <Activity className="h-6 w-6 text-violet-600" />
+                  </div>
+                  <div>
+                    <p className={`text-2xl font-bold ${siteHealthColor}`}>{siteHealth}</p>
+                    <p className="text-sm font-medium text-slate-700 mt-0.5">Site health</p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      {siteHealthScore !== null
+                        ? `Based on your last SEO audit — score: ${siteHealthScore}/100`
+                        : "Run an audit in the Audit tab to see your score"}
+                    </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
+          {/* Quick Actions */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Quick Actions</CardTitle>
@@ -505,7 +668,6 @@ export function SEODashboardClient() {
 
         {/* ── Audit ─────────────────────────────────────────────────────────── */}
         <TabsContent value="audit" className="space-y-6">
-          {/* Run Audit */}
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
@@ -541,7 +703,6 @@ export function SEODashboardClient() {
             </CardContent>
           </Card>
 
-          {/* Latest Score */}
           {auditLoading ? (
             <Card>
               <CardContent className="pt-6 text-center py-12">
@@ -596,7 +757,6 @@ export function SEODashboardClient() {
                 </Card>
               </div>
 
-              {/* Issues Detail */}
               {audit.latest.issues_detail && audit.latest.issues_detail.length > 0 && (
                 <Card>
                   <CardHeader>
@@ -646,7 +806,6 @@ export function SEODashboardClient() {
                 </Card>
               )}
 
-              {/* Score History */}
               {audit.history.length > 1 && (
                 <Card>
                   <CardHeader>
@@ -701,8 +860,173 @@ export function SEODashboardClient() {
           )}
         </TabsContent>
 
-        {/* ── Vitals ────────────────────────────────────────────────────────── */}
+        {/* ── Speed & Vitals ─────────────────────────────────────────────────── */}
         <TabsContent value="vitals" className="space-y-6">
+
+          {/* PageSpeed Section */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Gauge className="h-4 w-4 text-cyan-600" />
+                    PageSpeed Score
+                  </CardTitle>
+                  <CardDescription>
+                    How fast your site loads — tested by Google&apos;s PageSpeed Insights
+                  </CardDescription>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={runPageSpeed}
+                  disabled={psRunning}
+                  className="gap-2 shrink-0"
+                >
+                  {psRunning ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Zap className="h-4 w-4" />
+                  )}
+                  {psRunning ? "Testing…" : "Run Test"}
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {psLoading || psRunning ? (
+                <div className="flex flex-col items-center gap-3 py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-slate-300" />
+                  <p className="text-sm text-slate-500">
+                    {psRunning ? "Running PageSpeed test — this takes about 30 seconds…" : "Loading…"}
+                  </p>
+                </div>
+              ) : psError ? (
+                <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">
+                  {psError}
+                </div>
+              ) : pageSpeed?.mobile || pageSpeed?.desktop ? (
+                <>
+                  {/* Side-by-side gauges */}
+                  <div className="grid grid-cols-2 gap-6 mb-6">
+                    <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                      <div className="flex items-center gap-1.5 text-sm font-medium text-slate-600">
+                        <Smartphone className="h-4 w-4" />
+                        Mobile
+                      </div>
+                      <PSGauge score={pageSpeed.mobile?.performance_score ?? null} label="Performance" />
+                      <p className="text-xs text-slate-400 text-center">
+                        {pageSpeed.mobile?.performance_score !== null && pageSpeed.mobile?.performance_score !== undefined
+                          ? pageSpeed.mobile.performance_score >= 90
+                            ? "Your site loads fast on phones"
+                            : pageSpeed.mobile.performance_score >= 50
+                            ? "Room to improve on mobile"
+                            : "Slow on mobile — patients may leave"
+                          : "No data"}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                      <div className="flex items-center gap-1.5 text-sm font-medium text-slate-600">
+                        <Monitor className="h-4 w-4" />
+                        Desktop
+                      </div>
+                      <PSGauge score={pageSpeed.desktop?.performance_score ?? null} label="Performance" />
+                      <p className="text-xs text-slate-400 text-center">
+                        {pageSpeed.desktop?.performance_score !== null && pageSpeed.desktop?.performance_score !== undefined
+                          ? pageSpeed.desktop.performance_score >= 90
+                            ? "Your site loads fast on computers"
+                            : pageSpeed.desktop.performance_score >= 50
+                            ? "Room to improve on desktop"
+                            : "Slow on desktop — patients may leave"
+                          : "No data"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Metric grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                    {(
+                      [
+                        { key: "lcp", label: "Page loads main content", unit: "s" as const, good: "< 2.5s" },
+                        { key: "fcp", label: "First content appears", unit: "s" as const, good: "< 1.8s" },
+                        { key: "ttfb", label: "Server responds", unit: "ms" as const, good: "< 800ms" },
+                        { key: "cls", label: "Layout stays stable", unit: "raw" as const, good: "< 0.1" },
+                      ] as const
+                    ).map(({ key, label, unit, good }) => {
+                      const mVal = pageSpeed.mobile?.[key] ?? null;
+                      const dVal = pageSpeed.desktop?.[key] ?? null;
+                      const fmt = (v: number | null) => {
+                        if (v === null) return "--";
+                        if (unit === "s") return `${(v / 1000).toFixed(2)}s`;
+                        if (unit === "ms") return `${Math.round(v)}ms`;
+                        return v.toFixed(3);
+                      };
+                      return (
+                        <div key={key} className="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                          <p className="text-xs text-slate-500 mb-2">{label}</p>
+                          <div className="flex items-baseline gap-2">
+                            <div className="flex items-center gap-1">
+                              <Smartphone className="h-3 w-3 text-slate-400" />
+                              <span className="text-sm font-semibold text-slate-800">{fmt(mVal)}</span>
+                            </div>
+                            <span className="text-slate-300 text-xs">/</span>
+                            <div className="flex items-center gap-1">
+                              <Monitor className="h-3 w-3 text-slate-400" />
+                              <span className="text-sm font-semibold text-slate-800">{fmt(dVal)}</span>
+                            </div>
+                          </div>
+                          <p className="text-xs text-slate-400 mt-1">Target: {good}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Top opportunities */}
+                  {(pageSpeed.mobile?.opportunities ?? []).length > 0 && (
+                    <div>
+                      <p className="text-sm font-medium text-slate-700 mb-3">Top speed improvements</p>
+                      <div className="space-y-2">
+                        {(pageSpeed.mobile?.opportunities ?? []).slice(0, 3).map((opp) => (
+                          <div
+                            key={opp.id}
+                            className="flex items-center justify-between p-3 rounded-lg bg-amber-50 border border-amber-100"
+                          >
+                            <p className="text-sm text-slate-700">{opp.title}</p>
+                            <span className="text-xs font-medium text-amber-700 shrink-0 ml-3">
+                              {opp.displayValue}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {pageSpeed.cached && pageSpeed.cachedAt && (
+                    <p className="text-xs text-slate-400 mt-4">
+                      Last tested {new Date(pageSpeed.cachedAt).toLocaleDateString("en-US", {
+                        month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"
+                      })} — cached for 24h. Click Run Test to refresh.
+                    </p>
+                  )}
+                </>
+              ) : (
+                <div className="flex flex-col items-center gap-4 py-10">
+                  <Gauge className="h-12 w-12 text-slate-300" />
+                  <div className="text-center">
+                    <p className="text-slate-600 font-medium">No speed data yet</p>
+                    <p className="text-sm text-slate-400 mt-1">
+                      Click &quot;Run Test&quot; to check how fast your site loads on mobile and desktop
+                    </p>
+                  </div>
+                  <Button size="sm" onClick={runPageSpeed} disabled={psRunning} className="gap-2">
+                    <Zap className="h-4 w-4" />
+                    Run PageSpeed Test
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Real User Vitals Section */}
           {vitalsLoading ? (
             <Card>
               <CardContent className="pt-6 text-center py-12">
@@ -711,47 +1035,76 @@ export function SEODashboardClient() {
             </Card>
           ) : (
             <>
-              {/* Core 3 metrics */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {(
-                  [
-                    { name: "LCP", label: "Largest Contentful Paint", threshold: "< 2.5s", icon: Clock },
-                    { name: "CLS", label: "Cumulative Layout Shift", threshold: "< 0.1", icon: Activity },
-                    { name: "INP", label: "Interaction to Next Paint", threshold: "< 200ms", icon: Zap },
-                  ] as const
-                ).map(({ name, label, threshold, icon: Icon }) => {
-                  const value = vitals?.summary[name.toLowerCase() as "lcp" | "cls" | "inp"] ?? null;
-                  const status = vitalStatus(name, value);
-                  const samples = vitals?.summary.samples[name.toLowerCase() as "lcp" | "cls" | "inp"] ?? 0;
-                  return (
-                    <Card key={name}>
-                      <CardContent className="pt-6">
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="h-10 w-10 rounded-lg bg-cyan-50 flex items-center justify-center">
-                            <Icon className="h-5 w-5 text-cyan-600" />
-                          </div>
-                          <VitalBadge status={status} />
-                        </div>
-                        <p className="text-xs text-slate-500 uppercase tracking-wider">{name}</p>
-                        <p className="text-3xl font-bold text-slate-900 mt-1">
-                          {formatVitalValue(name, value)}
-                        </p>
-                        <p className="text-xs text-slate-400 mt-1">{label}</p>
-                        <p className="text-xs text-slate-400 mt-2">
-                          Target: {threshold} · {samples} sample{samples !== 1 ? "s" : ""}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Activity className="h-4 w-4 text-cyan-600" />
+                    Real User Experience
+                  </CardTitle>
+                  <CardDescription>
+                    Measured from actual visitors — collected automatically in the background
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {(
+                      [
+                        {
+                          name: "LCP",
+                          label: "Page load speed",
+                          description: "How long before your main content appears",
+                          threshold: "Fast if under 2.5s",
+                          icon: Clock,
+                        },
+                        {
+                          name: "CLS",
+                          label: "Layout stability",
+                          description: "How much your page jumps around while loading",
+                          threshold: "Stable if under 0.1",
+                          icon: Activity,
+                        },
+                        {
+                          name: "INP",
+                          label: "Tap/click response",
+                          description: "How fast buttons and links respond to a tap",
+                          threshold: "Fast if under 200ms",
+                          icon: Zap,
+                        },
+                      ] as const
+                    ).map(({ name, label, description, threshold, icon: Icon }) => {
+                      const value = vitals?.summary[name.toLowerCase() as "lcp" | "cls" | "inp"] ?? null;
+                      const status = vitalStatus(name, value);
+                      const samples = vitals?.summary.samples[name.toLowerCase() as "lcp" | "cls" | "inp"] ?? 0;
+                      return (
+                        <Card key={name} className="border border-slate-100 shadow-none">
+                          <CardContent className="pt-5">
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="h-10 w-10 rounded-lg bg-cyan-50 flex items-center justify-center">
+                                <Icon className="h-5 w-5 text-cyan-600" />
+                              </div>
+                              <VitalBadge status={status} />
+                            </div>
+                            <p className="text-2xl font-bold text-slate-900 mt-1">
+                              {formatVitalValue(name, value)}
+                            </p>
+                            <p className="text-sm font-medium text-slate-700 mt-0.5">{label}</p>
+                            <p className="text-xs text-slate-400 mt-1">{description}</p>
+                            <p className="text-xs text-slate-400 mt-2">
+                              {threshold} · {samples} real visitor{samples !== 1 ? "s" : ""}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
 
-              {/* Per-page breakdown */}
-              {vitals && vitals.byPage.length > 0 ? (
+              {vitals && vitals.byPage.length > 0 && (
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-base">Per-Page Breakdown</CardTitle>
-                    <CardDescription>p75 values from real user measurements (last 30 days)</CardDescription>
+                    <CardDescription>p75 from real visitors — last 30 days</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="overflow-x-auto">
@@ -759,10 +1112,10 @@ export function SEODashboardClient() {
                         <thead>
                           <tr className="border-b border-slate-200">
                             <th className="text-left py-3 px-2 font-medium text-slate-500">Page</th>
-                            <th className="text-center py-3 px-2 font-medium text-slate-500">LCP</th>
-                            <th className="text-center py-3 px-2 font-medium text-slate-500">CLS</th>
-                            <th className="text-center py-3 px-2 font-medium text-slate-500">INP</th>
-                            <th className="text-center py-3 px-2 font-medium text-slate-500">Samples</th>
+                            <th className="text-center py-3 px-2 font-medium text-slate-500">Load Speed</th>
+                            <th className="text-center py-3 px-2 font-medium text-slate-500">Layout Shift</th>
+                            <th className="text-center py-3 px-2 font-medium text-slate-500">Response</th>
+                            <th className="text-center py-3 px-2 font-medium text-slate-500">Visitors</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -818,51 +1171,21 @@ export function SEODashboardClient() {
                     </div>
                   </CardContent>
                 </Card>
-              ) : (
+              )}
+
+              {(!vitals || vitals.byPage.length === 0) && (
                 <Card>
                   <CardContent className="pt-6">
                     <div className="text-center py-10">
                       <Activity className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                      <p className="text-slate-500">No Web Vitals data yet</p>
+                      <p className="text-slate-500">No visitor data yet</p>
                       <p className="text-sm text-slate-400 mt-1">
-                        Real user metrics are collected automatically as visitors browse the site.
+                        Speed is measured automatically as real patients browse your site.
                       </p>
                     </div>
                   </CardContent>
                 </Card>
               )}
-
-              {/* Thresholds reference */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Google Thresholds</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-3 gap-4 text-sm">
-                    {[
-                      { metric: "LCP", good: "≤ 2.5s", needs: "2.5–4.0s", poor: "> 4.0s" },
-                      { metric: "CLS", good: "≤ 0.1", needs: "0.1–0.25", poor: "> 0.25" },
-                      { metric: "INP", good: "≤ 200ms", needs: "200–500ms", poor: "> 500ms" },
-                    ].map((row) => (
-                      <div key={row.metric} className="space-y-1.5">
-                        <p className="font-medium text-slate-700">{row.metric}</p>
-                        <div className="flex items-center gap-1.5">
-                          <div className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                          <span className="text-slate-600">{row.good}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <div className="h-2.5 w-2.5 rounded-full bg-amber-400" />
-                          <span className="text-slate-600">{row.needs}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <div className="h-2.5 w-2.5 rounded-full bg-red-500" />
-                          <span className="text-slate-600">{row.poor}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
             </>
           )}
         </TabsContent>
@@ -962,7 +1285,6 @@ export function SEODashboardClient() {
             </CardContent>
           </Card>
 
-          {/* Info card */}
           <Card className="border-cyan-100 bg-cyan-50/50">
             <CardContent className="pt-6">
               <div className="flex gap-3">
@@ -970,11 +1292,10 @@ export function SEODashboardClient() {
                   <Mail className="h-4 w-4 text-cyan-600" />
                 </div>
                 <div>
-                  <p className="font-medium text-slate-900 text-sm">Automatic Monthly Delivery</p>
-                  <p className="text-sm text-slate-500 mt-0.5">
-                    Reports include keyword rankings, Core Web Vitals (p75), Google Search Console
-                    traffic data, and site audit scores. Delivered on the 1st of each month to the
-                    practice email and NuStack.
+                  <p className="text-sm font-medium text-slate-700">Monthly reports are sent automatically</p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    On the 1st of each month, a report is generated and emailed with your rankings,
+                    site health score, and any improvements made.
                   </p>
                 </div>
               </div>
