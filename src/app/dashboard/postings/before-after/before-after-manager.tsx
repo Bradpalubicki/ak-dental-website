@@ -84,13 +84,34 @@ const TREATMENT_TIMELINES = ["Same day", "1 appointment", "2 appointments", "2�
 function AssetCard({ asset, onRemoved }: { asset: Asset; onRemoved: (id: string) => void }) {
   const [takedownStep, setTakedownStep] = useState<"idle" | "confirm" | "removing">("idle");
   const [editing, setEditing] = useState(false);
-  const [caption, setCaption] = useState(asset.caption ?? "");
   const [label, setLabel] = useState(asset.before_or_after ?? "na");
+
+  // Writing studio state
+  const [headline, setHeadline] = useState(asset.story_headline ?? "");
+  const [body, setBody] = useState<string>("");
+  const [treatmentSummary, setTreatmentSummary] = useState(asset.story_treatment_summary ?? "");
+  const [direction, setDirection] = useState("");
+
+  // AI redraft state
+  const [redrafting, setRedrafting] = useState(false);
+  const [draft, setDraft] = useState<{ headline: string; body: string; caption: string; treatment_summary: string } | null>(null);
+  const [redraftError, setRedraftError] = useState("");
+
   const [saving, setSaving] = useState(false);
 
   const cfg = STATUS_CONFIG[asset.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.pending;
   const Icon = cfg.icon;
   const imageUrl = asset.pending_blob_url || asset.blob_url;
+
+  function openEdit() {
+    setHeadline(asset.story_headline ?? "");
+    setBody((asset as unknown as Record<string, string>).story_body ?? "");
+    setTreatmentSummary(asset.story_treatment_summary ?? "");
+    setDirection("");
+    setDraft(null);
+    setRedraftError("");
+    setEditing(true);
+  }
 
   const handleTakedown = async () => {
     setTakedownStep("removing");
@@ -98,15 +119,60 @@ function AssetCard({ asset, onRemoved }: { asset: Asset; onRemoved: (id: string)
     onRemoved(asset.id);
   };
 
+  const handleRedraft = async () => {
+    setRedrafting(true);
+    setRedraftError("");
+    setDraft(null);
+    try {
+      const res = await fetch(`/api/media/${asset.id}/redraft`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          current_headline: headline,
+          current_body: body,
+          current_treatment_summary: treatmentSummary,
+          direction: direction || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (data.draft) {
+        setDraft(data.draft);
+      } else {
+        setRedraftError("Redraft failed — please try again.");
+      }
+    } catch {
+      setRedraftError("Redraft failed — please try again.");
+    } finally {
+      setRedrafting(false);
+    }
+  };
+
+  const handleApproveDraft = () => {
+    if (!draft) return;
+    setHeadline(draft.headline ?? headline);
+    setBody(draft.body ?? body);
+    setTreatmentSummary(draft.treatment_summary ?? treatmentSummary);
+    setDraft(null);
+    setDirection("");
+  };
+
   const handleSave = async () => {
     setSaving(true);
     await fetch(`/api/media/${asset.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ caption: caption || undefined, before_or_after: label }),
+      body: JSON.stringify({
+        before_or_after: label,
+        story_headline: headline || undefined,
+        story_body: body || undefined,
+        story_treatment_summary: treatmentSummary || undefined,
+      }),
     });
     setSaving(false);
     setEditing(false);
+    // Update local display
+    asset.story_headline = headline || asset.story_headline;
+    asset.story_treatment_summary = treatmentSummary || asset.story_treatment_summary;
   };
 
   return (
@@ -143,8 +209,8 @@ function AssetCard({ asset, onRemoved }: { asset: Asset; onRemoved: (id: string)
           )}
 
           <div className="flex items-center gap-2 pt-1">
-            <button onClick={() => setEditing(true)} className="flex items-center gap-1 text-xs text-gray-400 hover:text-cyan-600 transition-colors">
-              <Pencil className="h-3 w-3" /> Edit
+            <button onClick={openEdit} className="flex items-center gap-1 text-xs text-gray-400 hover:text-cyan-600 transition-colors">
+              <Pencil className="h-3 w-3" /> Edit Writeup
             </button>
             <span className="text-gray-200">|</span>
             {takedownStep === "idle" && (
@@ -200,44 +266,182 @@ function AssetCard({ asset, onRemoved }: { asset: Asset; onRemoved: (id: string)
         </div>
       )}
 
-      {/* Edit modal */}
+      {/* Writing Studio modal */}
       {editing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-gray-900">Edit Photo Details</h3>
-              <button onClick={() => setEditing(false)} className="text-gray-400 hover:text-gray-600">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl flex flex-col max-h-[92vh]">
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
+              <div>
+                <h3 className="font-bold text-gray-900">Edit Writeup</h3>
+                <p className="text-xs text-gray-500 mt-0.5">Edit the copy, then ask AI to redraft it — or save as-is.</p>
+              </div>
+              <button onClick={() => setEditing(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <div className="relative aspect-video rounded-lg overflow-hidden bg-gray-100">
-              <Image src={imageUrl} alt="Photo" fill className="object-cover" />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">Before or After?</label>
-              <div className="grid grid-cols-3 gap-2">
-                {[{ value: "before", label: "BEFORE" }, { value: "after", label: "AFTER" }, { value: "na", label: "Single" }].map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => setLabel(opt.value)}
-                    className={`rounded-lg border-2 py-1.5 text-xs font-semibold transition-colors ${label === opt.value ? "border-cyan-500 bg-cyan-50 text-cyan-700" : "border-gray-200 text-gray-600 hover:border-cyan-300"}`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
+
+            <div className="overflow-y-auto flex-1 p-6 space-y-5">
+
+              {/* Photo + label row */}
+              <div className="flex gap-4 items-start">
+                <div className="relative h-24 w-24 shrink-0 rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+                  <Image src={imageUrl} alt="Photo" fill className="object-cover" />
+                </div>
+                <div className="flex-1 space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Photo Type</label>
+                  <div className="flex gap-2">
+                    {[{ value: "before", label: "BEFORE" }, { value: "after", label: "AFTER" }, { value: "na", label: "Single Result" }].map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setLabel(opt.value)}
+                        className={`rounded-lg border-2 px-3 py-1.5 text-xs font-semibold transition-colors ${label === opt.value ? "border-cyan-500 bg-cyan-50 text-cyan-700" : "border-gray-200 text-gray-500 hover:border-cyan-300"}`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
+
+              {/* Current AI copy — editable */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="h-px flex-1 bg-gray-100" />
+                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">AI-Generated Copy</p>
+                  <div className="h-px flex-1 bg-gray-100" />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">Headline</label>
+                  <Textarea
+                    value={headline}
+                    onChange={(e) => setHeadline(e.target.value)}
+                    placeholder="e.g. She stopped hiding her smile after 10 years."
+                    rows={2}
+                    className="text-sm resize-none"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">Story Body</label>
+                  <Textarea
+                    value={body}
+                    onChange={(e) => setBody(e.target.value)}
+                    placeholder="The 2-3 sentence story shown on the gallery card and lightbox..."
+                    rows={4}
+                    className="text-sm resize-none"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">Treatment Summary</label>
+                  <Textarea
+                    value={treatmentSummary}
+                    onChange={(e) => setTreatmentSummary(e.target.value)}
+                    placeholder="e.g. 6 porcelain veneers, completed over two appointments."
+                    rows={2}
+                    className="text-sm resize-none"
+                  />
+                </div>
+              </div>
+
+              {/* AI Redraft section */}
+              <div className="rounded-xl border border-cyan-200 bg-cyan-50 p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-600">
+                    <Pencil className="h-3.5 w-3.5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-cyan-900">Ask AI to Redraft</p>
+                    <p className="text-xs text-cyan-700">Tell the AI what to change, then review the new version before saving.</p>
+                  </div>
+                </div>
+
+                <Textarea
+                  value={direction}
+                  onChange={(e) => setDirection(e.target.value)}
+                  placeholder='Optional: "Make it shorter" · "Focus more on confidence" · "Mention it was done in one visit" · "Warmer tone"'
+                  rows={2}
+                  className="bg-white text-sm resize-none border-cyan-200"
+                />
+
+                <button
+                  onClick={handleRedraft}
+                  disabled={redrafting}
+                  className="w-full flex items-center justify-center gap-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white py-2 text-sm font-semibold transition-colors disabled:opacity-60"
+                >
+                  {redrafting ? (
+                    <><Loader2 className="h-4 w-4 animate-spin" /> Redrafting…</>
+                  ) : (
+                    <><Pencil className="h-4 w-4" /> Redraft with AI</>
+                  )}
+                </button>
+
+                {redraftError && (
+                  <p className="text-xs text-red-600 font-medium">{redraftError}</p>
+                )}
+              </div>
+
+              {/* Draft preview — shown after AI responds */}
+              {draft && (
+                <div className="rounded-xl border-2 border-emerald-300 bg-emerald-50 p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-bold text-emerald-800 flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4" /> AI Redraft Ready — Review &amp; Approve
+                    </p>
+                    <button onClick={() => setDraft(null)} className="text-gray-400 hover:text-gray-600">
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-2 text-sm">
+                    {draft.headline && (
+                      <div className="rounded-lg bg-white border border-emerald-200 p-3">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 mb-1">Headline</p>
+                        <p className="text-gray-800 font-semibold leading-snug">{draft.headline}</p>
+                      </div>
+                    )}
+                    {draft.body && (
+                      <div className="rounded-lg bg-white border border-emerald-200 p-3">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 mb-1">Story Body</p>
+                        <p className="text-gray-700 leading-relaxed">{draft.body}</p>
+                      </div>
+                    )}
+                    {draft.treatment_summary && (
+                      <div className="rounded-lg bg-white border border-emerald-200 p-3">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 mb-1">Treatment Summary</p>
+                        <p className="text-gray-700">{draft.treatment_summary}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setDraft(null)}
+                      className="flex-1 rounded-lg border border-gray-300 bg-white py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      Reject — Keep My Version
+                    </button>
+                    <button
+                      onClick={handleApproveDraft}
+                      className="flex-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white py-2 text-sm font-semibold transition-colors"
+                    >
+                      Approve — Use This Version
+                    </button>
+                  </div>
+                </div>
+              )}
+
             </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">Caption (optional)</label>
-              <Textarea value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="Add a caption..." rows={2} maxLength={200} />
-              <p className="text-right text-[10px] text-gray-400">{caption.length}/200</p>
-            </div>
-            <div className="flex gap-2">
+
+            {/* Footer actions */}
+            <div className="flex gap-3 px-6 py-4 border-t border-gray-100 shrink-0">
               <Button variant="outline" className="flex-1" onClick={() => setEditing(false)}>Cancel</Button>
-              <Button className="flex-1" onClick={handleSave} disabled={saving}>
-                {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Save Changes
+              <Button className="flex-1 bg-gray-900 hover:bg-gray-800" onClick={handleSave} disabled={saving || !!draft}>
+                {saving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving…</> : "Save & Publish Changes"}
               </Button>
             </div>
           </div>

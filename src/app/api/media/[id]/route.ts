@@ -31,6 +31,11 @@ const PatchSchema = z.object({
   case_notes: z.string().optional(),
   consent_confirmed: z.boolean().optional(),
   consent_type: z.string().optional(),
+  // Writable story fields — client-edited or AI-approved drafts
+  story_headline: z.string().max(200).optional(),
+  story_body: z.string().max(2000).optional(),
+  story_caption: z.string().max(500).optional(),
+  story_treatment_summary: z.string().max(500).optional(),
 });
 
 // PATCH /api/media/[id]
