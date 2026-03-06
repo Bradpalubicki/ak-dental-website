@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { siteConfig } from "@/lib/config";
+import { secrets } from "@/lib/secrets";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -21,8 +22,8 @@ export async function GET(request: NextRequest) {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
       code,
-      client_id: process.env.GOOGLE_CLIENT_ID!,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+      client_id: (await secrets.google.clientId()) ?? "",
+      client_secret: await secrets.google.clientSecret(),
       redirect_uri: redirectUri,
       grant_type: "authorization_code",
     }),
