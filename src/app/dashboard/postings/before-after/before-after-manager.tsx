@@ -28,6 +28,7 @@ interface Asset {
   placement: string | null;
   ai_category: string | null;
   story_headline: string | null;
+  story_body: string | null;
   story_treatment_summary: string | null;
   created_at: string;
   rejection_reason: string | null;
@@ -105,7 +106,7 @@ function AssetCard({ asset, onRemoved }: { asset: Asset; onRemoved: (id: string)
 
   function openEdit() {
     setHeadline(asset.story_headline ?? "");
-    setBody((asset as unknown as Record<string, string>).story_body ?? "");
+    setBody(asset.story_body ?? "");
     setTreatmentSummary(asset.story_treatment_summary ?? "");
     setDirection("");
     setDraft(null);
