@@ -1,12 +1,11 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
-import { ArrowRight, Phone, Shield, Camera, Star } from "lucide-react";
+import { ArrowRight, Phone, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { BreadcrumbSchema } from "@/components/schema/local-business";
 import { siteConfig } from "@/lib/config";
 import { createServiceSupabase } from "@/lib/supabase/server";
+import { GalleryClient } from "./gallery-client";
 
 export const metadata: Metadata = {
   title: "Before & After Smile Gallery | AK Ultimate Dental Las Vegas",
@@ -30,154 +29,19 @@ export const metadata: Metadata = {
   },
 };
 
-const categories = [
-  {
-    id: "veneers",
-    label: "Porcelain Veneers",
-    href: "/services/porcelain-veneers",
-    color: "bg-purple-100 text-purple-800 border-purple-200",
-  },
-  {
-    id: "implants",
-    label: "Dental Implants",
-    href: "/services/dental-implants",
-    color: "bg-blue-100 text-blue-800 border-blue-200",
-  },
-  {
-    id: "whitening",
-    label: "Teeth Whitening",
-    href: "/services/cosmetic-dentistry",
-    color: "bg-yellow-100 text-yellow-800 border-yellow-200",
-  },
-  {
-    id: "crowns",
-    label: "Crowns & Bridges",
-    href: "/services/crowns-bridges",
-    color: "bg-green-100 text-green-800 border-green-200",
-  },
-  {
-    id: "smile-makeover",
-    label: "Smile Makeovers",
-    href: "/services/cosmetic-dentistry",
-    color: "bg-pink-100 text-pink-800 border-pink-200",
-  },
-];
-
-const cases = [
-  {
-    id: 1,
-    category: "veneers",
-    categoryLabel: "Porcelain Veneers",
-    title: "Complete Smile Transformation",
-    description: "8 porcelain veneers for a natural, symmetrical smile. Treatment completed in 2 visits.",
-    duration: "2 visits · 3 weeks",
-    beforeImage: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400&h=300&fit=crop&q=80",
-    afterImage: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=400&h=300&fit=crop&q=80",
-    patientNote: "Las Vegas patient, age 34",
-    placeholder: true,
-  },
-  {
-    id: 2,
-    category: "implants",
-    categoryLabel: "Dental Implants",
-    title: "Single Tooth Implant",
-    description: "Single implant replacing a missing molar. Restored full bite function and natural appearance.",
-    duration: "4–6 months total",
-    beforeImage: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400&h=300&fit=crop&q=80",
-    afterImage: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop&q=80",
-    patientNote: "Las Vegas patient, age 52",
-    placeholder: true,
-  },
-  {
-    id: 3,
-    category: "whitening",
-    categoryLabel: "Teeth Whitening",
-    title: "Professional In-Office Whitening",
-    description: "6–8 shades brighter with in-office whitening in a single appointment.",
-    duration: "1 visit · 90 minutes",
-    beforeImage: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400&h=300&fit=crop&q=80",
-    afterImage: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=400&h=300&fit=crop&q=80",
-    patientNote: "Las Vegas patient, age 28",
-    placeholder: true,
-  },
-  {
-    id: 4,
-    category: "crowns",
-    categoryLabel: "CEREC Same-Day Crown",
-    title: "Same-Day Ceramic Crown",
-    description: "CEREC crown milled in-office. Perfectly matched to natural tooth color. Completed in one visit.",
-    duration: "1 visit · 2 hours",
-    beforeImage: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400&h=300&fit=crop&q=80",
-    afterImage: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop&q=80",
-    patientNote: "Las Vegas patient, age 45",
-    placeholder: true,
-  },
-  {
-    id: 5,
-    category: "smile-makeover",
-    categoryLabel: "Smile Makeover",
-    title: "Full Smile Makeover",
-    description: "Combination of veneers, whitening, and gum contouring for a complete transformation.",
-    duration: "6 weeks · 4 visits",
-    beforeImage: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400&h=300&fit=crop&q=80",
-    afterImage: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=400&h=300&fit=crop&q=80",
-    patientNote: "Las Vegas patient, age 41",
-    placeholder: true,
-  },
-  {
-    id: 6,
-    category: "veneers",
-    categoryLabel: "Porcelain Veneers",
-    title: "Chipped & Worn Teeth Restored",
-    description: "6 upper veneers correcting chipping, wear, and slight misalignment without orthodontics.",
-    duration: "2 visits · 3 weeks",
-    beforeImage: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400&h=300&fit=crop&q=80",
-    afterImage: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=400&h=300&fit=crop&q=80",
-    patientNote: "Summerlin patient, age 39",
-    placeholder: true,
-  },
-  {
-    id: 7,
-    category: "implants",
-    categoryLabel: "Dental Implants",
-    title: "Full-Arch Implant Restoration",
-    description: "Multiple implants replacing a full arch with fixed, permanent teeth — no more dentures.",
-    duration: "6–9 months",
-    beforeImage: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400&h=300&fit=crop&q=80",
-    afterImage: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop&q=80",
-    patientNote: "Henderson patient, age 61",
-    placeholder: true,
-  },
-  {
-    id: 8,
-    category: "smile-makeover",
-    categoryLabel: "Smile Makeover",
-    title: "Wedding Smile Preparation",
-    description: "Whitening + 4 veneers + composite bonding for a picture-perfect smile before the big day.",
-    duration: "4 weeks",
-    beforeImage: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400&h=300&fit=crop&q=80",
-    afterImage: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=400&h=300&fit=crop&q=80",
-    patientNote: "Las Vegas patient, age 29",
-    placeholder: true,
-  },
-];
-
 export const dynamic = "force-dynamic";
 
 export default async function SmileGalleryPage() {
-  // Fetch real published photos from DB
   const supabase = createServiceSupabase();
-  const { data: publishedPhotos } = await supabase
+  const { data: photos } = await supabase
     .from("media_assets")
-    .select("id, blob_url, service_category, before_or_after, caption, ai_description, ai_quality, is_featured, paired_with_id, story_headline, story_body, story_caption, story_treatment_summary")
+    .select("id, blob_url, service_category, before_or_after, caption, ai_description, ai_quality, is_featured, story_headline, story_body, story_caption, story_treatment_summary")
     .eq("practice_id", "ak-ultimate-dental")
     .eq("status", "published")
     .eq("photo_type", "patient_result")
     .order("is_featured", { ascending: false })
     .order("published_at", { ascending: false })
-    .limit(50);
-
-  const hasRealPhotos = publishedPhotos && publishedPhotos.length > 0;
+    .limit(200);
 
   return (
     <>
@@ -227,155 +91,8 @@ export default async function SmileGalleryPage() {
         </div>
       </section>
 
-      {/* Category Filter Labels */}
-      <section className="py-8 bg-white border-b">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-wrap gap-3 justify-center">
-            <span className="font-semibold text-gray-700 self-center">Browse by treatment:</span>
-            {categories.map((cat) => (
-              <Link
-                key={cat.id}
-                href={cat.href}
-                className={`border rounded-full px-4 py-1.5 text-sm font-medium hover:shadow-md transition-shadow ${cat.color}`}
-              >
-                {cat.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Gallery Grid */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-
-            {/* Real patient photos from DB */}
-            {hasRealPhotos && (
-              <div className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Recent Patient Results</h2>
-                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {publishedPhotos.map((photo) => {
-                    const headline = photo.story_headline;
-                    // Fallback chain: story_body → ai_description → caption
-                    const description = photo.story_body ?? photo.ai_description ?? photo.story_caption ?? photo.caption;
-                    const treatmentSummary = photo.story_treatment_summary;
-                    const altText = headline ?? description ?? `${photo.service_category ?? "Patient result"} — AK Ultimate Dental Las Vegas`;
-                    return (
-                      <div key={photo.id} className="group rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 bg-white flex flex-col">
-                        <div className="relative aspect-[4/3]">
-                          <Image
-                            src={photo.blob_url}
-                            alt={altText}
-                            fill
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                          {photo.before_or_after && photo.before_or_after !== "na" && (
-                            <div className={`absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-full text-white shadow ${photo.before_or_after === "before" ? "bg-gray-800" : "bg-cyan-600"}`}>
-                              {photo.before_or_after.toUpperCase()}
-                            </div>
-                          )}
-                          {photo.is_featured && (
-                            <div className="absolute top-3 right-3 bg-yellow-400 text-yellow-900 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow">
-                              <Star className="h-3 w-3 fill-yellow-900" /> Featured
-                            </div>
-                          )}
-                        </div>
-                        <div className="p-4 flex flex-col gap-2 flex-1">
-                          {photo.service_category && (
-                            <p className="text-xs font-semibold text-cyan-600 uppercase tracking-wider capitalize">{photo.service_category}</p>
-                          )}
-                          {headline && (
-                            <h3 className="font-bold text-gray-900 leading-snug">{headline}</h3>
-                          )}
-                          {description && (
-                            <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
-                          )}
-                          {treatmentSummary && (
-                            <p className="text-xs text-gray-400 mt-auto pt-2 border-t border-gray-100">{treatmentSummary}</p>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Coming Soon Notice */}
-            <div className="bg-cyan-50 border border-cyan-200 rounded-2xl p-6 mb-10 flex items-start gap-4">
-              <Camera className="h-6 w-6 text-cyan-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="font-bold text-cyan-900 mb-1">More photos being added regularly</p>
-                <p className="text-cyan-800 text-sm">
-                  We photograph new cases weekly. Ask your care coordinator at your appointment — we&apos;re
-                  happy to show you specific case types matching your treatment goals.
-                </p>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              {cases.map((c) => {
-                const cat = categories.find((cat) => cat.id === c.category);
-                return (
-                  <div key={c.id} className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow overflow-hidden border border-gray-100">
-                    {/* Before/After Images */}
-                    <div className="grid grid-cols-2 relative">
-                      <div className="relative aspect-[4/3]">
-                        <Image
-                          src={c.beforeImage}
-                          alt={`Before ${c.title} — AK Ultimate Dental Las Vegas`}
-                          fill
-                          sizes="(max-width: 768px) 50vw, 25vw"
-                          className="object-cover"
-                        />
-                        <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs font-bold px-2 py-1 rounded">
-                          BEFORE
-                        </div>
-                      </div>
-                      <div className="relative aspect-[4/3]">
-                        <Image
-                          src={c.afterImage}
-                          alt={`After ${c.title} — AK Ultimate Dental Las Vegas`}
-                          fill
-                          sizes="(max-width: 768px) 50vw, 25vw"
-                          className="object-cover"
-                        />
-                        <div className="absolute bottom-2 right-2 bg-cyan-600 text-white text-xs font-bold px-2 py-1 rounded">
-                          AFTER
-                        </div>
-                      </div>
-                      {/* Divider line */}
-                      <div className="absolute inset-y-0 left-1/2 w-0.5 bg-white z-10" />
-                    </div>
-
-                    {/* Case Info */}
-                    <div className="p-5">
-                      {cat && (
-                        <Badge className={`${cat.color} border mb-3 text-xs`}>
-                          {c.categoryLabel}
-                        </Badge>
-                      )}
-                      <h3 className="text-lg font-bold text-gray-900 mb-1">{c.title}</h3>
-                      <p className="text-gray-600 text-sm mb-3">{c.description}</p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex gap-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-                          ))}
-                          <span className="text-xs text-gray-500 ml-1">{c.patientNote}</span>
-                        </div>
-                        <span className="text-xs text-gray-400">{c.duration}</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Client-side gallery with filters */}
+      <GalleryClient photos={photos ?? []} />
 
       {/* CTA */}
       <section className="py-20 bg-white">
