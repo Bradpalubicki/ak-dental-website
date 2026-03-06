@@ -6,6 +6,7 @@ import Image from "next/image";
 import {
   Camera, CheckCircle, Clock, XCircle, Globe, Trash2,
   Loader2, Pencil, X, ChevronRight, AlertTriangle, Upload,
+  Link2, Link2Off, SplitSquareHorizontal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +22,7 @@ interface Asset {
   photo_type: string | null;
   service_category: string | null;
   before_or_after: string | null;
+  pair_group_id: string | null;
   caption: string | null;
   case_notes: string | null;
   placement: string | null;
@@ -643,7 +645,145 @@ const FILTER_TABS = [
   { key: "published", label: "Live on Site" },
   { key: "pending",   label: "In Review" },
   { key: "rejected",  label: "Needs Attention" },
+  { key: "pairs",     label: "Pair Photos" },
 ];
+
+// ─── Pair Mode ────────────────────────────────────────────────────────────────
+
+function PairMode({ assets, onPaired }: { assets: Asset[]; onPaired: () => void }) {
+  const [selected, setSelected] = useState<string[]>([]);
+  const [pairing, setPairing] = useState(false);
+
+  const unpaired = assets.filter((a) => !a.pair_group_id && (a.before_or_after === "before" || a.before_or_after === "after" || a.before_or_after === "na" || !a.before_or_after));
+
+  function toggleSelect(id: string) {
+    setSelected((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : prev.length < 2 ? [...prev, id] : [prev[1], id]);
+  }
+
+  async function handlePair() {
+    if (selected.length !== 2) return;
+    setPairing(true);
+    // Determine which is before/after by their label; if both same, use order of selection
+    const a1 = assets.find((a) => a.id === selected[0])!;
+    const a2 = assets.find((a) => a.id === selected[1])!;
+    let beforeId = selected[0];
+    let afterId = selected[1];
+    if (a1.before_or_after === "after" || a2.before_or_after === "before") {
+      beforeId = selected[1];
+      afterId = selected[0];
+    }
+    await fetch("/api/media/pair", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ beforeId, afterId }) });
+    setPairing(false);
+    setSelected([]);
+    onPaired();
+  }
+
+  async function handleUnpair(assetId: string) {
+    await fetch("/api/media/pair", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ assetId }) });
+    onPaired();
+  }
+
+  const paired = assets.filter((a) => a.pair_group_id);
+  const pairedGroups: Record<string, Asset[]> = {};
+  paired.forEach((a) => {
+    if (a.pair_group_id) {
+      pairedGroups[a.pair_group_id] = pairedGroups[a.pair_group_id] ?? [];
+      pairedGroups[a.pair_group_id].push(a);
+    }
+  });
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-xl bg-blue-50 border border-blue-200 p-4 text-sm text-blue-800">
+        <p className="font-semibold flex items-center gap-2"><SplitSquareHorizontal className="h-4 w-4" /> How pairing works</p>
+        <p className="mt-1">Select a <strong>Before</strong> photo and an <strong>After</strong> photo, then click Pair. Paired photos show as a side-by-side comparison in your public Smile Gallery.</p>
+      </div>
+
+      {/* Existing pairs */}
+      {Object.keys(pairedGroups).length > 0 && (
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Existing Pairs</h3>
+          {Object.entries(pairedGroups).map(([groupId, group]) => {
+            const before = group.find((a) => a.before_or_after === "before") ?? group[0];
+            const after = group.find((a) => a.before_or_after === "after") ?? group[1];
+            if (!before || !after) return null;
+            return (
+              <div key={groupId} className="flex items-center gap-3 rounded-xl border border-cyan-200 bg-white p-3">
+                <div className="flex gap-2 flex-1 min-w-0">
+                  <div className="relative h-16 w-16 shrink-0 rounded-lg overflow-hidden border">
+                    <Image src={before.blob_url} alt="Before" fill className="object-cover" />
+                    <div className="absolute bottom-1 left-1 bg-gray-800/80 text-white text-[8px] font-bold px-1 rounded">B</div>
+                  </div>
+                  <Link2 className="h-4 w-4 self-center text-cyan-500 shrink-0" />
+                  <div className="relative h-16 w-16 shrink-0 rounded-lg overflow-hidden border">
+                    <Image src={after.blob_url} alt="After" fill className="object-cover" />
+                    <div className="absolute bottom-1 right-1 bg-cyan-600/80 text-white text-[8px] font-bold px-1 rounded">A</div>
+                  </div>
+                  <div className="ml-2 min-w-0">
+                    <p className="text-sm font-medium text-gray-700 truncate">{after.story_headline ?? before.service_category ?? "Paired case"}</p>
+                    <p className="text-xs text-cyan-600 font-semibold">Linked pair — shows side by side in gallery</p>
+                  </div>
+                </div>
+                <button onClick={() => handleUnpair(before.id)} className="shrink-0 p-2 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors" title="Unlink pair">
+                  <Link2Off className="h-4 w-4" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Select to pair */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+            Unpaired Photos <span className="text-gray-400 font-normal">({unpaired.length})</span>
+          </h3>
+          {selected.length === 2 && (
+            <Button onClick={handlePair} disabled={pairing} size="sm" className="bg-cyan-600 hover:bg-cyan-700 border-0 text-white">
+              {pairing ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Link2 className="h-3 w-3 mr-1" />}
+              Pair Selected ({selected.length}/2)
+            </Button>
+          )}
+          {selected.length === 1 && (
+            <p className="text-sm text-gray-500">Select 1 more photo to pair</p>
+          )}
+        </div>
+
+        {unpaired.length === 0 ? (
+          <p className="text-sm text-gray-400 py-4 text-center">All photos are paired.</p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {unpaired.map((a) => {
+              const isSelected = selected.includes(a.id);
+              return (
+                <button
+                  key={a.id}
+                  onClick={() => toggleSelect(a.id)}
+                  className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all ${isSelected ? "border-cyan-500 ring-2 ring-cyan-300 scale-95" : "border-gray-200 hover:border-cyan-300"}`}
+                >
+                  <Image src={a.blob_url} alt="" fill className="object-cover" />
+                  {a.before_or_after && a.before_or_after !== "na" && (
+                    <div className={`absolute top-1.5 left-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full text-white ${a.before_or_after === "before" ? "bg-gray-800" : "bg-cyan-600"}`}>
+                      {a.before_or_after.toUpperCase()}
+                    </div>
+                  )}
+                  {isSelected && (
+                    <div className="absolute inset-0 bg-cyan-500/20 flex items-center justify-center">
+                      <div className="bg-cyan-600 text-white rounded-full h-6 w-6 flex items-center justify-center text-xs font-bold">
+                        {selected.indexOf(a.id) + 1}
+                      </div>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export function BeforeAfterManager({ initialAssets }: Props) {
   const [assets, setAssets] = useState(initialAssets);
@@ -722,8 +862,10 @@ export function BeforeAfterManager({ initialAssets }: Props) {
         </div>
       )}
 
-      {/* Grid */}
-      {filtered.length > 0 ? (
+      {/* Grid or Pair Mode */}
+      {filter === "pairs" ? (
+        <PairMode assets={assets} onPaired={() => window.location.reload()} />
+      ) : filtered.length > 0 ? (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
           {filtered.map((a) => (
             <AssetCard key={a.id} asset={a} onRemoved={handleRemoved} />

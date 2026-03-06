@@ -29,5 +29,22 @@ export default async function PostingsPage() {
   const published = (assets ?? []).filter((a) => a.status === "published");
   const pending = (assets ?? []).filter((a) => a.status === "pending");
 
-  return <PostingsHub published={published} pending={pending} />;
+  const now = new Date().toISOString();
+  const [{ count: activeSpecials }, { count: activeAnnouncements }] = await Promise.all([
+    supabase.from("practice_specials").select("id", { count: "exact", head: true })
+      .eq("practice_id", PRACTICE_ID).eq("status", "active")
+      .or(`expires_at.is.null,expires_at.gt.${now}`),
+    supabase.from("practice_announcements").select("id", { count: "exact", head: true })
+      .eq("practice_id", PRACTICE_ID).eq("status", "active")
+      .or(`expires_at.is.null,expires_at.gt.${now}`),
+  ]);
+
+  return (
+    <PostingsHub
+      published={published}
+      pending={pending}
+      activeSpecials={activeSpecials ?? 0}
+      activeAnnouncements={activeAnnouncements ?? 0}
+    />
+  );
 }

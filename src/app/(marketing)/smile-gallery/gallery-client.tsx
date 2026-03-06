@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { X, ArrowRight, Star } from "lucide-react";
+import { X, ArrowRight, Star, SplitSquareHorizontal, ChevronRight, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -13,6 +13,7 @@ interface Photo {
   blob_url: string;
   service_category: string | null;
   before_or_after: string | null;
+  pair_group_id: string | null;
   caption: string | null;
   ai_description: string | null;
   ai_quality: string | null;
@@ -56,6 +57,58 @@ function matchCategory(raw: string | null): string {
   if (s.includes("gum") || s.includes("contouring")) return "gum_contouring";
   if (s.includes("ortho") || s.includes("invisalign") || s.includes("aligner")) return "invisalign_ortho";
   return "other";
+}
+
+// ─── Before/After Pair Card ───────────────────────────────────────────────────
+
+function BeforeAfterPairCard({
+  before,
+  after,
+  onClick,
+}: {
+  before: Photo;
+  after: Photo;
+  onClick: (p: Photo) => void;
+}) {
+  const headline = after.story_headline ?? before.story_headline;
+  const summary = after.story_treatment_summary;
+  const category = after.service_category;
+
+  return (
+    <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl hover:border-cyan-300 transition-all duration-300 bg-white flex flex-col">
+      {/* Side-by-side images */}
+      <div className="grid grid-cols-2 gap-0.5 bg-gray-200">
+        <div className="relative aspect-[3/4] overflow-hidden">
+          <Image src={before.blob_url} alt="Before" fill sizes="(max-width: 640px) 50vw, 25vw" className="object-cover" />
+          <div className="absolute bottom-2 left-2 bg-gray-900/80 text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">Before</div>
+        </div>
+        <div className="relative aspect-[3/4] overflow-hidden cursor-pointer" onClick={() => onClick(after)}>
+          <Image src={after.blob_url} alt="After" fill sizes="(max-width: 640px) 50vw, 25vw" className="object-cover hover:scale-105 transition-transform duration-500" />
+          <div className="absolute bottom-2 right-2 bg-cyan-600/90 text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">After</div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity flex items-end p-3">
+            <span className="text-white text-xs font-medium">See Full Story →</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Copy */}
+      <div className="p-4 flex flex-col gap-2 flex-1">
+        {category && (
+          <p className="text-xs font-semibold text-cyan-600 uppercase tracking-wider capitalize">
+            {category.replace(/_/g, " ")}
+          </p>
+        )}
+        {headline && <h3 className="font-bold text-gray-900 leading-snug line-clamp-2">{headline}</h3>}
+        {summary && <p className="text-xs text-gray-400 border-t border-gray-100 pt-2 mt-auto">{summary}</p>}
+        <button
+          onClick={() => onClick(after)}
+          className="mt-2 w-full text-center text-xs font-semibold text-cyan-600 hover:text-cyan-800 py-2 rounded-lg border border-cyan-100 hover:border-cyan-300 transition-colors"
+        >
+          Read the Full Story →
+        </button>
+      </div>
+    </div>
+  );
 }
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
@@ -187,9 +240,11 @@ function Lightbox({ photo, onClose }: { photo: Photo; onClose: () => void }) {
 
 // ─── Main Gallery ─────────────────────────────────────────────────────────────
 
+type ViewMode = "grid" | "pairs";
+
 export function GalleryClient({ photos }: Props) {
   const [activeCategory, setActiveCategory] = useState("all");
-  const [pairsOnly, setPairsOnly] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [lightboxPhoto, setLightboxPhoto] = useState<Photo | null>(null);
 
   // Only show categories that have at least one photo
@@ -202,16 +257,38 @@ export function GalleryClient({ photos }: Props) {
     return CATEGORIES.filter((c) => c.key === "all" || (counts[c.key] ?? 0) > 0);
   }, [photos]);
 
+  // Build paired before/after groups from pair_group_id
+  const { pairs, singles } = useMemo(() => {
+    const grouped: Record<string, Photo[]> = {};
+    const ungrouped: Photo[] = [];
+    photos.forEach((p) => {
+      if (p.pair_group_id) {
+        grouped[p.pair_group_id] = grouped[p.pair_group_id] ?? [];
+        grouped[p.pair_group_id].push(p);
+      } else {
+        ungrouped.push(p);
+      }
+    });
+    const pairList = Object.values(grouped).filter((g) => g.length === 2).map((g) => {
+      const before = g.find((p) => p.before_or_after === "before");
+      const after = g.find((p) => p.before_or_after === "after");
+      return before && after ? { before, after } : null;
+    }).filter(Boolean) as { before: Photo; after: Photo }[];
+    return { pairs: pairList, singles: ungrouped };
+  }, [photos]);
+
   const filtered = useMemo(() => {
     let list = photos;
     if (activeCategory !== "all") {
       list = list.filter((p) => matchCategory(p.service_category) === activeCategory);
     }
-    if (pairsOnly) {
-      list = list.filter((p) => p.before_or_after === "before" || p.before_or_after === "after");
-    }
     return list;
-  }, [photos, activeCategory, pairsOnly]);
+  }, [photos, activeCategory]);
+
+  const filteredPairs = useMemo(() => {
+    if (activeCategory === "all") return pairs;
+    return pairs.filter((pair) => matchCategory(pair.after.service_category) === activeCategory || matchCategory(pair.before.service_category) === activeCategory);
+  }, [pairs, activeCategory]);
 
   if (photos.length === 0) {
     return (
@@ -255,44 +332,72 @@ export function GalleryClient({ photos }: Props) {
                 ))}
               </div>
 
-              {/* Before/After toggle + count */}
+              {/* View mode + count */}
               <div className="flex items-center justify-between flex-wrap gap-3">
-                <label className="flex items-center gap-2 cursor-pointer select-none">
-                  <div
-                    onClick={() => setPairsOnly((v) => !v)}
-                    className={`relative h-5 w-9 rounded-full transition-colors ${pairsOnly ? "bg-cyan-500" : "bg-gray-300"}`}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setViewMode("grid")}
+                    className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-all ${viewMode === "grid" ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"}`}
                   >
-                    <span className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${pairsOnly ? "translate-x-4" : "translate-x-0"}`} />
-                  </div>
-                  <span className="text-sm text-gray-600">Before &amp; after pairs only</span>
-                </label>
+                    All Photos
+                  </button>
+                  {pairs.length > 0 && (
+                    <button
+                      onClick={() => setViewMode("pairs")}
+                      className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-all ${viewMode === "pairs" ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"}`}
+                    >
+                      <SplitSquareHorizontal className="h-3.5 w-3.5" />
+                      Before &amp; After Pairs
+                    </button>
+                  )}
+                </div>
                 <p className="text-sm text-gray-400">
-                  {filtered.length} result{filtered.length !== 1 ? "s" : ""}
+                  {viewMode === "pairs" ? `${filteredPairs.length} pair${filteredPairs.length !== 1 ? "s" : ""}` : `${filtered.length} result${filtered.length !== 1 ? "s" : ""}`}
                 </p>
               </div>
             </div>
 
             {/* Grid */}
-            {filtered.length > 0 ? (
-              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
-                {filtered.map((photo) => (
-                  <GalleryCard
-                    key={photo.id}
-                    photo={photo}
-                    onClick={() => setLightboxPhoto(photo)}
-                  />
-                ))}
-              </div>
+            {viewMode === "pairs" ? (
+              filteredPairs.length > 0 ? (
+                <div className="grid sm:grid-cols-2 gap-5">
+                  {filteredPairs.map(({ before, after }) => (
+                    <BeforeAfterPairCard
+                      key={after.pair_group_id ?? after.id}
+                      before={before}
+                      after={after}
+                      onClick={(p) => setLightboxPhoto(p)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="py-16 text-center">
+                  <p className="text-gray-500">No paired before &amp; afters in this category yet.</p>
+                  <button onClick={() => setActiveCategory("all")} className="mt-3 text-sm text-cyan-600 hover:underline">Show all categories</button>
+                </div>
+              )
             ) : (
-              <div className="py-16 text-center">
-                <p className="text-gray-500">No results in this category yet. Check back soon.</p>
-                <button
-                  onClick={() => { setActiveCategory("all"); setPairsOnly(false); }}
-                  className="mt-3 text-sm text-cyan-600 hover:underline"
-                >
-                  Show all results
-                </button>
-              </div>
+              filtered.length > 0 ? (
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
+                  {filtered.map((photo) => (
+                    <GalleryCard
+                      key={photo.id}
+                      photo={photo}
+                      onClick={() => setLightboxPhoto(photo)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="py-16 text-center">
+                  <p className="text-gray-500">No results in this category yet. Check back soon.</p>
+                  <button
+                    onClick={() => setActiveCategory("all")}
+                    className="mt-3 text-sm text-cyan-600 hover:underline"
+                  >
+                    Show all results
+                  </button>
+                </div>
+              )
             )}
 
             {/* CTA nudge inline */}

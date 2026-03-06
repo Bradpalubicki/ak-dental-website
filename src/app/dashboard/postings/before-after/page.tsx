@@ -18,7 +18,7 @@ export default async function BeforeAfterPage() {
   const supabase = createServiceSupabase();
   const { data: assets } = await supabase
     .from("media_assets")
-    .select("id, blob_url, pending_blob_url, status, photo_type, service_category, before_or_after, caption, case_notes, placement, ai_category, story_headline, story_treatment_summary, created_at, rejection_reason")
+    .select("id, blob_url, pending_blob_url, status, photo_type, service_category, before_or_after, pair_group_id, caption, case_notes, placement, ai_category, story_headline, story_treatment_summary, created_at, rejection_reason")
     .eq("practice_id", PRACTICE_ID)
     .eq("photo_type", "patient_result")
     .order("created_at", { ascending: false })

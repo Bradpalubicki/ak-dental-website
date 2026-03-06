@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { StickyEmergencyBar } from "@/components/marketing/sticky-emergency-bar";
+import { AnnouncementBanner } from "@/components/layout/announcement-banner";
 
 export default function MarketingLayout({
   children,
@@ -9,6 +10,7 @@ export default function MarketingLayout({
 }) {
   return (
     <>
+      <AnnouncementBanner />
       <Header />
       <main className="min-h-screen pb-14 md:pb-0">{children}</main>
       <Footer />

@@ -35,7 +35,7 @@ export default async function SmileGalleryPage() {
   const supabase = createServiceSupabase();
   const { data: photos } = await supabase
     .from("media_assets")
-    .select("id, blob_url, service_category, before_or_after, caption, ai_description, ai_quality, is_featured, story_headline, story_body, story_caption, story_treatment_summary")
+    .select("id, blob_url, service_category, before_or_after, pair_group_id, caption, ai_description, ai_quality, is_featured, story_headline, story_body, story_caption, story_treatment_summary")
     .eq("practice_id", "ak-ultimate-dental")
     .eq("status", "published")
     .eq("photo_type", "patient_result")

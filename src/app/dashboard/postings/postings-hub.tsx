@@ -29,6 +29,8 @@ interface Asset {
 interface Props {
   published: Asset[];
   pending: Asset[];
+  activeSpecials: number;
+  activeAnnouncements: number;
 }
 
 const ACTIONS = [
@@ -47,35 +49,41 @@ const ACTIONS = [
     icon: Tag,
     iconColor: "text-amber-600",
     iconBg: "bg-amber-50",
-    title: "Create a Special Offer",
-    description: "Publish a promotion to your Specials page. Set an expiry date and it removes itself automatically.",
-    badge: "Coming Soon",
-    badgeColor: "bg-slate-100 text-slate-500",
+    title: "Special Offers",
+    description: "Publish promotions to your Specials page. Set an expiry date and they remove themselves automatically.",
+    badge: null,
+    badgeColor: "",
   },
   {
     href: "/dashboard/postings/announcements",
     icon: Megaphone,
     iconColor: "text-violet-600",
     iconBg: "bg-violet-50",
-    title: "Post an Announcement",
+    title: "Announcements",
     description: "Add a temporary banner to the top of your website. Great for holiday hours, closures, or news.",
-    badge: "Coming Soon",
-    badgeColor: "bg-slate-100 text-slate-500",
+    badge: null,
+    badgeColor: "",
   },
   {
     href: "/dashboard/postings/hours",
     icon: Clock3,
     iconColor: "text-emerald-600",
     iconBg: "bg-emerald-50",
-    title: "Update Office Hours",
-    description: "Change your displayed hours and optionally add a banner. Holiday and temporary changes supported.",
-    badge: "Coming Soon",
-    badgeColor: "bg-slate-100 text-slate-500",
+    title: "Office Hours Override",
+    description: "Set temporary hours for holidays or closures. Shown on your site with an optional banner.",
+    badge: null,
+    badgeColor: "",
   },
 ];
 
-export function PostingsHub({ published, pending }: Props) {
+export function PostingsHub({ published, pending, activeSpecials, activeAnnouncements }: Props) {
   const totalLive = published.length;
+
+  // Inject live counts into action cards so dashboard feels alive
+  const ACTION_COUNTS: Record<string, string | null> = {
+    "/dashboard/postings/specials": activeSpecials > 0 ? `${activeSpecials} live` : null,
+    "/dashboard/postings/announcements": activeAnnouncements > 0 ? `${activeAnnouncements} live` : null,
+  };
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8 space-y-10">
@@ -112,40 +120,26 @@ export function PostingsHub({ published, pending }: Props) {
         <div className="grid gap-3 sm:grid-cols-2">
           {ACTIONS.map((action) => {
             const Icon = action.icon;
-            const isComingSoon = action.badge === "Coming Soon";
-            const cardContent = (
-              <div
-                className={`group flex items-start gap-4 rounded-xl border bg-white p-5 transition-all
-                  ${isComingSoon
-                    ? "border-gray-100 opacity-60 cursor-not-allowed"
-                    : "border-gray-200 hover:border-cyan-300 hover:shadow-md cursor-pointer"
-                  }`}
-              >
-                <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${action.iconBg}`}>
-                  <Icon className={`h-5 w-5 ${action.iconColor}`} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <p className="font-semibold text-gray-900">{action.title}</p>
-                    {action.badge && (
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${action.badgeColor}`}>
-                        {action.badge}
-                      </span>
-                    )}
-                  </div>
-                  <p className="mt-0.5 text-sm text-gray-500">{action.description}</p>
-                </div>
-                {!isComingSoon && (
-                  <ChevronRight className="h-4 w-4 text-gray-300 group-hover:text-cyan-500 transition-colors self-center shrink-0" />
-                )}
-              </div>
-            );
-
-            return isComingSoon ? (
-              <div key={action.href}>{cardContent}</div>
-            ) : (
+            const liveCount = ACTION_COUNTS[action.href];
+            return (
               <Link key={action.href} href={action.href}>
-                {cardContent}
+                <div className="group flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-5 transition-all hover:border-cyan-300 hover:shadow-md cursor-pointer">
+                  <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${action.iconBg}`}>
+                    <Icon className={`h-5 w-5 ${action.iconColor}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-semibold text-gray-900">{action.title}</p>
+                      {liveCount && (
+                        <span className="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          {liveCount}
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-0.5 text-sm text-gray-500">{action.description}</p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-gray-300 group-hover:text-cyan-500 transition-colors self-center shrink-0" />
+                </div>
               </Link>
             );
           })}

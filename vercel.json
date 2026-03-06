@@ -51,6 +51,10 @@
     {
       "path": "/api/cron/no-show",
       "schedule": "*/30 13-20 * * 1-6"
+    },
+    {
+      "path": "/api/cron/expire-postings",
+      "schedule": "0 2 * * *"
     }
   ]
 }
