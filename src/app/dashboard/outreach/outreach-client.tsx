@@ -356,6 +356,7 @@ export function OutreachClient({ initialWorkflows, analytics }: { initialWorkflo
   ]);
   const [saving, setSaving] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [launching, setLaunching] = useState<string | null>(null);
 
   const openCreate = () => {
     setEditingWorkflow(null);
@@ -417,6 +418,27 @@ export function OutreachClient({ initialWorkflows, analytics }: { initialWorkflo
     setPendingDeleteId(null);
     toast.success("Workflow deleted.");
     window.location.reload();
+  };
+
+  const handleLaunch = async (workflowId: string, workflowName: string) => {
+    setLaunching(workflowId);
+    try {
+      const res = await fetch("/api/outreach/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ workflow_id: workflowId, channel: "both", test_mode: false }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success(`Campaign launched — ${data.results.sent} messages sent`);
+      } else {
+        toast.error(data.error || "Launch failed");
+      }
+    } catch {
+      toast.error("Failed to launch campaign");
+    } finally {
+      setLaunching(null);
+    }
   };
 
   const handleToggleStatus = async (id: string, currentStatus: string) => {
@@ -800,6 +822,19 @@ export function OutreachClient({ initialWorkflows, analytics }: { initialWorkflo
                           <Play className="h-3 w-3" /> Activate
                         </button>
                       )}
+                      <button
+                        onClick={() => void handleLaunch(workflow.id, workflow.name)}
+                        disabled={launching === workflow.id}
+                        title="Send campaign now to all active patients"
+                        className="flex items-center gap-1.5 rounded-lg bg-cyan-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-cyan-700 disabled:opacity-50 transition-colors"
+                      >
+                        {launching === workflow.id ? (
+                          <RefreshCw className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <Send className="h-3 w-3" />
+                        )}
+                        {launching === workflow.id ? "Sending..." : "Launch"}
+                      </button>
                       <button
                         onClick={() => openEdit(workflow)}
                         className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 transition-colors"

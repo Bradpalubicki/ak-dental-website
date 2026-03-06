@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { toast } from "sonner";
 import {
   Phone,
   PhoneIncoming,
@@ -253,6 +254,37 @@ export function CallsClient({ initialCalls, analytics, vapiConfigured = false }:
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [directionFilter, setDirectionFilter] = useState<string>("all");
+  const [missedCallAutoReply, setMissedCallAutoReply] = useState(false);
+  const [togglingAutoReply, setTogglingAutoReply] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((r) => r.json())
+      .then((d) => { if (d?.missed_call_auto_reply !== undefined) setMissedCallAutoReply(d.missed_call_auto_reply === true || d.missed_call_auto_reply === "true"); })
+      .catch(() => {});
+  }, []);
+
+  const handleToggleAutoReply = async () => {
+    setTogglingAutoReply(true);
+    const newVal = !missedCallAutoReply;
+    try {
+      const res = await fetch("/api/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key: "missed_call_auto_reply", value: newVal }),
+      });
+      if (res.ok) {
+        setMissedCallAutoReply(newVal);
+        toast.success(newVal ? "Missed call auto-reply enabled" : "Missed call auto-reply disabled");
+      } else {
+        toast.error("Failed to update setting");
+      }
+    } catch {
+      toast.error("Failed to update setting");
+    } finally {
+      setTogglingAutoReply(false);
+    }
+  };
 
   const calls = initialCalls;
 
@@ -509,6 +541,42 @@ export function CallsClient({ initialCalls, analytics, vapiConfigured = false }:
             <GaugeRing value={aiMonthlyPerformance.length > 0 ? aiMonthlyPerformance[aiMonthlyPerformance.length - 1].resolutionRate : 0} label="Resolution Rate" color="#7c3aed" />
             <GaugeRing value={aiMonthlyPerformance.length > 0 ? aiMonthlyPerformance[aiMonthlyPerformance.length - 1].satisfactionScore : 0} label="Satisfaction" color="#d97706" />
             <GaugeRing value={95} label="Uptime" color="#2563eb" />
+          </div>
+        </div>
+
+        {/* AI Automation Settings */}
+        <div className="rounded-xl border border-slate-200/80 bg-white p-5">
+          <div className="mb-4 flex items-center gap-2">
+            <Zap className="h-4 w-4 text-cyan-600" />
+            <h3 className="text-sm font-semibold text-slate-800">AI Call Automation</h3>
+          </div>
+          <div className="flex items-center justify-between rounded-lg border border-slate-100 px-4 py-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50">
+                <PhoneMissed className="h-4 w-4 text-amber-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-900">Missed Call Auto-Reply</p>
+                <p className="text-[11px] text-slate-400">Automatically send an SMS to callers you miss within 2 minutes</p>
+              </div>
+            </div>
+            <button
+              onClick={() => void handleToggleAutoReply()}
+              disabled={togglingAutoReply}
+              className={cn(
+                "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-50",
+                missedCallAutoReply ? "bg-cyan-600" : "bg-slate-200"
+              )}
+              role="switch"
+              aria-checked={missedCallAutoReply}
+            >
+              <span
+                className={cn(
+                  "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+                  missedCallAutoReply ? "translate-x-5" : "translate-x-0"
+                )}
+              />
+            </button>
           </div>
         </div>
       </div>

@@ -40,5 +40,13 @@ export default async function InsurancePage() {
   }));
   /* eslint-enable @typescript-eslint/no-explicit-any */
 
-  return <InsuranceClient initialVerifications={verifications} />;
+  const { data: carriersData } = await supabase
+    .from("oe_insurance_carriers")
+    .select("id, name, source, is_active")
+    .eq("is_active", true)
+    .order("name");
+
+  const carriers = (carriersData || []).map((c) => c.name as string);
+
+  return <InsuranceClient initialVerifications={verifications} dbCarriers={carriers} />;
 }

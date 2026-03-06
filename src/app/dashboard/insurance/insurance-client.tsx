@@ -88,9 +88,10 @@ const emptyForm = {
 
 interface Props {
   initialVerifications: Verification[];
+  dbCarriers?: string[];
 }
 
-export function InsuranceClient({ initialVerifications }: Props) {
+export function InsuranceClient({ initialVerifications, dbCarriers }: Props) {
   const [verifications, setVerifications] = useState(initialVerifications);
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<"verifications" | "carriers" | "benefits">("verifications");
@@ -291,8 +292,8 @@ export function InsuranceClient({ initialVerifications }: Props) {
                   className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
                 >
                   <option value="">Select carrier...</option>
-                  {carriers.map((c) => (
-                    <option key={c.name} value={c.name}>{c.name} ({c.type})</option>
+                  {(dbCarriers && dbCarriers.length > 0 ? dbCarriers : carriers.map((c) => c.name)).map((name) => (
+                    <option key={name} value={name}>{name}</option>
                   ))}
                   <option value="Other">Other</option>
                 </select>

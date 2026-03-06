@@ -198,6 +198,7 @@ function TemplateCard({ template, onApprove, onEdit, onTestSend }: {
 export function MessageTemplatesClient({ templates: initialTemplates, totalCount }: Props) {
   const [templates, setTemplates] = useState(initialTemplates);
   const [isPending, startTransition] = useTransition();
+  const [recentlyEdited, setRecentlyEdited] = useState<Set<string>>(new Set());
 
   const approvedCount = templates.filter((t) => t.approved).length;
   const unapprovedCount = totalCount - approvedCount;
@@ -211,6 +212,7 @@ export function MessageTemplatesClient({ templates: initialTemplates, totalCount
       });
       if (res.ok) {
         setTemplates((prev) => prev.map((t) => t.type === type ? { ...t, approved: true, approved_at: new Date().toISOString() } : t));
+        setRecentlyEdited((prev) => { const next = new Set(prev); next.delete(type); return next; });
         toast.success("Template approved");
       } else {
         toast.error("Failed to approve template");
@@ -224,6 +226,7 @@ export function MessageTemplatesClient({ templates: initialTemplates, totalCount
       if (res.ok) {
         const now = new Date().toISOString();
         setTemplates((prev) => prev.map((t) => ({ ...t, approved: true, approved_at: now })));
+        setRecentlyEdited(new Set());
         toast.success("All templates approved");
       } else {
         toast.error("Failed to approve all templates");
@@ -233,6 +236,7 @@ export function MessageTemplatesClient({ templates: initialTemplates, totalCount
 
   const handleEdit = (type: string, body: string, subject?: string) => {
     setTemplates((prev) => prev.map((t) => t.type === type ? { ...t, body, subject: subject || t.subject, approved: false, approved_at: null } : t));
+    setRecentlyEdited((prev) => new Set([...prev, type]));
   };
 
   const handleTestSend = async (type: string) => {
@@ -285,10 +289,27 @@ export function MessageTemplatesClient({ templates: initialTemplates, totalCount
         </div>
       )}
 
-      {unapprovedCount === 0 && (
+      {unapprovedCount === 0 && recentlyEdited.size === 0 && (
         <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-3 text-emerald-800 text-sm">
           <CheckCircle className="h-4 w-4" />
           All templates approved — automations are active.
+        </div>
+      )}
+
+      {recentlyEdited.size > 0 && unapprovedCount > 0 && (
+        <div className="flex items-center justify-between gap-4 bg-orange-50 border border-orange-200 rounded-lg px-4 py-3">
+          <div className="flex items-center gap-2 text-orange-800 text-sm">
+            <AlertTriangle className="h-4 w-4 shrink-0" />
+            <span>You edited {recentlyEdited.size} template{recentlyEdited.size > 1 ? "s" : ""} — <strong>re-approval required</strong> before the updated version goes live</span>
+          </div>
+          <Button
+            size="sm"
+            className="bg-orange-600 hover:bg-orange-700 text-white shrink-0"
+            onClick={handleApproveAll}
+            disabled={isPending}
+          >
+            Re-Approve All
+          </Button>
         </div>
       )}
 
