@@ -20,14 +20,6 @@ interface StaffMember {
   createdAt: number;
 }
 
-const MODULE_LABELS: Record<string, string> = {
-  hipaa: "HIPAA",
-  osha: "OSHA",
-  scheduling_insurance: "Scheduling",
-  clinical_documentation: "Clinical Docs",
-  treatment_presentation: "Treatment Pres.",
-  collections_financials: "Collections",
-};
 
 const ROLE_LABELS: Record<string, string> = {
   "owner-dentist": "Owner Dentist",

@@ -28,7 +28,7 @@ interface TemplateRow {
 
 interface Props {
   templates: TemplateRow[];
-  approvedCount: number;
+  approvedCount?: number;
   totalCount: number;
 }
 
@@ -195,7 +195,7 @@ function TemplateCard({ template, onApprove, onEdit, onTestSend }: {
   );
 }
 
-export function MessageTemplatesClient({ templates: initialTemplates, approvedCount: initialApproved, totalCount }: Props) {
+export function MessageTemplatesClient({ templates: initialTemplates, totalCount }: Props) {
   const [templates, setTemplates] = useState(initialTemplates);
   const [isPending, startTransition] = useTransition();
 
