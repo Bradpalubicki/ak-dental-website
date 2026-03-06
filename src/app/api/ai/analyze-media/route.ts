@@ -49,8 +49,8 @@ function parseJson(text: string): any {
   }
 }
 
-// Pass 1: Technical analysis
-async function runAnalysis(blobUrl: string) {
+// Pass 1: Technical analysis — includes before/after verification
+async function runAnalysis(blobUrl: string, clientLabel?: string) {
   const res = await client.messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 1024,
@@ -67,8 +67,18 @@ async function runAnalysis(blobUrl: string) {
   "contains_identifiable_person": true | false,
   "quality_assessment": "good" | "acceptable" | "poor",
   "quality_notes": "Brief note on lighting, focus, angle",
-  "visible_treatments": ["veneer", "whitening", "implant", "crown", "bonding", "gum_contouring", "orthodontics", "general"]
+  "visible_treatments": ["veneer", "whitening", "implant", "crown", "bonding", "gum_contouring", "orthodontics", "general"],
+  "verified_before_or_after": "before" | "after" | "na" | "unknown"
 }
+
+CRITICAL — before/after verification:
+- "before": teeth show visible problems — discoloration, chips, gaps, misalignment, missing teeth, staining, decay, worn enamel, crowding
+- "after": teeth look treated — bright white, straight, restored, uniform, veneers visible, implants, clean gum line
+- "na": single result photo not intended as a pair, or no teeth visible
+- "unknown": cannot determine
+
+${clientLabel ? `The client labeled this photo as "${clientLabel}". Verify if that label is correct based on what you actually see. If the label is wrong, return the correct value.` : ""}
+
 Category: before_after=teeth transformation, team=staff/doctor, office=facility, equipment=dental tech, other=unclear.
 Only return the JSON.` },
       ],
@@ -172,18 +182,24 @@ export async function POST(req: NextRequest) {
       .eq("id", assetId)
       .single();
 
-    // Run both AI passes in parallel
-    const [analysis, story] = await Promise.all([
-      runAnalysis(blobUrl),
-      asset ? runStorytelling(blobUrl, asset as Record<string, unknown>, {}) : Promise.resolve({}),
-    ]);
+    // Pass 1: analysis — pass client's label so AI can verify it
+    const clientLabel = asset?.before_or_after as string | undefined;
+    const analysis = await runAnalysis(blobUrl, clientLabel);
 
-    // Run storytelling with analysis data if we need treatments info
+    // Determine the correct before_or_after value:
+    // If AI verified a different label than what the client said, trust the AI
+    const aiVerified = analysis.verified_before_or_after as string;
+    const correctedLabel = (aiVerified && aiVerified !== "unknown")
+      ? aiVerified
+      : (clientLabel ?? "na");
+    const labelWasCorrected = aiVerified && aiVerified !== "unknown" && aiVerified !== clientLabel;
+
+    // Pass 2: storytelling — now with analysis data
     const storyFinal = asset
-      ? await runStorytelling(blobUrl, asset as Record<string, unknown>, analysis)
-      : story;
+      ? await runStorytelling(blobUrl, { ...asset, before_or_after: correctedLabel }, analysis)
+      : {};
 
-    // Save all AI outputs
+    // Save all AI outputs — including corrected before_or_after
     await supabase
       .from("media_assets")
       .update({
@@ -193,11 +209,16 @@ export async function POST(req: NextRequest) {
         ai_tags: (analysis.detected_tags as string[]) ?? [],
         ai_contains_person: (analysis.contains_identifiable_person as boolean) ?? false,
         ai_quality: (analysis.quality_assessment as string) ?? "acceptable",
-        ai_quality_notes: (analysis.quality_notes as string) ?? null,
+        ai_quality_notes: [
+          analysis.quality_notes,
+          labelWasCorrected ? `⚠️ Label corrected: client said "${clientLabel}", AI detected "${correctedLabel}"` : null,
+        ].filter(Boolean).join(" | ") || null,
         story_headline: (storyFinal.headline as string) ?? null,
         story_body: (storyFinal.body as string) ?? null,
         story_caption: (storyFinal.caption as string) ?? null,
         story_treatment_summary: (storyFinal.treatment_summary as string) ?? null,
+        // Correct the before_or_after if AI disagrees with client's label
+        ...(labelWasCorrected ? { before_or_after: correctedLabel } : {}),
         // Use AI caption as the public caption if none was provided by client
         ...(asset && !asset.caption && storyFinal.caption
           ? { caption: storyFinal.caption }
@@ -214,10 +235,10 @@ export async function POST(req: NextRequest) {
     if (asset && qualityPasses && consentPasses && categoryOk) {
       const placement = (analysis.suggested_placement as string) ?? (isPatient ? "smile_gallery" : "about_page");
       await autoPublish(assetId, asset as Record<string, unknown>, placement);
-      return NextResponse.json({ success: true, analysis, story: storyFinal, auto_published: true, placement });
+      return NextResponse.json({ success: true, analysis, story: storyFinal, auto_published: true, placement, label_corrected: labelWasCorrected, corrected_to: correctedLabel });
     }
 
-    return NextResponse.json({ success: true, analysis, story: storyFinal, auto_published: false });
+    return NextResponse.json({ success: true, analysis, story: storyFinal, auto_published: false, label_corrected: labelWasCorrected, corrected_to: correctedLabel });
   } catch (err) {
     console.error("[analyze-media] error:", err);
     return NextResponse.json({ error: "Analysis failed" }, { status: 500 });
