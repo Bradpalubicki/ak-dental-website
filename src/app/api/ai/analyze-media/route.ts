@@ -1,7 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { put, del } from "@vercel/blob";
 import { z } from "zod";
 import { createServiceSupabase } from "@/lib/supabase/server";
+
+// Auto-publish when AI + consent checks all pass — no human review needed
+async function autoPublish(assetId: string, asset: Record<string, unknown>, placement: string) {
+  const supabase = createServiceSupabase();
+  let publishedUrl = asset.blob_url as string;
+
+  if (asset.pending_blob_url && (asset.pending_blob_url as string).includes("/pending/")) {
+    try {
+      const res = await fetch(asset.pending_blob_url as string);
+      const buffer = await res.arrayBuffer();
+      const contentType = res.headers.get("content-type") || "image/jpeg";
+      const ext = (asset.pending_blob_url as string).split(".").pop() || "jpg";
+      const newBlob = await put(`published/${asset.practice_id}/${assetId}.${ext}`, Buffer.from(buffer), { access: "public", contentType });
+      publishedUrl = newBlob.url;
+      await del(asset.pending_blob_url as string).catch(() => {});
+    } catch { /* keep existing URL on failure */ }
+  }
+
+  await supabase.from("media_assets").update({
+    status: "published",
+    blob_url: publishedUrl,
+    pending_blob_url: null,
+    reviewed_by: "ai-auto",
+    reviewed_at: new Date().toISOString(),
+    published_at: new Date().toISOString(),
+    placement,
+  }).eq("id", assetId);
+}
 
 const BodySchema = z.object({
   assetId: z.string().uuid(),
@@ -81,6 +110,14 @@ Only return the JSON object, no other text.`,
     }
 
     const supabase = createServiceSupabase();
+
+    // Fetch full asset record to check consent + photo_type
+    const { data: asset } = await supabase
+      .from("media_assets")
+      .select("*")
+      .eq("id", assetId)
+      .single();
+
     await supabase
       .from("media_assets")
       .update({
@@ -94,7 +131,22 @@ Only return the JSON object, no other text.`,
       })
       .eq("id", assetId);
 
-    return NextResponse.json({ success: true, analysis });
+    // Auto-publish compliance check:
+    // - Photo quality is not "poor"
+    // - For patient_result: consent must be confirmed
+    // - Non-patient photos (office, team, equipment) auto-publish freely
+    const qualityPasses = analysis.quality_assessment !== "poor";
+    const isPatient = asset?.photo_type === "patient_result";
+    const consentPasses = !isPatient || asset?.consent_confirmed === true;
+    const categoryOk = analysis.category !== "other"; // must be identifiable dental content
+
+    if (asset && qualityPasses && consentPasses && categoryOk) {
+      const placement = analysis.suggested_placement ?? (isPatient ? "smile_gallery" : "about_page");
+      await autoPublish(assetId, asset, placement);
+      return NextResponse.json({ success: true, analysis, auto_published: true, placement });
+    }
+
+    return NextResponse.json({ success: true, analysis, auto_published: false });
   } catch (err) {
     console.error("[analyze-media] error:", err);
     return NextResponse.json({ error: "Analysis failed" }, { status: 500 });

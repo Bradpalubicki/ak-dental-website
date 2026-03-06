@@ -105,8 +105,7 @@ export function UploadClient() {
         </div>
         <h2 className="text-2xl font-bold text-gray-900">All Set!</h2>
         <p className="mt-2 text-gray-600">
-          {results.length} photo{results.length !== 1 ? "s" : ""} uploaded and queued for review.
-          We&apos;ll publish within 24 hours.
+          {results.length} photo{results.length !== 1 ? "s" : ""} uploaded. Our AI is reviewing them now — compliant photos go live automatically within minutes.
         </p>
         <Button className="mt-6" onClick={() => { setStep("drop"); setFiles([]); setPreviews([]); setResults([]); setPhotoType(null); setConsentConfirmed(false); setServiceCategories([]); setBeforeOrAfter(""); setCaseNotes(""); setCaption(""); setOfficeType(""); }}>
           Upload More Photos
