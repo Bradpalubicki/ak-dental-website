@@ -29,10 +29,16 @@ export async function POST(req: NextRequest) {
   const blobPath = `pending/${PRACTICE_ID}/${assetId}.${ext}`;
 
   // Upload to Vercel Blob
-  const blob = await put(blobPath, file, {
-    access: "public",
-    contentType: file.type,
-  });
+  let blob: Awaited<ReturnType<typeof put>>;
+  try {
+    blob = await put(blobPath, file, {
+      access: "public",
+      contentType: file.type,
+    });
+  } catch (err) {
+    console.error("[media/upload] Blob upload error:", err);
+    return NextResponse.json({ error: `Blob upload failed: ${err instanceof Error ? err.message : String(err)}` }, { status: 500 });
+  }
 
   // Create media_assets record
   const supabase = createServiceSupabase();
@@ -50,7 +56,8 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) {
-    return NextResponse.json({ error: "Failed to save asset record" }, { status: 500 });
+    console.error("[media/upload] Supabase insert error:", error.message, error.code, error.details);
+    return NextResponse.json({ error: `Failed to save asset record: ${error.message}` }, { status: 500 });
   }
 
   // Fire-and-forget AI analysis
