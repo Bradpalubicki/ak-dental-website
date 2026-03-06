@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   UserPlus,
   Search,
@@ -30,7 +30,10 @@ import {
   PhoneCall,
   BarChart3,
   Filter,
+  X,
+  Plus,
 } from "lucide-react";
+import { toast } from "sonner";
 import type { Lead } from "@/types/database";
 import { StatCard } from "@/components/dashboard/stat-card";
 import {
@@ -112,6 +115,10 @@ function formatResponseTime(seconds: number | null): string {
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
   return `${m}m ${s.toString().padStart(2, "0")}s`;
+}
+
+function daysInStage(updatedAt: string): number {
+  return Math.floor((Date.now() - new Date(updatedAt).getTime()) / 86_400_000);
 }
 
 function avgResponseTime(leads: Lead[]): number {
@@ -218,11 +225,199 @@ function SyncIndicator() {
 }
 
 /* ------------------------------------------------------------------ */
+/*  New Lead Modal                                                     */
+/* ------------------------------------------------------------------ */
+
+interface NewLeadModalProps {
+  onClose: () => void;
+  onCreated: (lead: Lead) => void;
+}
+
+function NewLeadModal({ onClose, onCreated }: NewLeadModalProps) {
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    source: "walk_in",
+    inquiry_type: "",
+    message: "",
+    urgency: "medium" as "low" | "medium" | "high",
+  });
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!form.first_name || !form.last_name) {
+      toast.error("First and last name are required");
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          email: form.email || null,
+          phone: form.phone || null,
+          inquiry_type: form.inquiry_type || null,
+          message: form.message || null,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to create lead");
+      toast.success(`Lead created for ${form.first_name} ${form.last_name}`);
+      onCreated(data.lead);
+      onClose();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to create lead");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+      <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white shadow-xl">
+        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+          <h2 className="text-base font-semibold text-slate-900">New Lead</h2>
+          <button onClick={onClose} className="rounded-lg p-1 hover:bg-slate-100 transition-colors">
+            <X className="h-4 w-4 text-slate-500" />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-medium text-slate-700 mb-1 block">First Name *</label>
+              <input
+                type="text"
+                value={form.first_name}
+                onChange={(e) => setForm((f) => ({ ...f, first_name: e.target.value }))}
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-slate-700 mb-1 block">Last Name *</label>
+              <input
+                type="text"
+                value={form.last_name}
+                onChange={(e) => setForm((f) => ({ ...f, last_name: e.target.value }))}
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                required
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-medium text-slate-700 mb-1 block">Email</label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-slate-700 mb-1 block">Phone</label>
+              <input
+                type="tel"
+                value={form.phone}
+                onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-medium text-slate-700 mb-1 block">Source</label>
+              <select
+                value={form.source}
+                onChange={(e) => setForm((f) => ({ ...f, source: e.target.value }))}
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+              >
+                <option value="walk_in">Walk-in</option>
+                <option value="phone">Phone</option>
+                <option value="website">Website</option>
+                <option value="referral">Referral</option>
+                <option value="google">Google</option>
+                <option value="social">Social Media</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-slate-700 mb-1 block">Urgency</label>
+              <select
+                value={form.urgency}
+                onChange={(e) => setForm((f) => ({ ...f, urgency: e.target.value as typeof form.urgency }))}
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="text-xs font-medium text-slate-700 mb-1 block">Inquiry Type</label>
+            <input
+              type="text"
+              value={form.inquiry_type}
+              onChange={(e) => setForm((f) => ({ ...f, inquiry_type: e.target.value }))}
+              placeholder="e.g. Cleaning, Implants, Pain..."
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-medium text-slate-700 mb-1 block">Message</label>
+            <textarea
+              value={form.message}
+              onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
+              rows={3}
+              placeholder="Patient's inquiry or notes..."
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 resize-none"
+            />
+          </div>
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700 disabled:opacity-50 transition-colors"
+            >
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+              {saving ? "Creating..." : "Create Lead"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Main Component                                                     */
 /* ------------------------------------------------------------------ */
 
 interface Props {
   initialLeads: Lead[];
+}
+
+interface AiActionLog {
+  id: string;
+  action_type: string;
+  description: string;
+  status: string;
+  confidence_score: number | null;
+  created_at: string;
+  output_data: Record<string, unknown> | null;
 }
 
 export function LeadsClient({ initialLeads }: Props) {
@@ -234,6 +429,11 @@ export function LeadsClient({ initialLeads }: Props) {
   const [editingDraft, setEditingDraft] = useState(false);
   const [draftText, setDraftText] = useState("");
   const [activeTab, setActiveTab] = useState<Tab>("overview");
+  const [showNewLead, setShowNewLead] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
+  const [regenerating, setRegenerating] = useState(false);
+  const [aiActions, setAiActions] = useState<AiActionLog[]>([]);
+  const [aiActionsLoaded, setAiActionsLoaded] = useState(false);
 
   /* ---- Derived data ---- */
   const filteredLeads = leads.filter((l) => {
@@ -344,6 +544,69 @@ export function LeadsClient({ initialLeads }: Props) {
     }
   }
 
+  /* ---- Fetch real AI actions log ---- */
+  const fetchAiActions = useCallback(async () => {
+    try {
+      const res = await fetch("/api/leads/actions?limit=20");
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.actions?.length > 0) {
+        setAiActions(data.actions);
+      }
+    } catch {
+      // silently fail — demo data remains visible
+    } finally {
+      setAiActionsLoaded(true);
+    }
+  }, []);
+
+  /* ---- Inline status update ---- */
+  async function updateLeadStatus(leadId: string, newStatus: LeadStatus) {
+    setUpdatingStatus(leadId);
+    try {
+      const res = await fetch(`/api/leads/${leadId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (!res.ok) throw new Error("Failed to update status");
+      setLeads((prev) =>
+        prev.map((l) => (l.id === leadId ? { ...l, status: newStatus } : l))
+      );
+      if (selectedLead?.id === leadId) {
+        setSelectedLead((prev) => prev ? { ...prev, status: newStatus } : prev);
+      }
+      toast.success(`Status updated to ${statusConfig[newStatus]?.label || newStatus}`);
+    } catch {
+      toast.error("Failed to update status");
+    } finally {
+      setUpdatingStatus(null);
+    }
+  }
+
+  /* ---- Regenerate AI draft ---- */
+  async function handleRegenerate() {
+    if (!selectedLead) return;
+    setRegenerating(true);
+    try {
+      const res = await fetch(`/api/leads/${selectedLead.id}/regenerate`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to regenerate");
+      setLeads((prev) =>
+        prev.map((l) =>
+          l.id === selectedLead.id ? { ...l, ai_response_draft: data.draft } : l
+        )
+      );
+      setSelectedLead((prev) => prev ? { ...prev, ai_response_draft: data.draft } : prev);
+      setDraftText(data.draft);
+      toast.success("AI draft regenerated");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to regenerate draft");
+    } finally {
+      setRegenerating(false);
+    }
+  }
+
   /* ---- CSV export ---- */
   function exportCSV() {
     const headers = [
@@ -409,6 +672,18 @@ export function LeadsClient({ initialLeads }: Props) {
         }
       `}</style>
 
+      {/* New Lead Modal */}
+      {showNewLead && (
+        <NewLeadModal
+          onClose={() => setShowNewLead(false)}
+          onCreated={(lead) => {
+            setLeads((prev) => [lead, ...prev]);
+            setSelectedLead(lead);
+            setActiveTab("detail");
+          }}
+        />
+      )}
+
       {/* ---- Header ---- */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -425,6 +700,13 @@ export function LeadsClient({ initialLeads }: Props) {
           >
             <Download className="h-4 w-4" />
             Export
+          </button>
+          <button
+            onClick={() => setShowNewLead(true)}
+            className="flex items-center gap-2 rounded-lg bg-cyan-600 px-3 py-2 text-sm font-medium text-white hover:bg-cyan-700 transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            New Lead
           </button>
         </div>
       </div>
@@ -804,6 +1086,9 @@ export function LeadsClient({ initialLeads }: Props) {
                     <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
                       Created
                     </th>
+                    <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                      Days
+                    </th>
                     <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400" />
                   </tr>
                 </thead>
@@ -849,18 +1134,24 @@ export function LeadsClient({ initialLeads }: Props) {
                               </span>
                             </div>
                           </td>
-                          <td className="px-4 py-3">
-                            <span
-                              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                                statusConfig[lead.status]?.color ||
-                                "bg-slate-100 text-slate-600"
-                              }`}
-                            >
-                              <span
-                                className={`h-1.5 w-1.5 rounded-full ${statusConfig[lead.status]?.dotColor || "bg-slate-400"}`}
-                              />
-                              {statusConfig[lead.status]?.label || lead.status}
-                            </span>
+                          <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                            <div className="relative">
+                              {updatingStatus === lead.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
+                              ) : (
+                                <select
+                                  value={lead.status}
+                                  onChange={(e) => updateLeadStatus(lead.id, e.target.value as LeadStatus)}
+                                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium border-0 cursor-pointer focus:outline-none focus:ring-1 focus:ring-cyan-500 ${
+                                    statusConfig[lead.status]?.color || "bg-slate-100 text-slate-600"
+                                  }`}
+                                >
+                                  {Object.entries(statusConfig).map(([key, cfg]) => (
+                                    <option key={key} value={key}>{cfg.label}</option>
+                                  ))}
+                                </select>
+                              )}
+                            </div>
                           </td>
                           <td className="px-4 py-3">
                             <span
@@ -891,6 +1182,24 @@ export function LeadsClient({ initialLeads }: Props) {
                             {timeAgo(lead.created_at)}
                           </td>
                           <td className="px-4 py-3">
+                            {(() => {
+                              const d = daysInStage(lead.updated_at || lead.created_at);
+                              return (
+                                <span
+                                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                                    d >= 7
+                                      ? "bg-red-100 text-red-700"
+                                      : d >= 3
+                                      ? "bg-amber-100 text-amber-700"
+                                      : "bg-slate-100 text-slate-600"
+                                  }`}
+                                >
+                                  {d}d
+                                </span>
+                              );
+                            })()}
+                          </td>
+                          <td className="px-4 py-3">
                             <ChevronRight className="h-4 w-4 text-slate-300" />
                           </td>
                         </tr>
@@ -898,7 +1207,7 @@ export function LeadsClient({ initialLeads }: Props) {
                     })
                   ) : (
                     <tr>
-                      <td colSpan={8} className="px-4 py-12 text-center text-sm text-slate-400">
+                      <td colSpan={9} className="px-4 py-12 text-center text-sm text-slate-400">
                         {leads.length === 0
                           ? "No leads yet. New leads will appear here automatically."
                           : "No leads match your search"}
@@ -1179,6 +1488,18 @@ export function LeadsClient({ initialLeads }: Props) {
                           <Eye className="h-4 w-4" />
                           {editingDraft ? "Cancel Edit" : "Edit Draft"}
                         </button>
+                        <button
+                          onClick={handleRegenerate}
+                          disabled={regenerating || sending}
+                          className="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 transition-colors"
+                        >
+                          {regenerating ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <RefreshCw className="h-4 w-4" />
+                          )}
+                          Regenerate
+                        </button>
                       </div>
                     </div>
                   )}
@@ -1205,23 +1526,76 @@ export function LeadsClient({ initialLeads }: Props) {
                     </div>
                   )}
 
+                  {/* Status Update */}
+                  <div className="rounded-xl border border-slate-200 bg-white p-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-sm font-semibold text-slate-900">Update Status</h3>
+                      {updatingStatus === selectedLead.id && (
+                        <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {(Object.entries(statusConfig) as [LeadStatus, typeof statusConfig[string]][]).map(([key, cfg]) => (
+                        <button
+                          key={key}
+                          onClick={() => updateLeadStatus(selectedLead.id, key)}
+                          disabled={selectedLead.status === key || updatingStatus === selectedLead.id}
+                          className={`rounded-full px-3 py-1 text-xs font-medium transition-all disabled:opacity-40 ${
+                            selectedLead.status === key
+                              ? `${cfg.color} ring-2 ring-offset-1 ring-current`
+                              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                          }`}
+                        >
+                          {cfg.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Quick Actions */}
                   <div className="rounded-xl border border-slate-200 bg-white p-6">
                     <h3 className="text-sm font-semibold text-slate-900 mb-3">Quick Actions</h3>
                     <div className="grid grid-cols-2 gap-3">
-                      <button className="flex items-center gap-2.5 rounded-lg border border-slate-200 p-3 text-sm font-medium text-slate-700 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-colors">
+                      <a
+                        href="/dashboard/appointments/new"
+                        className="flex items-center gap-2.5 rounded-lg border border-slate-200 p-3 text-sm font-medium text-slate-700 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-colors"
+                      >
                         <Calendar className="h-4 w-4 text-blue-500" />
                         Book Appointment
-                      </button>
-                      <button className="flex items-center gap-2.5 rounded-lg border border-slate-200 p-3 text-sm font-medium text-slate-700 hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-colors">
+                      </a>
+                      <a
+                        href={selectedLead.phone ? `tel:${selectedLead.phone}` : "#"}
+                        className={`flex items-center gap-2.5 rounded-lg border border-slate-200 p-3 text-sm font-medium transition-colors ${
+                          selectedLead.phone
+                            ? "text-slate-700 hover:bg-green-50 hover:border-green-200 hover:text-green-700"
+                            : "opacity-40 cursor-not-allowed"
+                        }`}
+                        onClick={!selectedLead.phone ? (e) => { e.preventDefault(); toast.error("No phone number on file"); } : undefined}
+                      >
                         <PhoneCall className="h-4 w-4 text-green-500" />
                         Call Patient
-                      </button>
-                      <button className="flex items-center gap-2.5 rounded-lg border border-slate-200 p-3 text-sm font-medium text-slate-700 hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700 transition-colors">
+                      </a>
+                      <button
+                        onClick={() => {
+                          if (!selectedLead.email) { toast.error("No email address on file"); return; }
+                          if (!selectedLead.ai_response_draft) { toast.error("No draft to send — generate a draft first"); return; }
+                          handleApproveAndSend("email");
+                        }}
+                        className="flex items-center gap-2.5 rounded-lg border border-slate-200 p-3 text-sm font-medium text-slate-700 hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700 transition-colors disabled:opacity-40"
+                        disabled={sending}
+                      >
                         <Mail className="h-4 w-4 text-purple-500" />
                         Send Email
                       </button>
-                      <button className="flex items-center gap-2.5 rounded-lg border border-slate-200 p-3 text-sm font-medium text-slate-700 hover:bg-cyan-50 hover:border-cyan-200 hover:text-cyan-700 transition-colors">
+                      <button
+                        onClick={() => {
+                          if (!selectedLead.phone) { toast.error("No phone number on file"); return; }
+                          if (!selectedLead.ai_response_draft) { toast.error("No draft to send — generate a draft first"); return; }
+                          handleApproveAndSend("sms");
+                        }}
+                        className="flex items-center gap-2.5 rounded-lg border border-slate-200 p-3 text-sm font-medium text-slate-700 hover:bg-cyan-50 hover:border-cyan-200 hover:text-cyan-700 transition-colors disabled:opacity-40"
+                        disabled={sending}
+                      >
                         <MessageSquare className="h-4 w-4 text-cyan-500" />
                         Send SMS
                       </button>
@@ -1248,6 +1622,7 @@ export function LeadsClient({ initialLeads }: Props) {
       {/* ================================================================ */}
       {/*  TAB 4 — AI & Speed-to-Lead                                      */}
       {/* ================================================================ */}
+      {activeTab === "ai" && !aiActionsLoaded && (() => { fetchAiActions(); return null; })()}
       {activeTab === "ai" && (
         <div className="space-y-6">
           {/* AI Summary Banner */}
@@ -1415,21 +1790,39 @@ export function LeadsClient({ initialLeads }: Props) {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900">Recent AI Actions</h3>
-                <p className="text-xs text-slate-500">Real-time speed-to-lead log</p>
+                <p className="text-xs text-slate-500">
+                  {aiActions.length > 0 ? "Live data from your AI pipeline" : "Preview — will populate as leads are processed"}
+                </p>
               </div>
-              <RefreshCw className="h-4 w-4 text-slate-400" />
+              <button
+                onClick={fetchAiActions}
+                className="rounded-lg p-1.5 hover:bg-slate-100 transition-colors"
+                title="Refresh"
+              >
+                <RefreshCw className="h-4 w-4 text-slate-400" />
+              </button>
             </div>
             <div className="space-y-2 max-h-[300px] overflow-y-auto">
-              {[
-                { action: "Draft created", lead: "Sarah M.", time: "2s ago", type: "email", confidence: 94 },
-                { action: "Response sent", lead: "James W.", time: "5m ago", type: "sms", confidence: 91 },
-                { action: "Draft approved", lead: "Maria G.", time: "12m ago", type: "both", confidence: 88 },
-                { action: "Follow-up queued", lead: "David L.", time: "1h ago", type: "email", confidence: 85 },
-                { action: "Draft created", lead: "Lisa P.", time: "2h ago", type: "email", confidence: 92 },
-                { action: "Response sent", lead: "Robert K.", time: "3h ago", type: "sms", confidence: 87 },
-                { action: "Reactivation sent", lead: "Amy H.", time: "5h ago", type: "email", confidence: 79 },
-                { action: "Draft created", lead: "Michael T.", time: "6h ago", type: "both", confidence: 96 },
-              ].map((log, i) => (
+              {(aiActions.length > 0
+                ? aiActions.map((log) => ({
+                    action: log.description,
+                    lead: log.description.includes("for") ? log.description.split("for ").pop() || "" : "",
+                    time: timeAgo(log.created_at),
+                    type: (log.output_data as { channel?: string } | null)?.channel || "email",
+                    confidence: Math.round((log.confidence_score || 0.85) * 100),
+                    isReal: true,
+                  }))
+                : [
+                    { action: "Draft created", lead: "Sarah M.", time: "2s ago", type: "email", confidence: 94, isReal: false },
+                    { action: "Response sent", lead: "James W.", time: "5m ago", type: "sms", confidence: 91, isReal: false },
+                    { action: "Draft approved", lead: "Maria G.", time: "12m ago", type: "both", confidence: 88, isReal: false },
+                    { action: "Follow-up queued", lead: "David L.", time: "1h ago", type: "email", confidence: 85, isReal: false },
+                    { action: "Draft created", lead: "Lisa P.", time: "2h ago", type: "email", confidence: 92, isReal: false },
+                    { action: "Response sent", lead: "Robert K.", time: "3h ago", type: "sms", confidence: 87, isReal: false },
+                    { action: "Reactivation sent", lead: "Amy H.", time: "5h ago", type: "email", confidence: 79, isReal: false },
+                    { action: "Draft created", lead: "Michael T.", time: "6h ago", type: "both", confidence: 96, isReal: false },
+                  ]
+              ).map((log, i) => (
                 <div
                   key={i}
                   className="flex items-center justify-between rounded-lg border border-slate-100 px-4 py-2.5 hover:bg-slate-50 transition-colors"
@@ -1437,29 +1830,35 @@ export function LeadsClient({ initialLeads }: Props) {
                   <div className="flex items-center gap-3">
                     <div
                       className={`flex h-7 w-7 items-center justify-center rounded-lg ${
-                        log.action.includes("sent")
+                        log.action.includes("sent") || log.action.includes("Sent")
                           ? "bg-emerald-100"
-                          : log.action.includes("approved")
+                          : log.action.includes("approved") || log.action.includes("Approved")
                             ? "bg-blue-100"
-                            : log.action.includes("queued")
+                            : log.action.includes("queued") || log.action.includes("Queued")
                               ? "bg-amber-100"
                               : "bg-purple-100"
                       }`}
                     >
-                      {log.action.includes("sent") ? (
+                      {log.action.includes("sent") || log.action.includes("Sent") ? (
                         <Send className="h-3.5 w-3.5 text-emerald-600" />
-                      ) : log.action.includes("approved") ? (
+                      ) : log.action.includes("approved") || log.action.includes("Approved") ? (
                         <CheckCircle2 className="h-3.5 w-3.5 text-blue-600" />
-                      ) : log.action.includes("queued") ? (
+                      ) : log.action.includes("queued") || log.action.includes("Queued") ? (
                         <Clock className="h-3.5 w-3.5 text-amber-600" />
                       ) : (
                         <Sparkles className="h-3.5 w-3.5 text-purple-600" />
                       )}
                     </div>
                     <div>
-                      <p className="text-sm text-slate-900">
-                        {log.action}{" "}
-                        <span className="font-medium">for {log.lead}</span>
+                      <p className="text-sm text-slate-900 line-clamp-1">
+                        {log.lead ? (
+                          <>
+                            {log.action.replace(` for ${log.lead}`, "")}{" "}
+                            <span className="font-medium">for {log.lead}</span>
+                          </>
+                        ) : (
+                          log.action
+                        )}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
                         <span className="text-xs text-slate-400">{log.time}</span>
