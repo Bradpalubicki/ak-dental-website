@@ -281,6 +281,7 @@ export const engineConfig: EngineConfig = {
       { name: "Home", href: "/" },
       { name: "About", href: "/about" },
       { name: "Services", href: "/services" },
+      { name: "Smile Gallery", href: "/smile-gallery" },
       { name: "Insurance", href: "/insurance" },
       { name: "Technology", href: "/technology" },
       { name: "Reviews", href: "/reviews" },
