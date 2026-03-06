@@ -23,6 +23,10 @@ import {
   Gauge,
   Monitor,
   Smartphone,
+  Link2,
+  Eye,
+  MousePointerClick,
+  MapPin,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -109,6 +113,27 @@ interface PageSpeedData {
   cached: boolean;
   cachedAt?: string;
   needsRun?: boolean;
+}
+
+interface GSCSummary {
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+}
+
+interface GSCQuery {
+  query: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+}
+
+interface GSCStatus {
+  connected: boolean;
+  summary: GSCSummary | null;
+  topQueries: GSCQuery[];
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -244,6 +269,11 @@ export function SEODashboardClient() {
   const [psRunning, setPsRunning] = useState(false);
   const [psError, setPsError] = useState<string | null>(null);
 
+  // GSC
+  const [gsc, setGsc] = useState<GSCStatus | null>(null);
+  const [gscLoading, setGscLoading] = useState(false);
+  const [gscSyncing, setGscSyncing] = useState(false);
+
   // Audit
   const [audit, setAudit] = useState<AuditData | null>(null);
   const [auditLoading, setAuditLoading] = useState(false);
@@ -276,6 +306,31 @@ export function SEODashboardClient() {
       setVitalsLoading(false);
     }
   }, []);
+
+  const fetchGSC = useCallback(async () => {
+    setGscLoading(true);
+    try {
+      const res = await fetch("/api/seo/gsc/status");
+      if (res.ok) setGsc(await res.json());
+    } catch {
+      // noop
+    } finally {
+      setGscLoading(false);
+    }
+  }, []);
+
+  const syncGSC = useCallback(async () => {
+    setGscSyncing(true);
+    try {
+      await fetch("/api/seo/gsc/sync", { method: "POST" });
+      await fetchGSC();
+      fetchKeywords();
+    } catch {
+      // noop
+    } finally {
+      setGscSyncing(false);
+    }
+  }, [fetchGSC, fetchKeywords]);
 
   const fetchPageSpeed = useCallback(async () => {
     setPsLoading(true);
@@ -331,7 +386,18 @@ export function SEODashboardClient() {
 
   useEffect(() => {
     fetchKeywords();
-  }, [fetchKeywords]);
+    fetchGSC();
+  }, [fetchKeywords, fetchGSC]);
+
+  // Handle ?gsc=connected after OAuth redirect
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("gsc") === "connected") {
+      syncGSC();
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, [syncGSC]);
 
   useEffect(() => {
     if (activeTab === "vitals" && !vitals) fetchVitals();
@@ -417,6 +483,7 @@ export function SEODashboardClient() {
           size="sm"
           onClick={() => {
             fetchKeywords();
+            fetchGSC();
             if (activeTab === "vitals") { fetchVitals(); fetchPageSpeed(); }
             if (activeTab === "audit") fetchAudit();
             if (activeTab === "reports") fetchReports();
@@ -439,92 +506,255 @@ export function SEODashboardClient() {
 
         {/* ── Overview ──────────────────────────────────────────────────────── */}
         <TabsContent value="overview" className="space-y-6">
-          {/* Plain-English narrative cards */}
+
+          {/* GSC connect banner — shown when not connected */}
+          {!gscLoading && !gsc?.connected && (
+            <Card className="border-blue-200 bg-blue-50/60">
+              <CardContent className="pt-5 pb-5">
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                      <Link2 className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-slate-800">Connect Google Search Console</p>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        See real clicks, impressions, and which searches bring patients to your site
+                      </p>
+                    </div>
+                  </div>
+                  <Button size="sm" asChild className="shrink-0">
+                    <a href="/api/seo/gsc/connect">Connect Google</a>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* GSC connected — sync button + last-fetch note */}
+          {gsc?.connected && (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs text-slate-500">
+                <div className="h-2 w-2 rounded-full bg-emerald-500" />
+                Google Search Console connected
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={syncGSC}
+                disabled={gscSyncing}
+                className="gap-1.5 text-xs h-7"
+              >
+                {gscSyncing ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
+                {gscSyncing ? "Syncing…" : "Sync GSC"}
+              </Button>
+            </div>
+          )}
+
+          {/* Metric cards — GSC-powered when connected, keyword-based fallback */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="border-l-4 border-l-cyan-500">
-              <CardContent className="pt-6">
-                <div className="flex items-start gap-4">
-                  <div className="h-12 w-12 rounded-xl bg-cyan-50 flex items-center justify-center shrink-0">
-                    <Search className="h-6 w-6 text-cyan-600" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-slate-900">{keywords.length}</p>
-                    <p className="text-sm font-medium text-slate-700 mt-0.5">
-                      {keywords.length === 0
-                        ? "No keywords tracked yet"
-                        : keywords.length === 1
-                        ? "Search phrase tracked"
-                        : "Search phrases tracked"}
-                    </p>
-                    <p className="text-xs text-slate-500 mt-1">
-                      {keywords.length === 0
-                        ? "Add keywords below to start monitoring your rankings"
-                        : `We watch ${keywords.length} terms to see where you appear in Google`}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            {gsc?.connected && gsc.summary ? (
+              <>
+                <Card className="border-l-4 border-l-cyan-500">
+                  <CardContent className="pt-6">
+                    <div className="flex items-start gap-4">
+                      <div className="h-12 w-12 rounded-xl bg-cyan-50 flex items-center justify-center shrink-0">
+                        <Eye className="h-6 w-6 text-cyan-600" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-slate-900">
+                          {gsc.summary.impressions.toLocaleString()}
+                        </p>
+                        <p className="text-sm font-medium text-slate-700 mt-0.5">Times shown in Google</p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Your practice appeared in search results {gsc.summary.impressions.toLocaleString()} times in the last 28 days
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
 
-            <Card className="border-l-4 border-l-emerald-500">
-              <CardContent className="pt-6">
-                <div className="flex items-start gap-4">
-                  <div className="h-12 w-12 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
-                    <TrendingUp className="h-6 w-6 text-emerald-600" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-slate-900">
-                      {avgRank ? `#${avgRank}` : "--"}
-                    </p>
-                    <p className="text-sm font-medium text-slate-700 mt-0.5">Average Google position</p>
-                    <p className="text-xs text-slate-500 mt-1">
-                      {avgRank
-                        ? `Your practice appears around position ${avgRank} on average`
-                        : "Position data updates as rankings are tracked"}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                <Card className="border-l-4 border-l-emerald-500">
+                  <CardContent className="pt-6">
+                    <div className="flex items-start gap-4">
+                      <div className="h-12 w-12 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+                        <MousePointerClick className="h-6 w-6 text-emerald-600" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-slate-900">
+                          {gsc.summary.clicks.toLocaleString()}
+                        </p>
+                        <p className="text-sm font-medium text-slate-700 mt-0.5">Patients clicked to your site</p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          {(gsc.summary.ctr * 100).toFixed(1)}% of people who saw you clicked — last 28 days
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
 
-            <Card className="border-l-4 border-l-amber-500">
-              <CardContent className="pt-6">
-                <div className="flex items-start gap-4">
-                  <div className="h-12 w-12 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
-                    <CheckCircle2 className="h-6 w-6 text-amber-600" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-slate-900">{top10Count}</p>
-                    <p className="text-sm font-medium text-slate-700 mt-0.5">Keywords on page 1</p>
-                    <p className="text-xs text-slate-500 mt-1">
-                      {top10Count === 0
-                        ? "No keywords in top 10 yet — keep building!"
-                        : `${top10Count} ${top10Count === 1 ? "search term" : "search terms"} where patients can find you on the first page`}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                <Card className="border-l-4 border-l-amber-500">
+                  <CardContent className="pt-6">
+                    <div className="flex items-start gap-4">
+                      <div className="h-12 w-12 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+                        <MapPin className="h-6 w-6 text-amber-600" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-slate-900">
+                          #{gsc.summary.position.toFixed(1)}
+                        </p>
+                        <p className="text-sm font-medium text-slate-700 mt-0.5">Average Google position</p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          {gsc.summary.position <= 10
+                            ? "You appear on page 1 on average — great visibility"
+                            : gsc.summary.position <= 20
+                            ? "You appear on page 1-2 — room to climb"
+                            : "You appear beyond page 2 — content work will help"}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
 
-            <Card className="border-l-4 border-l-violet-500">
-              <CardContent className="pt-6">
-                <div className="flex items-start gap-4">
-                  <div className="h-12 w-12 rounded-xl bg-violet-50 flex items-center justify-center shrink-0">
-                    <Activity className="h-6 w-6 text-violet-600" />
-                  </div>
-                  <div>
-                    <p className={`text-2xl font-bold ${siteHealthColor}`}>{siteHealth}</p>
-                    <p className="text-sm font-medium text-slate-700 mt-0.5">Site health</p>
-                    <p className="text-xs text-slate-500 mt-1">
-                      {siteHealthScore !== null
-                        ? `Based on your last SEO audit — score: ${siteHealthScore}/100`
-                        : "Run an audit in the Audit tab to see your score"}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                <Card className="border-l-4 border-l-violet-500">
+                  <CardContent className="pt-6">
+                    <div className="flex items-start gap-4">
+                      <div className="h-12 w-12 rounded-xl bg-violet-50 flex items-center justify-center shrink-0">
+                        <Activity className="h-6 w-6 text-violet-600" />
+                      </div>
+                      <div>
+                        <p className={`text-2xl font-bold ${siteHealthColor}`}>{siteHealth}</p>
+                        <p className="text-sm font-medium text-slate-700 mt-0.5">Site health</p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          {siteHealthScore !== null
+                            ? `Based on your last SEO audit — score: ${siteHealthScore}/100`
+                            : "Run an audit in the Audit tab to see your score"}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            ) : (
+              <>
+                <Card className="border-l-4 border-l-cyan-500">
+                  <CardContent className="pt-6">
+                    <div className="flex items-start gap-4">
+                      <div className="h-12 w-12 rounded-xl bg-cyan-50 flex items-center justify-center shrink-0">
+                        <Search className="h-6 w-6 text-cyan-600" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-slate-900">{keywords.length}</p>
+                        <p className="text-sm font-medium text-slate-700 mt-0.5">
+                          {keywords.length === 1 ? "Search phrase tracked" : "Search phrases tracked"}
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          {keywords.length === 0
+                            ? "Add keywords below to start monitoring rankings"
+                            : `We watch ${keywords.length} terms to see where you appear in Google`}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-l-4 border-l-emerald-500">
+                  <CardContent className="pt-6">
+                    <div className="flex items-start gap-4">
+                      <div className="h-12 w-12 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+                        <TrendingUp className="h-6 w-6 text-emerald-600" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-slate-900">{avgRank ? `#${avgRank}` : "--"}</p>
+                        <p className="text-sm font-medium text-slate-700 mt-0.5">Average Google position</p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          {avgRank
+                            ? `Your practice appears around position ${avgRank} on average`
+                            : "Connect Google Search Console for real data"}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-l-4 border-l-amber-500">
+                  <CardContent className="pt-6">
+                    <div className="flex items-start gap-4">
+                      <div className="h-12 w-12 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="h-6 w-6 text-amber-600" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-slate-900">{top10Count}</p>
+                        <p className="text-sm font-medium text-slate-700 mt-0.5">Keywords on page 1</p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          {top10Count === 0
+                            ? "No keywords in top 10 yet — keep building!"
+                            : `${top10Count} ${top10Count === 1 ? "term" : "terms"} where patients can find you on page 1`}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-l-4 border-l-violet-500">
+                  <CardContent className="pt-6">
+                    <div className="flex items-start gap-4">
+                      <div className="h-12 w-12 rounded-xl bg-violet-50 flex items-center justify-center shrink-0">
+                        <Activity className="h-6 w-6 text-violet-600" />
+                      </div>
+                      <div>
+                        <p className={`text-2xl font-bold ${siteHealthColor}`}>{siteHealth}</p>
+                        <p className="text-sm font-medium text-slate-700 mt-0.5">Site health</p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          {siteHealthScore !== null
+                            ? `Based on your last SEO audit — score: ${siteHealthScore}/100`
+                            : "Run an audit in the Audit tab to see your score"}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            )}
           </div>
+
+          {/* GSC Top Queries table */}
+          {gsc?.connected && gsc.topQueries.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">What patients searched to find you</CardTitle>
+                <CardDescription>Top searches from Google — last 28 days</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200">
+                        <th className="text-left py-3 px-2 font-medium text-slate-500">Search term</th>
+                        <th className="text-center py-3 px-2 font-medium text-slate-500">Clicks</th>
+                        <th className="text-center py-3 px-2 font-medium text-slate-500">Shown</th>
+                        <th className="text-center py-3 px-2 font-medium text-slate-500">Position</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {gsc.topQueries.map((q) => (
+                        <tr key={q.query} className="border-b border-slate-100 hover:bg-slate-50">
+                          <td className="py-3 px-2 text-slate-800 font-medium">{q.query}</td>
+                          <td className="py-3 px-2 text-center font-semibold text-emerald-600">{q.clicks}</td>
+                          <td className="py-3 px-2 text-center text-slate-500">{q.impressions.toLocaleString()}</td>
+                          <td className="py-3 px-2 text-center">
+                            <span className={`font-mono text-sm ${q.position <= 10 ? "text-emerald-600" : q.position <= 20 ? "text-amber-500" : "text-slate-400"}`}>
+                              #{q.position.toFixed(1)}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Quick Actions */}
           <Card>
@@ -562,7 +792,7 @@ export function SEODashboardClient() {
           {keywords.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Top Keywords</CardTitle>
+                <CardTitle className="text-base">Tracked Keywords</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
