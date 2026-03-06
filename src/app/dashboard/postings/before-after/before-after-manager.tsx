@@ -828,7 +828,7 @@ export function BeforeAfterManager({ initialAssets }: Props) {
         </div>
         <Button onClick={() => setUploading(true)} className="shrink-0">
           <Camera className="mr-2 h-4 w-4" />
-          Add Photos
+          Create New Before &amp; After Posting
         </Button>
       </div>
 
@@ -883,7 +883,7 @@ export function BeforeAfterManager({ initialAssets }: Props) {
             </p>
             {filter === "all" && (
               <Button className="mt-4" onClick={() => setUploading(true)}>
-                <Camera className="mr-2 h-4 w-4" /> Add Your First Photo
+                <Camera className="mr-2 h-4 w-4" /> Create Your First Before &amp; After Posting
               </Button>
             )}
           </div>
