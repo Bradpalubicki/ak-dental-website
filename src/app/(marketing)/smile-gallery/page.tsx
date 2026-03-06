@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BreadcrumbSchema } from "@/components/schema/local-business";
 import { siteConfig } from "@/lib/config";
+import { createServiceSupabase } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Before & After Smile Gallery | AK Ultimate Dental Las Vegas",
@@ -161,7 +162,23 @@ const cases = [
   },
 ];
 
-export default function SmileGalleryPage() {
+export const dynamic = "force-dynamic";
+
+export default async function SmileGalleryPage() {
+  // Fetch real published photos from DB
+  const supabase = createServiceSupabase();
+  const { data: publishedPhotos } = await supabase
+    .from("media_assets")
+    .select("id, blob_url, service_category, before_or_after, caption, ai_description, is_featured, paired_with_id")
+    .eq("practice_id", "ak-ultimate-dental")
+    .eq("status", "published")
+    .eq("photo_type", "patient_result")
+    .order("is_featured", { ascending: false })
+    .order("published_at", { ascending: false })
+    .limit(50);
+
+  const hasRealPhotos = publishedPhotos && publishedPhotos.length > 0;
+
   return (
     <>
       <BreadcrumbSchema
@@ -232,6 +249,46 @@ export default function SmileGalleryPage() {
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
+
+            {/* Real patient photos from DB */}
+            {hasRealPhotos && (
+              <div className="mb-12">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Recent Patient Results</h2>
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {publishedPhotos.map((photo) => (
+                    <div key={photo.id} className="group relative rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg transition-shadow bg-white">
+                      <div className="relative aspect-[4/3]">
+                        <Image
+                          src={photo.blob_url}
+                          alt={photo.caption ?? `${photo.service_category ?? "Patient result"} — AK Ultimate Dental Las Vegas`}
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        {photo.before_or_after && photo.before_or_after !== "na" && (
+                          <div className={`absolute top-2 left-2 text-xs font-bold px-2 py-1 rounded text-white ${photo.before_or_after === "before" ? "bg-gray-700" : "bg-cyan-600"}`}>
+                            {photo.before_or_after.toUpperCase()}
+                          </div>
+                        )}
+                        {photo.is_featured && (
+                          <div className="absolute top-2 right-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded flex items-center gap-1">
+                            <Star className="h-3 w-3 fill-yellow-900" /> Featured
+                          </div>
+                        )}
+                      </div>
+                      {(photo.caption || photo.service_category) && (
+                        <div className="p-3">
+                          {photo.service_category && (
+                            <p className="text-xs font-medium text-cyan-700 uppercase tracking-wide mb-0.5 capitalize">{photo.service_category}</p>
+                          )}
+                          {photo.caption && <p className="text-sm text-gray-700">{photo.caption}</p>}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Coming Soon Notice */}
             <div className="bg-cyan-50 border border-cyan-200 rounded-2xl p-6 mb-10 flex items-start gap-4">
