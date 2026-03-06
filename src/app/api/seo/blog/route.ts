@@ -23,6 +23,7 @@ export async function GET() {
       id, slug, title, meta_description, excerpt, category, status,
       primary_keyword_id, supporting_keyword_ids, word_count,
       published_at, ai_generated, created_at, updated_at,
+      content_body, content_outline,
       primary_keyword:seo_keywords!seo_blog_posts_primary_keyword_id_fkey(keyword, current_rank)
     `)
     .order("created_at", { ascending: false });

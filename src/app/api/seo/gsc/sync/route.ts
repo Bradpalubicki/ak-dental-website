@@ -70,7 +70,35 @@ export async function POST(request: NextRequest) {
     await supabase.from("seo_keywords").insert(toSeed);
   }
 
-  return NextResponse.json({ synced: gscRows.length, seeded: toSeed.length });
+  // Update current_rank on tracked keywords from GSC average position
+  const { data: trackedKws } = await supabase
+    .from("seo_keywords")
+    .select("id, keyword, current_rank")
+    .eq("is_active", true);
+
+  let rankUpdated = 0;
+  if (trackedKws?.length) {
+    const gscByQuery = new Map<string, number>();
+    for (const r of rows) {
+      gscByQuery.set(r.keys[0].toLowerCase(), Math.round(r.position));
+    }
+    for (const kw of trackedKws) {
+      const gscRank = gscByQuery.get(kw.keyword.toLowerCase());
+      if (gscRank && gscRank !== kw.current_rank) {
+        await supabase
+          .from("seo_keywords")
+          .update({
+            previous_rank: kw.current_rank,
+            current_rank: gscRank,
+            updated_at: fetchedAt,
+          })
+          .eq("id", kw.id);
+        rankUpdated++;
+      }
+    }
+  }
+
+  return NextResponse.json({ synced: gscRows.length, seeded: toSeed.length, rank_updated: rankUpdated });
 }
 
 /**

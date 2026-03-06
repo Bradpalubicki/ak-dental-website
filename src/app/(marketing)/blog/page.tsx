@@ -1,173 +1,100 @@
-import { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Phone, ArrowRight, Clock, Tag } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { BreadcrumbSchema } from '@/components/schema/local-business';
-import { siteConfig } from '@/lib/config';
-import { getAllPosts } from '@/lib/blog';
-import { CategoryFilter } from './CategoryFilter';
+import { Metadata } from "next";
+import Link from "next/link";
+import { Calendar, Tag, ArrowRight } from "lucide-react";
+import { createServerSupabase } from "@/lib/supabase/server";
+import { siteConfig } from "@/lib/config";
+import { BreadcrumbSchema } from "@/components/schema/local-business";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: 'Dental Health Blog | AK Ultimate Dental | Las Vegas, NV',
-  description:
-    'Expert dental health articles from AK Ultimate Dental in Las Vegas, NV — covering implants, cosmetic dentistry, emergency care, preventive tips, and more.',
-  openGraph: {
-    title: 'Dental Health Blog | AK Ultimate Dental Las Vegas',
-    description:
-      'Expert dental health tips, oral care guides, and practice news from AK Ultimate Dental in Las Vegas, NV.',
-    images: [
-      {
-        url: 'https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=1200&h=630&fit=crop&q=80',
-        width: 1200,
-        height: 630,
-        alt: 'AK Ultimate Dental health blog',
-      },
-    ],
-  },
+  title: `Dental Health Blog | ${siteConfig.name}`,
+  description: `Expert dental health articles from ${siteConfig.name} in Las Vegas & Summerlin. Tips on implants, veneers, cosmetic dentistry, and oral health.`,
+  alternates: { canonical: `${siteConfig.url}/blog` },
 };
 
-export default function BlogPage() {
-  const allPosts = getAllPosts();
-  const [featured, ...rest] = allPosts;
-  const categories = Array.from(new Set(allPosts.map((p) => p.category)));
+export default async function BlogIndexPage() {
+  const supabase = await createServerSupabase();
+  const { data: posts } = await supabase
+    .from("seo_blog_posts")
+    .select("id, slug, title, meta_description, excerpt, category, published_at, word_count, ai_generated")
+    .eq("status", "published")
+    .order("published_at", { ascending: false });
+
+  const published = posts || [];
 
   return (
     <>
-      <BreadcrumbSchema
-        items={[
-          { name: 'Home', href: '/' },
-          { name: 'Blog', href: '/blog' },
-        ]}
-      />
+      <BreadcrumbSchema items={[{ name: "Home", href: "/" }, { name: "Blog", href: "/blog" }]} />
 
-      {/* Hero Section */}
-      <section className="relative py-20 md:py-28 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-900">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.15),transparent_50%)]" />
-        </div>
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center text-white">
-            <span className="inline-block text-cyan-400 font-semibold text-sm uppercase tracking-wider mb-4">
-              Insights &amp; Articles
-            </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              The AK Ultimate Dental Blog
-            </h1>
-            <p className="text-xl text-slate-300 mb-8 leading-relaxed max-w-3xl mx-auto">
-              Helpful articles, dental health tips, and oral care insights from
-              our team in Las Vegas, NV. Written to educate, inform, and help
-              you maintain a healthy, beautiful smile.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Article */}
-      <section className="py-16 md:py-20 bg-slate-50 border-b border-slate-100">
-        <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto">
-            <span className="inline-block text-cyan-600 font-semibold text-sm uppercase tracking-wider mb-6">
-              Featured Article
-            </span>
-            <Link href={`/blog/${featured.slug}`} className="group block">
-              <div className="grid md:grid-cols-2 gap-8 bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="relative h-64 md:h-auto min-h-[280px]">
-                  <Image
-                    src={featured.heroImage}
-                    alt={featured.heroAlt}
-                    fill
-                    priority
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                </div>
-                <div className="p-8 md:p-10 flex flex-col justify-center">
-                  <div className="flex items-center gap-3 mb-4">
-                    <Badge className="bg-cyan-50 text-cyan-700 border-0 text-xs font-semibold">
-                      <Tag className="h-3 w-3 mr-1" />
-                      {featured.category}
-                    </Badge>
-                    <span className="inline-flex items-center gap-1 text-xs text-slate-400">
-                      <Clock className="h-3 w-3" />
-                      {featured.readTime}
-                    </span>
-                  </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4 leading-snug group-hover:text-cyan-600 transition-colors">
-                    {featured.title}
-                  </h2>
-                  <p className="text-slate-500 mb-6 leading-relaxed">
-                    {featured.excerpt}
-                  </p>
-                  <span className="inline-flex items-center gap-2 text-sm font-semibold text-cyan-600 group-hover:text-cyan-700 transition-colors">
-                    Read Full Article
-                    <ArrowRight className="h-4 w-4" />
-                  </span>
-                </div>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* All Articles with Category Filter */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-12">
-              <span className="inline-block text-cyan-600 font-semibold text-sm uppercase tracking-wider mb-4">
-                All Articles
-              </span>
-              <h2 className="text-4xl font-bold text-slate-900 mb-4">
-                Dental Health Guides &amp; Tips
-              </h2>
-              <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-                Browse our library of articles written by the AK Ultimate Dental
-                team in Las Vegas, NV.
-              </p>
-            </div>
-
-            <CategoryFilter posts={rest} categories={categories} />
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="relative py-20 md:py-28 overflow-hidden bg-gradient-to-r from-slate-900 to-cyan-900">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(6,182,212,0.2),transparent_60%)]" />
-        </div>
-        <div className="container mx-auto px-4 relative z-10 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready for a Healthier Smile?
-          </h2>
-          <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
-            Reading about dental care is a great start. Book an appointment
-            today and take the next step toward better oral health.
+      {/* Hero */}
+      <section className="bg-gradient-to-b from-slate-900 to-slate-800 text-white py-16 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <p className="text-cyan-400 text-sm font-semibold tracking-widest uppercase mb-3">Dental Health Resources</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Expert Dental Advice</h1>
+          <p className="text-slate-300 text-lg max-w-2xl mx-auto">
+            Evidence-based dental health articles from the team at {siteConfig.name} in Las Vegas & Summerlin, NV.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              asChild
-              size="lg"
-              className="h-16 px-10 text-lg bg-cyan-500 text-white hover:bg-cyan-400 font-semibold"
-            >
-              <Link href="/appointment">
-                Book Your Appointment
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              className="h-16 px-10 text-lg bg-transparent border-2 border-white text-white hover:bg-white/10"
-            >
-              <a href={siteConfig.phoneHref}>
-                <Phone className="mr-2 h-5 w-5" />
-                Call {siteConfig.phone}
-              </a>
-            </Button>
-          </div>
+        </div>
+      </section>
+
+      {/* Posts grid */}
+      <section className="py-16 px-4 bg-white">
+        <div className="max-w-5xl mx-auto">
+          {published.length === 0 ? (
+            <div className="text-center py-24 text-slate-400">
+              <p className="text-xl font-medium">Articles coming soon.</p>
+              <p className="mt-2 text-sm">Check back shortly — our team is publishing new content regularly.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {published.map((post) => (
+                <Link key={post.id} href={`/blog/${post.slug}`} className="group block">
+                  <article className="h-full border border-slate-200 rounded-2xl overflow-hidden hover:border-cyan-400 hover:shadow-lg transition-all duration-200">
+                    {/* Category bar */}
+                    <div className="h-1.5 bg-gradient-to-r from-cyan-500 to-blue-600" />
+                    <div className="p-6">
+                      {post.category && (
+                        <div className="flex items-center gap-1.5 mb-3">
+                          <Tag className="h-3 w-3 text-cyan-500" />
+                          <span className="text-xs font-semibold text-cyan-600 uppercase tracking-wide">{post.category}</span>
+                        </div>
+                      )}
+                      <h2 className="text-xl font-bold text-slate-900 group-hover:text-cyan-700 transition-colors leading-snug mb-3">
+                        {post.title}
+                      </h2>
+                      <p className="text-slate-500 text-sm leading-relaxed line-clamp-3 mb-4">
+                        {post.excerpt || post.meta_description}
+                      </p>
+                      <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-100">
+                        <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                          <Calendar className="h-3.5 w-3.5" />
+                          {post.published_at
+                            ? new Date(post.published_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                            : "Recent"}
+                        </div>
+                        <span className="text-xs font-medium text-cyan-600 group-hover:gap-2 flex items-center gap-1 transition-all">
+                          Read article <ArrowRight className="h-3.5 w-3.5" />
+                        </span>
+                      </div>
+                    </div>
+                  </article>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="bg-cyan-600 text-white py-12 px-4 text-center">
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-2xl font-bold mb-2">Ready for Your Best Smile?</h2>
+          <p className="text-cyan-100 mb-6">Schedule a consultation with Dr. Chireau — same-week appointments available.</p>
+          <Link href="/get-started"
+            className="inline-flex items-center gap-2 bg-white text-cyan-700 font-semibold px-8 py-3 rounded-full hover:bg-cyan-50 transition-colors">
+            Book Your Consultation <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </section>
     </>

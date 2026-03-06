@@ -75,6 +75,8 @@ interface BlogPost {
   published_at: string | null;
   ai_generated: boolean;
   created_at: string;
+  content_body: string | null;
+  content_outline: string | null;
   primary_keyword?: { keyword: string; current_rank: number | null } | null;
 }
 
@@ -338,6 +340,9 @@ export function SEODashboardClient() {
   const [blogGenMode, setBlogGenMode] = useState<"outline" | "full">("outline");
   const [kwView, setKwView] = useState<"clusters" | "gap" | "blog" | "suggest">("clusters");
   const [suggestions, setSuggestions] = useState<KeywordSuggestion[]>([]);
+  const [editingPost, setEditingPost] = useState<string | null>(null);
+  const [editContent, setEditContent] = useState<string>("");
+  const [savingPost, setSavingPost] = useState(false);
 
   const fetchKeywords = useCallback(async () => {
     try {
@@ -1735,17 +1740,33 @@ export function SEODashboardClient() {
                     const avgRankCluster = ranked.length
                       ? Math.round(ranked.reduce((s, k) => s + (k.current_rank ?? 0), 0) / ranked.length)
                       : null;
+                    const mappedKwIds = new Set(blogPosts.map(b => b.primary_keyword_id).filter(Boolean));
+                    const blogsInCluster = clusterKws.filter(k => mappedKwIds.has(k.id)).length;
+                    const gapCount = clusterKws.length - blogsInCluster;
+                    const top10Count = clusterKws.filter(k => k.current_rank && k.current_rank <= 10).length;
                     return (
                       <Card key={cluster.id} className="border-l-4" style={{ borderLeftColor: cluster.color }}>
-                        <CardHeader className="pb-3">
+                        <CardHeader className="pb-2">
                           <div className="flex items-center justify-between">
                             <CardTitle className="text-sm font-semibold">{cluster.name}</CardTitle>
                             <span className="text-xs text-slate-400">{clusterKws.length} keywords</span>
                           </div>
-                          {avgRankCluster && <p className="text-xs text-slate-500">Avg rank: #{avgRankCluster}</p>}
+                          {/* Opportunity metrics row */}
+                          <div className="flex gap-3 mt-1.5 flex-wrap">
+                            {avgRankCluster && (
+                              <span className="text-xs text-slate-500">Avg rank: <span className="font-semibold text-slate-700">#{avgRankCluster}</span></span>
+                            )}
+                            <span className="text-xs text-slate-500">Top 10: <span className="font-semibold text-emerald-600">{top10Count}</span></span>
+                            {gapCount > 0 && (
+                              <span className="text-xs text-amber-600 font-medium">{gapCount} content gap{gapCount > 1 ? "s" : ""}</span>
+                            )}
+                            {gapCount === 0 && clusterKws.length > 0 && (
+                              <span className="text-xs text-emerald-600 font-medium">All covered ✓</span>
+                            )}
+                          </div>
                         </CardHeader>
                         <CardContent className="pt-0">
-                          <div className="flex flex-wrap gap-1.5">
+                          <div className="flex flex-wrap gap-1.5 mb-3">
                             {clusterKws.map(kw => (
                               <span key={kw.id} className="text-xs px-2 py-1 rounded-full border flex items-center gap-1"
                                 style={{ borderColor: cluster.color + "40", backgroundColor: cluster.color + "10" }}>
@@ -1754,6 +1775,12 @@ export function SEODashboardClient() {
                               </span>
                             ))}
                           </div>
+                          {gapCount > 0 && (
+                            <button onClick={() => setKwView("gap")}
+                              className="text-xs text-cyan-600 hover:text-cyan-800 font-medium">
+                              → View {gapCount} content gap{gapCount > 1 ? "s" : ""} →
+                            </button>
+                          )}
                         </CardContent>
                       </Card>
                     );
@@ -1867,33 +1894,73 @@ export function SEODashboardClient() {
                   ) : (
                     <div className="space-y-3">
                       {blogPosts.map(post => (
-                        <div key={post.id} className="flex items-center justify-between py-3 px-3 rounded-lg border border-slate-200">
-                          <div className="min-w-0">
-                            <p className="text-sm font-medium text-slate-900 truncate">{post.title}</p>
-                            <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                              <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${post.status === "published" ? "bg-emerald-100 text-emerald-700" : post.status === "draft" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"}`}>
-                                {post.status}
-                              </span>
-                              {post.ai_generated && <span className="text-xs px-1.5 py-0.5 bg-violet-100 text-violet-700 rounded">AI</span>}
-                              {post.word_count && <span className="text-xs text-slate-400">{post.word_count.toLocaleString()} words</span>}
-                              {post.primary_keyword && <span className="text-xs text-slate-400 truncate">→ {post.primary_keyword.keyword}</span>}
+                        <div key={post.id} className="rounded-lg border border-slate-200 overflow-hidden">
+                          <div className="flex items-center justify-between py-3 px-3">
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-slate-900 truncate">{post.title}</p>
+                              <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${post.status === "published" ? "bg-emerald-100 text-emerald-700" : post.status === "draft" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"}`}>
+                                  {post.status}
+                                </span>
+                                {post.ai_generated && <span className="text-xs px-1.5 py-0.5 bg-violet-100 text-violet-700 rounded">AI</span>}
+                                {post.word_count && <span className="text-xs text-slate-400">{post.word_count.toLocaleString()} words</span>}
+                                {post.primary_keyword && <span className="text-xs text-slate-400 truncate">→ {post.primary_keyword.keyword}</span>}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0 ml-3">
+                              <Button size="sm" variant="outline" className="text-xs h-7 gap-1"
+                                onClick={() => {
+                                  if (editingPost === post.id) { setEditingPost(null); return; }
+                                  setEditingPost(post.id);
+                                  setEditContent(post.content_body || post.content_outline || "");
+                                }}>
+                                {editingPost === post.id ? "Close" : "Edit"}
+                              </Button>
+                              {post.status === "draft" && (
+                                <Button size="sm" variant="outline" className="text-xs h-7 gap-1"
+                                  onClick={async () => {
+                                    await fetch("/api/seo/blog", { method: "PUT", headers: { "Content-Type": "application/json" },
+                                      body: JSON.stringify({ id: post.id, status: "published", published_at: new Date().toISOString() }) });
+                                    fetchKwIntel();
+                                  }}>
+                                  <CheckCircle2 className="h-3 w-3" />Publish
+                                </Button>
+                              )}
+                              {post.status === "published" && (
+                                <Button size="sm" variant="ghost" className="text-xs h-7" asChild>
+                                  <a href={`/blog/${post.slug}`} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-3 w-3" /></a>
+                                </Button>
+                              )}
                             </div>
                           </div>
-                          <div className="flex items-center gap-2 shrink-0 ml-3">
-                            {post.status === "draft" && (
-                              <Button size="sm" variant="outline" className="text-xs h-7 gap-1"
-                                onClick={async () => {
-                                  await fetch("/api/seo/blog", { method: "PUT", headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({ id: post.id, status: "published", published_at: new Date().toISOString() }) });
-                                  fetchKwIntel();
-                                }}>
-                                <CheckCircle2 className="h-3 w-3" />Publish
-                              </Button>
-                            )}
-                            <Button size="sm" variant="ghost" className="text-xs h-7" asChild>
-                              <a href={`/blog/${post.slug}`} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-3 w-3" /></a>
-                            </Button>
-                          </div>
+                          {editingPost === post.id && (
+                            <div className="border-t border-slate-200 p-3 bg-slate-50 space-y-3">
+                              <textarea
+                                className="w-full h-72 text-xs font-mono border border-slate-200 rounded-lg p-3 resize-y focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white"
+                                value={editContent}
+                                onChange={e => setEditContent(e.target.value)}
+                                placeholder="Markdown content..."
+                              />
+                              <div className="flex items-center gap-2">
+                                <Button size="sm" className="gap-1.5 text-xs" disabled={savingPost}
+                                  onClick={async () => {
+                                    setSavingPost(true);
+                                    try {
+                                      const field = post.content_body ? "content_body" : "content_outline";
+                                      const wc = editContent.trim().split(/\s+/).length;
+                                      await fetch("/api/seo/blog", { method: "PUT", headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ id: post.id, [field]: editContent, word_count: wc }) });
+                                      setEditingPost(null);
+                                      fetchKwIntel();
+                                    } finally { setSavingPost(false); }
+                                  }}>
+                                  {savingPost ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
+                                  Save Changes
+                                </Button>
+                                <p className="text-xs text-slate-400">{editContent.trim().split(/\s+/).filter(Boolean).length} words · Markdown supported</p>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>

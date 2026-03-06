@@ -284,6 +284,7 @@ export const engineConfig: EngineConfig = {
       { name: "Smile Gallery", href: "/smile-gallery" },
       { name: "Insurance", href: "/insurance" },
       { name: "Technology", href: "/technology" },
+      { name: "Blog", href: "/blog" },
       { name: "Reviews", href: "/reviews" },
       { name: "Contact", href: "/contact" },
     ],

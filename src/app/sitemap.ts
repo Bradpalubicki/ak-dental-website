@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
 import { siteConfig, getAllRenderableServices } from "@/lib/config";
+import { createServerSupabase } from "@/lib/supabase/server";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = siteConfig.url;
 
   // Static marketing pages
@@ -130,5 +131,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: service.featured ? 0.8 : 0.7,
   }));
 
-  return [...staticPages, ...servicePages];
+  // Dynamic blog post pages
+  let blogPages: MetadataRoute.Sitemap = [];
+  try {
+    const supabase = await createServerSupabase();
+    const { data: posts } = await supabase
+      .from("seo_blog_posts")
+      .select("slug, published_at")
+      .eq("status", "published");
+    blogPages = (posts || []).map((post) => ({
+      url: `${baseUrl}/blog/${post.slug}`,
+      lastModified: post.published_at ? new Date(post.published_at) : new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    }));
+  } catch { /* sitemap still works without blog posts */ }
+
+  return [...staticPages, ...servicePages, ...blogPages];
 }
