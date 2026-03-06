@@ -89,66 +89,176 @@ Only return the JSON.` },
 }
 
 // Pass 2: Storytelling agent — writes patient-facing copy that converts
+// Separate prompts per photo type, each trained on the psychological drivers:
+// BEFORE: Fear + Recognition ("I felt like this too")
+// AFTER: Aspiration + Possibility ("This could be me")
+// SINGLE RESULT: Trust + Confidence story
+// TEAM: Warmth + Safety ("You'll be in good hands")
+// OFFICE: Calm + Anticipation ("This is where it happens")
+
+const STORYTELLING_SYSTEM = `You are the lead copywriter for AK Ultimate Dental in Las Vegas, NV — a high-end cosmetic dental practice led by Dr. Alex Chireau, DDS.
+
+Your job is to write photo copy that makes real people feel something and take action.
+
+VOICE: Warm, direct, aspirational — like a trusted friend who is also an expert. Never clinical. Never salesy. Never generic.
+
+RULES:
+- Write for humans, not search engines
+- Use plain English — "straighter teeth" not "Class II malocclusion"
+- Be specific whenever possible — specificity creates trust
+- Mention Las Vegas lifestyle naturally where it fits (photos, events, work, dating, family moments)
+- HIPAA-safe: never use patient name, age, employer, or any identifying detail
+- "I wish I had done this sooner" is the most common thing patients say — write toward that realization
+- 99% of cosmetic patients delayed for years. Your copy should make them feel safe to finally act.
+
+WHAT PATIENTS ACTUALLY CARE ABOUT (use this, not procedure names):
+- Veneers: Looking natural, not "big horse teeth" or fake — just their best smile
+- Implants: Eating freely again, no more gap they have to hide in photos
+- Whitening: Looking younger and more energetic in every photo for years
+- Crowns/bonding: The chip or crack that's been nagging them, finally gone
+- Full makeover: How the world treats you differently when you lead with a confident smile`;
+
+function buildStoryPrompt(
+  photoType: string,
+  beforeOrAfter: string,
+  treatments: string,
+  caseNotes?: string,
+  description?: string,
+): string {
+  const treatmentContext = `Treatment performed: ${treatments}${caseNotes ? `\nCase notes (use as inspiration only, never quote directly): ${caseNotes}` : ""}`;
+  const jsonShape = `Respond with ONLY valid JSON (no markdown, no explanation):
+{
+  "headline": "...",
+  "body": "...",
+  "caption": "...",
+  "treatment_summary": "..."
+}`;
+
+  if (photoType === "patient_result" && beforeOrAfter === "before") {
+    return `This is a BEFORE photo — the patient before their dental treatment.
+
+${treatmentContext}
+
+Write copy that activates RECOGNITION and EMPATHY. The reader should see this photo and think "that's exactly how I feel about my smile."
+
+BEFORE copy rules:
+- Headline: Name the specific struggle — the thing this patient lived with every day. 6-10 words. Lead with the emotional reality, not the tooth problem. Examples: "She stopped smiling in photos for three years." / "He turned down the job interview photo." / "Every mirror was a reminder of what she wanted to change."
+- Body: 2-3 sentences. Name the emotional weight of the problem (hiding, avoiding, self-conscious), NOT the clinical details. Make the reader nod and feel understood. End with a quiet signal that change is possible — "It didn't have to stay this way." Leave them leaning forward.
+- Caption: One sentence. Empathetic, non-judgmental. "This is where every transformation starts — with the courage to imagine something different."
+- Treatment summary: Plain English, what was done. "6 porcelain veneers, completed over two appointments."
+
+${jsonShape}`;
+  }
+
+  if (photoType === "patient_result" && beforeOrAfter === "after") {
+    return `This is an AFTER photo — the patient after their dental treatment. This is the result they get to live with forever.
+
+${treatmentContext}
+
+Write copy that activates POSSIBILITY and ASPIRATION. The reader should see this photo and think "that could be me."
+
+AFTER copy rules:
+- Headline: Lead with the OUTCOME — what this person can now do, feel, or experience that they couldn't before. 6-10 words. Specific beats generic. Examples: "Now she smiles first in every photo." / "He got the promotion. Coincidence? We don't think so." / "Same-day veneers. The smile she always deserved." / "She stopped hiding. She'll never go back."
+- Body: 2-3 sentences. Start with what changed for them (not the teeth — their life, their confidence, how they carry themselves). Use sensory or scene-specific language: "The first thing she did was call her sister and say she finally felt like herself." End with a line that invites the reader to picture this for themselves — "Your version of this is one conversation away."
+- Caption: One confident sentence that anchors the transformation. Specific to what was done, ends with quiet pride.
+- Treatment summary: Plain English. "Full smile makeover: 8 upper and lower porcelain veneers, in-office whitening."
+
+${jsonShape}`;
+  }
+
+  if (photoType === "patient_result" && (beforeOrAfter === "na" || !beforeOrAfter)) {
+    return `This is a single completed result photo — a patient's smile after treatment, not part of a before/after pair.
+
+${treatmentContext}
+
+Write copy that builds TRUST through specificity and quiet confidence. The reader is someone on the fence — not sure if this practice is right for them.
+
+SINGLE RESULT copy rules:
+- Headline: Specific outcome + quiet emotional truth. 6-10 words. Examples: "The gap is gone. Her confidence is not." / "Four veneers. One decision she'll never regret." / "This is what 'I finally did it' looks like."
+- Body: 2-3 sentences. Tell the micro-story of WHY someone like this patient might have hesitated, then what it looks like on the other side. Be specific about what was done without sounding clinical. End with something that makes the reader feel this is possible for them — "If you've been thinking about it, this is your sign."
+- Caption: One specific, proud sentence about the result.
+- Treatment summary: Plain English, what was done.
+
+${jsonShape}`;
+  }
+
+  if (photoType === "team") {
+    return `This is a team photo of AK Ultimate Dental staff or Dr. Alex Chireau.
+
+What the photo shows: ${description || "dental team member(s)"}
+
+Write copy that creates WARMTH and SAFETY. A nervous new patient should see this and feel: "These are real people who will take care of me."
+
+TEAM copy rules:
+- Headline: 5-8 words. Welcoming, human, slightly personal. "The team you'll actually look forward to seeing." / "Friendly faces behind every transformation." / "Dr. Chireau and the crew who make it happen."
+- Body: 2 sentences. Make the reader feel comfortable before they walk in. Reference the kind of care they'll receive, not the credentials. "You'll never feel like a number here — the whole team knows your name before you sit down."
+- Caption: One warm, specific sentence.
+- Treatment summary: "" (empty string)
+
+${jsonShape}`;
+  }
+
+  if (photoType === "office") {
+    return `This is an office or facility photo of AK Ultimate Dental in Las Vegas.
+
+What the photo shows: ${description || "dental office"}
+
+Write copy that creates CALM and POSITIVE ANTICIPATION. A nervous patient should see this and feel: "This place feels safe and beautiful — not like a regular dentist."
+
+OFFICE copy rules:
+- Headline: 5-8 words. Clean, confident, inviting. "Where Las Vegas smiles are made." / "Modern care in a space designed for comfort." / "The room where it all begins."
+- Body: 1-2 sentences. Help the reader imagine being there — the feeling of walking in, settling in, being in good hands. Reference that dental anxiety is normal and this space was designed with them in mind.
+- Caption: One specific, reassuring sentence.
+- Treatment summary: "" (empty string)
+
+${jsonShape}`;
+  }
+
+  if (photoType === "equipment") {
+    return `This is a photo of dental technology or equipment at AK Ultimate Dental.
+
+What the photo shows: ${description || "dental equipment"}
+
+Write copy that builds CONFIDENCE through capability. The reader should feel: "This practice invests in the best so I get the best result."
+
+EQUIPMENT copy rules:
+- Headline: 5-8 words. Tech as benefit, not tech as tech. "Same-day results. No second guessing." / "Precision tools for permanent results."
+- Body: 1-2 sentences. Translate what the tech MEANS for the patient — faster, more comfortable, more accurate, fewer visits. Never sound like a brochure.
+- Caption: One specific, patient-benefit-focused sentence.
+- Treatment summary: "" (empty string)
+
+${jsonShape}`;
+  }
+
+  // Fallback for unknown photo types
+  return `This is a photo from AK Ultimate Dental in Las Vegas.
+
+What the photo shows: ${description || "dental practice"}
+
+Write brief, welcoming copy for this photo.
+
+- Headline: 5-8 words, warm and professional.
+- Body: 1-2 sentences that make a prospective patient feel welcome and confident.
+- Caption: One sentence.
+- Treatment summary: "" (empty string)
+
+${jsonShape}`;
+}
+
 async function runStorytelling(blobUrl: string, asset: Record<string, unknown>, analysis: Record<string, unknown>) {
-  const photoType = asset.photo_type as string;
+  const photoType = (asset.photo_type as string) ?? "other";
   const serviceCategory = asset.service_category as string;
   const beforeOrAfter = asset.before_or_after as string;
-  const caseNotes = asset.case_notes as string;
+  const caseNotes = asset.case_notes as string | undefined;
   const treatments = (analysis.visible_treatments as string[])?.join(", ") || serviceCategory || "dental treatment";
+  const description = analysis.description as string | undefined;
 
-  const isPatient = photoType === "patient_result";
-
-  const systemPrompt = `You are an expert dental marketing copywriter for AK Ultimate Dental in Las Vegas, NV — a high-end cosmetic dental practice led by Dr. Alex Chireau.
-
-You write compelling before & after stories and photo captions that:
-- Lead with the PATIENT OUTCOME and emotional transformation, not the procedure name
-- Use warm, confident, aspirational language — the tone of a trusted friend who happens to be an expert
-- Avoid clinical jargon (say "straighter smile" not "Class I occlusion")
-- Speak to the reader's deepest desire: to feel confident, attractive, and not self-conscious about their smile
-- Mention Las Vegas lifestyle naturally (photos, events, confidence at work, dating, etc.) when relevant
-- Never sound salesy or pushy — let the result speak
-- Are HIPAA-safe: never mention patient name, age, or identifying details
-
-You know these truths about dental patients:
-- Most patients delayed treatment for years out of fear, cost concern, or thinking it wasn't possible for them
-- The #1 thing patients say after cosmetic dentistry: "I wish I had done this sooner"
-- Veneers patients care about: looking natural, not "fake" or "big horse teeth"
-- Implant patients care about: eating normally again, not having a gap they hide
-- Whitening patients care about: looking younger and more energetic in photos
-- Smile makeover patients care about: the total transformation of how others perceive them
-- Before photos should evoke empathy and recognition ("I felt like this too")
-- After photos should evoke genuine excitement and possibility ("This could be me")`;
-
-  const userPrompt = isPatient
-    ? `Write compelling patient-facing copy for this ${beforeOrAfter === "before" ? "BEFORE" : beforeOrAfter === "after" ? "AFTER" : "result"} photo.
-
-Treatment performed: ${treatments}
-${caseNotes ? `Internal case notes (do NOT quote directly, use as inspiration only): ${caseNotes}` : ""}
-Photo type: ${beforeOrAfter === "before" ? "before treatment" : beforeOrAfter === "after" ? "after treatment" : "completed result"}
-
-Respond with ONLY valid JSON:
-{
-  "headline": "Short punchy headline, 6-10 words, emotion-first. Examples: 'She stopped hiding her smile at 34.' / 'Same-day. Permanent. Life-changing.' / 'The smile he was afraid to ask for.'",
-  "body": "2-3 sentence story that makes the reader feel something. Paint the before situation briefly, then the transformation. End with a line that makes them imagine themselves getting the same result. DO NOT mention the patient by name or any identifying detail.",
-  "caption": "Single sentence for the photo caption on the gallery page. Warm, specific to the treatment, ends with quiet confidence.",
-  "treatment_summary": "1 sentence plain-English summary of what was done. Example: '6 porcelain veneers, completed in two appointments.'"
-}`
-    : `Write compelling copy for this ${photoType} photo of AK Ultimate Dental.
-
-Photo shows: ${analysis.description || "dental practice"}
-
-Respond with ONLY valid JSON:
-{
-  "headline": "Short, welcoming headline for this photo. 5-8 words.",
-  "body": "1-2 sentences that make a prospective patient feel at ease and excited to visit.",
-  "caption": "Single sentence photo caption.",
-  "treatment_summary": ""
-}`;
+  const userPrompt = buildStoryPrompt(photoType, beforeOrAfter, treatments, caseNotes, description);
 
   const res = await client.messages.create({
     model: "claude-sonnet-4-6",
-    max_tokens: 800,
-    system: systemPrompt,
+    max_tokens: 1024,
+    system: STORYTELLING_SYSTEM,
     messages: [
       {
         role: "user",
