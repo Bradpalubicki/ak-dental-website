@@ -27,6 +27,10 @@ interface Asset {
   consent_confirmed_at: string | null;
   placement: string | null;
   created_at: string;
+  story_headline: string | null;
+  story_body: string | null;
+  story_caption: string | null;
+  story_treatment_summary: string | null;
 }
 
 const PLACEMENTS = [
@@ -144,6 +148,22 @@ function ReviewCard({ asset, onDone }: ReviewCardProps) {
         {asset.case_notes && (
           <div className="text-xs text-gray-500 bg-gray-50 rounded p-2">
             <span className="font-medium">Notes: </span>{asset.case_notes}
+          </div>
+        )}
+
+        {/* AI Story Preview */}
+        {(asset.story_headline || asset.story_body) && (
+          <div className="rounded-lg border border-violet-100 bg-violet-50 p-3 space-y-1.5">
+            <p className="text-xs font-semibold text-violet-700 uppercase tracking-wide">AI Story — shown on website</p>
+            {asset.story_headline && (
+              <p className="text-sm font-bold text-gray-900">{asset.story_headline}</p>
+            )}
+            {asset.story_body && (
+              <p className="text-sm text-gray-700 leading-relaxed">{asset.story_body}</p>
+            )}
+            {asset.story_treatment_summary && (
+              <p className="text-xs text-gray-500 italic">{asset.story_treatment_summary}</p>
+            )}
           </div>
         )}
 

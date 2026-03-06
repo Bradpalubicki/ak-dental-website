@@ -169,7 +169,7 @@ export default async function SmileGalleryPage() {
   const supabase = createServiceSupabase();
   const { data: publishedPhotos } = await supabase
     .from("media_assets")
-    .select("id, blob_url, service_category, before_or_after, caption, ai_description, is_featured, paired_with_id")
+    .select("id, blob_url, service_category, before_or_after, caption, ai_description, is_featured, paired_with_id, story_headline, story_body, story_caption, story_treatment_summary")
     .eq("practice_id", "ak-ultimate-dental")
     .eq("status", "published")
     .eq("photo_type", "patient_result")
@@ -255,37 +255,52 @@ export default async function SmileGalleryPage() {
               <div className="mb-12">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Recent Patient Results</h2>
                 <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {publishedPhotos.map((photo) => (
-                    <div key={photo.id} className="group relative rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg transition-shadow bg-white">
-                      <div className="relative aspect-[4/3]">
-                        <Image
-                          src={photo.blob_url}
-                          alt={photo.caption ?? `${photo.service_category ?? "Patient result"} — AK Ultimate Dental Las Vegas`}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        {photo.before_or_after && photo.before_or_after !== "na" && (
-                          <div className={`absolute top-2 left-2 text-xs font-bold px-2 py-1 rounded text-white ${photo.before_or_after === "before" ? "bg-gray-700" : "bg-cyan-600"}`}>
-                            {photo.before_or_after.toUpperCase()}
-                          </div>
-                        )}
-                        {photo.is_featured && (
-                          <div className="absolute top-2 right-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded flex items-center gap-1">
-                            <Star className="h-3 w-3 fill-yellow-900" /> Featured
-                          </div>
-                        )}
-                      </div>
-                      {(photo.caption || photo.service_category) && (
-                        <div className="p-3">
-                          {photo.service_category && (
-                            <p className="text-xs font-medium text-cyan-700 uppercase tracking-wide mb-0.5 capitalize">{photo.service_category}</p>
+                  {publishedPhotos.map((photo) => {
+                    const headline = photo.story_headline;
+                    const body = photo.story_body;
+                    const caption = photo.story_caption ?? photo.caption;
+                    const treatmentSummary = photo.story_treatment_summary;
+                    return (
+                      <div key={photo.id} className="group rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 bg-white flex flex-col">
+                        <div className="relative aspect-[4/3]">
+                          <Image
+                            src={photo.blob_url}
+                            alt={caption ?? `${photo.service_category ?? "Patient result"} — AK Ultimate Dental Las Vegas`}
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          {photo.before_or_after && photo.before_or_after !== "na" && (
+                            <div className={`absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-full text-white shadow ${photo.before_or_after === "before" ? "bg-gray-800" : "bg-cyan-600"}`}>
+                              {photo.before_or_after.toUpperCase()}
+                            </div>
                           )}
-                          {photo.caption && <p className="text-sm text-gray-700">{photo.caption}</p>}
+                          {photo.is_featured && (
+                            <div className="absolute top-3 right-3 bg-yellow-400 text-yellow-900 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow">
+                              <Star className="h-3 w-3 fill-yellow-900" /> Featured
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  ))}
+                        <div className="p-4 flex flex-col gap-2 flex-1">
+                          {photo.service_category && (
+                            <p className="text-xs font-semibold text-cyan-600 uppercase tracking-wider capitalize">{photo.service_category}</p>
+                          )}
+                          {headline && (
+                            <h3 className="font-bold text-gray-900 leading-snug">{headline}</h3>
+                          )}
+                          {body && (
+                            <p className="text-sm text-gray-600 leading-relaxed">{body}</p>
+                          )}
+                          {!headline && caption && (
+                            <p className="text-sm text-gray-700">{caption}</p>
+                          )}
+                          {treatmentSummary && (
+                            <p className="text-xs text-gray-400 mt-auto pt-2 border-t border-gray-100">{treatmentSummary}</p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}

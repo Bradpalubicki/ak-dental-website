@@ -39,8 +39,122 @@ const BodySchema = z.object({
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function parseJson(text: string): any {
+  try {
+    const clean = text.trim().replace(/^```json?\s*/i, "").replace(/\s*```$/i, "");
+    return JSON.parse(clean);
+  } catch {
+    return {};
+  }
+}
+
+// Pass 1: Technical analysis
+async function runAnalysis(blobUrl: string) {
+  const res = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 1024,
+    messages: [{
+      role: "user",
+      content: [
+        { type: "image", source: { type: "url", url: blobUrl } },
+        { type: "text", text: `Analyze this dental practice photo and respond with ONLY valid JSON:
+{
+  "category": "before_after" | "team" | "office" | "equipment" | "other",
+  "description": "1-2 sentence factual description",
+  "suggested_placement": "smile_gallery" | "team_page" | "about_page" | "homepage_hero" | "services/cosmetic-dentistry" | "other",
+  "detected_tags": ["tag1", "tag2"],
+  "contains_identifiable_person": true | false,
+  "quality_assessment": "good" | "acceptable" | "poor",
+  "quality_notes": "Brief note on lighting, focus, angle",
+  "visible_treatments": ["veneer", "whitening", "implant", "crown", "bonding", "gum_contouring", "orthodontics", "general"]
+}
+Category: before_after=teeth transformation, team=staff/doctor, office=facility, equipment=dental tech, other=unclear.
+Only return the JSON.` },
+      ],
+    }],
+  });
+  const text = res.content[0].type === "text" ? res.content[0].text : "{}";
+  return parseJson(text);
+}
+
+// Pass 2: Storytelling agent — writes patient-facing copy that converts
+async function runStorytelling(blobUrl: string, asset: Record<string, unknown>, analysis: Record<string, unknown>) {
+  const photoType = asset.photo_type as string;
+  const serviceCategory = asset.service_category as string;
+  const beforeOrAfter = asset.before_or_after as string;
+  const caseNotes = asset.case_notes as string;
+  const treatments = (analysis.visible_treatments as string[])?.join(", ") || serviceCategory || "dental treatment";
+
+  const isPatient = photoType === "patient_result";
+
+  const systemPrompt = `You are an expert dental marketing copywriter for AK Ultimate Dental in Las Vegas, NV — a high-end cosmetic dental practice led by Dr. Alex Chireau.
+
+You write compelling before & after stories and photo captions that:
+- Lead with the PATIENT OUTCOME and emotional transformation, not the procedure name
+- Use warm, confident, aspirational language — the tone of a trusted friend who happens to be an expert
+- Avoid clinical jargon (say "straighter smile" not "Class I occlusion")
+- Speak to the reader's deepest desire: to feel confident, attractive, and not self-conscious about their smile
+- Mention Las Vegas lifestyle naturally (photos, events, confidence at work, dating, etc.) when relevant
+- Never sound salesy or pushy — let the result speak
+- Are HIPAA-safe: never mention patient name, age, or identifying details
+
+You know these truths about dental patients:
+- Most patients delayed treatment for years out of fear, cost concern, or thinking it wasn't possible for them
+- The #1 thing patients say after cosmetic dentistry: "I wish I had done this sooner"
+- Veneers patients care about: looking natural, not "fake" or "big horse teeth"
+- Implant patients care about: eating normally again, not having a gap they hide
+- Whitening patients care about: looking younger and more energetic in photos
+- Smile makeover patients care about: the total transformation of how others perceive them
+- Before photos should evoke empathy and recognition ("I felt like this too")
+- After photos should evoke genuine excitement and possibility ("This could be me")`;
+
+  const userPrompt = isPatient
+    ? `Write compelling patient-facing copy for this ${beforeOrAfter === "before" ? "BEFORE" : beforeOrAfter === "after" ? "AFTER" : "result"} photo.
+
+Treatment performed: ${treatments}
+${caseNotes ? `Internal case notes (do NOT quote directly, use as inspiration only): ${caseNotes}` : ""}
+Photo type: ${beforeOrAfter === "before" ? "before treatment" : beforeOrAfter === "after" ? "after treatment" : "completed result"}
+
+Respond with ONLY valid JSON:
+{
+  "headline": "Short punchy headline, 6-10 words, emotion-first. Examples: 'She stopped hiding her smile at 34.' / 'Same-day. Permanent. Life-changing.' / 'The smile he was afraid to ask for.'",
+  "body": "2-3 sentence story that makes the reader feel something. Paint the before situation briefly, then the transformation. End with a line that makes them imagine themselves getting the same result. DO NOT mention the patient by name or any identifying detail.",
+  "caption": "Single sentence for the photo caption on the gallery page. Warm, specific to the treatment, ends with quiet confidence.",
+  "treatment_summary": "1 sentence plain-English summary of what was done. Example: '6 porcelain veneers, completed in two appointments.'"
+}`
+    : `Write compelling copy for this ${photoType} photo of AK Ultimate Dental.
+
+Photo shows: ${analysis.description || "dental practice"}
+
+Respond with ONLY valid JSON:
+{
+  "headline": "Short, welcoming headline for this photo. 5-8 words.",
+  "body": "1-2 sentences that make a prospective patient feel at ease and excited to visit.",
+  "caption": "Single sentence photo caption.",
+  "treatment_summary": ""
+}`;
+
+  const res = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 800,
+    system: systemPrompt,
+    messages: [
+      {
+        role: "user",
+        content: [
+          { type: "image", source: { type: "url", url: blobUrl } },
+          { type: "text", text: userPrompt },
+        ],
+      },
+    ],
+  });
+
+  const text = res.content[0].type === "text" ? res.content[0].text : "{}";
+  return parseJson(text);
+}
+
 export async function POST(req: NextRequest) {
-  // Internal route — no Clerk auth required (called server-side after upload)
   const body = BodySchema.safeParse(await req.json());
   if (!body.success) {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
@@ -49,104 +163,61 @@ export async function POST(req: NextRequest) {
   const { assetId, blobUrl } = body.data;
 
   try {
-    const response = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1024,
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "image",
-              source: { type: "url", url: blobUrl },
-            },
-            {
-              type: "text",
-              text: `You are analyzing a photo uploaded by a dental practice for their website.
-
-Analyze this image and respond with ONLY valid JSON matching this schema exactly:
-{
-  "category": "before_after" | "team" | "office" | "equipment" | "other",
-  "description": "1-2 sentence description of what the image shows",
-  "suggested_placement": "smile_gallery" | "team_page" | "about_page" | "homepage_hero" | "services/cosmetic-dentistry" | "other",
-  "detected_tags": ["tag1", "tag2"],
-  "contains_identifiable_person": true | false,
-  "quality_assessment": "good" | "acceptable" | "poor",
-  "quality_notes": "Brief note on lighting, focus, angle quality"
-}
-
-Category guide:
-- before_after: dental transformation photos showing teeth results
-- team: photos of staff members or the dentist
-- office: reception, exam room, exterior, or facility photos
-- equipment: dental technology or equipment photos
-- other: anything else
-
-Only return the JSON object, no other text.`,
-            },
-          ],
-        },
-      ],
-    });
-
-    const text = response.content[0].type === "text" ? response.content[0].text.trim() : "{}";
-
-    let analysis: {
-      category?: string;
-      description?: string;
-      suggested_placement?: string;
-      detected_tags?: string[];
-      contains_identifiable_person?: boolean;
-      quality_assessment?: string;
-      quality_notes?: string;
-    } = {};
-
-    try {
-      // Strip markdown code fences if present
-      const clean = text.replace(/^```json?\s*/i, "").replace(/\s*```$/, "");
-      analysis = JSON.parse(clean);
-    } catch {
-      analysis = { category: "other", description: "Could not analyze image.", quality_assessment: "acceptable" };
-    }
-
     const supabase = createServiceSupabase();
 
-    // Fetch full asset record to check consent + photo_type
+    // Fetch asset record
     const { data: asset } = await supabase
       .from("media_assets")
       .select("*")
       .eq("id", assetId)
       .single();
 
+    // Run both AI passes in parallel
+    const [analysis, story] = await Promise.all([
+      runAnalysis(blobUrl),
+      asset ? runStorytelling(blobUrl, asset as Record<string, unknown>, {}) : Promise.resolve({}),
+    ]);
+
+    // Run storytelling with analysis data if we need treatments info
+    const storyFinal = asset
+      ? await runStorytelling(blobUrl, asset as Record<string, unknown>, analysis)
+      : story;
+
+    // Save all AI outputs
     await supabase
       .from("media_assets")
       .update({
-        ai_category: analysis.category ?? "other",
-        ai_description: analysis.description ?? null,
-        ai_placement_suggestion: analysis.suggested_placement ?? null,
-        ai_tags: analysis.detected_tags ?? [],
-        ai_contains_person: analysis.contains_identifiable_person ?? false,
-        ai_quality: analysis.quality_assessment ?? "acceptable",
-        ai_quality_notes: analysis.quality_notes ?? null,
+        ai_category: (analysis.category as string) ?? "other",
+        ai_description: (analysis.description as string) ?? null,
+        ai_placement_suggestion: (analysis.suggested_placement as string) ?? null,
+        ai_tags: (analysis.detected_tags as string[]) ?? [],
+        ai_contains_person: (analysis.contains_identifiable_person as boolean) ?? false,
+        ai_quality: (analysis.quality_assessment as string) ?? "acceptable",
+        ai_quality_notes: (analysis.quality_notes as string) ?? null,
+        story_headline: (storyFinal.headline as string) ?? null,
+        story_body: (storyFinal.body as string) ?? null,
+        story_caption: (storyFinal.caption as string) ?? null,
+        story_treatment_summary: (storyFinal.treatment_summary as string) ?? null,
+        // Use AI caption as the public caption if none was provided by client
+        ...(asset && !asset.caption && storyFinal.caption
+          ? { caption: storyFinal.caption }
+          : {}),
       })
       .eq("id", assetId);
 
-    // Auto-publish compliance check:
-    // - Photo quality is not "poor"
-    // - For patient_result: consent must be confirmed
-    // - Non-patient photos (office, team, equipment) auto-publish freely
+    // Auto-publish compliance check
     const qualityPasses = analysis.quality_assessment !== "poor";
     const isPatient = asset?.photo_type === "patient_result";
     const consentPasses = !isPatient || asset?.consent_confirmed === true;
-    const categoryOk = analysis.category !== "other"; // must be identifiable dental content
+    const categoryOk = analysis.category !== "other";
 
     if (asset && qualityPasses && consentPasses && categoryOk) {
-      const placement = analysis.suggested_placement ?? (isPatient ? "smile_gallery" : "about_page");
-      await autoPublish(assetId, asset, placement);
-      return NextResponse.json({ success: true, analysis, auto_published: true, placement });
+      const placement = (analysis.suggested_placement as string) ?? (isPatient ? "smile_gallery" : "about_page");
+      await autoPublish(assetId, asset as Record<string, unknown>, placement);
+      return NextResponse.json({ success: true, analysis, story: storyFinal, auto_published: true, placement });
     }
 
-    return NextResponse.json({ success: true, analysis, auto_published: false });
+    return NextResponse.json({ success: true, analysis, story: storyFinal, auto_published: false });
   } catch (err) {
     console.error("[analyze-media] error:", err);
     return NextResponse.json({ error: "Analysis failed" }, { status: 500 });
