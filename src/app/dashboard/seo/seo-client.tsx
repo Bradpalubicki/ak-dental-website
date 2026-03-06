@@ -27,6 +27,10 @@ import {
   Eye,
   MousePointerClick,
   MapPin,
+  Download,
+  ChevronDown,
+  ChevronUp,
+  Sparkles,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -80,6 +84,7 @@ interface Report {
   id: string;
   report_month: string;
   overall_score: number | null;
+  narrative: string | null;
   sent_to_client: boolean;
   sent_at: string | null;
   created_at: string;
@@ -283,6 +288,8 @@ export function SEODashboardClient() {
   // Reports
   const [reports, setReports] = useState<Report[]>([]);
   const [reportsLoading, setReportsLoading] = useState(false);
+  const [generatingReport, setGeneratingReport] = useState(false);
+  const [expandedReport, setExpandedReport] = useState<string | null>(null);
 
   const fetchKeywords = useCallback(async () => {
     try {
@@ -1424,10 +1431,38 @@ export function SEODashboardClient() {
         <TabsContent value="reports" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Monthly SEO Reports</CardTitle>
-              <CardDescription>
-                Auto-generated on the 1st of each month and emailed to the client.
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base">Monthly SEO Reports</CardTitle>
+                  <CardDescription>
+                    Auto-generated on the 1st of each month. Includes AI narrative summary.
+                  </CardDescription>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={generatingReport}
+                  onClick={async () => {
+                    setGeneratingReport(true);
+                    try {
+                      const res = await fetch("/api/seo/reports/generate", { method: "POST" });
+                      if (res.ok) {
+                        await fetchReports();
+                      }
+                    } finally {
+                      setGeneratingReport(false);
+                    }
+                  }}
+                  className="gap-1.5 text-xs"
+                >
+                  {generatingReport ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-3.5 w-3.5" />
+                  )}
+                  {generatingReport ? "Generating..." : "Generate Now"}
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               {reportsLoading ? (
@@ -1439,77 +1474,87 @@ export function SEODashboardClient() {
                   <FileText className="h-12 w-12 text-slate-300 mx-auto mb-4" />
                   <p className="text-slate-500">No reports generated yet</p>
                   <p className="text-sm text-slate-400 mt-1">
-                    The first report will be generated on the 1st of next month.
+                    Click &ldquo;Generate Now&rdquo; to create the first report, or wait for the 1st of next month.
                   </p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-slate-200">
-                        <th className="text-left py-3 px-2 font-medium text-slate-500">Month</th>
-                        <th className="text-center py-3 px-2 font-medium text-slate-500">Score</th>
-                        <th className="text-center py-3 px-2 font-medium text-slate-500">Sent</th>
-                        <th className="text-left py-3 px-2 font-medium text-slate-500">Sent At</th>
-                        <th className="text-left py-3 px-2 font-medium text-slate-500">Generated</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {reports.map((r) => {
-                        const monthDate = new Date(r.report_month + "T12:00:00Z");
-                        return (
-                          <tr key={r.id} className="border-b border-slate-100 hover:bg-slate-50">
-                            <td className="py-3 px-2 font-medium text-slate-900">
-                              {monthDate.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
-                            </td>
-                            <td className="py-3 px-2 text-center">
-                              {r.overall_score !== null ? (
+                <div className="divide-y divide-slate-100">
+                  {reports.map((r) => {
+                    const monthDate = new Date(r.report_month + "T12:00:00Z");
+                    const monthLabel = monthDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+                    const isExpanded = expandedReport === r.id;
+                    return (
+                      <div key={r.id} className="py-3">
+                        <div className="flex items-center gap-3">
+                          {/* Month + score */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-slate-900">{monthLabel}</span>
+                              {r.overall_score !== null && (
                                 <span
-                                  className={`font-semibold ${
+                                  className={`text-xs font-semibold px-1.5 py-0.5 rounded ${
                                     r.overall_score >= 80
-                                      ? "text-emerald-600"
+                                      ? "bg-emerald-50 text-emerald-700"
                                       : r.overall_score >= 60
-                                      ? "text-amber-500"
-                                      : "text-red-500"
+                                      ? "bg-amber-50 text-amber-600"
+                                      : "bg-red-50 text-red-600"
                                   }`}
                                 >
                                   {r.overall_score}
                                 </span>
-                              ) : (
-                                <span className="text-slate-400">--</span>
                               )}
-                            </td>
-                            <td className="py-3 px-2 text-center">
-                              {r.sent_to_client ? (
-                                <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium">
-                                  <Mail className="h-3.5 w-3.5" />
+                              {r.sent_to_client && (
+                                <span className="inline-flex items-center gap-1 text-emerald-600 text-xs">
+                                  <Mail className="h-3 w-3" />
                                   Sent
                                 </span>
-                              ) : (
-                                <span className="text-slate-400 text-xs">Pending</span>
                               )}
-                            </td>
-                            <td className="py-3 px-2 text-slate-500">
-                              {r.sent_at
-                                ? new Date(r.sent_at).toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                    year: "numeric",
-                                  })
-                                : "--"}
-                            </td>
-                            <td className="py-3 px-2 text-slate-500">
-                              {new Date(r.created_at).toLocaleDateString("en-US", {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                              })}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                            </div>
+                            <p className="text-xs text-slate-400 mt-0.5">
+                              Generated {new Date(r.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                            </p>
+                          </div>
+                          {/* Actions */}
+                          <div className="flex items-center gap-2 shrink-0">
+                            {r.narrative && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => setExpandedReport(isExpanded ? null : r.id)}
+                                className="h-7 gap-1 text-xs text-slate-500 hover:text-slate-900"
+                              >
+                                {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                                {isExpanded ? "Hide" : "Summary"}
+                              </Button>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => window.open(`/api/seo/reports/pdf?id=${r.id}`, "_blank")}
+                              className="h-7 gap-1 text-xs"
+                            >
+                              <Download className="h-3.5 w-3.5" />
+                              PDF
+                            </Button>
+                          </div>
+                        </div>
+                        {/* Narrative block */}
+                        {isExpanded && r.narrative && (
+                          <div className="mt-3 rounded-lg border border-cyan-100 bg-cyan-50/50 p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Sparkles className="h-3.5 w-3.5 text-cyan-600" />
+                              <span className="text-xs font-semibold text-cyan-700 uppercase tracking-wide">AI Executive Summary</span>
+                            </div>
+                            <div className="space-y-2">
+                              {r.narrative.split("\n\n").map((para, i) => (
+                                <p key={i} className="text-sm text-slate-700 leading-relaxed">{para}</p>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </CardContent>
@@ -1524,8 +1569,8 @@ export function SEODashboardClient() {
                 <div>
                   <p className="text-sm font-medium text-slate-700">Monthly reports are sent automatically</p>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    On the 1st of each month, a report is generated and emailed with your rankings,
-                    site health score, and any improvements made.
+                    On the 1st of each month, a report is generated with AI narrative, keyword rankings,
+                    site health score, and emailed to the client.
                   </p>
                 </div>
               </div>

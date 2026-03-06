@@ -14,7 +14,7 @@ export async function GET() {
 
     const { data, error } = await supabase
       .from("seo_reports")
-      .select("id, report_month, overall_score, sent_to_client, sent_at, created_at")
+      .select("id, report_month, overall_score, narrative, sent_to_client, sent_at, created_at")
       .order("report_month", { ascending: false })
       .limit(24);
 
