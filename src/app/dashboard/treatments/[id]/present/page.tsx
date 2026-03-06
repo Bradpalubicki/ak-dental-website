@@ -475,99 +475,72 @@ export default function TreatmentPresentationPage() {
             </div>
           )}
 
-          {/* ==================== FINANCING APPLICATION ==================== */}
+          {/* ==================== FINANCING — CHERRY ==================== */}
           {currentStep === "financing" && !financingSubmitted && (
             <div className="animate-in fade-in duration-500 max-w-2xl mx-auto">
               <div className="text-center mb-8">
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600">
                   <Landmark className="h-8 w-8 text-white" />
                 </div>
-                <h2 className="text-3xl font-bold mb-2">Financing Application</h2>
-                <p className="text-slate-400">Pre-filled with your information — verify and submit</p>
+                <h2 className="text-3xl font-bold mb-2">Apply for Financing</h2>
+                <p className="text-slate-400">Powered by Cherry — 80%+ approval rate, decisions in seconds</p>
               </div>
 
               <div className="rounded-3xl bg-white/5 border border-white/10 p-8 backdrop-blur-sm">
-                <div className="mb-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-4">
+                {/* Amount summary */}
+                <div className="mb-8 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-5">
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="text-xs text-emerald-400 font-medium">Financing Amount</p>
-                      <p className="text-2xl font-bold text-white">${plan.patient_estimate.toLocaleString()}</p>
+                      <p className="text-xs text-emerald-400 font-medium uppercase tracking-wide">Financing Amount</p>
+                      <p className="text-3xl font-bold text-white">${plan.patient_estimate.toLocaleString()}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-emerald-400 font-medium">Est. Monthly</p>
-                      <p className="text-2xl font-bold text-emerald-300">${Math.round(plan.patient_estimate / 24).toLocaleString()}/mo</p>
+                      <p className="text-xs text-emerald-400 font-medium uppercase tracking-wide">Est. Monthly</p>
+                      <p className="text-3xl font-bold text-emerald-300">${Math.round(plan.patient_estimate / 24).toLocaleString()}<span className="text-base text-slate-400">/mo</span></p>
+                      <p className="text-xs text-slate-500 mt-0.5">est. 24 months, with approval</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-xs font-medium text-slate-400 mb-1.5 block">First Name</label>
-                      <input type="text" defaultValue={patient.first_name} className="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white focus:border-emerald-400 focus:outline-none" />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-slate-400 mb-1.5 block">Last Name</label>
-                      <input type="text" defaultValue={patient.last_name} className="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white focus:border-emerald-400 focus:outline-none" />
-                    </div>
+                {/* Cherry trust badges */}
+                <div className="grid grid-cols-3 gap-4 mb-8">
+                  <div className="rounded-2xl bg-white/5 p-4 text-center">
+                    <p className="text-2xl font-bold text-emerald-300">80%+</p>
+                    <p className="text-xs text-slate-400 mt-1">Approval Rate</p>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-xs font-medium text-slate-400 mb-1.5 block">Email</label>
-                      <input type="email" defaultValue={patient.email || ""} className="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white focus:border-emerald-400 focus:outline-none" />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-slate-400 mb-1.5 block">Phone</label>
-                      <input type="tel" defaultValue={patient.phone || ""} className="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white focus:border-emerald-400 focus:outline-none" />
-                    </div>
+                  <div className="rounded-2xl bg-white/5 p-4 text-center">
+                    <p className="text-2xl font-bold text-cyan-300">Soft</p>
+                    <p className="text-xs text-slate-400 mt-1">Credit Check Only</p>
                   </div>
-                  <div>
-                    <label className="text-xs font-medium text-slate-400 mb-1.5 block">Date of Birth</label>
-                    <input type="date" defaultValue={patient.date_of_birth || ""} className="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white focus:border-emerald-400 focus:outline-none" />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-slate-400 mb-1.5 block">Address</label>
-                    <input type="text" defaultValue={patient.address || ""} className="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white focus:border-emerald-400 focus:outline-none" />
-                  </div>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <label className="text-xs font-medium text-slate-400 mb-1.5 block">City</label>
-                      <input type="text" defaultValue={patient.city || ""} className="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white focus:border-emerald-400 focus:outline-none" />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-slate-400 mb-1.5 block">State</label>
-                      <input type="text" defaultValue={patient.state || ""} className="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white focus:border-emerald-400 focus:outline-none" />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-slate-400 mb-1.5 block">ZIP</label>
-                      <input type="text" defaultValue={patient.zip || ""} className="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white focus:border-emerald-400 focus:outline-none" />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-slate-400 mb-1.5 block">Annual Income (approximate)</label>
-                    <input type="text" placeholder="$50,000" className="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white placeholder:text-slate-500 focus:border-emerald-400 focus:outline-none" />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-slate-400 mb-1.5 block">Last 4 of SSN (for credit check)</label>
-                    <input type="text" placeholder="••••" maxLength={4} className="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white placeholder:text-slate-500 focus:border-emerald-400 focus:outline-none" />
+                  <div className="rounded-2xl bg-white/5 p-4 text-center">
+                    <p className="text-2xl font-bold text-amber-300">0%</p>
+                    <p className="text-xs text-slate-400 mt-1">Promo Options</p>
                   </div>
                 </div>
 
-                <div className="mt-6 text-xs text-slate-500">
-                  By submitting, you authorize a soft credit inquiry. This will not affect your credit score.
-                  Financing provided by our partner lending network. Terms and approval subject to credit review.
-                </div>
+                <p className="text-sm text-slate-300 mb-8 leading-relaxed text-center">
+                  You&apos;ll complete your application on Cherry&apos;s secure site. Pre-approval takes about 60 seconds.
+                  Your credit score is <span className="text-emerald-400 font-medium">not affected</span> until you accept an offer.
+                </p>
 
-                <button
+                {/* CTA — opens Cherry application in new tab */}
+                <a
+                  href={`https://www.withcherry.com/apply?amount=${plan.patient_estimate}&practice_name=AK+Ultimate+Dental&first_name=${encodeURIComponent(patient.first_name)}&last_name=${encodeURIComponent(patient.last_name)}&email=${encodeURIComponent(patient.email || "")}&phone=${encodeURIComponent(patient.phone || "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   onClick={() => {
                     setFinancingSubmitted(true);
-                    setCurrentStep("thankyou");
+                    setTimeout(() => setCurrentStep("thankyou"), 2000);
                   }}
-                  className="w-full mt-6 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4 text-lg font-semibold text-white hover:from-emerald-600 hover:to-teal-700 transition-all"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4 text-lg font-semibold text-white hover:from-emerald-600 hover:to-teal-700 transition-all"
                 >
-                  Submit Application
+                  Apply with Cherry
                   <ArrowRight className="h-5 w-5" />
-                </button>
+                </a>
+
+                <p className="mt-4 text-center text-xs text-slate-500">
+                  Cherry is a third-party financing partner. AK Ultimate Dental does not store or process your financial application.
+                </p>
               </div>
             </div>
           )}
@@ -587,7 +560,7 @@ export default function TreatmentPresentationPage() {
               <p className="text-lg text-slate-400 mb-12 max-w-md mx-auto">
                 {cardSubmitted
                   ? "Your payment has been processed. Our team will reach out to schedule your next appointment."
-                  : "Your financing application has been submitted. You'll receive a decision shortly, and our team will follow up with next steps."}
+                  : "Your Cherry application is open in a new tab. Complete it there and our team will follow up with next steps once you're approved."}
               </p>
               <div className="flex flex-col items-center gap-4">
                 <a
