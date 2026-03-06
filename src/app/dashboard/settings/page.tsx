@@ -19,11 +19,13 @@ const defaultNotifSettings = {
   alert_insurance_issues: true,
 };
 const defaultIntegrationStatus = {
-  twilio: "not_configured",
-  resend: "configured",
+  twilio: "connected",
+  resend: "connected",
   stripe: "not_configured",
-  pms: "not_configured",
+  pms: "connected",
   insurance_edi: "not_configured",
+  vapi: "not_configured",
+  nylas: "not_configured",
 };
 const defaultOfficeHours = [
   { day: "Monday", open: "08:00", close: "17:00", active: true },

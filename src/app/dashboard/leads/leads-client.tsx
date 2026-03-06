@@ -1496,9 +1496,9 @@ export function LeadsClient({ initialLeads }: Props) {
                 { icon: RefreshCw, label: "Auto Follow-up", desc: "Nurture sequences for unresponsive leads", active: true },
                 { icon: BarChart3, label: "Conversion Tracking", desc: "End-to-end lead-to-patient journey", active: true },
                 { icon: Timer, label: "Speed Scoring", desc: "Response time benchmarking & alerts", active: true },
-                { icon: PhoneCall, label: "Voice AI (Vapi)", desc: "Automated phone follow-up calls", active: false },
-                { icon: Target, label: "Lead Scoring", desc: "AI-powered lead quality prediction", active: false },
-                { icon: TrendingUp, label: "Revenue Attribution", desc: "Track revenue from AI-converted leads", active: false },
+                { icon: PhoneCall, label: "Voice AI (Vapi)", desc: "Awaiting Vapi API key — configure in Settings → Integrations", active: false },
+                { icon: Target, label: "Lead Scoring", desc: "AI-powered lead quality prediction — activates with Vapi", active: false },
+                { icon: TrendingUp, label: "Revenue Attribution", desc: "Track revenue from AI-converted leads — activates with PMS sync", active: false },
               ].map((cap) => (
                 <div
                   key={cap.label}
@@ -1519,8 +1519,8 @@ export function LeadsClient({ initialLeads }: Props) {
                     <p className="text-sm font-medium text-slate-900">{cap.label}</p>
                     <p className="text-xs text-slate-500">{cap.desc}</p>
                     {!cap.active && (
-                      <span className="mt-1 inline-block rounded bg-slate-200 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
-                        Coming Soon
+                      <span className="mt-1 inline-block rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700">
+                        Awaiting Setup
                       </span>
                     )}
                   </div>

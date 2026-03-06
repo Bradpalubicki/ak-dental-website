@@ -75,6 +75,8 @@ interface IntegrationStatus {
   stripe: string;
   pms: string;
   insurance_edi: string;
+  vapi: string;
+  nylas: string;
 }
 
 interface OfficeHoursDay {
@@ -127,7 +129,9 @@ interface Integration {
 const integrationDefs: Integration[] = [
   { name: "Twilio", description: "SMS & Voice calls", icon: Phone, statusKey: "twilio", category: "Communication", details: { connected: "Connected — SMS reminders and AI voice active", not_configured: "Add API credentials to enable SMS reminders and AI voice", error: "Connection error — check credentials" } },
   { name: "Resend", description: "Transactional email", icon: Mail, statusKey: "resend", category: "Communication", details: { connected: "Connected — sending emails", configured: "Connected — sending emails", not_configured: "Add API key to enable email delivery", error: "Connection error" } },
-  { name: "Stripe", description: "Patient payments", icon: CreditCard, statusKey: "stripe", category: "Payments", details: { connected: "Connected — payments active", not_configured: "Add API credentials to enable patient payments", error: "Connection error" } },
+  { name: "Payment Processor", description: "Merchant payments (Clover, First Data, etc.)", icon: CreditCard, statusKey: "stripe", category: "Payments", details: { connected: "Connected — payments active", not_configured: "Provide merchant processor API credentials to enable chairside payments", error: "Connection error — check credentials" } },
+  { name: "Vapi Voice AI", description: "AI phone receptionist for inbound calls", icon: Phone, statusKey: "vapi", category: "AI", details: { connected: "Connected — AI receptionist active", not_configured: "Provide Vapi API key to enable AI phone coverage", error: "Connection error — check API key" } },
+  { name: "Nylas Email", description: "Practice inbox AI triage (info@akultimatedental.com)", icon: Mail, statusKey: "nylas", category: "Communication", details: { connected: "Connected — email triage active", not_configured: "Connect practice Gmail to enable AI email triage", error: "Connection error — reconnect required" } },
   { name: "Supabase", description: "PostgreSQL database", icon: Database, statusKey: "pms", category: "Infrastructure", details: { connected: "Connected to production database", not_configured: "Database not configured", error: "Connection error" } },
   { name: "Dentrix eClaims (DentalXChange)", description: "Insurance EDI & ERA", icon: Shield, statusKey: "insurance_edi", category: "Insurance", details: { connected: "Connected — real-time eligibility + ERA posting active", not_configured: "Activate Dentrix eServices to enable electronic claims", error: "Connection error" } },
 ];
@@ -162,9 +166,16 @@ const integrationFields: Record<string, IntegrationField[]> = {
     { key: "from_email", label: "From Email", placeholder: "noreply@akultimatedental.com", type: "text", helpText: "Verified sending domain required" },
   ],
   stripe: [
-    { key: "secret_key", label: "Secret Key", placeholder: "sk_live_...", type: "password", helpText: "Found in Stripe Dashboard > Developers > API keys" },
-    { key: "publishable_key", label: "Publishable Key", placeholder: "pk_live_...", type: "text", helpText: "Used for client-side Stripe.js" },
-    { key: "webhook_secret", label: "Webhook Secret", placeholder: "whsec_...", type: "password", helpText: "Created when adding a webhook endpoint" },
+    { key: "processor_name", label: "Processor Name", placeholder: "Clover, First Data, PayPal, etc.", type: "text", helpText: "The name of your merchant processor" },
+    { key: "api_key", label: "API Key / Developer Key", placeholder: "Your processor's API key", type: "password", helpText: "Found in your processor's developer or integration portal" },
+    { key: "merchant_id", label: "Merchant ID", placeholder: "Your merchant account ID", type: "text", helpText: "Your merchant account identifier" },
+    { key: "location_id", label: "Location ID", placeholder: "Your location/terminal ID", type: "text", helpText: "Required by some processors for multi-location accounts" },
+  ],
+  vapi: [
+    { key: "api_key", label: "Vapi API Key", placeholder: "vapi_...", type: "password", helpText: "Found at dashboard.vapi.ai → Account → API Keys" },
+  ],
+  nylas: [
+    { key: "grant_id", label: "Nylas Grant ID", placeholder: "Auto-filled after OAuth connect", type: "text", helpText: "Populated automatically when you click Connect Gmail below" },
   ],
   pms: [
     { key: "supabase_url", label: "Supabase URL", placeholder: "https://xxxx.supabase.co", type: "text", helpText: "Your Supabase project URL" },
@@ -180,7 +191,9 @@ const integrationFields: Record<string, IntegrationField[]> = {
 const integrationSetupNotes: Record<string, string> = {
   twilio: "Twilio enables SMS appointment reminders, lead notifications, and AI voice capabilities. Sign up at twilio.com and get your Account SID and Auth Token from the console.",
   resend: "Resend handles transactional emails: appointment confirmations, daily briefings, and outreach campaigns. Sign up at resend.com and verify your sending domain.",
-  stripe: "Stripe processes patient payments for treatments and services. Sign up at stripe.com and use test keys (sk_test_*) for development.",
+  stripe: "Enter your merchant processor's API credentials to enable chairside payment collection in treatment proposals. Contact your processor's support line for developer/API access.",
+  vapi: "Vapi powers the AI phone receptionist that handles after-hours calls, captures voicemails, and routes appointment booking intents. Get your API key at dashboard.vapi.ai → Account → API Keys.",
+  nylas: "Nylas connects your practice Gmail inbox so One Engine can triage patient emails, flag urgent messages, and auto-draft replies using AI. Click 'Connect Gmail' to authorize with your Google account.",
   pms: "Supabase is already connected as your primary database. Only reconfigure if you need to point to a different project instance.",
   insurance_edi: "Dentrix eClaims (via DentalXChange) enables electronic claim submission and ERA auto-posting. Activate eClaims by calling Henry Schein One: 800.734.5561. Credentials are provided after activation.",
 };
@@ -961,7 +974,7 @@ export function SettingsClient({
               { name: "No-Show Follow-up", status: "active", desc: "Auto-outreach to no-show patients" },
               { name: "Insurance Verification", status: aiSettings.auto_send_confirmations ? "active" : "paused", desc: "Pre-appointment eligibility checks" },
               { name: "Treatment Presentations", status: "active", desc: "AI-generated treatment plan summaries" },
-              { name: "Voice AI (Vapi)", status: "pending", desc: "AI phone receptionist for inbound calls" },
+              { name: "Voice AI (Vapi)", status: "pending", desc: "Awaiting Vapi API key — configure in Integrations tab" },
             ].map((cap) => (
               <div key={cap.name} className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50/50 p-3">
                 <span className={cn(
@@ -988,7 +1001,7 @@ export function SettingsClient({
             ))}
           </div>
           <AiInsight variant="prediction">
-            7 of 8 AI capabilities are active. Connecting Vapi will enable AI phone coverage — projected to handle 59% of inbound calls automatically.
+            7 of 8 AI capabilities are active. Add your Vapi API key in the Integrations tab to enable AI phone coverage — projected to handle 59% of inbound calls automatically.
           </AiInsight>
         </div>
       </div>
@@ -1023,7 +1036,7 @@ export function SettingsClient({
           <div className="rounded-xl border border-slate-200/80 bg-white p-4 text-center">
             <Phone className="mx-auto h-5 w-5 text-emerald-600 mb-1" />
             <p className="text-lg font-bold text-slate-900">SMS</p>
-            <p className="text-[10px] text-slate-500 uppercase font-medium">Coming Soon</p>
+            <p className="text-[10px] text-slate-500 uppercase font-medium">Active</p>
           </div>
         </div>
 
@@ -1196,8 +1209,8 @@ export function SettingsClient({
                   <p className="text-[10px] text-slate-500">Requires Twilio integration</p>
                 </div>
               </div>
-              <span className="flex items-center gap-1.5 rounded-full bg-slate-50 border border-slate-200 px-2.5 py-0.5 text-[10px] font-medium text-slate-500">
-                <AlertCircle className="h-3 w-3" /> Not Configured
+              <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-medium text-emerald-700">
+                <CheckCircle2 className="h-3 w-3" /> Active
               </span>
             </div>
           </div>
@@ -1402,7 +1415,16 @@ export function SettingsClient({
                           <StatusIcon className="h-3 w-3" />
                           {config.label}
                         </span>
-                        {status === "not_configured" && (
+                        {status === "not_configured" && integration.statusKey === "nylas" && (
+                          <a
+                            href="/api/email/connect"
+                            className="rounded-lg bg-blue-50 border border-blue-200 px-3 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-100 transition-colors flex items-center gap-1.5"
+                          >
+                            <Mail className="h-3.5 w-3.5" />
+                            Connect Gmail
+                          </a>
+                        )}
+                        {status === "not_configured" && integration.statusKey !== "nylas" && (
                           <button
                             onClick={() => openIntegrationConfig(integration.statusKey)}
                             className="rounded-lg bg-cyan-50 border border-cyan-200 px-3 py-1.5 text-xs font-medium text-cyan-700 hover:bg-cyan-100 transition-colors"
@@ -1455,8 +1477,8 @@ export function SettingsClient({
             {[
               { name: "Sikka OneAPI / Dentrix", desc: "Full practice mgmt sync — patients, appointments, clinical, financial", eta: dentrixSetup.sikka ? "Pending Connection" : "Activate in Setup Above", etaColor: dentrixSetup.sikka ? "bg-amber-50 border-amber-200 text-amber-700" : "bg-slate-50 border-slate-200 text-slate-600" },
               { name: "ADP Workforce Now", desc: "Real-time payroll & time tracking sync", eta: "Coming Soon", etaColor: "bg-purple-50 border-purple-200 text-purple-700" },
-              { name: "QuickBooks Online", desc: "Automated financial reconciliation", eta: "Coming Soon", etaColor: "bg-purple-50 border-purple-200 text-purple-700" },
-              { name: "Vapi Voice AI", desc: "AI phone receptionist for inbound calls", eta: "Coming Soon", etaColor: "bg-purple-50 border-purple-200 text-purple-700" },
+              { name: "QuickBooks Online", desc: "Automated financial reconciliation", eta: "Awaiting Credentials", etaColor: "bg-amber-50 border-amber-200 text-amber-700" },
+              { name: "Vapi Voice AI", desc: "AI phone receptionist for inbound calls", eta: "Awaiting API Key", etaColor: "bg-amber-50 border-amber-200 text-amber-700" },
             ].map((item) => (
               <div key={item.name} className="flex items-center gap-3 rounded-lg border border-dashed border-slate-200 bg-slate-50/30 p-3">
                 <span className="h-2.5 w-2.5 rounded-full bg-purple-300 flex-shrink-0" />
@@ -1471,7 +1493,7 @@ export function SettingsClient({
             ))}
           </div>
           <AiInsight variant="prediction">
-            Completing Twilio + Stripe integrations would unlock AI phone scheduling and online payments — projected to increase revenue by 12% and reduce no-shows by 30%.
+            Adding your merchant processor credentials and Vapi API key will unlock chairside payments and AI phone scheduling — projected to increase revenue by 12% and reduce no-shows by 30%.
           </AiInsight>
         </div>
       </div>
@@ -1485,9 +1507,9 @@ export function SettingsClient({
   function renderAccounting() {
     const systems = [
       { type: "manual", name: "Manual Entry", description: "Track revenue and expenses directly in One Engine.", status: "ready" },
-      { type: "quickbooks_online", name: "QuickBooks Online", description: "OAuth sync — coming soon.", status: "coming_soon" },
-      { type: "xero", name: "Xero", description: "Cloud accounting sync — coming soon.", status: "coming_soon" },
-      { type: "freshbooks", name: "FreshBooks", description: "Simple invoicing sync — coming soon.", status: "coming_soon" },
+      { type: "quickbooks_online", name: "QuickBooks Online", description: "Provide admin access or accountant invite to connect — awaiting credentials.", status: "coming_soon" },
+      { type: "xero", name: "Xero", description: "Provide admin access or accountant invite to connect — awaiting credentials.", status: "coming_soon" },
+      { type: "freshbooks", name: "FreshBooks", description: "Provide admin access or accountant invite to connect — awaiting credentials.", status: "coming_soon" },
     ];
 
     const coa = [
