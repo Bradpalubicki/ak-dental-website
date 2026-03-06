@@ -49,6 +49,41 @@ interface Keyword {
   best_rank: number | null;
   search_volume: number | null;
   is_active: boolean;
+  cluster_id: string | null;
+  intent: string | null;
+  notes: string | null;
+}
+
+interface KeywordCluster {
+  id: string;
+  name: string;
+  color: string;
+  description: string | null;
+}
+
+interface BlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  meta_description: string | null;
+  excerpt: string | null;
+  category: string | null;
+  status: "draft" | "published" | "archived";
+  primary_keyword_id: string | null;
+  supporting_keyword_ids: string[];
+  word_count: number | null;
+  published_at: string | null;
+  ai_generated: boolean;
+  created_at: string;
+  primary_keyword?: { keyword: string; current_rank: number | null } | null;
+}
+
+interface KeywordSuggestion {
+  keyword: string;
+  category: string;
+  intent: string;
+  est_volume: number;
+  rationale: string;
 }
 
 interface VitalsSummary {
@@ -291,6 +326,19 @@ export function SEODashboardClient() {
   const [generatingReport, setGeneratingReport] = useState(false);
   const [expandedReport, setExpandedReport] = useState<string | null>(null);
 
+  // Keyword Intelligence
+  const [clusters, setClusters] = useState<KeywordCluster[]>([]);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [kwIntelLoading, setKwIntelLoading] = useState(false);
+  const [clusteringLoading, setClusteringLoading] = useState(false);
+  const [blogGenLoading, setBlogGenLoading] = useState(false);
+  const [suggestLoading, setSuggestLoading] = useState(false);
+  const [seedKeyword, setSeedKeyword] = useState("");
+  const [selectedKeywordId, setSelectedKeywordId] = useState<string | null>(null);
+  const [blogGenMode, setBlogGenMode] = useState<"outline" | "full">("outline");
+  const [kwView, setKwView] = useState<"clusters" | "gap" | "blog" | "suggest">("clusters");
+  const [suggestions, setSuggestions] = useState<KeywordSuggestion[]>([]);
+
   const fetchKeywords = useCallback(async () => {
     try {
       const res = await fetch("/api/seo/keywords");
@@ -391,6 +439,71 @@ export function SEODashboardClient() {
     }
   }, []);
 
+  const fetchKwIntel = useCallback(async () => {
+    setKwIntelLoading(true);
+    try {
+      const [clustersRes, blogsRes] = await Promise.all([
+        fetch("/api/seo/clusters"),
+        fetch("/api/seo/blog"),
+      ]);
+      if (clustersRes.ok) {
+        const data = await clustersRes.json();
+        setClusters(data.clusters || []);
+      }
+      if (blogsRes.ok) setBlogPosts(await blogsRes.json());
+    } catch { /* noop */ }
+    finally { setKwIntelLoading(false); }
+  }, []);
+
+  const runAutocluster = async () => {
+    setClusteringLoading(true);
+    try {
+      const res = await fetch("/api/seo/keywords/cluster", { method: "POST" });
+      if (res.ok) { await fetchKwIntel(); fetchKeywords(); }
+    } catch { /* noop */ }
+    finally { setClusteringLoading(false); }
+  };
+
+  const generateBlog = async () => {
+    if (!selectedKeywordId) return;
+    setBlogGenLoading(true);
+    try {
+      const res = await fetch("/api/seo/blog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "generate", keyword_id: selectedKeywordId, mode: blogGenMode }),
+      });
+      if (res.ok) { await fetchKwIntel(); }
+    } catch { /* noop */ }
+    finally { setBlogGenLoading(false); }
+  };
+
+  const suggestKeywords = async () => {
+    if (!seedKeyword.trim()) return;
+    setSuggestLoading(true);
+    try {
+      const res = await fetch("/api/seo/keywords/suggest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ seed_keyword: seedKeyword, existing_keywords: keywords.map(k => k.keyword) }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSuggestions(data.suggestions || []);
+      }
+    } catch { /* noop */ }
+    finally { setSuggestLoading(false); }
+  };
+
+  const addSuggestedKeyword = async (kw: KeywordSuggestion) => {
+    await fetch("/api/seo/keywords", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ keyword: kw.keyword, category: kw.category, intent: kw.intent, search_volume: kw.est_volume }),
+    });
+    fetchKeywords();
+  };
+
   useEffect(() => {
     fetchKeywords();
     fetchGSC();
@@ -411,7 +524,8 @@ export function SEODashboardClient() {
     if (activeTab === "vitals" && !pageSpeed) fetchPageSpeed();
     if (activeTab === "audit" && !audit) fetchAudit();
     if (activeTab === "reports" && reports.length === 0) fetchReports();
-  }, [activeTab, vitals, pageSpeed, audit, reports.length, fetchVitals, fetchPageSpeed, fetchAudit, fetchReports]);
+    if (activeTab === "intelligence" && clusters.length === 0) fetchKwIntel();
+  }, [activeTab, vitals, pageSpeed, audit, reports.length, clusters.length, fetchVitals, fetchPageSpeed, fetchAudit, fetchReports, fetchKwIntel]);
 
   const addKeyword = async () => {
     if (!newKeyword.trim()) return;
@@ -509,6 +623,7 @@ export function SEODashboardClient() {
           <TabsTrigger value="audit">Audit</TabsTrigger>
           <TabsTrigger value="vitals">Speed & Vitals</TabsTrigger>
           <TabsTrigger value="reports">Reports</TabsTrigger>
+          <TabsTrigger value="intelligence">Keyword Intel</TabsTrigger>
         </TabsList>
 
         {/* ── Overview ──────────────────────────────────────────────────────── */}
@@ -1576,6 +1691,268 @@ export function SEODashboardClient() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* ── Keyword Intelligence ───────────────────────────────────────────── */}
+        <TabsContent value="intelligence" className="space-y-6">
+          {/* Sub-nav */}
+          <div className="flex gap-2 flex-wrap">
+            {(["clusters", "gap", "blog", "suggest"] as const).map((key) => {
+              const labels: Record<string, string> = { clusters: "Clusters", gap: "Content Gap", blog: "Blog Generator", suggest: "AI Suggest" };
+              return (
+                <Button key={key} variant={kwView === key ? "default" : "outline"} size="sm" onClick={() => setKwView(key)}>
+                  {labels[key]}
+                </Button>
+              );
+            })}
+            <div className="ml-auto">
+              <Button variant="outline" size="sm" onClick={runAutocluster} disabled={clusteringLoading} className="gap-2">
+                {clusteringLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
+                Auto-Cluster
+              </Button>
+            </div>
+          </div>
+
+          {kwIntelLoading && (
+            <Card><CardContent className="pt-6 py-12 text-center"><Loader2 className="h-8 w-8 animate-spin text-slate-300 mx-auto" /></CardContent></Card>
+          )}
+
+          {!kwIntelLoading && kwView === "clusters" && (
+            <>
+              {clusters.length === 0 ? (
+                <Card>
+                  <CardContent className="pt-6 py-12 text-center">
+                    <BarChart2 className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                    <p className="text-slate-500 font-medium">No clusters yet</p>
+                    <p className="text-sm text-slate-400 mt-1">Click Auto-Cluster to group keywords by topic using AI</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {clusters.map((cluster) => {
+                    const clusterKws = keywords.filter(k => k.cluster_id === cluster.id);
+                    const ranked = clusterKws.filter(k => k.current_rank !== null);
+                    const avgRankCluster = ranked.length
+                      ? Math.round(ranked.reduce((s, k) => s + (k.current_rank ?? 0), 0) / ranked.length)
+                      : null;
+                    return (
+                      <Card key={cluster.id} className="border-l-4" style={{ borderLeftColor: cluster.color }}>
+                        <CardHeader className="pb-3">
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-sm font-semibold">{cluster.name}</CardTitle>
+                            <span className="text-xs text-slate-400">{clusterKws.length} keywords</span>
+                          </div>
+                          {avgRankCluster && <p className="text-xs text-slate-500">Avg rank: #{avgRankCluster}</p>}
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <div className="flex flex-wrap gap-1.5">
+                            {clusterKws.map(kw => (
+                              <span key={kw.id} className="text-xs px-2 py-1 rounded-full border flex items-center gap-1"
+                                style={{ borderColor: cluster.color + "40", backgroundColor: cluster.color + "10" }}>
+                                {kw.keyword}
+                                {kw.current_rank && <span className="font-mono text-slate-500">#{kw.current_rank}</span>}
+                              </span>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
+              <Card className="border-amber-200 bg-amber-50/50">
+                <CardContent className="pt-5 pb-5">
+                  <div className="flex items-start gap-3">
+                    <div className="h-9 w-9 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
+                      <Zap className="h-5 w-5 text-amber-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-slate-800">High-Value Service Keywords</p>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Prioritize these high-ticket services. Each needs a dedicated landing page + blog post with &ldquo;near me Las Vegas&rdquo; angle.
+                      </p>
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {["dental implants Las Vegas", "porcelain veneers Summerlin", "dental crowns near me", "tooth restoration Las Vegas", "cosmetic dentist near me"].map(kw => (
+                          <span key={kw} className="text-xs px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full">{kw}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          )}
+
+          {!kwIntelLoading && kwView === "gap" && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Content Gap Analysis</CardTitle>
+                <CardDescription>Keywords with no blog post mapped &mdash; these are content opportunities</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {keywords.length === 0 ? (
+                  <p className="text-sm text-slate-400 text-center py-8">No keywords to analyze</p>
+                ) : (() => {
+                  const mappedIds = new Set(blogPosts.map(b => b.primary_keyword_id).filter(Boolean));
+                  const gapKws = keywords.filter(k => !mappedIds.has(k.id));
+                  return gapKws.length === 0 ? (
+                    <div className="text-center py-8">
+                      <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto mb-3" />
+                      <p className="text-slate-600 font-medium">All keywords have content mapped!</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <p className="text-sm text-amber-600 font-medium mb-3">{gapKws.length} keywords need content</p>
+                      {gapKws.map(kw => (
+                        <div key={kw.id} className="flex items-center justify-between py-2.5 px-3 rounded-lg border border-slate-200 hover:border-cyan-300 hover:bg-cyan-50/30 transition-colors">
+                          <div>
+                            <span className="text-sm font-medium text-slate-900">{kw.keyword}</span>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <span className="text-xs px-1.5 py-0.5 bg-slate-100 rounded text-slate-500">{kw.category}</span>
+                              {kw.search_volume && <span className="text-xs text-slate-400">{kw.search_volume.toLocaleString()}/mo</span>}
+                              {kw.current_rank && <span className="text-xs font-mono text-slate-400">#{kw.current_rank}</span>}
+                            </div>
+                          </div>
+                          <Button size="sm" variant="outline" className="gap-1.5 text-xs h-7"
+                            onClick={() => { setSelectedKeywordId(kw.id); setKwView("blog"); }}>
+                            <FileText className="h-3 w-3" />Create Blog
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </CardContent>
+            </Card>
+          )}
+
+          {!kwIntelLoading && kwView === "blog" && (
+            <>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">AI Blog Post Generator</CardTitle>
+                  <CardDescription>Generates SEO-optimized posts targeting Las Vegas patients with &ldquo;near me&rdquo; local signals.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-slate-700 block mb-1.5">Target Keyword</label>
+                    <select className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                      value={selectedKeywordId ?? ""} onChange={e => setSelectedKeywordId(e.target.value || null)}>
+                      <option value="">Select a keyword...</option>
+                      {keywords.map(kw => <option key={kw.id} value={kw.id}>{kw.keyword}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-700 block mb-1.5">Generation Mode</label>
+                    <div className="flex gap-2">
+                      <Button variant={blogGenMode === "outline" ? "default" : "outline"} size="sm" onClick={() => setBlogGenMode("outline")}>Outline Only</Button>
+                      <Button variant={blogGenMode === "full" ? "default" : "outline"} size="sm" onClick={() => setBlogGenMode("full")}>Full Post (1,200-1,800 words)</Button>
+                    </div>
+                    <p className="text-xs text-slate-400 mt-1.5">Full mode produces publish-ready content with FAQ section and booking CTAs.</p>
+                  </div>
+                  <Button onClick={generateBlog} disabled={!selectedKeywordId || blogGenLoading} className="gap-2">
+                    {blogGenLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                    {blogGenLoading ? "Generating…" : "Generate Blog Post"}
+                  </Button>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader><CardTitle className="text-base">Generated Blog Posts ({blogPosts.length})</CardTitle></CardHeader>
+                <CardContent>
+                  {blogPosts.length === 0 ? (
+                    <div className="text-center py-8">
+                      <FileText className="h-10 w-10 text-slate-300 mx-auto mb-3" />
+                      <p className="text-slate-400">No blog posts generated yet</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {blogPosts.map(post => (
+                        <div key={post.id} className="flex items-center justify-between py-3 px-3 rounded-lg border border-slate-200">
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium text-slate-900 truncate">{post.title}</p>
+                            <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                              <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${post.status === "published" ? "bg-emerald-100 text-emerald-700" : post.status === "draft" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"}`}>
+                                {post.status}
+                              </span>
+                              {post.ai_generated && <span className="text-xs px-1.5 py-0.5 bg-violet-100 text-violet-700 rounded">AI</span>}
+                              {post.word_count && <span className="text-xs text-slate-400">{post.word_count.toLocaleString()} words</span>}
+                              {post.primary_keyword && <span className="text-xs text-slate-400 truncate">→ {post.primary_keyword.keyword}</span>}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0 ml-3">
+                            {post.status === "draft" && (
+                              <Button size="sm" variant="outline" className="text-xs h-7 gap-1"
+                                onClick={async () => {
+                                  await fetch("/api/seo/blog", { method: "PUT", headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ id: post.id, status: "published", published_at: new Date().toISOString() }) });
+                                  fetchKwIntel();
+                                }}>
+                                <CheckCircle2 className="h-3 w-3" />Publish
+                              </Button>
+                            )}
+                            <Button size="sm" variant="ghost" className="text-xs h-7" asChild>
+                              <a href={`/blog/${post.slug}`} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-3 w-3" /></a>
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </>
+          )}
+
+          {!kwIntelLoading && kwView === "suggest" && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">AI Keyword Suggestions</CardTitle>
+                <CardDescription>Enter a seed term &mdash; AI generates Las Vegas-focused variations with &ldquo;near me&rdquo; angles and local intent.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex gap-3">
+                  <input type="text" value={seedKeyword} onChange={(e) => setSeedKeyword(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && suggestKeywords()}
+                    placeholder='e.g. "dental implants" or "veneers"'
+                    className="flex-1 rounded-lg border border-slate-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+                  <Button onClick={suggestKeywords} disabled={suggestLoading || !seedKeyword.trim()} size="sm" className="gap-2">
+                    {suggestLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                    Suggest
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <p className="text-xs text-slate-500 w-full">Quick start &mdash; high-value services:</p>
+                  {["dental implants", "porcelain veneers", "dental crowns", "tooth restoration", "cosmetic dentist", "Invisalign", "teeth whitening", "emergency dentist"].map(seed => (
+                    <button key={seed} onClick={() => setSeedKeyword(seed)}
+                      className="text-xs px-2.5 py-1 rounded-full border border-cyan-200 bg-cyan-50 text-cyan-700 hover:bg-cyan-100 transition-colors">
+                      {seed}
+                    </button>
+                  ))}
+                </div>
+                {suggestions.length > 0 && (
+                  <div className="space-y-2 pt-2">
+                    <p className="text-sm font-medium text-slate-700">{suggestions.length} suggestions</p>
+                    {suggestions.map((sug, i) => (
+                      <div key={i} className="flex items-start justify-between gap-3 py-2.5 px-3 rounded-lg border border-slate-200 hover:border-cyan-300 hover:bg-cyan-50/30 transition-colors">
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-slate-900">{sug.keyword}</p>
+                          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                            <span className="text-xs px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded">{sug.category}</span>
+                            <span className="text-xs px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded">{sug.intent}</span>
+                            {sug.est_volume > 0 && <span className="text-xs text-slate-400">{sug.est_volume.toLocaleString()}/mo</span>}
+                          </div>
+                          <p className="text-xs text-slate-400 mt-1">{sug.rationale}</p>
+                        </div>
+                        <Button size="sm" variant="outline" className="text-xs h-7 gap-1 shrink-0" onClick={() => addSuggestedKeyword(sug)}>
+                          <Plus className="h-3 w-3" />Add
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
       </Tabs>
     </div>
