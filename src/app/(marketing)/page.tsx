@@ -138,6 +138,38 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Insurance Bar */}
+      <section className="bg-[#1a237e] py-3">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+            <div className="flex items-center gap-3">
+              <Link href="/insurance" className="flex items-center gap-1.5 text-white font-bold text-sm whitespace-nowrap hover:text-cyan-300 transition-colors">
+                Most insured patients pay $0
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+              <span className="hidden md:block text-white/30">|</span>
+              <Link href="/appointment" className="hidden md:flex items-center gap-1 text-cyan-300 font-semibold text-sm whitespace-nowrap hover:text-white transition-colors">
+                Get prequalified in 2 min
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {["Anthem BCBS", "Cigna", "Humana", "Molina", "UnitedHealth", "iCare", "Medicaid"].map((ins) => (
+                <span key={ins} className="rounded-full bg-[#283593] border border-white/20 px-3 py-0.5 text-xs text-white font-medium">{ins}</span>
+              ))}
+              <Link href="/insurance" className="rounded-full bg-[#283593] border border-white/20 px-3 py-0.5 text-xs text-cyan-300 font-medium hover:text-white transition-colors">+12 more</Link>
+            </div>
+          </div>
+          {/* Mobile: show prequalify CTA below */}
+          <div className="md:hidden flex justify-center mt-1.5">
+            <Link href="/appointment" className="flex items-center gap-1 text-cyan-300 font-semibold text-sm hover:text-white transition-colors">
+              Get prequalified in 2 min
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Trust Bar */}
       <section className="bg-gradient-to-r from-gray-900 to-gray-800 py-6 border-y border-gray-700">
         <div className="container mx-auto px-4">
