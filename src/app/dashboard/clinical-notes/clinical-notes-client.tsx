@@ -141,7 +141,7 @@ const COMMON_CDT_CODES = [
 
 const emptyForm = {
   patient_id: "",
-  provider_name: "Dr. Alex Khachaturian",
+  provider_name: "Dr. Alex Chireau",
   note_type: "progress",
   chief_complaint: "",
   subjective: "",
@@ -410,7 +410,7 @@ export function ClinicalNotesClient({ initialNotes, stats, patients }: Props) {
       const res = await fetch(`/api/clinical-notes/${noteId}/sign`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ signer_name: "Dr. Alex Khachaturian" }),
+        body: JSON.stringify({ signer_name: "Dr. Alex Chireau" }),
       });
       if (res.ok) {
         const updated = await res.json();

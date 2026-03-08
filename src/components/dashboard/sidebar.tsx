@@ -41,9 +41,19 @@ import {
   ClipboardCheck,
   Globe,
   HelpCircle,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, createContext, useContext } from "react";
+
+export const MobileSidebarContext = createContext<{
+  open: boolean;
+  setOpen: (v: boolean) => void;
+}>({ open: false, setOpen: () => {} });
+
+export function useMobileSidebar() {
+  return useContext(MobileSidebarContext);
+}
 
 export interface SidebarBadges {
   approvals: number;
@@ -141,15 +151,26 @@ const sections: NavSection[] = [
 export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadges }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
-  // Sidebar always shows all nav items — access control is enforced server-side
-  // in API routes via requirePermission(). Hiding nav links caused blank sidebar
-  // when RBAC wasn't fully configured.
+  const { open: mobileOpen, setOpen: setMobileOpen } = useMobileSidebar();
 
   return (
+    <>
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/60 lg:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
     <aside
       className={cn(
-        "flex flex-col bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 transition-all duration-300 relative",
-        collapsed ? "w-[68px]" : "w-64"
+        "flex flex-col bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 transition-all duration-300 relative z-50",
+        // Desktop: collapsible
+        collapsed ? "lg:w-[68px]" : "lg:w-64",
+        // Mobile: fixed drawer
+        "fixed inset-y-0 left-0 lg:relative",
+        mobileOpen ? "w-64 translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}
     >
       {/* Subtle side accent line */}
@@ -311,19 +332,30 @@ export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadg
           {!collapsed && (
             <div className="flex-1 min-w-0">
               <p className="truncate text-xs font-medium text-slate-300">AK Ultimate Dental</p>
-              <p className="text-[10px] text-slate-500">Dr. Alex Khachaturian</p>
+              <p className="text-[10px] text-slate-500">Dr. Alex Chireau</p>
             </div>
           )}
         </div>
       </div>
 
-      {/* Collapse toggle */}
+      {/* Collapse toggle (desktop) / Close button (mobile) */}
       <button
-        onClick={() => setCollapsed(!collapsed)}
+        onClick={() => {
+          if (mobileOpen) {
+            setMobileOpen(false);
+          } else {
+            setCollapsed(!collapsed);
+          }
+        }}
         className="flex h-9 items-center justify-center border-t border-white/[0.06] text-slate-500 hover:bg-white/[0.04] hover:text-slate-300 transition-colors"
       >
-        {collapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
+        {mobileOpen
+          ? <X className="h-3.5 w-3.5" />
+          : collapsed
+            ? <ChevronRight className="h-3.5 w-3.5" />
+            : <ChevronLeft className="h-3.5 w-3.5" />}
       </button>
     </aside>
+    </>
   );
 }

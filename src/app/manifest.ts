@@ -4,8 +4,8 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "AK Ultimate Dental",
     short_name: "AK Dental",
-    description: "Las Vegas dentist — cosmetic, implants, and general dentistry by Dr. Alex Khachaturian",
-    start_url: "/",
+    description: "Las Vegas dentist — cosmetic, implants, and general dentistry by Dr. Alex Chireau",
+    start_url: "/dashboard",
     display: "standalone",
     background_color: "#ffffff",
     theme_color: "#0891b2",

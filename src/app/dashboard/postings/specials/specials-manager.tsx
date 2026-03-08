@@ -4,17 +4,13 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Tag, Plus, Pencil, Trash2, Loader2, X, Star, Pause, Play, AlertTriangle, ExternalLink } from "lucide-react";
+import { Tag, Plus, Pencil, Trash2, Loader2, Star, Pause, Play, AlertTriangle, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
 import Link from "next/link";
 
 // ─── Types ────────────────────────────────────────────────────────────────────

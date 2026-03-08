@@ -177,7 +177,7 @@ export async function seedBenefits(supabase: SupabaseClient) {
       expiration_date: "2026-05-15",
       renewal_frequency: "Annual",
       cost: 150,
-      responsible_party: "Dr. Alex Khachaturian",
+      responsible_party: "Dr. Alex Chireau",
     },
     {
       filing_type: "business_license",
@@ -190,7 +190,7 @@ export async function seedBenefits(supabase: SupabaseClient) {
       expiration_date: "2026-06-30",
       renewal_frequency: "Annual",
       cost: 200,
-      responsible_party: "Dr. Alex Khachaturian",
+      responsible_party: "Dr. Alex Chireau",
     },
     {
       filing_type: "tax_registration",
@@ -203,7 +203,7 @@ export async function seedBenefits(supabase: SupabaseClient) {
       expiration_date: null,
       renewal_frequency: "Annual renewal",
       cost: 200,
-      responsible_party: "Dr. Alex Khachaturian",
+      responsible_party: "Dr. Alex Chireau",
     },
     {
       filing_type: "annual_report",
@@ -216,7 +216,7 @@ export async function seedBenefits(supabase: SupabaseClient) {
       expiration_date: "2026-05-15",
       renewal_frequency: "Annual",
       cost: 150,
-      responsible_party: "Dr. Alex Khachaturian",
+      responsible_party: "Dr. Alex Chireau",
       notes: "Due May 15 — file online via SilverFlume.",
     },
   ];

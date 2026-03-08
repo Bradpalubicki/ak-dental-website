@@ -213,7 +213,7 @@ export default function DrMillerRetirementPage() {
               <div className="aspect-square bg-gray-200 rounded-2xl overflow-hidden relative">
                 <Image
                   src="/dr-alex-headshot.jpg"
-                  alt="Dr. Alex Khachaturian, DDS - AK Ultimate Dental Las Vegas"
+                  alt="Dr. Alex Chireau, DDS - AK Ultimate Dental Las Vegas"
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"

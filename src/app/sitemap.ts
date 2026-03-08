@@ -94,6 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/dental-implants-las-vegas`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.9 },
     { url: `${baseUrl}/porcelain-veneers-las-vegas`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.9 },
     { url: `${baseUrl}/cosmetic-dentistry-las-vegas`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.9 },
+    { url: `${baseUrl}/teeth-whitening-las-vegas`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.9 },
     // Specialty conversion pages
     { url: `${baseUrl}/emergency-dentist-las-vegas`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.9 },
     { url: `${baseUrl}/sedation-dentistry-las-vegas`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },

@@ -599,7 +599,7 @@ export function SettingsClient({
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {[
               { key: "name" as const, label: "Practice Name", placeholder: "AK Ultimate Dental" },
-              { key: "doctor" as const, label: "Primary Doctor", placeholder: "Dr. Alex Khachaturian" },
+              { key: "doctor" as const, label: "Primary Doctor", placeholder: "Dr. Alex Chireau" },
               { key: "phone" as const, label: "Phone", placeholder: "(702) 555-0123" },
               { key: "email" as const, label: "Email", placeholder: "info@akultimatedental.com" },
             ].map((field) => (

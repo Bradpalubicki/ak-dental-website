@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 const providers = [
-  { first_name: "Alex", last_name: "Khachaturian", title: "DDS", specialty: "General Dentistry", npi_number: "1234567890", license_number: "NV-DDS-2015-4821", license_state: "NV", email: "dr.alex@akultimatedental.com", phone: "(702) 555-0100", bio: "Dr. Khachaturian is the founder and lead dentist at AK Ultimate Dental with over 15 years of experience.", accepting_new_patients: true, is_active: true, color: "#2563EB" },
+  { first_name: "Alex", last_name: "Chireau", title: "DDS", specialty: "General Dentistry", npi_number: "1234567890", license_number: "NV-DDS-2015-4821", license_state: "NV", email: "dr.alex@akultimatedental.com", phone: "(702) 555-0100", bio: "Dr. Chireau is the founder and lead dentist at AK Ultimate Dental with over 15 years of experience.", accepting_new_patients: true, is_active: true, color: "#2563EB" },
   { first_name: "Sarah", last_name: "Chen", title: "DMD", specialty: "Cosmetic Dentistry", npi_number: "2345678901", license_number: "NV-DMD-2018-7293", license_state: "NV", email: "dr.chen@akultimatedental.com", phone: "(702) 555-0101", bio: "Dr. Chen specializes in cosmetic and restorative dentistry.", accepting_new_patients: true, is_active: true, color: "#7C3AED" },
   { first_name: "Michael", last_name: "Torres", title: "DDS", specialty: "Oral Surgery & Implants", npi_number: "3456789012", license_number: "NV-DDS-2016-5547", license_state: "NV", email: "dr.torres@akultimatedental.com", phone: "(702) 555-0102", bio: "Dr. Torres is a board-certified oral surgeon specializing in dental implants.", accepting_new_patients: true, is_active: true, color: "#059669" },
   { first_name: "Maria", last_name: "Lopez", title: "RDH", specialty: "Hygienist", npi_number: null, license_number: "NV-RDH-2019-3381", license_state: "NV", email: "maria.lopez@akultimatedental.com", phone: "(702) 555-0103", bio: "Maria is a registered dental hygienist with 8 years of experience.", accepting_new_patients: true, is_active: true, color: "#D97706" },
@@ -10,7 +10,7 @@ const providers = [
 ];
 
 const availabilityTemplates: Record<string, { day_of_week: number; start_time: string; end_time: string }[]> = {
-  "Alex Khachaturian": [
+  "Alex Chireau": [
     { day_of_week: 1, start_time: "08:00", end_time: "17:00" },
     { day_of_week: 2, start_time: "08:00", end_time: "17:00" },
     { day_of_week: 3, start_time: "08:00", end_time: "17:00" },
@@ -54,11 +54,11 @@ const availabilityTemplates: Record<string, { day_of_week: number; start_time: s
 };
 
 const timeOffBlocks = [
-  { providerName: "Alex Khachaturian", block_type: "vacation", title: "Family Vacation", start_date: "2026-03-15", end_date: "2026-03-22", all_day: true },
+  { providerName: "Alex Chireau", block_type: "vacation", title: "Family Vacation", start_date: "2026-03-15", end_date: "2026-03-22", all_day: true },
   { providerName: "Sarah Chen", block_type: "meeting", title: "Cosmetic Dentistry Conference", start_date: "2026-03-05", end_date: "2026-03-07", all_day: true },
   { providerName: "Michael Torres", block_type: "personal", title: "Personal Day", start_date: "2026-02-28", end_date: "2026-02-28", all_day: true },
   { providerName: "Maria Lopez", block_type: "sick", title: "Sick Day", start_date: "2026-02-10", end_date: "2026-02-10", all_day: true },
-  { providerName: "Alex Khachaturian", block_type: "meeting", title: "Staff Meeting", start_date: "2026-02-20", end_date: "2026-02-20", all_day: false, start_time: "12:00", end_time: "13:00" },
+  { providerName: "Alex Chireau", block_type: "meeting", title: "Staff Meeting", start_date: "2026-02-20", end_date: "2026-02-20", all_day: false, start_time: "12:00", end_time: "13:00" },
   { providerName: "Jennifer Park", block_type: "holiday", title: "Presidents Day", start_date: "2026-02-16", end_date: "2026-02-16", all_day: true },
   { providerName: "Sarah Chen", block_type: "vacation", title: "Spring Break", start_date: "2026-04-06", end_date: "2026-04-10", all_day: true },
 ];

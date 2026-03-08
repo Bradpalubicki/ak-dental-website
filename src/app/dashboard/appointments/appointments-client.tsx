@@ -81,7 +81,7 @@ const emptyForm = {
   appointment_time: "09:00",
   duration_minutes: "60",
   type: "Routine Cleaning",
-  provider_name: "Dr. Alex Khachaturian",
+  provider_name: "Dr. Alex Chireau",
   notes: "",
 };
 

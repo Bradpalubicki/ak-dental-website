@@ -145,7 +145,7 @@ function MeetDoctorSection() {
           <div className="overflow-hidden rounded-2xl border border-stone-300/50 bg-white shadow-lg">
             <Image
               src="/gamma/3_Meet-Our-Doctor.png"
-              alt="Dr. Alex Khachaturian"
+              alt="Dr. Alex Chireau"
               width={600}
               height={500}
               className="h-auto w-full object-cover"

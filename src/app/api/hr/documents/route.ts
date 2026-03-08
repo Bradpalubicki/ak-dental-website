@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
       content: body.content,
       severity: body.severity || null,
       status: body.status || "draft",
-      created_by: body.created_by || "Dr. Alex Khachaturian",
+      created_by: body.created_by || "Dr. Alex Chireau",
       metadata: body.metadata || {},
     })
     .select()

@@ -9,7 +9,6 @@ import {
   Calendar,
   CheckCircle2,
   Circle,
-  ArrowRight,
   ExternalLink,
   Award,
   AlertTriangle,

@@ -560,15 +560,15 @@ export const serviceContent: Record<string, ServicePageContent> = {
     title: "Porcelain Veneers",
     metaTitle: "Porcelain Veneers Las Vegas | AK Ultimate Dental",
     metaDescription:
-      "Custom porcelain veneers in Las Vegas, NV. Natural-looking, stain-resistant smile makeovers by Dr. Khachaturian. Free consultation. Call (702) 935-4395.",
+      "Custom porcelain veneers in Las Vegas, NV. Natural-looking, stain-resistant smile makeovers by Dr. Chireau. Free consultation. Call (702) 935-4395.",
     heroTitle: "Custom Porcelain Veneers in Las Vegas",
     heroDescription:
       "Transform your smile with custom porcelain veneers at AK Ultimate Dental. Our team crafts natural-looking, stain-resistant veneers that correct chips, stains, gaps, and misalignment — giving you the confident, beautiful smile you deserve.",
     content: [
-      "Porcelain veneers are ultra-thin shells of dental ceramic custom-bonded to the front surface of your teeth. At AK Ultimate Dental in Las Vegas, Dr. Alex Khachaturian uses advanced digital imaging and precision craftsmanship to design veneers that look completely natural — enhancing your unique features rather than creating a one-size-fits-all smile.",
+      "Porcelain veneers are ultra-thin shells of dental ceramic custom-bonded to the front surface of your teeth. At AK Ultimate Dental in Las Vegas, Dr. Alex Chireau uses advanced digital imaging and precision craftsmanship to design veneers that look completely natural — enhancing your unique features rather than creating a one-size-fits-all smile.",
       "Unlike over-the-counter whitening strips or temporary bonding, porcelain veneers provide a permanent transformation. Each veneer is individually crafted from high-quality ceramic that mimics the light-reflecting properties of natural tooth enamel. The result is a smile that looks like yours — only better. Modern veneers are designed for a natural, individualized look rather than the overly uniform appearance of the past.",
       "Veneers can address multiple cosmetic concerns simultaneously: deep stains that whitening cannot remove, chipped or worn teeth, small gaps between teeth, minor misalignment, uneven tooth shapes, and teeth that appear too small. For many patients, veneers accomplish in two visits what would otherwise require years of orthodontics, whitening, and bonding.",
-      "The veneer process at AK Ultimate Dental begins with a comprehensive consultation. Dr. Khachaturian examines your teeth, discusses your smile goals, and creates a digital preview of your potential results. You will see your new smile before any treatment begins. During the preparation appointment, a thin layer of enamel (approximately 0.5mm) is gently removed to make room for the veneers. Digital impressions replace traditional messy molds, ensuring a precise, comfortable fit.",
+      "The veneer process at AK Ultimate Dental begins with a comprehensive consultation. Dr. Chireau examines your teeth, discusses your smile goals, and creates a digital preview of your potential results. You will see your new smile before any treatment begins. During the preparation appointment, a thin layer of enamel (approximately 0.5mm) is gently removed to make room for the veneers. Digital impressions replace traditional messy molds, ensuring a precise, comfortable fit.",
       "Your custom veneers are fabricated using premium ceramic materials. Once ready, they are carefully bonded to your teeth with a strong, tooth-colored adhesive. The fit, color, and shape are verified at every step. Most patients complete their smile transformation in just two visits spaced two to three weeks apart.",
       "With proper care, porcelain veneers typically last 10 to 15 years or longer. They resist staining from coffee, tea, and wine better than natural enamel. Maintenance is simple: brush and floss normally, avoid biting hard objects like ice or pens, and keep up with regular dental visits. We provide a detailed care guide so your investment lasts.",
     ],
@@ -612,7 +612,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
       {
         question: "Do porcelain veneers look natural?",
         answer:
-          "Yes. Modern porcelain veneers are designed to replicate the translucency, texture, and light-reflecting properties of natural enamel. Dr. Khachaturian customizes each veneer to your facial features and desired outcome. The goal is a natural enhancement — not an obvious dental look.",
+          "Yes. Modern porcelain veneers are designed to replicate the translucency, texture, and light-reflecting properties of natural enamel. Dr. Chireau customizes each veneer to your facial features and desired outcome. The goal is a natural enhancement — not an obvious dental look.",
       },
       {
         question: "Are porcelain veneers reversible?",
@@ -632,7 +632,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
       {
         question: "How many veneers do I need?",
         answer:
-          "Most smile makeovers involve 6 to 10 veneers on the upper front teeth, though some patients choose to include lower teeth as well. During your consultation, Dr. Khachaturian will recommend the ideal number based on your smile goals, facial symmetry, and budget.",
+          "Most smile makeovers involve 6 to 10 veneers on the upper front teeth, though some patients choose to include lower teeth as well. During your consultation, Dr. Chireau will recommend the ideal number based on your smile goals, facial symmetry, and budget.",
       },
       {
         question: "Does getting veneers hurt?",
@@ -642,7 +642,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
       {
         question: "Can I get veneers if I have crooked teeth?",
         answer:
-          "Veneers can correct the appearance of mildly crooked or misaligned teeth without orthodontics. For more significant alignment issues, Dr. Khachaturian may recommend orthodontic treatment first to achieve the best possible result. We will discuss the best approach during your consultation.",
+          "Veneers can correct the appearance of mildly crooked or misaligned teeth without orthodontics. For more significant alignment issues, Dr. Chireau may recommend orthodontic treatment first to achieve the best possible result. We will discuss the best approach during your consultation.",
       },
       {
         question: "What are the alternatives to porcelain veneers?",
@@ -663,11 +663,11 @@ export const serviceContent: Record<string, ServicePageContent> = {
     heroDescription:
       "Restore damaged teeth with precision-crafted dental crowns at AK Ultimate Dental. With CEREC same-day crown technology, you can walk in with a problem and walk out with a permanent, beautiful restoration — all in a single visit.",
     content: [
-      "A dental crown is a custom-made restoration that covers and protects a damaged tooth, restoring its strength, shape, and appearance. At AK Ultimate Dental in Las Vegas, Dr. Alex Khachaturian offers both traditional lab-crafted crowns and CEREC same-day crowns, giving you the best option for your specific situation.",
+      "A dental crown is a custom-made restoration that covers and protects a damaged tooth, restoring its strength, shape, and appearance. At AK Ultimate Dental in Las Vegas, Dr. Alex Chireau offers both traditional lab-crafted crowns and CEREC same-day crowns, giving you the best option for your specific situation.",
       "Dental crowns are recommended when a tooth is significantly weakened by decay, cracked or fractured, worn down from grinding, has a large filling that compromises its structure, or needs protection after root canal therapy. A crown essentially becomes the new outer surface of your tooth, providing full coverage and long-term protection.",
-      "Our CEREC same-day crown technology eliminates the need for temporary crowns and second appointments. Using a digital intraoral scanner, Dr. Khachaturian captures a precise 3D image of your tooth — no uncomfortable impression trays. The crown is designed on screen using advanced CAD software, then milled from a solid block of ceramic right in our office. The entire process takes approximately two hours.",
+      "Our CEREC same-day crown technology eliminates the need for temporary crowns and second appointments. Using a digital intraoral scanner, Dr. Chireau captures a precise 3D image of your tooth — no uncomfortable impression trays. The crown is designed on screen using advanced CAD software, then milled from a solid block of ceramic right in our office. The entire process takes approximately two hours.",
       "For cases that benefit from lab fabrication, we work with premium dental laboratories to create crowns from materials including all-ceramic (e.max), zirconia, and porcelain-fused-to-metal. Lab-crafted crowns may be preferred for complex cases, large bridges, or when maximum strength is needed for back teeth under heavy bite forces.",
-      "Material selection matters. All-ceramic crowns like e.max offer the most natural appearance and are ideal for front teeth. Zirconia crowns provide exceptional strength for back teeth. Dr. Khachaturian will recommend the best material based on the tooth's location, your bite forces, and aesthetic goals.",
+      "Material selection matters. All-ceramic crowns like e.max offer the most natural appearance and are ideal for front teeth. Zirconia crowns provide exceptional strength for back teeth. Dr. Chireau will recommend the best material based on the tooth's location, your bite forces, and aesthetic goals.",
       "With proper oral hygiene and regular dental visits, dental crowns typically last 10 to 20 years. Some crowns last a lifetime. The key to longevity is treating your crown like a natural tooth: brush twice daily, floss around the crown margin, and avoid using your teeth as tools.",
     ],
     benefits: [
@@ -730,7 +730,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
       {
         question: "What is the difference between a crown and a veneer?",
         answer:
-          "A crown covers the entire tooth (360 degrees) and requires more tooth preparation. A veneer covers only the front surface and requires minimal preparation. Crowns are used for damaged or weakened teeth, while veneers are primarily cosmetic. Dr. Khachaturian will recommend the best option based on your specific needs.",
+          "A crown covers the entire tooth (360 degrees) and requires more tooth preparation. A veneer covers only the front surface and requires minimal preparation. Crowns are used for damaged or weakened teeth, while veneers are primarily cosmetic. Dr. Chireau will recommend the best option based on your specific needs.",
       },
       {
         question: "Do I need a crown after a root canal?",
@@ -751,7 +751,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
     heroDescription:
       "Replace missing teeth and restore your complete smile with custom-crafted dental bridges at AK Ultimate Dental. Our bridges fill gaps, prevent teeth from shifting, and give you back the ability to eat and speak with confidence.",
     content: [
-      "A dental bridge literally bridges the gap created by one or more missing teeth. At AK Ultimate Dental in Las Vegas, Dr. Alex Khachaturian designs custom bridges that restore your ability to chew, maintain your facial shape, and prevent remaining teeth from shifting out of position.",
+      "A dental bridge literally bridges the gap created by one or more missing teeth. At AK Ultimate Dental in Las Vegas, Dr. Alex Chireau designs custom bridges that restore your ability to chew, maintain your facial shape, and prevent remaining teeth from shifting out of position.",
       "Missing teeth do more than affect your appearance. When a tooth is lost, the surrounding teeth gradually shift toward the gap, changing your bite and making teeth harder to clean. The jawbone beneath the missing tooth begins to deteriorate. Over time, these changes can lead to further tooth loss, TMJ problems, and facial changes. A dental bridge addresses these concerns by filling the space promptly.",
       "Traditional bridges are the most common type. They consist of one or more artificial teeth (called pontics) held in place by dental crowns cemented onto the teeth on either side of the gap. These anchor teeth are called abutments. The entire bridge is fabricated as a single piece for maximum strength and stability.",
       "Implant-supported bridges are an excellent option when multiple adjacent teeth are missing or when the teeth next to the gap are healthy and you prefer not to crown them. Instead of anchoring to natural teeth, the bridge attaches to dental implants placed in the jawbone. This option also helps preserve bone density at the implant sites.",
@@ -798,7 +798,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
       {
         question: "Is a dental bridge better than an implant?",
         answer:
-          "Both are excellent options with different advantages. Bridges are typically faster (completed in two visits vs. several months), less invasive (no surgery), and less expensive upfront. Implants preserve jawbone, do not require altering adjacent teeth, and may last longer. Dr. Khachaturian will discuss which option is best for your situation.",
+          "Both are excellent options with different advantages. Bridges are typically faster (completed in two visits vs. several months), less invasive (no surgery), and less expensive upfront. Implants preserve jawbone, do not require altering adjacent teeth, and may last longer. Dr. Chireau will discuss which option is best for your situation.",
       },
       {
         question: "How do I clean under my dental bridge?",
@@ -823,7 +823,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
       {
         question: "Can a dental bridge replace more than one tooth?",
         answer:
-          "Yes. Bridges can replace one, two, three, or even more adjacent missing teeth. Longer bridges may require additional support teeth or dental implants as anchors. Dr. Khachaturian will design a bridge plan based on the number and location of your missing teeth.",
+          "Yes. Bridges can replace one, two, three, or even more adjacent missing teeth. Longer bridges may require additional support teeth or dental implants as anchors. Dr. Chireau will design a bridge plan based on the number and location of your missing teeth.",
       },
     ],
     relatedServices: ["dental-crowns", "dental-implants", "porcelain-veneers"],
@@ -839,12 +839,12 @@ export const serviceContent: Record<string, ServicePageContent> = {
     metaTitle: "Porcelain Veneers Las Vegas NV | AK Ultimate Dental",
     metaDescription:
       "Top-rated porcelain veneers in Las Vegas. Custom smile makeovers near Summerlin and Spring Valley. Free consultation, financing from $99/mo. Call (702) 935-4395.",
-    heroTitle: "Las Vegas Porcelain Veneers by Dr. Khachaturian",
+    heroTitle: "Las Vegas Porcelain Veneers by Dr. Chireau",
     heroDescription:
-      "Las Vegas residents trust AK Ultimate Dental for stunning porcelain veneer transformations. Located conveniently on South Durango Drive, our office serves patients from Summerlin, Spring Valley, The Lakes, and throughout the Las Vegas Valley. Dr. Alex Khachaturian combines over a decade of dental expertise with advanced digital technology to deliver natural, individualized results.",
+      "Las Vegas residents trust AK Ultimate Dental for stunning porcelain veneer transformations. Located conveniently on South Durango Drive, our office serves patients from Summerlin, Spring Valley, The Lakes, and throughout the Las Vegas Valley. Dr. Alex Chireau combines over a decade of dental expertise with advanced digital technology to deliver natural, individualized results.",
     content: [
-      "If you are searching for porcelain veneers in Las Vegas, you want results you can trust — and a dentist who understands that your smile should look like yours, not like everyone else's. At AK Ultimate Dental on South Durango Drive in Las Vegas, Dr. Alex Khachaturian designs custom porcelain veneers that enhance your natural features while correcting the imperfections that bother you most.",
-      "Las Vegas is home to some of the best cosmetic dentistry in the country, and patients have high expectations. Dr. Khachaturian meets those expectations by combining European and American dental methodologies with advanced digital imaging. Every veneer case starts with a comprehensive consultation where you see a preview of your potential results before committing to treatment.",
+      "If you are searching for porcelain veneers in Las Vegas, you want results you can trust — and a dentist who understands that your smile should look like yours, not like everyone else's. At AK Ultimate Dental on South Durango Drive in Las Vegas, Dr. Alex Chireau designs custom porcelain veneers that enhance your natural features while correcting the imperfections that bother you most.",
+      "Las Vegas is home to some of the best cosmetic dentistry in the country, and patients have high expectations. Dr. Chireau meets those expectations by combining European and American dental methodologies with advanced digital imaging. Every veneer case starts with a comprehensive consultation where you see a preview of your potential results before committing to treatment.",
       "Porcelain veneers are ultra-thin ceramic shells bonded to the front of your teeth. They correct deep stains, chips, gaps, minor misalignment, and uneven tooth shapes — all in as few as two appointments. Unlike temporary fixes, porcelain veneers provide a permanent, stain-resistant transformation that can last 10 to 15 years or more with proper care.",
       "Our Las Vegas office uses digital intraoral scanning to capture precise impressions — no messy trays. Each veneer is individually designed and crafted from premium dental ceramic that mimics natural tooth enamel. The result is a smile that looks completely natural, even under the bright lights of Las Vegas.",
       "We understand that veneers are an investment, and we want to make your dream smile accessible. AK Ultimate Dental offers flexible financing through CareCredit with payments as low as $99 per month. We also work with most major dental insurance plans and can help you understand your coverage before treatment begins.",
@@ -853,7 +853,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
     benefits: [
       {
         title: "Las Vegas's Trusted Cosmetic Dentist",
-        description: "Dr. Khachaturian combines European and American dental expertise for exceptional results",
+        description: "Dr. Chireau combines European and American dental expertise for exceptional results",
       },
       {
         title: "Digital Smile Preview",
@@ -885,7 +885,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
       {
         question: "Who is the best veneer dentist in Las Vegas?",
         answer:
-          "Dr. Alex Khachaturian at AK Ultimate Dental combines over a decade of dental education with advanced cosmetic training. His unique background in both European and American dental methodologies allows him to create exceptionally natural-looking veneers. Patient reviews consistently praise his attention to detail and natural results.",
+          "Dr. Alex Chireau at AK Ultimate Dental combines over a decade of dental education with advanced cosmetic training. His unique background in both European and American dental methodologies allows him to create exceptionally natural-looking veneers. Patient reviews consistently praise his attention to detail and natural results.",
       },
       {
         question: "How long does the veneer process take?",
@@ -895,7 +895,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
       {
         question: "Do porcelain veneers look natural?",
         answer:
-          "Absolutely. Dr. Khachaturian specializes in natural-looking veneers that match your facial features and desired aesthetic. Modern porcelain mimics the translucency and texture of natural enamel. We avoid the overly white, uniform look — your veneers will look like beautiful natural teeth.",
+          "Absolutely. Dr. Chireau specializes in natural-looking veneers that match your facial features and desired aesthetic. Modern porcelain mimics the translucency and texture of natural enamel. We avoid the overly white, uniform look — your veneers will look like beautiful natural teeth.",
       },
       {
         question: "Does dental insurance cover veneers in Las Vegas?",
@@ -919,12 +919,12 @@ export const serviceContent: Record<string, ServicePageContent> = {
       "Porcelain veneers near Henderson and Green Valley, NV. Custom smile makeovers with free consultation. Financing available. Call (702) 935-4395.",
     heroTitle: "Porcelain Veneers for Henderson Patients",
     heroDescription:
-      "Henderson residents choose AK Ultimate Dental for premium porcelain veneers. Our Las Vegas office is a short drive from Henderson, Green Valley, Anthem, and MacDonald Ranch. Dr. Alex Khachaturian delivers the natural-looking, long-lasting results Henderson patients expect.",
+      "Henderson residents choose AK Ultimate Dental for premium porcelain veneers. Our Las Vegas office is a short drive from Henderson, Green Valley, Anthem, and MacDonald Ranch. Dr. Alex Chireau delivers the natural-looking, long-lasting results Henderson patients expect.",
     content: [
-      "Henderson residents looking for porcelain veneers want quality, convenience, and results they can trust. AK Ultimate Dental, located just minutes from Henderson on South Durango Drive in Las Vegas, provides the expert cosmetic dentistry Henderson patients deserve. Dr. Alex Khachaturian has built a reputation for natural-looking veneer transformations that patients love.",
-      "Our office is easily accessible from Henderson, Green Valley, Anthem, MacDonald Ranch, and Seven Hills — just a short drive across the valley. Many of our veneer patients come from Henderson because they value Dr. Khachaturian's unique combination of European and American dental training and his commitment to individualized, natural results.",
+      "Henderson residents looking for porcelain veneers want quality, convenience, and results they can trust. AK Ultimate Dental, located just minutes from Henderson on South Durango Drive in Las Vegas, provides the expert cosmetic dentistry Henderson patients deserve. Dr. Alex Chireau has built a reputation for natural-looking veneer transformations that patients love.",
+      "Our office is easily accessible from Henderson, Green Valley, Anthem, MacDonald Ranch, and Seven Hills — just a short drive across the valley. Many of our veneer patients come from Henderson because they value Dr. Chireau's unique combination of European and American dental training and his commitment to individualized, natural results.",
       "Porcelain veneers transform your smile by covering the front surfaces of your teeth with custom-crafted ceramic shells. Whether you are dealing with stained, chipped, gapped, or misaligned teeth, veneers address multiple concerns in as few as two visits. Each veneer is designed specifically for your facial features and smile goals.",
-      "At AK Ultimate Dental, we use digital scanning technology instead of traditional impression trays. This makes the process faster, more comfortable, and more precise. Dr. Khachaturian designs your veneers using advanced imaging so you can preview your results before treatment begins — no surprises.",
+      "At AK Ultimate Dental, we use digital scanning technology instead of traditional impression trays. This makes the process faster, more comfortable, and more precise. Dr. Chireau designs your veneers using advanced imaging so you can preview your results before treatment begins — no surprises.",
       "We make premium cosmetic dentistry accessible with flexible financing through CareCredit, offering monthly payments from $99. Our team handles insurance verification and helps you understand your coverage. We believe that everyone deserves a beautiful smile, and we work to make veneers fit your budget.",
       "If you live in Henderson, Green Valley, or the surrounding communities and want to transform your smile, contact AK Ultimate Dental for a free veneer consultation. Our team will answer your questions, show you what veneers can do for your smile, and create a personalized treatment plan.",
     ],
@@ -935,7 +935,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
       },
       {
         title: "Expert Cosmetic Dentist",
-        description: "Dr. Khachaturian's European and American training delivers exceptional results",
+        description: "Dr. Chireau's European and American training delivers exceptional results",
       },
       {
         title: "Digital Smile Design",
@@ -973,12 +973,12 @@ export const serviceContent: Record<string, ServicePageContent> = {
       {
         question: "How long do porcelain veneers last?",
         answer:
-          "With proper care, porcelain veneers typically last 10 to 15 years or longer. Regular dental visits, good oral hygiene, and avoiding habits like ice chewing will maximize your veneers' lifespan. Dr. Khachaturian uses premium materials for lasting results.",
+          "With proper care, porcelain veneers typically last 10 to 15 years or longer. Regular dental visits, good oral hygiene, and avoiding habits like ice chewing will maximize your veneers' lifespan. Dr. Chireau uses premium materials for lasting results.",
       },
       {
         question: "Can I get a free veneer consultation?",
         answer:
-          "Yes. AK Ultimate Dental offers complimentary veneer consultations for Henderson and Las Vegas area patients. During your consultation, Dr. Khachaturian will examine your teeth, discuss your goals, and show you potential results. Call (702) 935-4395 to schedule.",
+          "Yes. AK Ultimate Dental offers complimentary veneer consultations for Henderson and Las Vegas area patients. During your consultation, Dr. Chireau will examine your teeth, discuss your goals, and show you potential results. Call (702) 935-4395 to schedule.",
       },
       {
         question: "What areas near Henderson do you serve?",
@@ -999,10 +999,10 @@ export const serviceContent: Record<string, ServicePageContent> = {
     heroDescription:
       "Las Vegas patients choose AK Ultimate Dental for expert dental crowns — including same-day CEREC options. Located on South Durango Drive, we serve Summerlin, Spring Valley, and the entire Las Vegas Valley with convenient, high-quality crown restorations.",
     content: [
-      "When you need a dental crown in Las Vegas, you want it done right — and ideally, done fast. At AK Ultimate Dental on South Durango Drive, Dr. Alex Khachaturian provides custom dental crowns using both same-day CEREC technology and premium lab-crafted options. Many of our Las Vegas patients receive their permanent crown in a single two-hour appointment.",
-      "CEREC same-day crowns are a game-changer for busy Las Vegas residents. Traditional crowns require two visits, a temporary crown, and weeks of waiting. With CEREC, Dr. Khachaturian digitally scans your tooth, designs your crown on screen, and mills it from a solid block of ceramic — all while you relax in the chair. You leave with your permanent crown the same day.",
+      "When you need a dental crown in Las Vegas, you want it done right — and ideally, done fast. At AK Ultimate Dental on South Durango Drive, Dr. Alex Chireau provides custom dental crowns using both same-day CEREC technology and premium lab-crafted options. Many of our Las Vegas patients receive their permanent crown in a single two-hour appointment.",
+      "CEREC same-day crowns are a game-changer for busy Las Vegas residents. Traditional crowns require two visits, a temporary crown, and weeks of waiting. With CEREC, Dr. Chireau digitally scans your tooth, designs your crown on screen, and mills it from a solid block of ceramic — all while you relax in the chair. You leave with your permanent crown the same day.",
       "Our Las Vegas office uses digital intraoral scanning to capture detailed 3D images of your tooth. This means no messy impression trays — just a comfortable digital scan that takes minutes. The precision of digital scanning results in crowns that fit better, look more natural, and last longer.",
-      "We offer multiple crown materials to match your specific needs: all-ceramic e.max for the most natural appearance on front teeth, zirconia for maximum strength on back teeth, and porcelain-fused-to-metal when both strength and aesthetics are required. Dr. Khachaturian will recommend the ideal material based on the tooth's location and your bite.",
+      "We offer multiple crown materials to match your specific needs: all-ceramic e.max for the most natural appearance on front teeth, zirconia for maximum strength on back teeth, and porcelain-fused-to-metal when both strength and aesthetics are required. Dr. Chireau will recommend the ideal material based on the tooth's location and your bite.",
       "Dental crowns protect teeth that are cracked, severely decayed, worn from grinding, weakened after root canal therapy, or compromised by large fillings. A well-made crown restores the tooth to full function and can last 10 to 20 years with proper care.",
       "AK Ultimate Dental accepts most dental insurance plans, and crowns are often partially covered when medically necessary. We also offer CareCredit financing for any out-of-pocket costs. Our South Durango Drive location is conveniently accessible from Summerlin, Spring Valley, The Lakes, and all Las Vegas neighborhoods.",
     ],
@@ -1029,7 +1029,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
       },
       {
         title: "Experienced Dentist",
-        description: "Dr. Khachaturian's dual European-American training ensures precision results",
+        description: "Dr. Chireau's dual European-American training ensures precision results",
       },
     ],
     faqs: [
@@ -1061,7 +1061,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
       {
         question: "What is better — a same-day crown or a lab crown?",
         answer:
-          "Both produce excellent results. Same-day CEREC crowns offer unmatched convenience and eliminate temporaries. Lab crowns may be preferred for complex cases or when specific materials are needed. Dr. Khachaturian will recommend the best option for your situation.",
+          "Both produce excellent results. Same-day CEREC crowns offer unmatched convenience and eliminate temporaries. Lab crowns may be preferred for complex cases or when specific materials are needed. Dr. Chireau will recommend the best option for your situation.",
       },
     ],
     relatedServices: ["dental-crowns", "dental-bridges-las-vegas", "porcelain-veneers-las-vegas"],
@@ -1079,7 +1079,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
     content: [
       "Henderson residents who need a dental crown want quality and convenience. AK Ultimate Dental, a short drive from Henderson on South Durango Drive in Las Vegas, provides same-day CEREC crowns and premium lab-crafted restorations that Henderson patients rely on for lasting results.",
       "With CEREC same-day crown technology, you can drive in from Henderson, Green Valley, or Anthem and leave with your permanent crown in approximately two hours. No temporary crown that could fall off, no second appointment to schedule, no weeks of waiting. It is the most convenient way to restore a damaged tooth.",
-      "Dr. Alex Khachaturian uses digital scanning and computer-aided design to create crowns with exceptional precision. The digital workflow eliminates uncomfortable impression trays and ensures your crown fits perfectly. Multiple material options — including natural-looking ceramic and ultra-strong zirconia — allow us to match the ideal material to your specific tooth.",
+      "Dr. Alex Chireau uses digital scanning and computer-aided design to create crowns with exceptional precision. The digital workflow eliminates uncomfortable impression trays and ensures your crown fits perfectly. Multiple material options — including natural-looking ceramic and ultra-strong zirconia — allow us to match the ideal material to your specific tooth.",
       "Dental crowns restore teeth weakened by decay, fracture, grinding, root canal treatment, or large fillings. A properly made crown protects the tooth from further damage and restores full chewing function. Most crowns last 10 to 20 years with proper home care and regular dental visits.",
       "We work with most dental insurance plans commonly used by Henderson area residents and verify your benefits before treatment. CareCredit financing is available for any out-of-pocket costs. Our team is committed to making quality dental care accessible and affordable.",
       "If you live in Henderson, Green Valley, Anthem, MacDonald Ranch, or Seven Hills and need a dental crown, contact AK Ultimate Dental. Our experienced team will evaluate your tooth, discuss your options, and get you back to full function quickly.",
@@ -1107,7 +1107,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
       },
       {
         title: "Experienced Care",
-        description: "Dr. Khachaturian's advanced training ensures reliable, long-lasting results",
+        description: "Dr. Chireau's advanced training ensures reliable, long-lasting results",
       },
     ],
     faqs: [
@@ -1155,17 +1155,17 @@ export const serviceContent: Record<string, ServicePageContent> = {
     heroDescription:
       "Replace missing teeth and restore your smile with custom dental bridges at AK Ultimate Dental in Las Vegas. Serving Summerlin, Spring Valley, and the entire Las Vegas Valley with expert tooth replacement solutions.",
     content: [
-      "Missing teeth affect more than your smile — they impact your ability to eat, speak, and maintain oral health. At AK Ultimate Dental on South Durango Drive in Las Vegas, Dr. Alex Khachaturian provides custom dental bridges that restore function, prevent shifting, and give Las Vegas patients their confidence back.",
+      "Missing teeth affect more than your smile — they impact your ability to eat, speak, and maintain oral health. At AK Ultimate Dental on South Durango Drive in Las Vegas, Dr. Alex Chireau provides custom dental bridges that restore function, prevent shifting, and give Las Vegas patients their confidence back.",
       "A dental bridge fills the gap left by missing teeth using artificial teeth anchored to adjacent natural teeth or dental implants. Traditional bridges are the most common: crowns are placed on the teeth flanking the gap, and one or more pontic teeth span the space between them. The entire restoration functions as a single, secure unit.",
       "For Las Vegas patients who prefer not to alter their natural teeth, implant-supported bridges are an excellent alternative. Dental implants placed in the jawbone serve as anchors for the bridge, preserving adjacent teeth and helping maintain bone density at the implant sites.",
-      "The bridge process at AK Ultimate Dental typically involves two appointments. At your first visit, Dr. Khachaturian prepares the anchor teeth, takes digital impressions, and places a temporary bridge. Your custom permanent bridge is fabricated from premium materials, then precisely fitted and cemented at your second appointment.",
+      "The bridge process at AK Ultimate Dental typically involves two appointments. At your first visit, Dr. Chireau prepares the anchor teeth, takes digital impressions, and places a temporary bridge. Your custom permanent bridge is fabricated from premium materials, then precisely fitted and cemented at your second appointment.",
       "We offer bridges in multiple materials including all-ceramic for natural aesthetics, zirconia for maximum strength, and porcelain-fused-to-metal for a balance of both. Material choice depends on the bridge's location, your bite, and aesthetic preferences.",
       "Conveniently located for Summerlin, Spring Valley, The Lakes, and all Las Vegas neighborhoods, AK Ultimate Dental accepts most dental insurance plans and offers CareCredit financing. Do not wait to replace missing teeth — the sooner you act, the simpler and more affordable treatment will be.",
     ],
     benefits: [
       {
         title: "Expert Tooth Replacement",
-        description: "Dr. Khachaturian's precision craftsmanship restores your complete smile",
+        description: "Dr. Chireau's precision craftsmanship restores your complete smile",
       },
       {
         title: "Multiple Bridge Types",
@@ -1202,7 +1202,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
       {
         question: "Should I get a bridge or an implant in Las Vegas?",
         answer:
-          "Both are excellent options. Bridges are faster and less invasive. Implants preserve bone and adjacent teeth. Dr. Khachaturian will discuss the pros and cons of each based on your specific situation during your consultation.",
+          "Both are excellent options. Bridges are faster and less invasive. Implants preserve bone and adjacent teeth. Dr. Chireau will discuss the pros and cons of each based on your specific situation during your consultation.",
       },
       {
         question: "Does dental insurance cover bridges in Las Vegas?",
@@ -1235,8 +1235,8 @@ export const serviceContent: Record<string, ServicePageContent> = {
     content: [
       "If you are missing teeth and live in Henderson, Green Valley, or the surrounding communities, dental bridges from AK Ultimate Dental can restore your complete smile. Our Las Vegas office on South Durango Drive is a convenient drive from Henderson, and our team specializes in custom bridges that look and function like natural teeth.",
       "Missing teeth cause more than cosmetic concerns. Without replacement, surrounding teeth shift toward the gap, your bite changes, and the jawbone beneath the missing tooth begins to deteriorate. Dental bridges address all of these issues by filling the space promptly with a fixed, stable restoration.",
-      "Dr. Alex Khachaturian offers both traditional bridges (anchored to adjacent teeth) and implant-supported bridges (anchored to dental implants) depending on your situation. During your consultation, he will examine your mouth, discuss your goals, and recommend the approach that best serves your long-term dental health.",
-      "Our bridges are crafted from premium materials including natural-looking all-ceramic, ultra-strong zirconia, and durable porcelain-fused-to-metal. Digital impressions ensure precision fit, and Dr. Khachaturian verifies every detail before final placement.",
+      "Dr. Alex Chireau offers both traditional bridges (anchored to adjacent teeth) and implant-supported bridges (anchored to dental implants) depending on your situation. During your consultation, he will examine your mouth, discuss your goals, and recommend the approach that best serves your long-term dental health.",
+      "Our bridges are crafted from premium materials including natural-looking all-ceramic, ultra-strong zirconia, and durable porcelain-fused-to-metal. Digital impressions ensure precision fit, and Dr. Chireau verifies every detail before final placement.",
       "We accept most dental insurance plans used by Henderson area residents and provide CareCredit financing for any remaining costs. Our team handles insurance verification so you know your costs upfront.",
       "Henderson, Green Valley, Anthem, and MacDonald Ranch patients — contact AK Ultimate Dental today to discuss your tooth replacement options. The sooner you address missing teeth, the simpler and more affordable treatment will be.",
     ],
@@ -1263,7 +1263,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
       },
       {
         title: "Personalized Care",
-        description: "Dr. Khachaturian takes time to explain options and answer your questions",
+        description: "Dr. Chireau takes time to explain options and answer your questions",
       },
     ],
     faqs: [
@@ -1290,7 +1290,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
       {
         question: "Should I get a bridge or implant?",
         answer:
-          "Both are excellent options with different advantages. Bridges are faster and less invasive; implants preserve bone and adjacent teeth. Dr. Khachaturian will discuss the best option for your situation during a consultation.",
+          "Both are excellent options with different advantages. Bridges are faster and less invasive; implants preserve bone and adjacent teeth. Dr. Chireau will discuss the best option for your situation during a consultation.",
       },
       {
         question: "What Henderson areas do you serve?",
@@ -1315,10 +1315,10 @@ export const serviceContent: Record<string, ServicePageContent> = {
     heroDescription:
       "Walk in with a dental problem, walk out with a permanent solution — all in a single visit. AK Ultimate Dental uses state-of-the-art CEREC and CAD/CAM technology to design, fabricate, and place custom dental restorations while you wait.",
     content: [
-      "Same-day dentistry is transforming the dental experience. At AK Ultimate Dental in Las Vegas, we invest in advanced CEREC and CAD/CAM technology that allows Dr. Alex Khachaturian to create permanent crowns, veneers, inlays, and onlays in a single appointment. No temporary restorations, no second visits, no weeks of waiting.",
+      "Same-day dentistry is transforming the dental experience. At AK Ultimate Dental in Las Vegas, we invest in advanced CEREC and CAD/CAM technology that allows Dr. Alex Chireau to create permanent crowns, veneers, inlays, and onlays in a single appointment. No temporary restorations, no second visits, no weeks of waiting.",
       "Traditional dental restorations require multiple appointments: one to prepare the tooth and take impressions, then a waiting period while an outside lab fabricates your restoration, and finally a second appointment to place it. During the wait, you wear a temporary that can be uncomfortable, fragile, and unattractive. Our digital workflow eliminates this entire process.",
       "The CEREC system represents the pinnacle of chairside CAD/CAM technology. It combines three components working together: a high-resolution intraoral scanner that captures detailed 3D images of your teeth (replacing messy impression trays), sophisticated design software that allows your restoration to be engineered on screen with precision, and an in-office milling unit that carves your custom restoration from a solid block of premium dental ceramic.",
-      "Here is how it works: Dr. Khachaturian prepares your tooth and scans it with the digital camera. The scan appears on a high-resolution monitor as a detailed 3D model. Using advanced CAD software, he designs your restoration — adjusting the shape, contours, and bite to perfection. Once the design is finalized, the milling unit fabricates your crown or veneer from a block of high-strength ceramic in approximately 15 minutes. After a brief sintering and glazing process, your restoration is bonded to your tooth. Total time: approximately two hours.",
+      "Here is how it works: Dr. Chireau prepares your tooth and scans it with the digital camera. The scan appears on a high-resolution monitor as a detailed 3D model. Using advanced CAD software, he designs your restoration — adjusting the shape, contours, and bite to perfection. Once the design is finalized, the milling unit fabricates your crown or veneer from a block of high-strength ceramic in approximately 15 minutes. After a brief sintering and glazing process, your restoration is bonded to your tooth. Total time: approximately two hours.",
       "Our technology works with premium materials including IPS e.max lithium disilicate (offering exceptional aesthetics and strength), zirconia (the strongest ceramic available for back teeth), and advanced composite resins. Each material is selected based on the specific restoration needed — front teeth receive the most natural-looking ceramics, while back teeth get maximum-strength materials.",
       "Same-day restorations are not just convenient — they are precise. Digital scanning captures your tooth anatomy with sub-millimeter accuracy. Computer-aided design ensures optimal fit and function. The result is restorations that fit better, last longer, and require fewer adjustments than traditional methods.",
       "Patients consistently tell us that same-day crowns changed their perception of dental care. No dreading a second appointment. No worrying about a temporary falling off during dinner. No taking additional time off work. You arrive with a problem and leave with a permanent, beautiful solution — same day.",
@@ -1378,7 +1378,7 @@ export const serviceContent: Record<string, ServicePageContent> = {
       {
         question: "What materials are used for same-day restorations?",
         answer:
-          "We use premium ceramic materials including IPS e.max lithium disilicate (ideal for its natural appearance and strength), zirconia (the strongest ceramic for high-stress areas), and advanced composite resins. Dr. Khachaturian selects the optimal material for each tooth's specific needs.",
+          "We use premium ceramic materials including IPS e.max lithium disilicate (ideal for its natural appearance and strength), zirconia (the strongest ceramic for high-stress areas), and advanced composite resins. Dr. Chireau selects the optimal material for each tooth's specific needs.",
       },
       {
         question: "Is the digital scan comfortable?",

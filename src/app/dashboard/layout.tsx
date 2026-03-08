@@ -2,7 +2,8 @@ export const dynamic = "force-dynamic";
 
 import { auth } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
-import { Sidebar } from "@/components/dashboard/sidebar";
+import { Sidebar, MobileSidebarContext } from "@/components/dashboard/sidebar";
+import { MobileSidebarProvider } from "@/components/dashboard/mobile-sidebar-provider";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { AiCommandBar } from "@/components/dashboard/ai-command-bar";
 import { OnboardingProvider } from "@/components/onboarding/onboarding-provider";
@@ -85,17 +86,19 @@ export default async function DashboardLayout({
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-slate-50 to-cyan-50/30">
-      <TestModeBanner />
-      <Sidebar badges={badges} />
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <DashboardHeader />
-        <main className="flex-1 overflow-y-auto p-6">
-          <OnboardingProvider />
-          {children}
-        </main>
+    <MobileSidebarProvider>
+      <div className="flex h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-slate-50 to-cyan-50/30">
+        <TestModeBanner />
+        <Sidebar badges={badges} />
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <DashboardHeader />
+          <main className="flex-1 overflow-y-auto p-4 md:p-6">
+            <OnboardingProvider />
+            {children}
+          </main>
+        </div>
+        <AiCommandBar />
       </div>
-      <AiCommandBar />
-    </div>
+    </MobileSidebarProvider>
   );
 }

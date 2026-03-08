@@ -100,7 +100,7 @@ export const services: ServiceItem[] = [
   {
     title: "Porcelain Veneers Las Vegas",
     slug: "porcelain-veneers-las-vegas",
-    description: "Premium porcelain veneers in Las Vegas, NV. Custom smile transformations by Dr. Alex Khachaturian at AK Ultimate Dental.",
+    description: "Premium porcelain veneers in Las Vegas, NV. Custom smile transformations by Dr. Alex Chireau at AK Ultimate Dental.",
     icon: "Sparkles",
     featured: false,
     // preview: true,

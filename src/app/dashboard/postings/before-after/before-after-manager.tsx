@@ -9,7 +9,6 @@ import {
   Link2, Link2Off, SplitSquareHorizontal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 
 // ─── Types ───────────────────────────────────────────────────────────────────

@@ -285,7 +285,7 @@ function PSGauge({ score, label }: { score: number | null; label: string }) {
   );
 }
 
-function psMetricRow(name: string, value: number | null, good: string, unit: "ms" | "s" | "raw") {
+function _psMetricRow(name: string, value: number | null, good: string, unit: "ms" | "s" | "raw") {
   const fmt = unit === "s" ? (v: number) => `${(v / 1000).toFixed(2)}s`
     : unit === "ms" ? (v: number) => `${Math.round(v)}ms`
     : (v: number) => v.toFixed(3);

@@ -1,9 +1,10 @@
 "use client";
 
-import { Search, Command, Zap } from "lucide-react";
+import { Search, Command, Zap, Menu } from "lucide-react";
 import { useState } from "react";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { NotificationBell } from "./notification-bell";
+import { useMobileSidebar } from "./sidebar";
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -26,6 +27,7 @@ export function DashboardHeader() {
   const greeting = getGreeting();
   const dateStr = getFormattedDate();
   const { user, isLoaded } = useUser();
+  const { setOpen: setMobileOpen } = useMobileSidebar();
 
   // Only prefix title (e.g. "Dr.") for users who have it set in Clerk metadata
   const title = (user?.publicMetadata?.title as string) || "";
@@ -34,8 +36,16 @@ export function DashboardHeader() {
     : "there";
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-slate-200/80 bg-white/80 backdrop-blur-sm px-6">
-      <div className="flex items-center gap-4">
+    <header className="flex h-14 items-center justify-between border-b border-slate-200/80 bg-white/80 backdrop-blur-sm px-4 lg:px-6">
+      <div className="flex items-center gap-3 lg:gap-4">
+        {/* Hamburger — mobile only */}
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="lg:hidden p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
+          aria-label="Open menu"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
         {/* Greeting */}
         <div className="hidden md:block">
           <p className="text-sm font-semibold text-slate-900">{greeting}, {displayName}</p>

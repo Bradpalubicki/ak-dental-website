@@ -17,6 +17,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "AK Dental",
+  },
   title: {
     default: siteConfig.seo.defaultTitle,
     template: siteConfig.seo.titleTemplate,

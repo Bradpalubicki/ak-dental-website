@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
       content,
       severity: null,
       status: "draft",
-      created_by: "Dr. Alex Khachaturian",
+      created_by: "Dr. Alex Chireau",
       metadata: { messages },
     })
     .select()

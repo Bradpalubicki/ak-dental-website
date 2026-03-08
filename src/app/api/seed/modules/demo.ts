@@ -48,11 +48,11 @@ export async function seedDemo(supabase: SupabaseClient) {
 
   // Appointments (today)
   const appointments = [
-    { patient_id: patients[0].id, provider_name: "Dr. Alex Khachaturian", appointment_date: today, appointment_time: "09:00", duration_minutes: 60, type: "Cleaning & Exam", status: "confirmed", confirmation_sent: true, reminder_24h_sent: true, reminder_2h_sent: true, insurance_verified: true },
-    { patient_id: patients[2].id, provider_name: "Dr. Alex Khachaturian", appointment_date: today, appointment_time: "10:30", duration_minutes: 90, type: "Cosmetic Consultation", status: "confirmed", confirmation_sent: true, reminder_24h_sent: true, reminder_2h_sent: false, insurance_verified: true },
-    { patient_id: patients[5].id, provider_name: "Dr. Alex Khachaturian", appointment_date: today, appointment_time: "13:00", duration_minutes: 90, type: "Crown Prep", status: "scheduled", confirmation_sent: true, reminder_24h_sent: true, reminder_2h_sent: false, insurance_verified: true },
-    { patient_id: patients[4].id, provider_name: "Dr. Alex Khachaturian", appointment_date: today, appointment_time: "14:30", duration_minutes: 60, type: "Orthodontic Check", status: "scheduled", confirmation_sent: true, reminder_24h_sent: false, reminder_2h_sent: false, insurance_verified: false },
-    { patient_id: patients[7].id, provider_name: "Dr. Alex Khachaturian", appointment_date: today, appointment_time: "16:00", duration_minutes: 60, type: "Emergency - Toothache", status: "confirmed", confirmation_sent: true, reminder_24h_sent: true, reminder_2h_sent: true, insurance_verified: false },
+    { patient_id: patients[0].id, provider_name: "Dr. Alex Chireau", appointment_date: today, appointment_time: "09:00", duration_minutes: 60, type: "Cleaning & Exam", status: "confirmed", confirmation_sent: true, reminder_24h_sent: true, reminder_2h_sent: true, insurance_verified: true },
+    { patient_id: patients[2].id, provider_name: "Dr. Alex Chireau", appointment_date: today, appointment_time: "10:30", duration_minutes: 90, type: "Cosmetic Consultation", status: "confirmed", confirmation_sent: true, reminder_24h_sent: true, reminder_2h_sent: false, insurance_verified: true },
+    { patient_id: patients[5].id, provider_name: "Dr. Alex Chireau", appointment_date: today, appointment_time: "13:00", duration_minutes: 90, type: "Crown Prep", status: "scheduled", confirmation_sent: true, reminder_24h_sent: true, reminder_2h_sent: false, insurance_verified: true },
+    { patient_id: patients[4].id, provider_name: "Dr. Alex Chireau", appointment_date: today, appointment_time: "14:30", duration_minutes: 60, type: "Orthodontic Check", status: "scheduled", confirmation_sent: true, reminder_24h_sent: false, reminder_2h_sent: false, insurance_verified: false },
+    { patient_id: patients[7].id, provider_name: "Dr. Alex Chireau", appointment_date: today, appointment_time: "16:00", duration_minutes: 60, type: "Emergency - Toothache", status: "confirmed", confirmation_sent: true, reminder_24h_sent: true, reminder_2h_sent: true, insurance_verified: false },
   ];
 
   const { error: aErr } = await supabase.from("oe_appointments").insert(appointments);
@@ -61,9 +61,9 @@ export async function seedDemo(supabase: SupabaseClient) {
 
   // Future appointments
   const futureAppts = [
-    { patient_id: patients[1].id, provider_name: "Dr. Alex Khachaturian", appointment_date: daysAgo(-2), appointment_time: "09:00", duration_minutes: 120, type: "Implant Consultation", status: "scheduled", confirmation_sent: false, insurance_verified: false },
-    { patient_id: patients[8].id, provider_name: "Dr. Alex Khachaturian", appointment_date: daysAgo(-3), appointment_time: "11:00", duration_minutes: 60, type: "Teeth Whitening", status: "scheduled", confirmation_sent: false, insurance_verified: true },
-    { patient_id: patients[6].id, provider_name: "Dr. Alex Khachaturian", appointment_date: daysAgo(-5), appointment_time: "10:00", duration_minutes: 90, type: "Periodontal Scaling", status: "scheduled", confirmation_sent: false, insurance_verified: true },
+    { patient_id: patients[1].id, provider_name: "Dr. Alex Chireau", appointment_date: daysAgo(-2), appointment_time: "09:00", duration_minutes: 120, type: "Implant Consultation", status: "scheduled", confirmation_sent: false, insurance_verified: false },
+    { patient_id: patients[8].id, provider_name: "Dr. Alex Chireau", appointment_date: daysAgo(-3), appointment_time: "11:00", duration_minutes: 60, type: "Teeth Whitening", status: "scheduled", confirmation_sent: false, insurance_verified: true },
+    { patient_id: patients[6].id, provider_name: "Dr. Alex Chireau", appointment_date: daysAgo(-5), appointment_time: "10:00", duration_minutes: 90, type: "Periodontal Scaling", status: "scheduled", confirmation_sent: false, insurance_verified: true },
   ];
   const { error: faErr } = await supabase.from("oe_appointments").insert(futureAppts);
   if (faErr) errors.push(`Future appointments: ${faErr.message}`);
@@ -97,10 +97,10 @@ export async function seedDemo(supabase: SupabaseClient) {
 
   // Recent processed actions
   const recentActions = [
-    { action_type: "lead_response_draft", module: "lead_response", description: "Drafted response for lead: Stephanie Park", input_data: {}, output_data: {}, status: "executed", confidence_score: 0.91, approved_by: "Dr. Alex Khachaturian", approved_at: hoursAgo(20), created_at: hoursAgo(24) },
-    { action_type: "appointment_confirmation", module: "scheduling", description: "Sent confirmation to Maria Gonzalez for Cleaning & Exam", input_data: {}, output_data: {}, status: "executed", confidence_score: 0.96, approved_by: "Dr. Alex Khachaturian", approved_at: hoursAgo(48), created_at: hoursAgo(48) },
-    { action_type: "appointment_confirmation", module: "scheduling", description: "Sent confirmation to Sarah Chen for Cosmetic Consultation", input_data: {}, output_data: {}, status: "approved", confidence_score: 0.94, approved_by: "Dr. Alex Khachaturian", approved_at: hoursAgo(24), created_at: hoursAgo(24) },
-    { action_type: "patient_recall", module: "recall", description: "Recall outreach for inactive patient: Anthony Brown", input_data: {}, output_data: {}, status: "rejected", confidence_score: 0.65, approved_by: "Dr. Alex Khachaturian", approved_at: hoursAgo(72), created_at: hoursAgo(72) },
+    { action_type: "lead_response_draft", module: "lead_response", description: "Drafted response for lead: Stephanie Park", input_data: {}, output_data: {}, status: "executed", confidence_score: 0.91, approved_by: "Dr. Alex Chireau", approved_at: hoursAgo(20), created_at: hoursAgo(24) },
+    { action_type: "appointment_confirmation", module: "scheduling", description: "Sent confirmation to Maria Gonzalez for Cleaning & Exam", input_data: {}, output_data: {}, status: "executed", confidence_score: 0.96, approved_by: "Dr. Alex Chireau", approved_at: hoursAgo(48), created_at: hoursAgo(48) },
+    { action_type: "appointment_confirmation", module: "scheduling", description: "Sent confirmation to Sarah Chen for Cosmetic Consultation", input_data: {}, output_data: {}, status: "approved", confidence_score: 0.94, approved_by: "Dr. Alex Chireau", approved_at: hoursAgo(24), created_at: hoursAgo(24) },
+    { action_type: "patient_recall", module: "recall", description: "Recall outreach for inactive patient: Anthony Brown", input_data: {}, output_data: {}, status: "rejected", confidence_score: 0.65, approved_by: "Dr. Alex Chireau", approved_at: hoursAgo(72), created_at: hoursAgo(72) },
   ];
 
   const { error: raErr } = await supabase.from("oe_ai_actions").insert(recentActions);
