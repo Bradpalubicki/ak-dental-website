@@ -30,9 +30,9 @@ interface Special {
   is_featured: boolean;
 }
 
-function SpecialCard({ special }: { special: Special }) {
+function SpecialCard({ special, nowMs }: { special: Special; nowMs: number }) {
   const daysLeft = special.expires_at
-    ? Math.ceil((new Date(special.expires_at).getTime() - Date.now()) / 86400000)
+    ? Math.ceil((new Date(special.expires_at).getTime() - nowMs) / 86400000)
     : null;
 
   return (
@@ -94,7 +94,9 @@ function SpecialCard({ special }: { special: Special }) {
 
 export default async function SpecialsPage() {
   const supabase = createServiceSupabase();
-  const now = new Date().toISOString();
+  const nowDate = new Date();
+  const now = nowDate.toISOString();
+  const nowMs = nowDate.getTime();
 
   const { data: specials } = await supabase
     .from("practice_specials")
@@ -145,7 +147,7 @@ export default async function SpecialsPage() {
             {activeSpecials.length > 0 ? (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {activeSpecials.map((s) => (
-                  <SpecialCard key={s.id} special={s} />
+                  <SpecialCard key={s.id} special={s} nowMs={nowMs} />
                 ))}
               </div>
             ) : (

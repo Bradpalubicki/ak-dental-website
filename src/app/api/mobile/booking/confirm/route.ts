@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
   const supabase = createServiceSupabase()
 
   // Find or create patient by Clerk user ID
-  let patient = await supabase
+  const patient = await supabase
     .from('oe_patients')
     .select('id, first_name, last_name, email, phone')
     .eq('clerk_user_id', user.userId)

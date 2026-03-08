@@ -100,8 +100,7 @@ export default function ContactPage() {
                       </p>
                       <a
                         href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(siteConfig.address.full)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        target="_blank" rel="noopener noreferrer"
                         className="text-primary hover:underline text-sm mt-2 inline-block"
                       >
                         Get Directions →

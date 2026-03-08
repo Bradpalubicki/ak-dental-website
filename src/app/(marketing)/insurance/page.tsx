@@ -300,8 +300,7 @@ export default function InsurancePage() {
                     </ul>
                     <a
                       href={option.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      target="_blank" rel="noopener noreferrer"
                       className="block text-center bg-gray-900 hover:bg-gray-700 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors"
                     >
                       {option.cta}
