@@ -3,10 +3,10 @@ import { timingSafeEqual } from "crypto";
 
 /** Verify agency secret from Authorization header with timing-safe comparison */
 export function verifyAgencySecret(req: NextRequest): { valid: boolean; response?: NextResponse } {
-  const secret = process.env.AGENCY_SECRET;
+  const secret = process.env.AGENCY_SNAPSHOT_SECRET;
 
   if (!secret) {
-    console.error("[Agency] AGENCY_SECRET not configured");
+    console.error("[Agency] AGENCY_SNAPSHOT_SECRET not configured");
     return {
       valid: false,
       response: NextResponse.json({ error: "Agency API not configured" }, { status: 503 }),
