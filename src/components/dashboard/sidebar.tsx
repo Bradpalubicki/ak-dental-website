@@ -40,6 +40,7 @@ import {
   Rocket,
   ClipboardCheck,
   Globe,
+  HelpCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -132,6 +133,7 @@ const sections: NavSection[] = [
       { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3, requiredPermission: "analytics.view" },
       { name: "Compliance", href: "/dashboard/compliance", icon: ShieldCheck, requiredPermission: "settings.view" },
       { name: "Settings", href: "/dashboard/settings", icon: Settings, requiredPermission: "settings.view" },
+      { name: "Help", href: "/dashboard/help", icon: HelpCircle },
     ],
   },
 ];
