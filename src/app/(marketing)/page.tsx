@@ -29,7 +29,7 @@ export default function HomePage() {
   return (
     <>
       {/* Premium Hero Section */}
-      <section className="relative min-h-[calc(100vh-8rem)] flex items-center overflow-hidden">
+      <section className="relative py-12 md:py-16 lg:py-20 overflow-hidden">
         {/* Premium Gradient Background */}
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-900">
           {/* Subtle radial accents for depth */}
