@@ -9,7 +9,8 @@ import { siteConfig } from "@/lib/config";
 export const metadata: Metadata = {
   title: "New Patients | Get Started | AK Ultimate Dental",
   description:
-    "New to AK Ultimate Dental? Learn what to expect at your first visit. Step-by-step guide for new dental patients in Las Vegas, NV.",
+    "New to AK Ultimate Dental? Learn what to expect at your first visit in Las Vegas. Step-by-step guide: exam, X-rays, treatment plan, and ongoing care. Free consultation.",
+  alternates: { canonical: `${siteConfig.url}/get-started` },
 };
 
 export default function GetStartedPage() {

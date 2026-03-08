@@ -10,9 +10,10 @@ import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Careers | Join Our Team | AK Ultimate Dental",
+  title: "Dental Careers in Las Vegas | Join AK Ultimate Dental",
   description:
-    "Join AK Ultimate Dental in Las Vegas, NV. We are hiring skilled, compassionate dental professionals and support staff.",
+    "Join AK Ultimate Dental in Las Vegas, NV. Hiring skilled, compassionate dental professionals. Mon–Thu schedule, competitive pay, and a patient-first culture.",
+  alternates: { canonical: `${siteConfig.url}/careers` },
   openGraph: {
     title: "Dental Careers in Las Vegas | Join AK Ultimate Dental",
     description: "Join a top-rated dental team in Las Vegas. Competitive pay, great culture, growth opportunities. View open positions at AK Ultimate Dental.",

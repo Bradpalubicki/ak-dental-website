@@ -3,7 +3,7 @@ import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | AK Ultimate Dental",
-  description: "Privacy policy for AK Ultimate Dental. Learn how we collect, use, and protect your personal and health information.",
+  description: "Privacy policy for AK Ultimate Dental in Las Vegas, NV. Learn how we collect, use, and safeguard your personal, dental, and health information.",
   alternates: { canonical: `${siteConfig.url}/privacy` },
 };
 

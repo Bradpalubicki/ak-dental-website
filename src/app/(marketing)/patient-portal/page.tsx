@@ -7,9 +7,10 @@ import { BreadcrumbSchema } from "@/components/schema/local-business";
 import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Patient Portal | AK Ultimate Dental",
+  title: "Patient Portal | AK Ultimate Dental Las Vegas",
   description:
-    "Access the AK Ultimate Dental patient portal to schedule appointments, complete forms, view treatment plans, and manage billing.",
+    "Access the AK Ultimate Dental patient portal to schedule appointments, complete forms online, view treatment plans, and manage billing — securely from any device.",
+  alternates: { canonical: `${siteConfig.url}/patient-portal` },
   openGraph: {
     title: "Patient Portal | AK Ultimate Dental Las Vegas",
     description: "Access your dental records, appointments, treatment plans, and billing online. Secure patient portal for AK Ultimate Dental patients.",

@@ -11,7 +11,7 @@ import { curatedImages } from "@/content/images";
 export const metadata: Metadata = {
   title: "Contact Us | Las Vegas Dental Office",
   description:
-    "Contact AK Ultimate Dental in Las Vegas. Located at 7480 West Sahara Avenue. Call (702) 935-4395. Open Monday-Thursday 8AM-5PM.",
+    "Contact AK Ultimate Dental in Las Vegas, NV. Located at 7480 W Sahara Ave — call (702) 935-4395, text, or book online. Open Monday–Thursday 8AM–5PM. Free parking.",
   alternates: {
     canonical: `${siteConfig.url}/contact`,
   },

@@ -3,7 +3,7 @@ import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "Terms of Service | AK Ultimate Dental",
-  description: "Terms of service for AK Ultimate Dental website and patient portal.",
+  description: "Terms of service for AK Ultimate Dental website, patient portal, and appointment system. Review our legal terms and conditions for Las Vegas patients.",
   alternates: { canonical: `${siteConfig.url}/terms` },
 };
 

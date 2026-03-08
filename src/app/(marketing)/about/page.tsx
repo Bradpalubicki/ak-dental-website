@@ -13,7 +13,7 @@ import { GoogleReviewsBadge } from "@/components/marketing/google-reviews-badge"
 export const metadata: Metadata = {
   title: "About Our Team | Las Vegas Dentist",
   description:
-    "Meet the team at AK Ultimate Dental - your trusted Las Vegas dentist with over a decade of dental education and experience. Learn about our patient-centered approach to dental care.",
+    "Meet Dr. Alex Chireau, DDS at AK Ultimate Dental — Las Vegas dentist with 10+ years of training. Discover our patient-centered approach to general and cosmetic dental care.",
   alternates: {
     canonical: `${siteConfig.url}/about`,
   },

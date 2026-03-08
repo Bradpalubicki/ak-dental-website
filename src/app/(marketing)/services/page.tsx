@@ -9,9 +9,10 @@ import { siteConfig, getPublicServices, serviceImages } from "@/lib/config";
 import { curatedImages } from "@/content/images";
 
 export const metadata: Metadata = {
-  title: "Dental Services in Las Vegas, NV",
+  title: "Dental Services Las Vegas | AK Ultimate Dental",
   description:
-    "Comprehensive dental services in Las Vegas including cleanings, cosmetic dentistry, dental implants, crowns, root canals, and more. Our dental team provides expert care.",
+    "Comprehensive dental services in Las Vegas: cleanings, cosmetic dentistry, dental implants, crowns, Zoom whitening & same-day CEREC crowns. Expert care from Dr. Alex Chireau, DDS.",
+  alternates: { canonical: `${siteConfig.url}/services` },
   keywords: [
     "dental services Las Vegas",
     "Las Vegas dentist services",

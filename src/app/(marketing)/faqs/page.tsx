@@ -12,9 +12,10 @@ import {
 } from "@/components/ui/accordion";
 
 export const metadata: Metadata = {
-  title: "FAQs | AK Ultimate Dental | Las Vegas, NV",
+  title: "Dental FAQs | AK Ultimate Dental Las Vegas",
   description:
-    "Frequently asked questions about dental care at AK Ultimate Dental. Learn about appointments, insurance, treatments, and more.",
+    "Frequently asked questions about dental care at AK Ultimate Dental in Las Vegas. Learn about appointments, insurance, treatments, costs, and what to expect.",
+  alternates: { canonical: `${siteConfig.url}/faqs` },
   openGraph: {
     title: "Dental FAQs | AK Ultimate Dental Las Vegas",
     description: "Answers to common questions about dental care, insurance, appointments, and treatments at AK Ultimate Dental in Las Vegas.",
