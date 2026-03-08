@@ -84,10 +84,10 @@ export default function HomePage() {
                   </Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="text-lg h-14 px-8 bg-white/10 border-white/30 text-white hover:bg-white/20">
-                  <a href={siteConfig.phoneHref}>
-                    <Phone className="mr-2 h-5 w-5" />
-                    {siteConfig.phone}
-                  </a>
+                  <Link href="/appointment">
+                    <CheckCircle className="mr-2 h-5 w-5 text-green-400" />
+                    Get Prequalified in 2 Min
+                  </Link>
                 </Button>
               </div>
               <div className="flex flex-wrap gap-4 mb-6">
