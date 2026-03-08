@@ -10,7 +10,7 @@ import { siteConfig } from "@/lib/config";
 export const metadata: Metadata = {
   title: "Dr. Scott Miller Retirement | AK Ultimate Dental Las Vegas",
   description:
-    "Dr. Scott L. Miller has retired after 20+ years serving Las Vegas. AK Ultimate Dental continues under Dr. Alex Chireau, DDS — same commitment to exceptional care.",
+    "Dr. Scott L. Miller has retired after 20+ years in Las Vegas, NV. AK Ultimate Dental continues under Dr. Alex Chireau, DDS — same exceptional care.",
   alternates: { canonical: `${siteConfig.url}/dr-scott-miller-retirement` },
   keywords: [
     "Dr. Scott Miller Las Vegas",

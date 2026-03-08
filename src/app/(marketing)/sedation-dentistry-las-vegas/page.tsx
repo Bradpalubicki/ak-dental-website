@@ -7,9 +7,9 @@ import { BreadcrumbSchema, FAQSchema } from "@/components/schema/local-business"
 import { siteConfig, testimonials } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Sedation Dentistry Las Vegas — Anxiety-Free Dental Care | AK Ultimate Dental",
+  title: "Sedation Dentistry Las Vegas NV | AK Ultimate Dental",
   description:
-    "Afraid of the dentist? AK Ultimate Dental specializes in anxiety-free, comfortable dental care in Las Vegas. Nitrous oxide and oral sedation available. You are not alone. Call (702) 935-4395.",
+    "Afraid of the dentist? We specialize in anxiety-free care in Las Vegas, NV. Nitrous oxide & oral sedation available. You are not alone. Call (702) 935-4395.",
   keywords: [
     "sedation dentist Las Vegas",
     "sedation dentistry Las Vegas NV",

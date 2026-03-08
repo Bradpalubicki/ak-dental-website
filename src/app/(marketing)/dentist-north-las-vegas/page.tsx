@@ -7,9 +7,9 @@ import { BreadcrumbSchema, FAQSchema } from "@/components/schema/local-business"
 import { siteConfig, testimonials } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Dentist Near North Las Vegas, NV | Same-Day Care | AK Ultimate Dental",
+  title: "Dentist Near North Las Vegas NV | AK Ultimate Dental",
   description:
-    "Serving North Las Vegas, NV with accessible, comprehensive dental care. Same-day emergency appointments available. Most insurance accepted. Flexible financing. Call (702) 935-4395.",
+    "Serving North Las Vegas, NV with comprehensive dental care. Same-day emergencies, most insurance accepted & flexible financing. Call (702) 935-4395.",
   keywords: [
     "dentist North Las Vegas",
     "North Las Vegas dentist",

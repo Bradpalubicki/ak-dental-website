@@ -9,9 +9,9 @@ import { ProviderByline } from "@/components/marketing/provider-byline";
 import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Dental Implants Las Vegas | AK Ultimate Dental — Dr. Alex Chireau, DDS",
+  title: "Dental Implants Las Vegas NV | AK Ultimate Dental",
   description:
-    "Missing teeth? Dr. Alex Chireau offers dental implants in Las Vegas with natural-looking results. Same-day consultations, Cherry financing, 128 five-star reviews. Call (702) 935-4395.",
+    "Replace missing teeth with permanent implants in Las Vegas, NV. Natural-looking results, same-day consults & Cherry financing. Call (702) 935-4395.",
   keywords: [
     "dental implants Las Vegas",
     "Las Vegas dental implants",

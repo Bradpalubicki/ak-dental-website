@@ -4,7 +4,7 @@ import { siteConfig } from "@/lib/config";
 export const metadata: Metadata = {
   title: "Request an Appointment | AK Ultimate Dental Las Vegas",
   description:
-    "Schedule your dental appointment at AK Ultimate Dental in Las Vegas. New patients welcome. Call (702) 935-4395 or request online. Located at 7480 W Sahara Ave.",
+    "Schedule your appointment in Las Vegas, NV. New patients welcome — call (702) 935-4395 or request online. Located at 7480 W Sahara Ave.",
   alternates: { canonical: `${siteConfig.url}/appointment` },
   openGraph: {
     title: "Request an Appointment | AK Ultimate Dental Las Vegas",

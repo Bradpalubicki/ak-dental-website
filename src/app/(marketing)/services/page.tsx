@@ -11,7 +11,7 @@ import { curatedImages } from "@/content/images";
 export const metadata: Metadata = {
   title: "Dental Services Las Vegas | AK Ultimate Dental",
   description:
-    "Comprehensive dental services in Las Vegas: cleanings, cosmetic dentistry, dental implants, crowns, Zoom whitening & same-day CEREC crowns. Expert care from Dr. Alex Chireau, DDS.",
+    "Comprehensive dental services in Las Vegas, NV: cleanings, cosmetic dentistry, implants, crowns & Zoom whitening. Same-day CEREC crowns. Call (702) 935-4395.",
   alternates: { canonical: `${siteConfig.url}/services` },
   keywords: [
     "dental services Las Vegas",

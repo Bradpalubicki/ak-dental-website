@@ -7,9 +7,9 @@ import { BreadcrumbSchema, FAQSchema } from "@/components/schema/local-business"
 import { siteConfig, testimonials } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Dentist Near Henderson, NV | Family Dental Care | AK Ultimate Dental",
+  title: "Dentist Near Henderson, NV | AK Ultimate Dental",
   description:
-    "Serving Henderson, NV families with comprehensive dental care. AK Ultimate Dental is conveniently located on West Sahara Ave, Las Vegas — 20 minutes from Henderson. Call (702) 935-4395.",
+    "Serving Henderson, NV families — 20 minutes from Henderson on W Sahara Ave, Las Vegas. Implants, cosmetic & general dental care. Call (702) 935-4395.",
   keywords: [
     "dentist Henderson NV",
     "Henderson dentist",

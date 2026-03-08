@@ -9,9 +9,9 @@ import { ProviderByline } from "@/components/marketing/provider-byline";
 import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Cosmetic Dentistry Las Vegas | AK Ultimate Dental — Dr. Alex Chireau, DDS",
+  title: "Cosmetic Dentistry Las Vegas NV | AK Ultimate Dental",
   description:
-    "Las Vegas cosmetic dentist specializing in veneers, whitening, Invisalign & smile makeovers. Dr. Alex Chireau, DDS — dual European & American training. Free consultations. (702) 935-4395.",
+    "Las Vegas, NV cosmetic dentist — veneers, whitening, Invisalign & smile makeovers. Dual-trained Dr. Alex Chireau, DDS. Free consultations. (702) 935-4395.",
   keywords: [
     "cosmetic dentistry Las Vegas",
     "cosmetic dentist Las Vegas",

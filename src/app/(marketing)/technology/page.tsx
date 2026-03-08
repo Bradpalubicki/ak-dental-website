@@ -22,7 +22,7 @@ import { siteConfig, getServicePromotion } from "@/lib/config";
 export const metadata: Metadata = {
   title: "Dental Technology Las Vegas | AK Ultimate Dental",
   description:
-    "Advanced CEREC and CAD/CAM dental technology at AK Ultimate Dental in Las Vegas. Same-day crowns, digital scanning, precision restorations. Call (702) 935-4395.",
+    "CEREC CAD/CAM technology in Las Vegas, NV — same-day crowns, digital scanning & precision restorations. Skip the temporary. Call (702) 935-4395.",
   alternates: {
     canonical: `${siteConfig.url}/technology`,
   },

@@ -24,9 +24,9 @@ import { siteConfig } from "@/lib/config";
 import { images } from "@/lib/images";
 
 export const metadata: Metadata = {
-  title: "Dr. Alex Chireau, DDS | Las Vegas Dentist | AK Ultimate Dental",
+  title: "Dr. Alex Chireau DDS | Las Vegas | AK Ultimate Dental",
   description:
-    "Meet Dr. Alex Chireau, DDS — Las Vegas dentist with dual dental training in Romania and the United States (UNLV SDM). Specializing in cosmetic dentistry, dental implants, and comprehensive care. Serving Las Vegas, NV.",
+    "Meet Dr. Alex Chireau, DDS — dual-trained in Romania & the US (UNLV SDM). Cosmetic dentistry, implants & comprehensive care in Las Vegas, NV.",
   alternates: {
     canonical: `${siteConfig.url}/team/dr-alex-chireau`,
   },

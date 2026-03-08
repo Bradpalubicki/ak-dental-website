@@ -9,7 +9,7 @@ import { siteConfig } from "@/lib/config";
 export const metadata: Metadata = {
   title: "Dental Insurance & Financing | AK Ultimate Dental Las Vegas",
   description:
-    "AK Ultimate Dental accepts most major dental insurance plans including Delta Dental, Cigna, Aetna, MetLife, Guardian, and more. We also offer Cherry and CareCredit financing. Las Vegas, NV.",
+    "We accept Delta Dental, Cigna, Aetna, MetLife, Guardian & more in Las Vegas, NV. Cherry & CareCredit financing available. Verify benefits free.",
   alternates: {
     canonical: `${siteConfig.url}/insurance`,
   },

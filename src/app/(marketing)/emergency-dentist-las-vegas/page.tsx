@@ -6,9 +6,9 @@ import { BreadcrumbSchema, FAQSchema } from "@/components/schema/local-business"
 import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Emergency Dentist Las Vegas — Same Day Appointments | AK Ultimate Dental",
+  title: "Emergency Dentist Las Vegas NV | AK Ultimate Dental",
   description:
-    "Dental emergency in Las Vegas? AK Ultimate Dental offers same-day emergency appointments. Toothaches, broken teeth, lost crowns, swelling. Call (702) 935-4395 now.",
+    "Dental emergency in Las Vegas, NV? Same-day appointments for toothaches, broken teeth, lost crowns & swelling. Don't wait — call (702) 935-4395 now.",
   keywords: [
     "emergency dentist Las Vegas",
     "emergency dental Las Vegas",

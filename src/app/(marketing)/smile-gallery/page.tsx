@@ -8,9 +8,9 @@ import { createServiceSupabase } from "@/lib/supabase/server";
 import { GalleryClient } from "./gallery-client";
 
 export const metadata: Metadata = {
-  title: "Before & After Smile Gallery | AK Ultimate Dental Las Vegas",
+  title: "Smile Makeover Gallery Las Vegas | AK Ultimate Dental",
   description:
-    "See real patient smile transformations at AK Ultimate Dental in Las Vegas, NV. Before and after photos for veneers, dental implants, teeth whitening, crowns, and full smile makeovers.",
+    "Real patient smile transformations in Las Vegas, NV — before & after photos for veneers, implants, whitening & full makeovers. See what's possible.",
   alternates: {
     canonical: `${siteConfig.url}/smile-gallery`,
   },

@@ -9,7 +9,7 @@ import { siteConfig } from "@/lib/config";
 export const metadata: Metadata = {
   title: "Patient Portal | AK Ultimate Dental Las Vegas",
   description:
-    "Access the AK Ultimate Dental patient portal to schedule appointments, complete forms online, view treatment plans, and manage billing — securely from any device.",
+    "Access your Las Vegas dental patient portal — schedule appointments, complete forms, view treatment plans & manage billing securely from any device.",
   alternates: { canonical: `${siteConfig.url}/patient-portal` },
   openGraph: {
     title: "Patient Portal | AK Ultimate Dental Las Vegas",

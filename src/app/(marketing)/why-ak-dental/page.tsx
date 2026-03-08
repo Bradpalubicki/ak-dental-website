@@ -7,9 +7,9 @@ import { BreadcrumbSchema } from "@/components/schema/local-business";
 import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Why Choose AK Ultimate Dental? | Las Vegas Dentist Comparison",
+  title: "Why Choose AK Ultimate Dental? | Las Vegas Dentist",
   description:
-    "See why Las Vegas patients choose AK Ultimate Dental over other practices. Dual-trained dentist, advanced technology, same-day care, all insurance accepted. 128 five-star reviews.",
+    "See why Las Vegas, NV patients choose us. Dual-trained dentist, advanced technology, same-day care, all insurance accepted. 128 five-star reviews.",
   keywords: [
     "why choose AK Ultimate Dental",
     "best dentist Las Vegas",

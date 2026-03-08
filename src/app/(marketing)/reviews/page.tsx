@@ -12,7 +12,7 @@ import { curatedImages } from "@/content/images";
 export const metadata: Metadata = {
   title: "Patient Reviews & Testimonials | Las Vegas Dentist",
   description:
-    "Read 128+ five-star reviews from real patients at AK Ultimate Dental in Las Vegas. See why families choose Dr. Alex Chireau for cosmetic, implant, and general dental care.",
+    "128+ five-star reviews from real patients in Las Vegas, NV. See why families choose Dr. Alex Chireau for cosmetic, implant & general dental care.",
   alternates: {
     canonical: `${siteConfig.url}/reviews`,
   },

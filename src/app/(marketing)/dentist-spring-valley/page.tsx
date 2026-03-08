@@ -7,9 +7,9 @@ import { BreadcrumbSchema, FAQSchema } from "@/components/schema/local-business"
 import { siteConfig, testimonials } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Dentist Near Spring Valley, Las Vegas NV | AK Ultimate Dental",
+  title: "Dentist Near Spring Valley NV | AK Ultimate Dental",
   description:
-    "Affordable, top-rated dental care for Spring Valley, NV residents. AK Ultimate Dental accepts most insurance, offers flexible financing, and is just minutes from Spring Valley on West Sahara Ave.",
+    "Affordable dental care for Spring Valley, NV — minutes away on W Sahara Ave, Las Vegas. Most insurance accepted, flexible financing. Call (702) 935-4395.",
   keywords: [
     "dentist Spring Valley NV",
     "Spring Valley dentist",

@@ -8,9 +8,9 @@ import { ProviderByline } from "@/components/marketing/provider-byline";
 import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Porcelain Veneers Las Vegas | AK Ultimate Dental — Dr. Alex Chireau, DDS",
+  title: "Porcelain Veneers Las Vegas NV | AK Ultimate Dental",
   description:
-    "Transform your smile with porcelain veneers in Las Vegas. Dr. Alex Chireau crafts ultra-thin, natural-looking veneers in just 2 visits. Cherry financing available. Call (702) 935-4395.",
+    "Transform your smile with porcelain veneers in Las Vegas, NV — ultra-thin & natural-looking in just 2 visits. Cherry financing available. Call (702) 935-4395.",
   keywords: [
     "porcelain veneers Las Vegas",
     "dental veneers Las Vegas",

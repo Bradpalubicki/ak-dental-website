@@ -17,7 +17,7 @@ import { curatedImages } from "@/content/images";
 export const metadata: Metadata = {
   title: "Best Dentist in Las Vegas, NV | AK Ultimate Dental",
   description:
-    "Looking for the best dentist in Las Vegas? AK Ultimate Dental offers implants, cosmetic dentistry & emergency care. 128 five-star reviews. Call (702) 935-4395.",
+    "Top-rated Las Vegas, NV dentist — implants, cosmetic dentistry & emergency care. 128 five-star reviews. New patients welcome. Call (702) 935-4395.",
   alternates: { canonical: `${siteConfig.url}/dentist-las-vegas` },
   keywords: [
     "dentist Las Vegas",

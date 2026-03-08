@@ -9,7 +9,7 @@ import { siteConfig, testimonials } from "@/lib/config";
 export const metadata: Metadata = {
   title: "Dentist Near Summerlin, Las Vegas NV | AK Ultimate Dental",
   description:
-    "Top-rated dentist serving Summerlin, NV. AK Ultimate Dental is just minutes from Summerlin on West Sahara Ave. Cosmetic dentistry, implants, veneers & more. Call (702) 935-4395.",
+    "Top-rated dentist serving Summerlin, NV — minutes from Summerlin on W Sahara Ave, Las Vegas. Cosmetic, implants & veneers. Call (702) 935-4395.",
   keywords: [
     "dentist Summerlin",
     "Summerlin dentist",

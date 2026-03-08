@@ -9,7 +9,7 @@ import { siteConfig } from "@/lib/config";
 export const metadata: Metadata = {
   title: "New Patients | Get Started | AK Ultimate Dental",
   description:
-    "New to AK Ultimate Dental? Learn what to expect at your first visit in Las Vegas. Step-by-step guide: exam, X-rays, treatment plan, and ongoing care. Free consultation.",
+    "New patient in Las Vegas, NV? Learn what to expect: exam, X-rays, treatment plan & ongoing care. Free consultation available. Call (702) 935-4395.",
   alternates: { canonical: `${siteConfig.url}/get-started` },
 };
 

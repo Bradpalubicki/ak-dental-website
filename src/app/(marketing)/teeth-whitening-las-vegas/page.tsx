@@ -9,9 +9,9 @@ import { BreadcrumbSchema, FAQSchema } from "@/components/schema/local-business"
 import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Teeth Whitening Las Vegas | Professional & Take-Home | AK Ultimate Dental",
+  title: "Teeth Whitening Las Vegas NV | AK Ultimate Dental",
   description:
-    "Professional teeth whitening in Las Vegas, NV. In-office Zoom whitening for immediate results, or custom take-home trays. Dr. Alex Chireau, DDS. Call (702) 935-4395.",
+    "Professional teeth whitening in Las Vegas, NV — Zoom in-office for immediate results or custom take-home trays. Whiten up to 8 shades. Call (702) 935-4395.",
   keywords: [
     "teeth whitening Las Vegas",
     "professional teeth whitening Las Vegas",
