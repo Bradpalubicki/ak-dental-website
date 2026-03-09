@@ -58,7 +58,7 @@ const primaryNav: NavItem[] = [
   { name: "Schedule",        href: "/dashboard/schedule",           icon: Calendar,       badgeKey: "appointments",  badgeColor: "bg-orange-400 text-orange-950" },
   { name: "Clinical",        href: "/dashboard/clinical-notes",     icon: Stethoscope,    badgeKey: "consentPending", badgeColor: "bg-cyan-400 text-cyan-950" },
   { name: "Billing",         href: "/dashboard/billing",            icon: DollarSign,     badgeKey: "insurance",     badgeColor: "bg-violet-400 text-violet-950" },
-  { name: "Communications",  href: "/dashboard/inbox",              icon: MessageSquare,  badgeKey: "inbox",         badgeColor: "bg-blue-400 text-blue-950" },
+  { name: "Inbox",  href: "/dashboard/inbox",              icon: MessageSquare,  badgeKey: "inbox",         badgeColor: "bg-blue-400 text-blue-950" },
   { name: "Analytics",       href: "/dashboard/analytics",          icon: BarChart3,      requiredPermission: "analytics.view" },
 ];
 
