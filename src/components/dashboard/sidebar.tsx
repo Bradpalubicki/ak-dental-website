@@ -6,41 +6,16 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
-  UserPlus,
   Calendar,
-  Shield,
-  FileText,
-  Phone,
+  Stethoscope,
   DollarSign,
+  MessageSquare,
   BarChart3,
-  Send,
   Settings,
-  Search,
+  HelpCircle,
   ChevronLeft,
   ChevronRight,
-  CheckSquare,
-  Inbox,
-  Sparkles,
-  UsersRound,
   Activity,
-  Wallet,
-  Award,
-  Upload,
-  ClipboardList,
-  Stethoscope,
-  UserCog,
-  Clock,
-  ShieldCheck,
-  CalendarDays,
-  GraduationCap,
-  FolderOpen,
-  FileSignature,
-  MailOpen,
-  MessageSquare,
-  Rocket,
-  ClipboardCheck,
-  Globe,
-  HelpCircle,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -75,78 +50,84 @@ interface NavItem {
   requiredPermission?: string;
 }
 
-interface NavSection {
-  label: string;
-  accent: string;   // tailwind text color for the section label
-  items: NavItem[];
-}
-
-const sections: NavSection[] = [
-  {
-    label: "Command Center",
-    accent: "text-slate-400",
-    items: [
-      { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, requiredPermission: "dashboard.view" },
-      { name: "Business Advisor", href: "/dashboard/advisor", icon: Sparkles, requiredPermission: "advisor.use" },
-      { name: "Approvals", href: "/dashboard/approvals", icon: CheckSquare, badgeKey: "approvals", badgeColor: "bg-amber-400 text-amber-950", requiredPermission: "approvals.view" },
-      { name: "File Drop Box", href: "/dashboard/dropbox", icon: Upload, requiredPermission: "documents.view" },
-      { name: "Onboarding", href: "/dashboard/onboarding", icon: ClipboardList, requiredPermission: "settings.view" },
-      { name: "Training", href: "/dashboard/training", icon: GraduationCap, requiredPermission: "settings.view" },
-      { name: "Launch Checklist", href: "/dashboard/launch-checklist", icon: Rocket, requiredPermission: "settings.view" },
-    ],
-  },
-  {
-    label: "Clinical",
-    accent: "text-cyan-400",
-    items: [
-      { name: "Patients", href: "/dashboard/patients", icon: Users, requiredPermission: "patients.view" },
-      { name: "Schedule", href: "/dashboard/schedule", icon: CalendarDays, requiredPermission: "appointments.view" },
-      { name: "Appointments", href: "/dashboard/appointments", icon: Calendar, badgeKey: "appointments", badgeColor: "bg-orange-400 text-orange-950", requiredPermission: "appointments.view" },
-      { name: "Clinical Notes", href: "/dashboard/clinical-notes", icon: Stethoscope, requiredPermission: "treatments.view" },
-      { name: "Treatments", href: "/dashboard/treatments", icon: FileText, requiredPermission: "treatments.view" },
-      { name: "Proposals", href: "/dashboard/proposals", icon: ClipboardCheck, requiredPermission: "treatments.view" },
-      { name: "Consent Forms", href: "/dashboard/consent-forms", icon: FileSignature, badgeKey: "consentPending", badgeColor: "bg-cyan-400 text-cyan-950", requiredPermission: "treatments.view" },
-      { name: "Providers", href: "/dashboard/providers", icon: UserCog, requiredPermission: "hr.view" },
-      { name: "Waitlist", href: "/dashboard/waitlist", icon: Clock, requiredPermission: "appointments.view" },
-    ],
-  },
-  {
-    label: "Operations",
-    accent: "text-violet-400",
-    items: [
-      { name: "Leads", href: "/dashboard/leads", icon: UserPlus, badgeKey: "leads", badgeColor: "bg-emerald-400 text-emerald-950", requiredPermission: "leads.view" },
-      { name: "Insurance", href: "/dashboard/insurance", icon: Shield, badgeKey: "insurance", badgeColor: "bg-violet-400 text-violet-950", requiredPermission: "insurance.view" },
-      { name: "Outreach", href: "/dashboard/outreach", icon: Send, requiredPermission: "outreach.view" },
-      { name: "Message Templates", href: "/dashboard/message-templates", icon: MessageSquare, requiredPermission: "outreach.view" },
-      { name: "Calls", href: "/dashboard/calls", icon: Phone, requiredPermission: "calls.view" },
-    ],
-  },
-  {
-    label: "Business Hub",
-    accent: "text-amber-400",
-    items: [
-      { name: "Financials", href: "/dashboard/financials", icon: Wallet, requiredPermission: "financials.view" },
-      { name: "Billing", href: "/dashboard/billing", icon: DollarSign, requiredPermission: "billing.view" },
-      { name: "HR & Payroll", href: "/dashboard/hr", icon: UsersRound, badgeKey: "hrPending", badgeColor: "bg-rose-400 text-rose-950", requiredPermission: "hr.view" },
-      { name: "Licensing", href: "/dashboard/licensing", icon: Award, requiredPermission: "licensing.view" },
-      { name: "Documents", href: "/dashboard/documents", icon: FolderOpen, badgeKey: "pendingDocs", badgeColor: "bg-amber-400 text-amber-950", requiredPermission: "settings.view" },
-      { name: "Website Postings", href: "/dashboard/postings", icon: Globe, requiredPermission: "documents.view" },
-    ],
-  },
-  {
-    label: "Intelligence",
-    accent: "text-blue-400",
-    items: [
-      { name: "Inbox", href: "/dashboard/inbox", icon: Inbox, badgeKey: "inbox", badgeColor: "bg-blue-400 text-blue-950", requiredPermission: "inbox.view" },
-      { name: "Email Intelligence", href: "/dashboard/email", icon: MailOpen, requiredPermission: "inbox.view" },
-      { name: "SEO", href: "/dashboard/seo", icon: Search, requiredPermission: "seo.view" },
-      { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3, requiredPermission: "analytics.view" },
-      { name: "Compliance", href: "/dashboard/compliance", icon: ShieldCheck, requiredPermission: "settings.view" },
-      { name: "Settings", href: "/dashboard/settings", icon: Settings, requiredPermission: "settings.view" },
-      { name: "Help", href: "/dashboard/help", icon: HelpCircle },
-    ],
-  },
+// Primary 7-item nav — each top-level item links to the section landing page
+// Sub-pages within each section are accessible from those pages, not the sidebar
+const primaryNav: NavItem[] = [
+  { name: "Dashboard",       href: "/dashboard",                    icon: LayoutDashboard },
+  { name: "Patients",        href: "/dashboard/patients",           icon: Users,          badgeKey: "approvals",     badgeColor: "bg-amber-400 text-amber-950" },
+  { name: "Schedule",        href: "/dashboard/schedule",           icon: Calendar,       badgeKey: "appointments",  badgeColor: "bg-orange-400 text-orange-950" },
+  { name: "Clinical",        href: "/dashboard/clinical-notes",     icon: Stethoscope,    badgeKey: "consentPending", badgeColor: "bg-cyan-400 text-cyan-950" },
+  { name: "Billing",         href: "/dashboard/billing",            icon: DollarSign,     badgeKey: "insurance",     badgeColor: "bg-violet-400 text-violet-950" },
+  { name: "Communications",  href: "/dashboard/inbox",              icon: MessageSquare,  badgeKey: "inbox",         badgeColor: "bg-blue-400 text-blue-950" },
+  { name: "Analytics",       href: "/dashboard/analytics",          icon: BarChart3,      requiredPermission: "analytics.view" },
 ];
+
+const bottomNav: NavItem[] = [
+  { name: "Settings", href: "/dashboard/settings", icon: Settings },
+  { name: "Help",     href: "/dashboard/help",     icon: HelpCircle },
+];
+
+
+function NavLink({
+  item,
+  badges,
+  pathname,
+  collapsed,
+}: {
+  item: NavItem;
+  badges: SidebarBadges;
+  pathname: string;
+  collapsed: boolean;
+}) {
+  const isActive =
+    item.href === "/dashboard"
+      ? pathname === "/dashboard"
+      : pathname.startsWith(item.href);
+  const badgeCount = item.badgeKey ? badges[item.badgeKey] || 0 : 0;
+
+  return (
+    <li>
+      <Link
+        href={item.href}
+        className={cn(
+          "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all duration-150 relative",
+          isActive
+            ? "bg-white/[0.08] text-white shadow-sm"
+            : "text-slate-400 hover:bg-white/[0.04] hover:text-slate-200"
+        )}
+      >
+        {isActive && (
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-gradient-to-b from-cyan-400 to-blue-500" />
+        )}
+        <div className="relative shrink-0">
+          <item.icon className={cn(
+            "h-[18px] w-[18px] transition-colors",
+            isActive ? "text-cyan-400" : "text-slate-500 group-hover:text-slate-300"
+          )} />
+          {collapsed && badgeCount > 0 && (
+            <span className="absolute -right-1 -top-1 flex h-2.5 w-2.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
+              <span className={`relative inline-flex h-2.5 w-2.5 rounded-full ${item.badgeColor || "bg-amber-400"}`} />
+            </span>
+          )}
+        </div>
+        {!collapsed && (
+          <>
+            <span className="flex-1">{item.name}</span>
+            {badgeCount > 0 && (
+              <span className={cn(
+                "flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[10px] font-bold",
+                item.badgeColor || "bg-cyan-400/20 text-cyan-300"
+              )}>
+                {badgeCount}
+              </span>
+            )}
+          </>
+        )}
+      </Link>
+    </li>
+  );
+}
 
 export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadges }) {
   const pathname = usePathname();
@@ -207,86 +188,20 @@ export function Sidebar({ badges = {} as SidebarBadges }: { badges?: SidebarBadg
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
-        {sections.map((section) => {
-          const visibleItems = section.items;
-          return (
-          <div key={section.label}>
-            {!collapsed && (
-              <div className="mb-2 flex items-center gap-2 px-3">
-                <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", section.accent.replace("text-", "bg-"))} />
-                <p className={cn("text-[10px] font-bold uppercase tracking-[0.15em]", section.accent)}>
-                  {section.label}
-                </p>
-              </div>
-            )}
-            {collapsed && <div className="mb-1 mx-auto h-px w-6 bg-white/[0.06]" />}
-            <ul className="space-y-0.5">
-              {visibleItems.map((item) => {
-                const isActive =
-                  item.href === "/dashboard"
-                    ? pathname === "/dashboard"
-                    : pathname.startsWith(item.href);
+      <nav className="flex-1 overflow-y-auto px-3 py-4 flex flex-col justify-between">
+        {/* Primary 7 items */}
+        <ul className="space-y-0.5">
+          {primaryNav.map((item) => (
+            <NavLink key={item.name} item={item} badges={badges} pathname={pathname} collapsed={collapsed} />
+          ))}
+        </ul>
 
-                const badgeCount = item.badgeKey ? badges[item.badgeKey] || 0 : 0;
-
-                return (
-                  <li key={item.name}>
-                    <Link
-                      href={item.href}
-                      className={cn(
-                        "group flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-all duration-150 relative",
-                        isActive
-                          ? "bg-white/[0.08] text-white shadow-sm"
-                          : "text-slate-400 hover:bg-white/[0.04] hover:text-slate-200"
-                      )}
-                    >
-                      {/* Active indicator bar */}
-                      {isActive && (
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-gradient-to-b from-cyan-400 to-blue-500" />
-                      )}
-
-                      <div className="relative shrink-0">
-                        <item.icon className={cn(
-                          "h-[18px] w-[18px] transition-colors",
-                          isActive ? "text-cyan-400" : "text-slate-500 group-hover:text-slate-300"
-                        )} />
-                        {/* Dot badge when collapsed */}
-                        {collapsed && badgeCount > 0 && (
-                          <span className="absolute -right-1 -top-1 flex h-2.5 w-2.5">
-                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
-                            <span className={`relative inline-flex h-2.5 w-2.5 rounded-full ${item.badgeColor || "bg-amber-400"}`} />
-                          </span>
-                        )}
-                      </div>
-                      {!collapsed && (
-                        <>
-                          <span className="flex-1">
-                            {item.name}
-                            {item.href === "/dashboard/advisor" && (
-                              <span className="block text-[9px] font-medium animate-shimmer bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 bg-[length:200%_auto] bg-clip-text text-transparent">
-                                ask me anything
-                              </span>
-                            )}
-                          </span>
-                          {badgeCount > 0 && (
-                            <span className={cn(
-                              "flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[10px] font-bold",
-                              item.badgeColor || "bg-cyan-400/20 text-cyan-300"
-                            )}>
-                              {badgeCount}
-                            </span>
-                          )}
-                        </>
-                      )}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-          );
-        })}
+        {/* Bottom: Settings + Help */}
+        <ul className="space-y-0.5 mt-4 pt-4 border-t border-white/[0.06]">
+          {bottomNav.map((item) => (
+            <NavLink key={item.name} item={item} badges={badges} pathname={pathname} collapsed={collapsed} />
+          ))}
+        </ul>
       </nav>
 
       {/* System Status */}

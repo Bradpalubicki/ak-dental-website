@@ -1,27 +1,25 @@
 export const dynamic = "force-dynamic";
 
 import { createServiceSupabase } from "@/lib/supabase/server";
-import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
+import { MorningHuddle } from "@/components/dashboard/morning-huddle";
 
 export default async function DashboardPage() {
   const supabase = createServiceSupabase();
   const now = new Date();
   const today = now.toISOString().split("T")[0];
   const todayStart = `${today}T00:00:00.000Z`;
-  const fourteenDaysOut = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 14).toISOString().split("T")[0];
+  const fourteenDaysOut = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 14)
+    .toISOString()
+    .split("T")[0];
 
   const [
-    patientsRes,
     appointmentsRes,
     leadsRes,
     pendingApprovalsRes,
-    aiActionsTodayRes,
-    recentAiActionsRes,
     pendingInsuranceRes,
     emergencyLeadsRes,
     pendingIntakeRes,
   ] = await Promise.all([
-    supabase.from("oe_patients").select("id", { count: "exact", head: true }),
     supabase
       .from("oe_appointments")
       .select("id, appointment_time, type, status, patient:oe_patients(first_name, last_name)")
@@ -38,15 +36,6 @@ export default async function DashboardPage() {
       .select("id", { count: "exact", head: true })
       .eq("status", "pending_approval"),
     supabase
-      .from("oe_ai_actions")
-      .select("id, status")
-      .gte("created_at", todayStart),
-    supabase
-      .from("oe_ai_actions")
-      .select("id, action_type, module, description, status, created_at")
-      .order("created_at", { ascending: false })
-      .limit(8),
-    supabase
       .from("oe_insurance_verifications")
       .select("id", { count: "exact", head: true })
       .eq("status", "pending"),
@@ -57,7 +46,6 @@ export default async function DashboardPage() {
       .eq("status", "new")
       .order("created_at", { ascending: false })
       .limit(5),
-    // New patients without intake submissions (joined upcoming appts in last 30 days)
     supabase
       .from("oe_appointments")
       .select("patient_id", { count: "exact", head: true })
@@ -85,33 +73,22 @@ export default async function DashboardPage() {
     createdAt: l.created_at as string,
   }));
 
-  const aiActions = (recentAiActionsRes.data || []).map((a: any) => ({
-    id: a.id as string,
-    description: a.description as string,
-    module: a.module as string,
-    status: a.status as string,
-    createdAt: a.created_at as string,
-  }));
+  const pendingApprovals = pendingApprovalsRes.count || 0;
+  const pendingIns = pendingInsuranceRes.count || 0;
+  const unconfirmed = appointments.filter((a) => a.status === "scheduled");
 
-  const aiActionsToday = aiActionsTodayRes.data || [];
-  const approvedToday = aiActionsToday.filter(
-    (a: any) => a.status === "approved" || a.status === "executed"
-  ).length;
-
-  // Build urgent items
   const urgentItems: Array<{ type: string; label: string; detail: string; href: string; level: string }> = [];
 
   (emergencyLeadsRes.data || []).forEach((l: any) => {
     urgentItems.push({
       type: "lead",
-      label: l.urgency === "emergency" ? "EMERGENCY LEAD" : "High-Priority Lead",
+      label: l.urgency === "emergency" ? "Emergency Lead" : "High-Priority Lead",
       detail: `${l.first_name} ${l.last_name} — ${l.inquiry_type || "new inquiry"}`,
       href: "/dashboard/leads",
       level: l.urgency === "emergency" ? "critical" : "warning",
     });
   });
 
-  const pendingApprovals = pendingApprovalsRes.count || 0;
   if (pendingApprovals > 0) {
     urgentItems.push({
       type: "approvals",
@@ -122,7 +99,6 @@ export default async function DashboardPage() {
     });
   }
 
-  const unconfirmed = appointments.filter((a) => a.status === "scheduled");
   if (unconfirmed.length > 0) {
     urgentItems.push({
       type: "appointments",
@@ -133,7 +109,6 @@ export default async function DashboardPage() {
     });
   }
 
-  const pendingIns = pendingInsuranceRes.count || 0;
   if (pendingIns > 0) {
     urgentItems.push({
       type: "insurance",
@@ -148,8 +123,8 @@ export default async function DashboardPage() {
   if (upcomingApptCount > 0) {
     urgentItems.push({
       type: "intake",
-      label: `${upcomingApptCount} Appointment${upcomingApptCount !== 1 ? "s" : ""} in Next 14 Days`,
-      detail: "Send intake form links to new patients before their visit",
+      label: `${upcomingApptCount} Upcoming Appointment${upcomingApptCount !== 1 ? "s" : ""} — Intake Needed`,
+      detail: "Send intake form links before their visit",
       href: "/dashboard/patients",
       level: "info",
     });
@@ -160,11 +135,11 @@ export default async function DashboardPage() {
   urgentItems.sort((a, b) => (levelOrder[a.level] ?? 2) - (levelOrder[b.level] ?? 2));
 
   return (
-    <DashboardGrid
+    <MorningHuddle
       data={{
         appointments,
         leads,
-        aiActions,
+        aiActions: [],
         urgentItems,
         stats: {
           appointmentCount: appointments.length,
@@ -172,9 +147,9 @@ export default async function DashboardPage() {
           leadCount: leads.length,
           pendingApprovals,
           pendingInsurance: pendingIns,
-          patientCount: patientsRes.count || 0,
-          aiActionsToday: aiActionsToday.length,
-          approvedToday,
+          patientCount: 0,
+          aiActionsToday: 0,
+          approvedToday: 0,
         },
       }}
     />
