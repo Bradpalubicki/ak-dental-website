@@ -1,5 +1,7 @@
 export const dynamic = "force-dynamic";
 
+import { FEATURES } from "@/lib/feature-flags";
+import { ComingSoon } from "@/components/dashboard/coming-soon";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { CallsClient } from "./calls-client";
 import type { Call } from "@/types/database";
@@ -26,6 +28,18 @@ const INTENT_COLORS: Record<string, string> = {
 };
 
 export default async function CallsPage() {
+  if (!FEATURES.vapi) {
+    return (
+      <ComingSoon
+        title="AI Call Intelligence"
+        description="Your AI phone system will log, transcribe, and analyze every call automatically. This activates once your Vapi phone number is configured — contact NuStack to get set up."
+        eta="Requires Vapi setup"
+        actionLabel="Go to Settings"
+        actionHref="/dashboard/settings"
+      />
+    );
+  }
+
   const supabase = createServiceSupabase();
   const now = new Date();
   const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1).toISOString();

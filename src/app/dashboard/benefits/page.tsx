@@ -1,5 +1,7 @@
 export const dynamic = "force-dynamic";
 
+import { FEATURES } from "@/lib/feature-flags";
+import { ComingSoon } from "@/components/dashboard/coming-soon";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { BenefitsClient } from "./benefits-client";
 
@@ -40,6 +42,18 @@ function computePolicyStatus(expirationDate: string): string {
 }
 
 export default async function BenefitsPage() {
+  if (!FEATURES.benefits) {
+    return (
+      <ComingSoon
+        title="Benefits & Insurance Policies"
+        description="Employee benefit enrollments and business insurance policy tracking are coming soon. Your existing policy data is safe and will appear here when this module launches."
+        eta="Coming soon"
+        actionLabel="View HR & Staff"
+        actionHref="/dashboard/hr"
+      />
+    );
+  }
+
   const supabase = createServiceSupabase();
 
   const [enrollmentsRes, policiesRes, filingsRes, employeesRes, docsRes] =

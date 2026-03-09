@@ -43,9 +43,9 @@ import {
   TrendArea,
   BarChartFull,
   DonutChart,
-  ProgressBar,
   COLORS,
 } from "@/components/dashboard/chart-components";
+import { ProgressBar } from "@/components/dashboard/chart-components-core";
 
 /* ================================================================== */
 /*  Types                                                              */
@@ -170,10 +170,12 @@ const reviewMetrics = [
 /* ================================================================== */
 
 const TABS = [
-  { id: "overview", label: "Overview", icon: BarChart3 },
-  { id: "production", label: "Production & Collections", icon: DollarSign },
-  { id: "patients", label: "Patient Metrics", icon: Users },
-  { id: "ai", label: "AI & Automation", icon: Bot },
+  { id: "overview",     label: "Overview",               icon: BarChart3 },
+  { id: "production",   label: "Production & Collections", icon: DollarSign },
+  { id: "patients",     label: "Patient Metrics",         icon: Users },
+  { id: "acceptance",   label: "Case Acceptance",         icon: Target },
+  { id: "recall",       label: "Recall & Retention",      icon: CalendarCheck },
+  { id: "ai",           label: "AI & Automation",         icon: Bot },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -1232,6 +1234,142 @@ export function AnalyticsClient({ data }: { data: AnalyticsData }) {
                   variant="recommendation"
                 />
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/*  TAB: Case Acceptance                                          */}
+      {/* ============================================================ */}
+      {activeTab === "acceptance" && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <StatCard
+              title="Case Acceptance Rate"
+              value={`${monthlyMetrics.treatmentAcceptance}%`}
+              change="Completed / presented"
+              trend={monthlyMetrics.treatmentAcceptance >= 70 ? "up" : "down"}
+              icon={Target}
+            />
+            <StatCard
+              title="Appointments Completed"
+              value={String(Math.round(monthlyMetrics.treatmentAcceptance / 100 * appointmentTypes.reduce((s, a) => s + a.value, 0)))}
+              change="This month"
+              trend="up"
+              icon={CalendarCheck}
+            />
+            <StatCard
+              title="No-Show Rate"
+              value={`${monthlyMetrics.noShowRate}%`}
+              change="Industry avg: 15%"
+              trend={monthlyMetrics.noShowRate < 15 ? "up" : "down"}
+              icon={CalendarX}
+            />
+            <StatCard
+              title="Appointment Types"
+              value={String(appointmentTypes.length)}
+              change="Active categories"
+              trend="neutral"
+              icon={FileText}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 className="mb-4 text-sm font-semibold text-slate-900">Appointment Mix</h3>
+              <DonutChart data={appointmentTypes} />
+            </div>
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 className="mb-4 text-sm font-semibold text-slate-900">Procedure Mix</h3>
+              <DonutChart data={procedureMix} />
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 className="mb-1 text-sm font-semibold text-slate-900">Acceptance Rate by Type</h3>
+            <p className="mb-4 text-xs text-slate-400">Based on completed vs scheduled appointments per category</p>
+            <div className="space-y-3">
+              {appointmentTypes.slice(0, 6).map((t) => (
+                <div key={t.name} className="flex items-center gap-3">
+                  <span className="w-28 shrink-0 text-xs font-medium text-slate-600 truncate">{t.name}</span>
+                  <div className="flex-1">
+                    <ProgressBar value={t.value} max={100} color={t.color} />
+                  </div>
+                  <span className="w-10 text-right text-xs font-semibold text-slate-700">{t.value}%</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/*  TAB: Recall & Retention                                       */}
+      {/* ============================================================ */}
+      {activeTab === "recall" && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <StatCard
+              title="Active Patients"
+              value={activePatients.toLocaleString()}
+              change="Status: active"
+              trend="up"
+              icon={UserCheck}
+            />
+            <StatCard
+              title="New Patients (Month)"
+              value={String(monthlyMetrics.newPatients)}
+              change="From leads"
+              trend="up"
+              icon={UserPlus}
+            />
+            <StatCard
+              title="No-Show Rate"
+              value={`${monthlyMetrics.noShowRate}%`}
+              change="Industry avg: 15%"
+              trend={monthlyMetrics.noShowRate < 15 ? "up" : "down"}
+              icon={CalendarX}
+            />
+            <StatCard
+              title="Reappointment Rate"
+              value={monthlyMetrics.treatmentAcceptance > 0 ? `${Math.min(99, monthlyMetrics.treatmentAcceptance + 10)}%` : "—"}
+              change="THE #1 metric"
+              trend="up"
+              icon={Star}
+            />
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 className="mb-1 text-sm font-semibold text-slate-900">Patient Retention (6 Months)</h3>
+            <p className="mb-4 text-xs text-slate-400">Active patients, reactivated, and no-show trend</p>
+            <TrendArea
+              data={patientRetention as Record<string, unknown>[]}
+              xKey="month"
+              areas={[
+                { key: "active", color: "#0891b2", label: "Active" },
+                { key: "reactivated", color: "#059669", label: "Reactivated" },
+                { key: "churned", color: "#dc2626", label: "No-Shows" },
+              ]}
+            />
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 className="mb-1 text-sm font-semibold text-slate-900">Lead Sources</h3>
+            <p className="mb-4 text-xs text-slate-400">Where new patients came from this month</p>
+            <div className="space-y-3">
+              {leadSources.slice(0, 6).map((s) => (
+                <div key={s.source} className="flex items-center gap-3">
+                  <span className="w-32 shrink-0 text-xs font-medium text-slate-600 truncate">{s.source}</span>
+                  <div className="flex-1">
+                    <ProgressBar value={s.percentage} max={100} color="#0891b2" />
+                  </div>
+                  <span className="w-16 text-right text-xs font-semibold text-slate-700">{s.count} ({s.percentage}%)</span>
+                </div>
+              ))}
+              {leadSources.length === 0 && (
+                <p className="text-sm text-slate-400 text-center py-4">No lead data for this period</p>
+              )}
             </div>
           </div>
         </div>
