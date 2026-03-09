@@ -5,6 +5,7 @@ import { useState } from "react";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { NotificationBell } from "./notification-bell";
 import { useMobileSidebar } from "./sidebar";
+import { EngineSwitcher } from "./engine-switcher";
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -82,6 +83,9 @@ export function DashboardHeader() {
       </div>
 
       <div className="flex items-center gap-2">
+        {/* Engine Switcher */}
+        <EngineSwitcher />
+
         {/* AI Engine Status */}
         <div className="flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200/50 px-3 py-1">
           <div className="relative">
