@@ -1,20 +1,39 @@
+import { CalendarDays, Calendar, Clock } from "lucide-react";
+import { SectionHub } from "@/components/dashboard/section-hub";
 import { CalendarView } from "@/components/scheduling/calendar-view";
-import { CalendarDays } from "lucide-react";
 
 export const metadata = { title: "Schedule | AK Ultimate Dental" };
 
 export default function SchedulePage() {
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-50">
-          <CalendarDays className="h-5 w-5 text-cyan-600" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Schedule</h1>
-          <p className="text-sm text-slate-500">Day and week view of all appointments</p>
-        </div>
-      </div>
+    <div>
+      <SectionHub
+        title="Schedule"
+        description="Calendar, appointments, and waitlist management"
+        icon={CalendarDays}
+        iconBg="bg-orange-50"
+        iconColor="text-orange-600"
+        links={[
+          {
+            label: "Calendar",
+            href: "/dashboard/schedule",
+            icon: CalendarDays,
+            description: "Day and week appointment calendar",
+          },
+          {
+            label: "Appointments",
+            href: "/dashboard/appointments",
+            icon: Calendar,
+            description: "All appointments — search and filter",
+          },
+          {
+            label: "Waitlist",
+            href: "/dashboard/waitlist",
+            icon: Clock,
+            description: "Patients waiting for earlier openings",
+          },
+        ]}
+      />
       <CalendarView />
     </div>
   );

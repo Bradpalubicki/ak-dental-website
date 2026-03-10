@@ -1,6 +1,8 @@
 export const dynamic = "force-dynamic";
 
+import { Settings, Users, GraduationCap, Image, Megaphone, Award } from "lucide-react";
 import { createServiceSupabase } from "@/lib/supabase/server";
+import { SectionHub } from "@/components/dashboard/section-hub";
 import { SettingsClient } from "./settings-client";
 
 const defaultPracticeInfo = { name: "", phone: "", email: "", address: "", doctor: "" };
@@ -70,6 +72,52 @@ export default async function SettingsPage() {
   const dbLatency = Date.now() - dbStart;
 
   return (
+    <div>
+      <SectionHub
+        title="Settings & Operations"
+        description="Practice settings, staff, training, media, and compliance tools"
+        icon={Settings}
+        iconBg="bg-slate-100"
+        iconColor="text-slate-600"
+        links={[
+          {
+            label: "HR & Staff",
+            href: "/dashboard/hr",
+            icon: Users,
+            description: "Employees, payroll, write-ups, certifications",
+          },
+          {
+            label: "Training",
+            href: "/dashboard/training",
+            icon: GraduationCap,
+            description: "HIPAA, OSHA, and platform training by role",
+          },
+          {
+            label: "Media",
+            href: "/dashboard/media",
+            icon: Image,
+            description: "Practice photos, before/after, and assets",
+          },
+          {
+            label: "Postings",
+            href: "/dashboard/postings",
+            icon: Megaphone,
+            description: "Website specials, announcements, and hours",
+          },
+          {
+            label: "Licensing",
+            href: "/dashboard/licensing",
+            icon: Award,
+            description: "Provider licenses and renewal tracking",
+          },
+          {
+            label: "Settings",
+            href: "/dashboard/settings",
+            icon: Settings,
+            description: "AI, notifications, integrations, office hours",
+          },
+        ]}
+      />
     <SettingsClient
       initialSettings={{
         practice_info: { ...defaultPracticeInfo, ...(typeof dbSettings.practice_info === "object" && !Array.isArray(dbSettings.practice_info) ? dbSettings.practice_info : {}) } as typeof defaultPracticeInfo,
@@ -85,5 +133,6 @@ export default async function SettingsPage() {
         aiStatus: "active" as const,
       }}
     />
+    </div>
   );
 }

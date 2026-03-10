@@ -1,6 +1,8 @@
 export const dynamic = "force-dynamic";
 
+import { DollarSign, ShieldCheck, TrendingUp, Phone } from "lucide-react";
 import { createServiceSupabase } from "@/lib/supabase/server";
+import { SectionHub } from "@/components/dashboard/section-hub";
 import { BillingClient } from "./billing-client";
 import type { BillingClaim } from "@/types/database";
 
@@ -140,7 +142,48 @@ export default async function BillingPage() {
     return { days: bucket.days, count, pct: Math.round((count / totalUnpaid) * 100) };
   });
 
+  const insurancePendingRes = await supabase
+    .from("oe_insurance_verifications")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "pending");
+
   return (
+    <div>
+      <SectionHub
+        title="Billing"
+        description="Claims, insurance, financials, and call logs"
+        icon={DollarSign}
+        iconBg="bg-violet-50"
+        iconColor="text-violet-600"
+        links={[
+          {
+            label: "Insurance Claims",
+            href: "/dashboard/billing",
+            icon: DollarSign,
+            description: `$${Math.round(totalOutstanding).toLocaleString()} outstanding`,
+          },
+          {
+            label: "Insurance Verifications",
+            href: "/dashboard/insurance",
+            icon: ShieldCheck,
+            description: "Eligibility checks and prior auths",
+            badge: insurancePendingRes.count ?? 0,
+            badgeColor: "bg-violet-100 text-violet-700",
+          },
+          {
+            label: "Financials",
+            href: "/dashboard/financials",
+            icon: TrendingUp,
+            description: "P&L, collections, and revenue trends",
+          },
+          {
+            label: "Call Logs",
+            href: "/dashboard/calls",
+            icon: Phone,
+            description: "Voice AI call history and transcripts",
+          },
+        ]}
+      />
     <BillingClient
       data={{
         claims,
@@ -158,5 +201,6 @@ export default async function BillingPage() {
         paymentTimeline,
       }}
     />
+    </div>
   );
 }

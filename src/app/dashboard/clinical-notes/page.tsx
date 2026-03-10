@@ -1,6 +1,14 @@
 export const dynamic = "force-dynamic";
 
+import {
+  Stethoscope,
+  CheckSquare,
+  ShieldCheck,
+  Users,
+  FileText,
+} from "lucide-react";
 import { createServiceSupabase } from "@/lib/supabase/server";
+import { SectionHub } from "@/components/dashboard/section-hub";
 import { ClinicalNotesClient } from "./clinical-notes-client";
 
 export default async function ClinicalNotesPage() {
@@ -10,45 +18,37 @@ export default async function ClinicalNotesPage() {
   today.setHours(0, 0, 0, 0);
   const todayISO = today.toISOString();
 
-  const [notesRes, unsignedRes, todayRes, aiAssistedRes, patientsRes] =
+  const [notesRes, unsignedRes, todayRes, aiAssistedRes, patientsRes, approvalsRes] =
     await Promise.all([
-      // Recent notes with patient info
       supabase
         .from("oe_clinical_notes")
-        .select(
-          "*, patient:oe_patients(id, first_name, last_name)",
-          { count: "exact" }
-        )
+        .select("*, patient:oe_patients(id, first_name, last_name)", { count: "exact" })
         .order("created_at", { ascending: false })
         .limit(50),
-
-      // Unsigned notes count
       supabase
         .from("oe_clinical_notes")
         .select("id", { count: "exact", head: true })
         .eq("is_signed", false)
         .neq("status", "draft"),
-
-      // Today's notes count
       supabase
         .from("oe_clinical_notes")
         .select("id", { count: "exact", head: true })
         .gte("created_at", todayISO),
-
-      // AI-assisted notes count
       supabase
         .from("oe_clinical_notes")
         .select("id", { count: "exact", head: true })
         .not("ai_summary", "is", null),
-
-      // Patients list for the dropdown
       supabase
         .from("oe_patients")
         .select("id, first_name, last_name")
         .is("deleted_at", null)
         .eq("status", "active")
-        .order("last_name", { ascending: true })
+        .order("last_name")
         .limit(500),
+      supabase
+        .from("oe_ai_actions")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "pending_approval"),
     ]);
 
   const stats = {
@@ -62,9 +62,7 @@ export default async function ClinicalNotesPage() {
   const notes = (notesRes.data || []).map((n: any) => ({
     id: n.id as string,
     patient_id: n.patient_id as string,
-    patientName: n.patient
-      ? `${n.patient.first_name} ${n.patient.last_name}`
-      : "Unknown Patient",
+    patientName: n.patient ? `${n.patient.first_name} ${n.patient.last_name}` : "Unknown Patient",
     provider_name: n.provider_name as string,
     provider_id: n.provider_id as string | null,
     note_type: n.note_type as string,
@@ -97,10 +95,45 @@ export default async function ClinicalNotesPage() {
   );
 
   return (
-    <ClinicalNotesClient
-      initialNotes={notes}
-      stats={stats}
-      patients={patients}
-    />
+    <div>
+      <SectionHub
+        title="Clinical"
+        description="Notes, approvals, compliance, and provider management"
+        icon={Stethoscope}
+        iconBg="bg-cyan-50"
+        iconColor="text-cyan-600"
+        links={[
+          {
+            label: "Clinical Notes",
+            href: "/dashboard/clinical-notes",
+            icon: FileText,
+            description: `${stats.unsigned} unsigned · ${stats.today} today`,
+            badge: stats.unsigned,
+            badgeColor: "bg-cyan-100 text-cyan-700",
+          },
+          {
+            label: "Approvals",
+            href: "/dashboard/approvals",
+            icon: CheckSquare,
+            description: "AI-generated messages pending review",
+            badge: approvalsRes.count ?? 0,
+            badgeColor: "bg-amber-100 text-amber-700",
+          },
+          {
+            label: "Compliance",
+            href: "/dashboard/compliance",
+            icon: ShieldCheck,
+            description: "HIPAA audit logs and compliance records",
+          },
+          {
+            label: "Providers",
+            href: "/dashboard/providers",
+            icon: Users,
+            description: "Provider profiles, schedules, and time-off",
+          },
+        ]}
+      />
+      <ClinicalNotesClient initialNotes={notes} stats={stats} patients={patients} />
+    </div>
   );
 }
