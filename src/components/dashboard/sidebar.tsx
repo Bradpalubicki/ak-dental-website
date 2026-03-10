@@ -16,6 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Activity,
+  Phone,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -50,16 +51,17 @@ interface NavItem {
   requiredPermission?: string;
 }
 
-// Primary 7-item nav — each top-level item links to the section landing page
+// Primary nav — each top-level item links to the section landing page
 // Sub-pages within each section are accessible from those pages, not the sidebar
 const primaryNav: NavItem[] = [
-  { name: "Dashboard",       href: "/dashboard",                    icon: LayoutDashboard },
-  { name: "Patients",        href: "/dashboard/patients",           icon: Users,          badgeKey: "approvals",     badgeColor: "bg-amber-400 text-amber-950" },
-  { name: "Schedule",        href: "/dashboard/schedule",           icon: Calendar,       badgeKey: "appointments",  badgeColor: "bg-orange-400 text-orange-950" },
-  { name: "Clinical",        href: "/dashboard/clinical-notes",     icon: Stethoscope,    badgeKey: "consentPending", badgeColor: "bg-cyan-400 text-cyan-950" },
-  { name: "Billing",         href: "/dashboard/billing",            icon: DollarSign,     badgeKey: "insurance",     badgeColor: "bg-violet-400 text-violet-950" },
-  { name: "Inbox",  href: "/dashboard/inbox",              icon: MessageSquare,  badgeKey: "inbox",         badgeColor: "bg-blue-400 text-blue-950" },
-  { name: "Analytics",       href: "/dashboard/analytics",          icon: BarChart3,      requiredPermission: "analytics.view" },
+  { name: "Dashboard",  href: "/dashboard",               icon: LayoutDashboard },
+  { name: "Patients",   href: "/dashboard/patients",      icon: Users,         badgeKey: "approvals",      badgeColor: "bg-amber-400 text-amber-950" },
+  { name: "Schedule",   href: "/dashboard/schedule",      icon: Calendar,      badgeKey: "appointments",   badgeColor: "bg-orange-400 text-orange-950" },
+  { name: "Clinical",   href: "/dashboard/clinical-notes",icon: Stethoscope,   badgeKey: "consentPending", badgeColor: "bg-cyan-400 text-cyan-950" },
+  { name: "Billing",    href: "/dashboard/billing",       icon: DollarSign,    badgeKey: "insurance",      badgeColor: "bg-violet-400 text-violet-950" },
+  { name: "Inbox",      href: "/dashboard/inbox",         icon: MessageSquare, badgeKey: "inbox",          badgeColor: "bg-blue-400 text-blue-950" },
+  { name: "Calls",      href: "/dashboard/calls",         icon: Phone,                                     badgeColor: "bg-emerald-400 text-emerald-950" },
+  { name: "Analytics",  href: "/dashboard/analytics",     icon: BarChart3,     requiredPermission: "analytics.view" },
 ];
 
 const bottomNav: NavItem[] = [
