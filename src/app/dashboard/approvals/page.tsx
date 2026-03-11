@@ -7,7 +7,7 @@ export default async function ApprovalsPage() {
   const supabase = createServiceSupabase();
 
   // Fetch pending approvals — scoped to AK Dental practice only
-  // Filter out any cross-tenant contamination by excluding non-dental modules
+  // Filter cross-tenant contamination on both description AND output_data content
   const { data: pendingActions } = await supabase
     .from("oe_ai_actions")
     .select("*")
@@ -16,6 +16,8 @@ export default async function ApprovalsPage() {
     .not("description", "ilike", "%counseling%")
     .not("description", "ilike", "%therapy%")
     .not("description", "ilike", "%Milwaukee%")
+    .not("output_data->>content", "ilike", "%MindStar%")
+    .not("output_data->>content", "ilike", "%(414)%")
     .order("created_at", { ascending: true });
 
   // Fetch recently processed (last 20) — scoped to AK Dental
@@ -26,6 +28,8 @@ export default async function ApprovalsPage() {
     .not("description", "ilike", "%MindStar%")
     .not("description", "ilike", "%counseling%")
     .not("description", "ilike", "%therapy%")
+    .not("output_data->>content", "ilike", "%MindStar%")
+    .not("output_data->>content", "ilike", "%(414)%")
     .order("created_at", { ascending: false })
     .limit(20);
 

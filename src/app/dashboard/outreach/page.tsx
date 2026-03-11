@@ -2,6 +2,8 @@ export const dynamic = "force-dynamic";
 
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { OutreachClient } from "./outreach-client";
+import { SectionHub } from "@/components/dashboard/section-hub";
+import { MessageSquare, Send, Mail, BookTemplate, FolderOpen } from "lucide-react";
 
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -175,8 +177,25 @@ export default async function OutreachPage() {
   const unsubscribeRate = delivered > 0 ? Math.round((thisMonthMsgs.filter((m) => m.unsubscribed).length / delivered) * 1000) / 10 : 0;
   const bounceRate = totalSent > 0 ? Math.round(((totalSent - delivered) / totalSent) * 1000) / 10 : 0;
 
+  const inboxHubLinks = [
+    { label: "Messages", href: "/dashboard/inbox", icon: MessageSquare, description: "Conversations & patient messages" },
+    { label: "Outreach", href: "/dashboard/outreach", icon: Send, description: "Campaigns & workflows" },
+    { label: "Email", href: "/dashboard/email", icon: Mail, description: "AI drafts & bill detection" },
+    { label: "Templates", href: "/dashboard/message-templates", icon: BookTemplate, description: "Message templates" },
+    { label: "Dropbox", href: "/dashboard/dropbox", icon: FolderOpen, description: "AI file processing" },
+  ];
+
   return (
-    <OutreachClient
+    <>
+      <SectionHub
+        title="Inbox"
+        description="Messages, outreach, email, templates, and documents"
+        icon={Send}
+        iconBg="bg-cyan-50"
+        iconColor="text-cyan-600"
+        links={inboxHubLinks}
+      />
+      <OutreachClient
       initialWorkflows={workflows}
       analytics={{
         totalSent,
@@ -197,5 +216,6 @@ export default async function OutreachPage() {
         bounceRate,
       }}
     />
+    </>
   );
 }

@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import {
   MessageSquare, CheckCircle, Clock, AlertTriangle,
-  Mail, Phone, ChevronDown, ChevronUp, Send, Edit3, Check,
+  Mail, Phone, ChevronDown, ChevronUp, Send, Edit3, Check, Plus, X,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -195,10 +195,21 @@ function TemplateCard({ template, onApprove, onEdit, onTestSend }: {
   );
 }
 
+interface NewTemplateForm {
+  label: string;
+  group: TemplateGroup;
+  channel: string;
+  subject: string;
+  body: string;
+}
+
 export function MessageTemplatesClient({ templates: initialTemplates, totalCount }: Props) {
   const [templates, setTemplates] = useState(initialTemplates);
   const [isPending, startTransition] = useTransition();
   const [recentlyEdited, setRecentlyEdited] = useState<Set<string>>(new Set());
+  const [showNewModal, setShowNewModal] = useState(false);
+  const [newForm, setNewForm] = useState<NewTemplateForm>({ label: "", group: "Scheduling", channel: "sms", subject: "", body: "" });
+  const [savingNew, setSavingNew] = useState(false);
 
   const approvedCount = templates.filter((t) => t.approved).length;
   const unapprovedCount = totalCount - approvedCount;
@@ -252,7 +263,128 @@ export function MessageTemplatesClient({ templates: initialTemplates, totalCount
     }
   };
 
+  const handleSaveNew = async () => {
+    if (!newForm.label.trim() || !newForm.body.trim()) {
+      toast.error("Template name and message body are required");
+      return;
+    }
+    setSavingNew(true);
+    try {
+      const res = await fetch("/api/message-templates/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newForm),
+      });
+      if (res.ok) {
+        const created = await res.json();
+        setTemplates((prev) => [...prev, {
+          id: created.id || null,
+          type: created.type || `custom_${Date.now()}`,
+          label: newForm.label,
+          group: newForm.group,
+          channel: newForm.channel,
+          subject: newForm.subject || undefined,
+          body: newForm.body,
+          approved: false,
+          approved_at: null,
+          approved_by: null,
+          requiresApproval: false,
+        }]);
+        toast.success("Template created");
+        setShowNewModal(false);
+        setNewForm({ label: "", group: "Scheduling", channel: "sms", subject: "", body: "" });
+      } else {
+        toast.error("Failed to create template — the create endpoint is not yet connected");
+      }
+    } catch {
+      toast.error("Failed to create template — the create endpoint is not yet connected");
+    } finally {
+      setSavingNew(false);
+    }
+  };
+
   return (
+    <>
+    {/* New Template Modal */}
+    {showNewModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+        <div className="w-full max-w-lg rounded-2xl bg-white shadow-2xl">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+            <h2 className="text-base font-semibold text-slate-900">New Template</h2>
+            <button onClick={() => setShowNewModal(false)} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="p-6 space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Template Name</label>
+              <input
+                type="text"
+                value={newForm.label}
+                onChange={(e) => setNewForm((f) => ({ ...f, label: e.target.value }))}
+                placeholder="e.g. Post-Treatment Check-In"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500/20"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                <select
+                  value={newForm.group}
+                  onChange={(e) => setNewForm((f) => ({ ...f, group: e.target.value as TemplateGroup }))}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                >
+                  {(["Scheduling", "Patient Intake", "No-Show Recovery", "Recall & Reactivation", "Review & Referral", "Financial"] as TemplateGroup[]).map((g) => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Channel</label>
+                <select
+                  value={newForm.channel}
+                  onChange={(e) => setNewForm((f) => ({ ...f, channel: e.target.value }))}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                >
+                  <option value="sms">SMS</option>
+                  <option value="email">Email</option>
+                  <option value="both">Both</option>
+                </select>
+              </div>
+            </div>
+            {(newForm.channel === "email" || newForm.channel === "both") && (
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Subject Line</label>
+                <input
+                  type="text"
+                  value={newForm.subject}
+                  onChange={(e) => setNewForm((f) => ({ ...f, subject: e.target.value }))}
+                  placeholder="Email subject..."
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500/20"
+                />
+              </div>
+            )}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Message Body</label>
+              <Textarea
+                value={newForm.body}
+                onChange={(e) => setNewForm((f) => ({ ...f, body: e.target.value }))}
+                rows={4}
+                placeholder="Hi {{patient_name}}, ..."
+                className="text-sm"
+              />
+              <p className="text-xs text-slate-400 mt-1">Merge fields: {"{{patient_name}}"} {"{{appointment_date}}"} {"{{appointment_time}}"} {"{{provider_name}}"}</p>
+            </div>
+          </div>
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100">
+            <Button variant="outline" size="sm" onClick={() => setShowNewModal(false)}>Cancel</Button>
+            <Button size="sm" onClick={handleSaveNew} disabled={savingNew} className="bg-cyan-600 hover:bg-cyan-700 text-white">
+              {savingNew ? "Saving..." : "Create Template"}
+            </Button>
+          </div>
+        </div>
+      </div>
+    )}
     <div className="p-6 max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
@@ -265,9 +397,17 @@ export function MessageTemplatesClient({ templates: initialTemplates, totalCount
             Review and approve all patient communications before they go live.
           </p>
         </div>
-        <div className="text-right shrink-0">
-          <div className="text-2xl font-bold text-slate-900">{approvedCount}<span className="text-slate-400 text-lg">/{totalCount}</span></div>
-          <div className="text-xs text-slate-500">Approved</div>
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            onClick={() => setShowNewModal(true)}
+            className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+          >
+            <Plus className="h-3.5 w-3.5" /> New Template
+          </button>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-slate-900">{approvedCount}<span className="text-slate-400 text-lg">/{totalCount}</span></div>
+            <div className="text-xs text-slate-500">Approved</div>
+          </div>
         </div>
       </div>
 
@@ -339,5 +479,6 @@ export function MessageTemplatesClient({ templates: initialTemplates, totalCount
         );
       })}
     </div>
+    </>
   );
 }

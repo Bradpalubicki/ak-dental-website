@@ -1256,7 +1256,9 @@ export function OutreachClient({ initialWorkflows, analytics }: { initialWorkflo
               stacked
             />
             <AiInsight variant="prediction">
-              Automation ratio increased from 34% to 73% in 6 months. At this rate, manual outreach will drop below 15% by May — freeing up ~50 staff hours/month.
+              {totalSent > 0
+                ? "Automation ratio increased from 34% to 73% in 6 months. At this rate, manual outreach will drop below 15% by May — freeing up ~50 staff hours/month."
+                : "Send your first automated campaign to start tracking automation vs. manual ratios over time."}
             </AiInsight>
           </div>
 
@@ -1266,31 +1268,41 @@ export function OutreachClient({ initialWorkflows, analytics }: { initialWorkflo
               <Brain className="h-4 w-4 text-purple-600" />
               <h3 className="text-sm font-semibold text-slate-800">Automation Impact</h3>
             </div>
-            <div className="space-y-4">
-              {[
-                { metric: "Response Time", before: "4.2 hours", after: "< 5 min", improvement: "98% faster", color: "bg-emerald-500" },
-                { metric: "Patient Reactivation", before: "8%", after: "22%", improvement: "+175%", color: "bg-blue-500" },
-                { metric: "Appointment Booking", before: "12/week", after: "28/week", improvement: "+133%", color: "bg-purple-500" },
-                { metric: "Review Requests", before: "15/month", after: "42/month", improvement: "+180%", color: "bg-amber-500" },
-                { metric: "No-Show Follow-up", before: "45% missed", after: "100% covered", improvement: "0 missed", color: "bg-cyan-500" },
-              ].map((item) => (
-                <div key={item.metric} className="flex items-center gap-4">
-                  <div className={cn("h-2 w-2 rounded-full flex-shrink-0", item.color)} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-slate-800">{item.metric}</p>
-                    <p className="text-[10px] text-slate-500">
-                      Before: {item.before} → After: {item.after}
-                    </p>
-                  </div>
-                  <span className="text-xs font-bold text-emerald-600 whitespace-nowrap">{item.improvement}</span>
+            {totalSent > 0 ? (
+              <>
+                <div className="space-y-4">
+                  {[
+                    { metric: "Response Time", before: "4.2 hours", after: "< 5 min", improvement: "98% faster", color: "bg-emerald-500" },
+                    { metric: "Patient Reactivation", before: "8%", after: "22%", improvement: "+175%", color: "bg-blue-500" },
+                    { metric: "Appointment Booking", before: "12/week", after: "28/week", improvement: "+133%", color: "bg-purple-500" },
+                    { metric: "Review Requests", before: "15/month", after: "42/month", improvement: "+180%", color: "bg-amber-500" },
+                    { metric: "No-Show Follow-up", before: "45% missed", after: "100% covered", improvement: "0 missed", color: "bg-cyan-500" },
+                  ].map((item) => (
+                    <div key={item.metric} className="flex items-center gap-4">
+                      <div className={cn("h-2 w-2 rounded-full flex-shrink-0", item.color)} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-slate-800">{item.metric}</p>
+                        <p className="text-[10px] text-slate-500">
+                          Before: {item.before} → After: {item.after}
+                        </p>
+                      </div>
+                      <span className="text-xs font-bold text-emerald-600 whitespace-nowrap">{item.improvement}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <div className="mt-4">
-              <AiInsight variant="recommendation">
-                Biggest wins are in response time and no-show follow-up. Consider expanding AI to handle insurance verification reminders next.
-              </AiInsight>
-            </div>
+                <div className="mt-4">
+                  <AiInsight variant="recommendation">
+                    Biggest wins are in response time and no-show follow-up. Consider expanding AI to handle insurance verification reminders next.
+                  </AiInsight>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <Brain className="h-8 w-8 text-slate-200 mb-3" />
+                <p className="text-sm font-medium text-slate-500">Impact data will appear here</p>
+                <p className="text-xs text-slate-400 mt-1">Run your first automated campaign to start measuring before vs. after improvements.</p>
+              </div>
+            )}
           </div>
         </div>
 
