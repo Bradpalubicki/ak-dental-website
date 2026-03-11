@@ -259,6 +259,9 @@ export function BillingClient({ data, analytics }: { data: BillingData; analytic
   const [appealLetter, setAppealLetter] = useState("");
   const [generatingAppeal, setGeneratingAppeal] = useState(false);
   const [appealCopied, setAppealCopied] = useState(false);
+  const [expandedClaimId, setExpandedClaimId] = useState<string | null>(null);
+  const [followUpClaim, setFollowUpClaim] = useState<BillingClaim | null>(null);
+  const [followUpNote, setFollowUpNote] = useState("");
 
   const collectionRate = totalBilled > 0 ? ((totalCollected / totalBilled) * 100) : 0;
   const deniedCount = claims.filter((c) => c.status === "denied" || c.status === "appealed").length;
@@ -456,26 +459,30 @@ export function BillingClient({ data, analytics }: { data: BillingData; analytic
               sparkColor="#2563eb"
               accentColor="#2563eb"
             />
-            <StatCard
-              title="Outstanding A/R"
-              value={formatCurrency(totalOutstanding)}
-              change={`${unpaid.length} claims`}
-              trend="neutral"
-              icon={Wallet}
-              iconColor="bg-amber-50 text-amber-600"
-              accentColor="#d97706"
-              pulse={totalOutstanding > 50000}
-            />
-            <StatCard
-              title="Denied Claims"
-              value={deniedCount.toString()}
-              change={`${denialRate.toFixed(1)}% denial rate`}
-              trend={denialRate <= 5 ? "up" : "down"}
-              icon={XCircle}
-              iconColor="bg-red-50 text-red-600"
-              accentColor="#dc2626"
-              pulse={deniedCount > 0}
-            />
+            <button onClick={() => { setActiveTab("aging"); }} className="text-left">
+              <StatCard
+                title="Outstanding A/R"
+                value={formatCurrency(totalOutstanding)}
+                change={`${unpaid.length} claims`}
+                trend="neutral"
+                icon={Wallet}
+                iconColor="bg-amber-50 text-amber-600"
+                accentColor="#d97706"
+                pulse={totalOutstanding > 50000}
+              />
+            </button>
+            <button onClick={() => { setActiveTab("claims"); setClaimFilter("denied"); }} className="text-left">
+              <StatCard
+                title="Denied Claims"
+                value={deniedCount.toString()}
+                change={`${denialRate.toFixed(1)}% denial rate`}
+                trend={denialRate <= 5 ? "up" : "down"}
+                icon={XCircle}
+                iconColor="bg-red-50 text-red-600"
+                accentColor="#dc2626"
+                pulse={deniedCount > 0}
+              />
+            </button>
             <StatCard
               title="Avg Days to Pay"
               value={`${avgAgingDays}d`}
@@ -779,6 +786,12 @@ export function BillingClient({ data, analytics }: { data: BillingData; analytic
                   <Download className="h-3 w-3" />
                   CSV
                 </button>
+                <button
+                  onClick={() => alert("New claim form coming soon — connect your billing system to auto-create claims from treatments.")}
+                  className="flex items-center gap-1.5 rounded-lg bg-cyan-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-cyan-700 transition-colors"
+                >
+                  + New Claim
+                </button>
               </div>
             </div>
 
@@ -809,8 +822,10 @@ export function BillingClient({ data, analytics }: { data: BillingData; analytic
                       const config = statusConfig[claim.status] || statusConfig.pending;
                       const StatusIcon = config.icon;
                       const needsAction = claim.status === "denied" || claim.status === "appealed";
+                      const isExpanded = expandedClaimId === claim.id;
                       return (
-                        <tr key={claim.id} className="hover:bg-slate-50/50 transition-colors">
+                        <>
+                        <tr key={claim.id} className="hover:bg-slate-50/50 transition-colors cursor-pointer" onClick={() => setExpandedClaimId(isExpanded ? null : claim.id)}>
                           <td className="px-6 py-3">
                             <span className="font-mono text-xs text-slate-600">{claim.claim_number || "—"}</span>
                           </td>
@@ -859,7 +874,7 @@ export function BillingClient({ data, analytics }: { data: BillingData; analytic
                               {claim.aging_days || 0}d
                             </span>
                           </td>
-                          <td className="px-6 py-3 text-center">
+                          <td className="px-6 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                             {needsAction ? (
                               <button
                                 onClick={() => openAppeal(claim)}
@@ -868,7 +883,10 @@ export function BillingClient({ data, analytics }: { data: BillingData; analytic
                                 <Brain className="h-3 w-3" /> Draft Appeal
                               </button>
                             ) : claim.status === "pending" || claim.status === "submitted" ? (
-                              <button className="inline-flex items-center gap-1 rounded-md bg-blue-50 border border-blue-200 px-2 py-1 text-[10px] font-semibold text-blue-700 hover:bg-blue-100 transition-colors">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setFollowUpClaim(claim); setFollowUpNote(""); }}
+                                className="inline-flex items-center gap-1 rounded-md bg-blue-50 border border-blue-200 px-2 py-1 text-[10px] font-semibold text-blue-700 hover:bg-blue-100 transition-colors"
+                              >
                                 Follow Up
                               </button>
                             ) : (
@@ -876,6 +894,36 @@ export function BillingClient({ data, analytics }: { data: BillingData; analytic
                             )}
                           </td>
                         </tr>
+                        {isExpanded && (
+                          <tr className="bg-slate-50/60">
+                            <td colSpan={8} className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                                <div>
+                                  <p className="text-slate-400 font-medium uppercase tracking-wider mb-1">Submitted</p>
+                                  <p className="text-slate-700">{new Date(claim.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
+                                </div>
+                                <div>
+                                  <p className="text-slate-400 font-medium uppercase tracking-wider mb-1">Procedures</p>
+                                  <p className="text-slate-700">{Array.isArray(claim.procedure_codes) ? claim.procedure_codes.join(", ") : "—"}</p>
+                                </div>
+                                {claim.denial_reason && (
+                                  <div>
+                                    <p className="text-slate-400 font-medium uppercase tracking-wider mb-1">Denial Reason</p>
+                                    <p className="text-red-600">{claim.denial_reason}</p>
+                                  </div>
+                                )}
+                                <div>
+                                  <p className="text-slate-400 font-medium uppercase tracking-wider mb-1">Balance</p>
+                                  <p className="text-slate-700 font-semibold">{formatCurrency(Number(claim.billed_amount || 0) - Number(claim.insurance_paid || 0))}</p>
+                                </div>
+                              </div>
+                              {claim.notes && (
+                                <p className="mt-3 text-xs text-slate-500 italic border-t border-slate-100 pt-3">{claim.notes}</p>
+                              )}
+                            </td>
+                          </tr>
+                        )}
+                        </>
                       );
                     })}
                   </tbody>
@@ -1380,6 +1428,56 @@ export function BillingClient({ data, analytics }: { data: BillingData; analytic
                   {appealCopied ? "Copied!" : "Copy Letter"}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Follow Up Modal */}
+      {followUpClaim && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">Follow Up — {followUpClaim.claim_number || "Claim"}</h3>
+                <p className="text-xs text-slate-400 mt-0.5">{followUpClaim.insurance_provider} · {formatCurrency(Number(followUpClaim.billed_amount))}</p>
+              </div>
+              <button onClick={() => setFollowUpClaim(null)} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100">
+                <XCircle className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="px-6 py-4 space-y-3">
+              <p className="text-xs text-slate-500">Choose a follow-up action:</p>
+              <div className="grid grid-cols-2 gap-2">
+                {["Log call to carrier", "Re-submit claim", "File appeal", "Send to collections", "Request EOB", "Mark as resolved"].map((action) => (
+                  <button
+                    key={action}
+                    onClick={() => { setFollowUpNote(action); }}
+                    className={`rounded-lg border px-3 py-2 text-xs font-medium text-left transition-colors ${followUpNote === action ? "border-cyan-400 bg-cyan-50 text-cyan-700" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}
+                  >
+                    {action}
+                  </button>
+                ))}
+              </div>
+              <textarea
+                value={followUpNote && !["Log call to carrier","Re-submit claim","File appeal","Send to collections","Request EOB","Mark as resolved"].includes(followUpNote) ? followUpNote : ""}
+                onChange={(e) => setFollowUpNote(e.target.value)}
+                placeholder="Add notes (optional)..."
+                rows={2}
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs focus:border-cyan-400 focus:outline-none"
+              />
+            </div>
+            <div className="flex justify-end gap-2 border-t border-slate-100 px-6 py-4">
+              <button onClick={() => setFollowUpClaim(null)} className="rounded-lg border border-slate-200 px-4 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50">
+                Cancel
+              </button>
+              <button
+                onClick={() => { alert(`Follow-up logged: ${followUpNote || "No action selected"}`); setFollowUpClaim(null); }}
+                disabled={!followUpNote}
+                className="rounded-lg bg-cyan-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-cyan-700 disabled:opacity-50"
+              >
+                Log Follow-Up
+              </button>
             </div>
           </div>
         </div>

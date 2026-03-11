@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Shield,
   Search,
@@ -86,15 +86,21 @@ const emptyForm = {
   notes: "",
 };
 
+interface PatientOption {
+  id: string;
+  name: string;
+}
+
 interface Props {
   initialVerifications: Verification[];
   dbCarriers?: string[];
+  patients?: PatientOption[];
 }
 
-export function InsuranceClient({ initialVerifications, dbCarriers }: Props) {
+export function InsuranceClient({ initialVerifications, dbCarriers, patients = [] }: Props) {
   const [verifications, setVerifications] = useState(initialVerifications);
   const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState<"verifications" | "carriers" | "benefits">("verifications");
+  const [activeTab, setActiveTab] = useState<"verifications" | "carriers">("verifications");
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
@@ -103,6 +109,13 @@ export function InsuranceClient({ initialVerifications, dbCarriers }: Props) {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [verifying, setVerifying] = useState<string | null>(null);
   const [docRefreshKey, setDocRefreshKey] = useState(0);
+  const [patientSearch, setPatientSearch] = useState("");
+  const [showPatientDropdown, setShowPatientDropdown] = useState(false);
+
+  const filteredPatients = useMemo(() => {
+    if (!patientSearch) return patients.slice(0, 20);
+    return patients.filter((p) => p.name.toLowerCase().includes(patientSearch.toLowerCase())).slice(0, 20);
+  }, [patients, patientSearch]);
 
   const filtered = verifications.filter(
     (v) =>
@@ -274,14 +287,40 @@ export function InsuranceClient({ initialVerifications, dbCarriers }: Props) {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Patient ID *</label>
-                <input
-                  required
-                  value={form.patient_id}
-                  onChange={(e) => setForm({ ...form, patient_id: e.target.value })}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
-                  placeholder="Patient UUID"
-                />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Patient *</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={patientSearch}
+                    onChange={(e) => { setPatientSearch(e.target.value); setShowPatientDropdown(true); }}
+                    onFocus={() => setShowPatientDropdown(true)}
+                    placeholder="Search patient name..."
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                  />
+                  {form.patient_id && (
+                    <div className="mt-1 flex items-center gap-1">
+                      <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+                      <span className="text-xs text-emerald-600">{patientSearch}</span>
+                      <button type="button" onClick={() => { setForm({ ...form, patient_id: "" }); setPatientSearch(""); }} className="ml-1 text-slate-400 hover:text-red-500">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
+                  {showPatientDropdown && filteredPatients.length > 0 && !form.patient_id && (
+                    <div className="absolute z-10 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-lg max-h-40 overflow-y-auto">
+                      {filteredPatients.map((p) => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => { setForm({ ...form, patient_id: p.id }); setPatientSearch(p.name); setShowPatientDropdown(false); }}
+                          className="w-full px-3 py-2 text-left text-sm hover:bg-cyan-50 hover:text-cyan-700 transition-colors"
+                        >
+                          {p.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Insurance Provider *</label>
@@ -377,7 +416,6 @@ export function InsuranceClient({ initialVerifications, dbCarriers }: Props) {
         {[
           { key: "verifications" as const, label: "Patient Verifications", icon: Shield, count: verifications.length },
           { key: "carriers" as const, label: "Insurance Carriers", icon: Building2, count: carriers.length },
-          { key: "benefits" as const, label: "Employee Benefits", icon: Gift, count: employeeBenefits.length },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -587,58 +625,6 @@ export function InsuranceClient({ initialVerifications, dbCarriers }: Props) {
                 <div>
                   <p className="text-sm font-semibold text-cyan-900">Carrier API Integration</p>
                   <p className="text-xs text-cyan-700/70 mt-1">One Engine connects directly to Dentrix eClaims (DentalXChange) for real-time eligibility verification, electronic claim submission, and ERA auto-posting. Activate in Settings → Integrations.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* TAB: Employee Benefits */}
-      {activeTab === "benefits" && (
-        <div className="rounded-2xl border border-slate-200/80 bg-white shadow-sm">
-          <div className="border-b border-slate-100 px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-sm font-bold text-slate-900">Employee Benefits Package</h2>
-                <p className="text-[11px] text-slate-400">Benefits offered to AK Ultimate Dental team members</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="px-6 py-4 border-b border-slate-50">
-            <div className="rounded-xl bg-slate-50 p-4">
-              <p className="text-sm text-slate-600">
-                <span className="font-semibold">Note:</span> AK Ultimate Dental does not currently offer group health insurance to employees. Below are the benefits and perks currently provided to the team.
-              </p>
-            </div>
-          </div>
-
-          <div className="divide-y divide-slate-50">
-            {employeeBenefits.map((benefit) => (
-              <div key={benefit.benefit} className="flex items-start gap-4 px-6 py-4 hover:bg-slate-50/50 transition-colors">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50">
-                  <Gift className="h-5 w-5 text-emerald-600" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-slate-900">{benefit.benefit}</p>
-                    <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-emerald-200/50">{benefit.status}</span>
-                  </div>
-                  <p className="text-xs text-slate-500 mt-1">{benefit.description}</p>
-                  <p className="text-[11px] text-slate-400 mt-1">Eligible: {benefit.eligible}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="border-t border-slate-100 px-6 py-4">
-            <div className="rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/30 p-4">
-              <div className="flex items-start gap-3">
-                <Sparkles className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-sm font-semibold text-amber-900">One Engine Recommendation</p>
-                  <p className="text-xs text-amber-700/70 mt-1">Consider adding a group dental HMO/PPO plan through a carrier like Guardian or MetLife. As a contracted provider, your team gets treated at your practice at no cost, while the insurance benefit becomes a recruiting tool. Estimated employer cost: $85-150/employee/month.</p>
                 </div>
               </div>
             </div>

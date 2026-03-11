@@ -11,7 +11,6 @@ export default async function InsurancePage() {
     .select(
       "*, patient:oe_patients(first_name, last_name), appointment:oe_appointments(appointment_date, appointment_time)"
     )
-    .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .limit(50);
 
@@ -48,5 +47,17 @@ export default async function InsurancePage() {
 
   const carriers = (carriersData || []).map((c) => c.name as string);
 
-  return <InsuranceClient initialVerifications={verifications} dbCarriers={carriers} />;
+  const { data: patientsData } = await supabase
+    .from("oe_patients")
+    .select("id, first_name, last_name")
+    .eq("status", "active")
+    .order("last_name")
+    .limit(500);
+
+  const patients = (patientsData || []).map((p: { id: string; first_name: string; last_name: string }) => ({
+    id: p.id,
+    name: `${p.first_name} ${p.last_name}`,
+  }));
+
+  return <InsuranceClient initialVerifications={verifications} dbCarriers={carriers} patients={patients} />;
 }

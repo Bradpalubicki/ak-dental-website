@@ -20,20 +20,14 @@ export default async function FinancialsPage() {
   const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1).toISOString().split("T")[0];
   const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
 
-  const [metricsResult, claimsResult, expensesResult, apResult, settingsResult] = await Promise.all([
-    // Last 6 months of daily metrics for revenue charts
-    supabase
-      .from("oe_daily_metrics")
-      .select("date, production, collections")
-      .gte("date", sixMonthsAgo)
-      .order("date", { ascending: true }),
-
-    // All unpaid claims for AR aging
+  const [claimsResult, expensesResult, apResult, settingsResult] = await Promise.all([
+    // All claims for AR aging + revenue derivation
     supabase
       .from("oe_billing_claims")
       .select("*, oe_patients(first_name, last_name)")
+      .gte("created_at", sixMonthsAgo)
       .order("aging_days", { ascending: false })
-      .limit(200),
+      .limit(500),
 
     // Current month expenses
     supabase
@@ -57,14 +51,15 @@ export default async function FinancialsPage() {
       .single(),
   ]);
 
-  // Build monthly revenue from daily metrics
+  // Build monthly revenue from billing claims (same source as Billing dashboard)
+  const allClaims = (claimsResult.data || []) as (BillingClaim & { oe_patients?: { first_name: string; last_name: string } })[];
   const monthlyMap = new Map<string, { production: number; collections: number }>();
-  for (const m of metricsResult.data || []) {
-    const d = new Date(m.date + "T12:00:00");
+  for (const c of allClaims) {
+    const d = new Date(c.created_at);
     const key = `${d.getFullYear()}-${d.getMonth()}`;
     const existing = monthlyMap.get(key) || { production: 0, collections: 0 };
-    existing.production += Number(m.production || 0);
-    existing.collections += Number(m.collections || 0);
+    existing.production += Number(c.billed_amount || 0);
+    existing.collections += Number(c.insurance_paid || 0);
     monthlyMap.set(key, existing);
   }
 
@@ -88,8 +83,7 @@ export default async function FinancialsPage() {
   const currentMonth = monthlyMap.get(currentMonthKey) || { production: 0, collections: 0 };
 
   // AR aging from claims
-  const claims = (claimsResult.data || []) as (BillingClaim & { oe_patients?: { first_name: string; last_name: string } })[];
-  const unpaid = claims.filter((c) => c.status !== "paid" && c.status !== "written_off");
+  const unpaid = allClaims.filter((c) => c.status !== "paid" && c.status !== "written_off");
 
   const bucketAmounts = { "0-30 days": 0, "31-60 days": 0, "61-90 days": 0, "90+ days": 0 };
   for (const c of unpaid) {
@@ -184,16 +178,22 @@ export default async function FinancialsPage() {
   // Net income
   const netIncome = currentMonth.collections - totalExpenses;
 
-  // Daily collections (last 7 days from daily metrics)
+  // Daily collections — derive from claims created in the last 7 days
   const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const last7Days = (metricsResult.data || []).slice(-7);
-  const dailyCollections = last7Days.map((m) => {
-    const d = new Date(m.date + "T12:00:00");
-    return {
-      name: DAY_NAMES[d.getDay()],
-      amount: Number(m.collections || 0),
-      target: dailyTarget,
-    };
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const dailyMap = new Map<string, number>();
+  for (const c of allClaims) {
+    const d = new Date(c.created_at);
+    if (d >= sevenDaysAgo) {
+      const key = d.toISOString().split("T")[0];
+      dailyMap.set(key, (dailyMap.get(key) || 0) + Number(c.insurance_paid || 0));
+    }
+  }
+  // Build last 7 days array
+  const dailyCollections = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(now.getTime() - (6 - i) * 24 * 60 * 60 * 1000);
+    const key = d.toISOString().split("T")[0];
+    return { name: DAY_NAMES[d.getDay()], amount: dailyMap.get(key) || 0, target: dailyTarget };
   });
 
   // Collection rate trend (from monthly prod vs collections)
