@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRealtimeAppointments } from "@/hooks/use-realtime-appointments";
 import {
   Calendar,
@@ -92,13 +92,37 @@ interface Props {
 
 export function AppointmentsClient({ initialAppointments, today }: Props) {
   const [appointments, setAppointments] = useState(initialAppointments);
-  const [view, setView] = useState<"list" | "schedule">("list");
+
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ ...emptyForm, appointment_date: today });
   const [saving, setSaving] = useState(false);
   const [showTrash, setShowTrash] = useState(false);
   const [trashItems, setTrashItems] = useState<AppointmentRow[]>([]);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [currentDate, setCurrentDate] = useState(today);
+
+  // Patient search autocomplete
+  const [patientQuery, setPatientQuery] = useState("");
+  const [patientResults, setPatientResults] = useState<{ id: string; name: string; phone: string }[]>([]);
+  const [patientSearching, setPatientSearching] = useState(false);
+  const patientInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!patientQuery || patientQuery.length < 2) { setPatientResults([]); return; }
+    const t = setTimeout(async () => {
+      setPatientSearching(true);
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(patientQuery)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setPatientResults(data.filter((r: { type: string }) => r.type === "patient").map((r: { label: string; sub: string; href: string }) => ({
+            id: r.href, name: r.label, phone: r.sub,
+          })));
+        }
+      } finally { setPatientSearching(false); }
+    }, 250);
+    return () => clearTimeout(t);
+  }, [patientQuery]);
 
   // Realtime: live updates from Supabase postgres_changes
   const handleRealtimeInsert = useCallback((row: AppointmentRow) => {
@@ -124,22 +148,28 @@ export function AppointmentsClient({ initialAppointments, today }: Props) {
     onDelete: handleRealtimeDelete,
   });
 
-  const todayAppointments = appointments.filter((a) => a.date === today);
-  const futureAppointments = appointments.filter((a) => a.date > today);
+  const currentAppointments = appointments.filter((a) => a.date === currentDate);
+  const futureAppointments = appointments.filter((a) => a.date > currentDate);
 
   const stats = {
-    total: todayAppointments.length,
-    confirmed: todayAppointments.filter((a) => a.status === "confirmed").length,
-    unconfirmed: todayAppointments.filter((a) => a.status === "scheduled").length,
-    checkedIn: todayAppointments.filter((a) => a.status === "checked_in").length,
+    total: currentAppointments.length,
+    confirmed: currentAppointments.filter((a) => a.status === "confirmed").length,
+    unconfirmed: currentAppointments.filter((a) => a.status === "scheduled").length,
+    checkedIn: currentAppointments.filter((a) => a.status === "checked_in").length,
   };
 
-  const todayFormatted = new Date(today + "T12:00:00").toLocaleDateString("en-US", {
+  const currentFormatted = new Date(currentDate + "T12:00:00").toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",
     day: "numeric",
     year: "numeric",
   });
+
+  function navigateDate(dir: -1 | 1) {
+    const d = new Date(currentDate + "T12:00:00");
+    d.setDate(d.getDate() + dir);
+    setCurrentDate(d.toISOString().split("T")[0]);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -241,24 +271,6 @@ export function AppointmentsClient({ initialAppointments, today }: Props) {
           >
             <Trash2 className="h-4 w-4" /> Trash
           </button>
-          <div className="flex rounded-lg border border-slate-200">
-            <button
-              onClick={() => setView("list")}
-              className={`px-3 py-1.5 text-sm font-medium ${
-                view === "list" ? "bg-slate-100 text-slate-900" : "text-slate-500"
-              }`}
-            >
-              List
-            </button>
-            <button
-              onClick={() => setView("schedule")}
-              className={`px-3 py-1.5 text-sm font-medium ${
-                view === "schedule" ? "bg-slate-100 text-slate-900" : "text-slate-500"
-              }`}
-            >
-              Schedule
-            </button>
-          </div>
           <button
             onClick={() => setShowForm(true)}
             className="flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700"
@@ -280,15 +292,41 @@ export function AppointmentsClient({ initialAppointments, today }: Props) {
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Patient ID *</label>
+              <div className="relative">
+                <label className="block text-sm font-medium text-slate-700 mb-1">Patient *</label>
                 <input
-                  required
-                  value={form.patient_id}
-                  onChange={(e) => setForm({ ...form, patient_id: e.target.value })}
+                  ref={patientInputRef}
+                  required={!form.patient_id}
+                  value={patientQuery}
+                  onChange={(e) => { setPatientQuery(e.target.value); if (!e.target.value) setForm({ ...form, patient_id: "" }); }}
                   className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
-                  placeholder="Enter patient UUID or search"
+                  placeholder="Search patient by name..."
                 />
+                {form.patient_id && (
+                  <span className="absolute right-3 top-8 text-[10px] text-emerald-600 font-medium">✓ Selected</span>
+                )}
+                {(patientResults.length > 0 || patientSearching) && (
+                  <div className="absolute top-full left-0 z-50 w-full rounded-lg border border-slate-200 bg-white shadow-lg overflow-hidden mt-0.5">
+                    {patientSearching && <div className="px-3 py-2 text-xs text-slate-400">Searching...</div>}
+                    {patientResults.map((p, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onMouseDown={() => {
+                          setForm({ ...form, patient_id: p.id });
+                          setPatientQuery(p.name);
+                          setPatientResults([]);
+                        }}
+                        className="flex w-full items-center gap-2 px-3 py-2 hover:bg-slate-50 text-left"
+                      >
+                        <div>
+                          <p className="text-xs font-medium text-slate-900">{p.name}</p>
+                          <p className="text-[10px] text-slate-400">{p.phone}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Type *</label>
@@ -376,31 +414,43 @@ export function AppointmentsClient({ initialAppointments, today }: Props) {
 
       {/* Date Navigation */}
       <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-6 py-3">
-        <button className="rounded-lg p-1 hover:bg-slate-100">
+        <button onClick={() => navigateDate(-1)} className="rounded-lg p-1 hover:bg-slate-100">
           <ChevronLeft className="h-5 w-5 text-slate-400" />
         </button>
-        <div className="text-center">
-          <p className="text-lg font-semibold text-slate-900">{todayFormatted}</p>
-          <div className="mt-1 flex items-center justify-center gap-4 text-sm text-slate-500">
-            <span>{stats.total} appointments</span>
-            <span className="text-emerald-600">{stats.confirmed} confirmed</span>
-            <span className="text-amber-600">{stats.unconfirmed} unconfirmed</span>
-            <span className="text-purple-600">{stats.checkedIn} checked in</span>
+        <div className="flex items-center gap-4">
+          {currentDate !== today && (
+            <button
+              onClick={() => setCurrentDate(today)}
+              className="rounded-lg border border-slate-200 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+            >
+              Today
+            </button>
+          )}
+          <div className="text-center">
+            <p className="text-lg font-semibold text-slate-900">{currentFormatted}</p>
+            <div className="mt-1 flex items-center justify-center gap-4 text-sm text-slate-500">
+              <span>{stats.total} appointments</span>
+              <span className="text-emerald-600">{stats.confirmed} confirmed</span>
+              <span className="text-amber-600">{stats.unconfirmed} unconfirmed</span>
+              <span className="text-purple-600">{stats.checkedIn} checked in</span>
+            </div>
           </div>
         </div>
-        <button className="rounded-lg p-1 hover:bg-slate-100">
+        <button onClick={() => navigateDate(1)} className="rounded-lg p-1 hover:bg-slate-100">
           <ChevronRight className="h-5 w-5 text-slate-400" />
         </button>
       </div>
 
-      {/* Today's Appointments */}
+      {/* Current Date Appointments */}
       <div className="rounded-xl border border-slate-200 bg-white">
         <div className="border-b border-slate-200 px-6 py-3">
-          <h2 className="text-sm font-semibold text-slate-700">Today</h2>
+          <h2 className="text-sm font-semibold text-slate-700">
+            {currentDate === today ? "Today" : new Date(currentDate + "T12:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
+          </h2>
         </div>
-        {todayAppointments.length > 0 ? (
+        {currentAppointments.length > 0 ? (
           <div className="divide-y divide-slate-100">
-            {todayAppointments.map((apt) => {
+            {currentAppointments.map((apt) => {
               const config = statusConfig[apt.status] || statusConfig.scheduled;
               const StatusIcon = config.icon;
               return (

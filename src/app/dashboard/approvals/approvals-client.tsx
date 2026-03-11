@@ -64,11 +64,44 @@ function getConfidenceColor(score: number | null): string {
 
 function getOutputContent(action: PendingAction): string {
   if (!action.outputData) return "";
-  if (typeof action.outputData === "string") return action.outputData;
+  if (typeof action.outputData === "string") {
+    // Try to parse JSON string and extract readable content
+    try {
+      const parsed = JSON.parse(action.outputData);
+      return parsed.sms_content || parsed.email_content || parsed.content || parsed.response || parsed.message || action.outputData;
+    } catch { return action.outputData; }
+  }
+  if (action.outputData.sms_content) return String(action.outputData.sms_content);
   if (action.outputData.response) return String(action.outputData.response);
   if (action.outputData.content) return String(action.outputData.content);
   if (action.outputData.message) return String(action.outputData.message);
-  return JSON.stringify(action.outputData, null, 2);
+  // Last resort — don't dump raw JSON, just return a summary
+  return "(No message content)";
+}
+
+function getSmsContent(action: PendingAction): string {
+  if (!action.outputData) return "";
+  const data = typeof action.outputData === "string" ? (() => { try { return JSON.parse(action.outputData); } catch { return {}; } })() : action.outputData;
+  return String(data.sms_content || data.sms || "");
+}
+
+function getEmailContent(action: PendingAction): string {
+  if (!action.outputData) return "";
+  const data = typeof action.outputData === "string" ? (() => { try { return JSON.parse(action.outputData); } catch { return {}; } })() : action.outputData;
+  return String(data.email_content || data.email || "");
+}
+
+function getContextSummary(action: PendingAction): string {
+  if (!action.inputData) return "";
+  const d = action.inputData;
+  const parts: string[] = [];
+  if (d.patient_name) parts.push(`Patient: ${d.patient_name}`);
+  else if (d.first_name) parts.push(`Patient: ${d.first_name} ${d.last_name || ""}`.trim());
+  if (d.channel) parts.push(`Channel: ${String(d.channel).toUpperCase()}`);
+  else if (d.sms_content || d.email_content) parts.push("Channel: SMS + Email");
+  if (d.trigger || d.reason) parts.push(`Trigger: ${d.trigger || d.reason}`);
+  if (d.appointment_type) parts.push(`Type: ${d.appointment_type}`);
+  return parts.join(" · ") || "AI-generated action";
 }
 
 function getModuleLabel(module: string): string {
@@ -315,35 +348,60 @@ export function ApprovalsClient({ pendingActions, recentActions }: Props) {
                   </div>
                 </div>
 
-                {/* Content preview */}
-                {content && (
-                  <div className="px-6 py-4">
-                    {isEditing ? (
-                      <textarea
-                        value={editText}
-                        onChange={(e) => setEditText(e.target.value)}
-                        rows={6}
-                        className="w-full rounded-lg border border-cyan-200 bg-white p-4 text-sm text-slate-700 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
-                      />
-                    ) : (
-                      <div className="rounded-lg bg-slate-50 p-4 text-sm text-slate-700 whitespace-pre-line">
-                        {content}
-                      </div>
-                    )}
-                  </div>
-                )}
+                {/* Content preview — split SMS / Email if available */}
+                <div className="px-6 py-4 space-y-3">
+                  {(() => {
+                    const sms = getSmsContent(action);
+                    const email = getEmailContent(action);
+                    if (sms || email) {
+                      return (
+                        <>
+                          {sms && (
+                            <div>
+                              <p className="text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">SMS Message</p>
+                              {isEditing ? (
+                                <textarea
+                                  value={editText}
+                                  onChange={(e) => setEditText(e.target.value)}
+                                  rows={3}
+                                  className="w-full rounded-lg border border-cyan-200 bg-white p-3 text-sm text-slate-700 focus:border-cyan-500 focus:outline-none"
+                                />
+                              ) : (
+                                <div className="rounded-lg bg-slate-50 p-3 text-sm text-slate-700 whitespace-pre-line">{sms}</div>
+                              )}
+                            </div>
+                          )}
+                          {email && (
+                            <div>
+                              <p className="text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Email Message</p>
+                              <div className="rounded-lg bg-slate-50 p-3 text-sm text-slate-700 whitespace-pre-line">{email}</div>
+                            </div>
+                          )}
+                        </>
+                      );
+                    }
+                    if (content && content !== "(No message content)") {
+                      return isEditing ? (
+                        <textarea
+                          value={editText}
+                          onChange={(e) => setEditText(e.target.value)}
+                          rows={5}
+                          className="w-full rounded-lg border border-cyan-200 bg-white p-3 text-sm text-slate-700 focus:border-cyan-500 focus:outline-none"
+                        />
+                      ) : (
+                        <div className="rounded-lg bg-slate-50 p-3 text-sm text-slate-700 whitespace-pre-line">{content}</div>
+                      );
+                    }
+                    return null;
+                  })()}
+                </div>
 
-                {/* Context from input data */}
+                {/* Context summary — human-readable, no raw PII/JSON */}
                 {action.inputData && (
-                  <div className="px-6 pb-2">
-                    <details className="text-xs text-slate-400">
-                      <summary className="cursor-pointer hover:text-slate-600">
-                        View context
-                      </summary>
-                      <pre className="mt-2 rounded-lg bg-slate-50 p-3 overflow-auto">
-                        {JSON.stringify(action.inputData, null, 2)}
-                      </pre>
-                    </details>
+                  <div className="px-6 pb-3">
+                    <p className="text-xs text-slate-400">
+                      {getContextSummary(action)}
+                    </p>
                   </div>
                 )}
 

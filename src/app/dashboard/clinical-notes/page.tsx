@@ -41,7 +41,6 @@ export default async function ClinicalNotesPage() {
       supabase
         .from("oe_patients")
         .select("id, first_name, last_name")
-        .is("deleted_at", null)
         .eq("status", "active")
         .order("last_name")
         .limit(500),

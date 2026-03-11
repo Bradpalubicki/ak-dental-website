@@ -943,8 +943,7 @@ export function ProvidersClient({ initialProviders, initialReferrals, stats }: P
               {hours.map((hour) => (
                 <tr key={hour}>
                   <td className="px-3 py-2 text-xs text-slate-500 font-medium whitespace-nowrap border-r border-slate-100">
-                    {hour === 0 ? "12 AM" : hour <= 12 ? `${hour} AM` : `${hour - 12} PM`}
-                    {hour === 12 && " PM"}
+                    {hour === 0 ? "12 AM" : hour === 12 ? "12 PM" : hour < 12 ? `${hour} AM` : `${hour - 12} PM`}
                   </td>
                   {[1, 2, 3, 4, 5, 6].map((dayOfWeek) => (
                     <td key={dayOfWeek} className="px-1 py-1 border-r border-slate-50">

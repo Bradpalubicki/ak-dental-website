@@ -66,11 +66,11 @@ export function ComplianceClient({
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-          <Shield className="h-6 w-6 text-cyan-400" />
+        <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+          <Shield className="h-6 w-6 text-cyan-600" />
           HIPAA Compliance Center
         </h1>
-        <p className="text-slate-400 mt-1">
+        <p className="text-slate-500 mt-1">
           Audit logging, consent management, and data retention policies
         </p>
       </div>
@@ -104,15 +104,15 @@ export function ComplianceClient({
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-white/10 pb-0">
+      <div className="flex gap-1 border-b border-slate-200 pb-0">
         {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors ${
               activeTab === tab.id
-                ? "bg-white/10 text-white border-b-2 border-cyan-400"
-                : "text-slate-400 hover:text-white hover:bg-white/5"
+                ? "bg-cyan-50 text-cyan-700 border-b-2 border-cyan-500"
+                : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
             }`}
           >
             <tab.icon className="h-4 w-4" />

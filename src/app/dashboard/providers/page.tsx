@@ -19,7 +19,15 @@ export default async function ProvidersPage() {
       .limit(100),
   ]);
 
-  const providers = (providersRes.data || []) as Provider[];
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  const providers = (providersRes.data || []).map((p: any) => ({
+    ...p,
+    is_active: p.status === "active" || p.is_active === true,
+    accepting_new_patients: p.accepting_new_patients ?? true,
+    color: p.calendar_color || p.color || "#3b82f6",
+    title: p.credentials || p.title || "",
+  })) as Provider[];
+  /* eslint-enable @typescript-eslint/no-explicit-any */
   const referrals = (referralsRes.data || []) as Referral[];
 
   const stats = {

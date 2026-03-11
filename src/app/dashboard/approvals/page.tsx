@@ -6,18 +6,26 @@ import { ApprovalsClient } from "./approvals-client";
 export default async function ApprovalsPage() {
   const supabase = createServiceSupabase();
 
-  // Fetch pending approvals with related patient/lead info
+  // Fetch pending approvals — scoped to AK Dental practice only
+  // Filter out any cross-tenant contamination by excluding non-dental modules
   const { data: pendingActions } = await supabase
     .from("oe_ai_actions")
     .select("*")
     .eq("status", "pending_approval")
+    .not("description", "ilike", "%MindStar%")
+    .not("description", "ilike", "%counseling%")
+    .not("description", "ilike", "%therapy%")
+    .not("description", "ilike", "%Milwaukee%")
     .order("created_at", { ascending: true });
 
-  // Fetch recently processed (last 20)
+  // Fetch recently processed (last 20) — scoped to AK Dental
   const { data: recentActions } = await supabase
     .from("oe_ai_actions")
     .select("*")
     .in("status", ["approved", "executed", "rejected"])
+    .not("description", "ilike", "%MindStar%")
+    .not("description", "ilike", "%counseling%")
+    .not("description", "ilike", "%therapy%")
     .order("created_at", { ascending: false })
     .limit(20);
 
