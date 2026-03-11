@@ -1,8 +1,9 @@
 "use client";
 
 import { Search, Command, Zap, Menu } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { UserButton, useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { NotificationBell } from "./notification-bell";
 import { useMobileSidebar } from "./sidebar";
 import { EngineSwitcher } from "./engine-switcher";
@@ -23,12 +24,51 @@ function getFormattedDate(): string {
   });
 }
 
+type SearchResult = {
+  type: "patient" | "lead" | "appointment";
+  label: string;
+  sub: string;
+  href: string;
+};
+
 export function DashboardHeader() {
   const [showSearch, setShowSearch] = useState(false);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [searching, setSearching] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
   const greeting = getGreeting();
   const dateStr = getFormattedDate();
   const { user, isLoaded } = useUser();
   const { setOpen: setMobileOpen } = useMobileSidebar();
+
+  useEffect(() => {
+    if (!query.trim() || query.length < 2) { setResults([]); return; }
+    const timeout = setTimeout(async () => {
+      setSearching(true);
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        if (res.ok) setResults(await res.json());
+      } finally {
+        setSearching(false);
+      }
+    }, 250);
+    return () => clearTimeout(timeout);
+  }, [query]);
+
+  function handleSelect(href: string) {
+    setShowSearch(false);
+    setQuery("");
+    setResults([]);
+    router.push(href);
+  }
+
+  function handleClose() {
+    setShowSearch(false);
+    setQuery("");
+    setResults([]);
+  }
 
   // Only prefix title (e.g. "Dr.") for users who have it set in Clerk metadata
   const title = (user?.publicMetadata?.title as string) || "";
@@ -61,12 +101,44 @@ export function DashboardHeader() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input
+              ref={inputRef}
               autoFocus
-              onBlur={() => setShowSearch(false)}
               type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onBlur={() => setTimeout(handleClose, 150)}
+              onKeyDown={(e) => e.key === "Escape" && handleClose()}
               placeholder="Search patients, leads, appointments..."
               className="w-80 rounded-lg border border-slate-200 bg-slate-50/80 py-2 pl-9 pr-4 text-sm focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-100"
             />
+            {/* Results dropdown */}
+            {(results.length > 0 || searching) && (
+              <div className="absolute top-full left-0 mt-1 w-80 rounded-xl border border-slate-200 bg-white shadow-lg z-50 overflow-hidden">
+                {searching && (
+                  <div className="px-4 py-3 text-xs text-slate-400">Searching...</div>
+                )}
+                {!searching && results.map((r, i) => (
+                  <button
+                    key={i}
+                    onMouseDown={() => handleSelect(r.href)}
+                    className="flex w-full items-center gap-3 px-4 py-2.5 hover:bg-slate-50 text-left transition-colors"
+                  >
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize shrink-0 ${
+                      r.type === "patient" ? "bg-blue-100 text-blue-700" :
+                      r.type === "lead" ? "bg-amber-100 text-amber-700" :
+                      "bg-cyan-100 text-cyan-700"
+                    }`}>{r.type}</span>
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium text-slate-900 truncate">{r.label}</p>
+                      <p className="text-[10px] text-slate-400 truncate">{r.sub}</p>
+                    </div>
+                  </button>
+                ))}
+                {!searching && query.length >= 2 && results.length === 0 && (
+                  <div className="px-4 py-3 text-xs text-slate-400">No results for &quot;{query}&quot;</div>
+                )}
+              </div>
+            )}
           </div>
         ) : (
           <button

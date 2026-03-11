@@ -79,6 +79,10 @@ const emptyForm = {
   insurance_member_id: "",
   status: "prospect" as "active" | "inactive" | "prospect",
   notes: "",
+  preferred_provider: "",
+  emergency_contact: "",
+  referral_source: "",
+  pronouns: "",
 };
 
 /* ------------------------------------------------------------------ */
@@ -402,39 +406,45 @@ export function PatientsClient({ initialPatients, stats }: Props) {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 xl:grid-cols-6">
-        <StatCard
-          title="Total Patients"
-          value={stats.total > 0 ? stats.total.toLocaleString() : "389"}
-          change="+17 this month"
-          trend="up"
-          icon={Users}
-          iconColor="text-cyan-600 bg-cyan-50"
-          sparkData={[312, 328, 341, 355, 372, 389]}
-          sparkColor="#0891b2"
-          accentColor="#0891b2"
-        />
-        <StatCard
-          title="Active"
-          value={stats.active > 0 ? stats.active.toLocaleString() : "389"}
-          change="+4.6% growth"
-          trend="up"
-          icon={UserCheck}
-          iconColor="text-emerald-600 bg-emerald-50"
-          sparkData={[312, 328, 341, 355, 372, 389]}
-          sparkColor="#059669"
-          accentColor="#059669"
-        />
-        <StatCard
-          title="Prospects"
-          value={stats.prospect > 0 ? stats.prospect.toString() : "58"}
-          change="12 hot leads"
-          trend="up"
-          icon={UserPlus}
-          iconColor="text-blue-600 bg-blue-50"
-          sparkData={[45, 52, 48, 56, 61, 58]}
-          sparkColor="#2563eb"
-          accentColor="#2563eb"
-        />
+        <a href="/dashboard/patients?status=all" className="block">
+          <StatCard
+            title="Total Patients"
+            value={stats.total > 0 ? stats.total.toLocaleString() : "389"}
+            change="+17 this month"
+            trend="up"
+            icon={Users}
+            iconColor="text-cyan-600 bg-cyan-50"
+            sparkData={[312, 328, 341, 355, 372, 389]}
+            sparkColor="#0891b2"
+            accentColor="#0891b2"
+          />
+        </a>
+        <a href="/dashboard/patients?status=active" className="block">
+          <StatCard
+            title="Active"
+            value={stats.active > 0 ? stats.active.toLocaleString() : "389"}
+            change="+4.6% growth"
+            trend="up"
+            icon={UserCheck}
+            iconColor="text-emerald-600 bg-emerald-50"
+            sparkData={[312, 328, 341, 355, 372, 389]}
+            sparkColor="#059669"
+            accentColor="#059669"
+          />
+        </a>
+        <a href="/dashboard/patients?status=prospect" className="block">
+          <StatCard
+            title="Prospects"
+            value={stats.prospect > 0 ? stats.prospect.toString() : "58"}
+            change="12 hot leads"
+            trend="up"
+            icon={UserPlus}
+            iconColor="text-blue-600 bg-blue-50"
+            sparkData={[45, 52, 48, 56, 61, 58]}
+            sparkColor="#2563eb"
+            accentColor="#2563eb"
+          />
+        </a>
         <StatCard
           title="Retention Rate"
           value="93.6%"
@@ -457,18 +467,20 @@ export function PatientsClient({ initialPatients, stats }: Props) {
           sparkColor="#7c3aed"
           accentColor="#7c3aed"
         />
-        <StatCard
-          title="At Risk"
-          value="18"
-          change="3 critical"
-          trend="down"
-          icon={AlertTriangle}
-          iconColor="text-amber-600 bg-amber-50"
-          sparkData={[32, 28, 25, 22, 20, 18]}
-          sparkColor="#d97706"
-          accentColor="#d97706"
-          pulse
-        />
+        <a href="/dashboard/patients?status=at-risk" className="block">
+          <StatCard
+            title="At Risk"
+            value="18"
+            change="3 critical"
+            trend="down"
+            icon={AlertTriangle}
+            iconColor="text-amber-600 bg-amber-50"
+            sparkData={[32, 28, 25, 22, 20, 18]}
+            sparkColor="#d97706"
+            accentColor="#d97706"
+            pulse
+          />
+        </a>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -528,25 +540,34 @@ export function PatientsClient({ initialPatients, stats }: Props) {
               <p className="text-xs text-slate-500">Patient distribution by carrier</p>
             </div>
           </div>
-          <div className="flex items-center gap-6">
-            <DonutChart
-              data={demographics.insuranceMixLive}
-              height={200}
-              innerRadius={55}
-              outerRadius={80}
-              centerLabel="carriers"
-              centerValue={String(demographics.insuranceMixLive.length)}
-            />
-            <div className="space-y-2.5 flex-1">
-              {demographics.insuranceMixLive.map((ins) => (
-                <div key={ins.name} className="flex items-center gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: ins.color }} />
-                  <span className="text-xs text-slate-600 flex-1">{ins.name}</span>
-                  <span className="text-xs font-semibold text-slate-900">{ins.value}</span>
-                </div>
-              ))}
+          {demographics.insuranceMixLive.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <Shield className="h-8 w-8 text-slate-300 mb-2" />
+              <p className="text-xs font-medium text-slate-500">No insurance data yet</p>
+              <p className="text-[10px] text-slate-400 mt-1">Add insurance providers to patient records to see distribution</p>
+              <a href="/dashboard/patients" className="mt-2 text-xs text-cyan-600 hover:underline">Add patient insurance →</a>
             </div>
-          </div>
+          ) : (
+            <div className="flex items-center gap-6">
+              <DonutChart
+                data={demographics.insuranceMixLive}
+                height={200}
+                innerRadius={55}
+                outerRadius={80}
+                centerLabel="carriers"
+                centerValue={String(demographics.insuranceMixLive.length)}
+              />
+              <div className="space-y-2.5 flex-1">
+                {demographics.insuranceMixLive.map((ins) => (
+                  <div key={ins.name} className="flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: ins.color }} />
+                    <span className="text-xs text-slate-600 flex-1">{ins.name}</span>
+                    <span className="text-xs font-semibold text-slate-900">{ins.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Retention Trend */}
@@ -705,6 +726,59 @@ export function PatientsClient({ initialPatients, stats }: Props) {
                 rows={2}
               />
             </div>
+            {/* Additional dental fields */}
+            <details className="col-span-2 group">
+              <summary className="cursor-pointer text-xs font-medium text-cyan-600 hover:text-cyan-700 mb-3 list-none flex items-center gap-1">
+                <span className="group-open:hidden">+ More details (provider, emergency contact, referral)</span>
+                <span className="hidden group-open:inline">− Hide additional details</span>
+              </summary>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Preferred Provider</label>
+                  <input
+                    value={form.preferred_provider}
+                    onChange={(e) => setForm({ ...form, preferred_provider: e.target.value })}
+                    placeholder="Dr. Smith"
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Emergency Contact</label>
+                  <input
+                    value={form.emergency_contact}
+                    onChange={(e) => setForm({ ...form, emergency_contact: e.target.value })}
+                    placeholder="Name & phone"
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Referral Source</label>
+                  <select
+                    value={form.referral_source}
+                    onChange={(e) => setForm({ ...form, referral_source: e.target.value })}
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                  >
+                    <option value="">Select source</option>
+                    <option value="referral">Patient Referral</option>
+                    <option value="website">Website</option>
+                    <option value="google">Google Search</option>
+                    <option value="insurance">Insurance Directory</option>
+                    <option value="walkin">Walk-In</option>
+                    <option value="social">Social Media</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Pronouns</label>
+                  <input
+                    value={form.pronouns}
+                    onChange={(e) => setForm({ ...form, pronouns: e.target.value })}
+                    placeholder="e.g. she/her, he/him, they/them"
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+            </details>
             <div className="flex justify-end gap-3">
               <button
                 type="button"
@@ -1211,7 +1285,7 @@ export function PatientsClient({ initialPatients, stats }: Props) {
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-slate-900 truncate">{action.action}</p>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[10px] text-slate-500">{action.patient}</span>
+                  <a href="/dashboard/patients" className="text-[10px] text-cyan-600 hover:underline font-medium">{action.patient}</a>
                   <span className="text-[10px] text-slate-300">·</span>
                   <span className={cn(
                     "rounded-full px-1.5 py-0.5 text-[9px] font-medium capitalize",
