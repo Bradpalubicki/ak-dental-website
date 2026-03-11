@@ -2,7 +2,8 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { DraftsQueue } from "@/components/email/DraftsQueue";
 import { BillsFromEmail } from "@/components/email/BillsFromEmail";
-import { Mail, DollarSign } from "lucide-react";
+import { Mail, DollarSign, MessageSquare, Send, BookTemplate, FolderOpen } from "lucide-react";
+import { SectionHub } from "@/components/dashboard/section-hub";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,20 @@ export default async function EmailPage({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-6">
+      <SectionHub
+        title="Inbox"
+        description="Messages, outreach, email, templates, and documents"
+        icon={Mail}
+        iconBg="bg-cyan-50"
+        iconColor="text-cyan-600"
+        links={[
+          { label: "Messages", href: "/dashboard/inbox", icon: MessageSquare, description: "Conversations & patient messages" },
+          { label: "Outreach", href: "/dashboard/outreach", icon: Send, description: "Campaigns & workflows" },
+          { label: "Email", href: "/dashboard/email", icon: Mail, description: "AI drafts & bill detection" },
+          { label: "Templates", href: "/dashboard/message-templates", icon: BookTemplate, description: "Message templates" },
+          { label: "Dropbox", href: "/dashboard/dropbox", icon: FolderOpen, description: "AI file processing" },
+        ]}
+      />
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Email Intelligence</h1>

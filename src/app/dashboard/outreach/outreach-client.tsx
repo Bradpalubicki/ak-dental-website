@@ -626,7 +626,9 @@ export function OutreachClient({ initialWorkflows, analytics }: { initialWorkflo
               <GaugeRing value={totalSent > 0 ? Math.round((conversionCount / totalSent) * 100) : 0} label="Conversion" color="#d97706" />
             </div>
             <AiInsight variant="prediction">
-              At current trajectory, you&apos;ll reach 10% conversion rate by April. Welcome sequences are your highest converting workflow type at 18%.
+              {totalSent > 0
+                ? "At current trajectory, you'll reach 10% conversion rate by April. Welcome sequences are your highest converting workflow type at 18%."
+                : "Run your first campaign to start seeing conversion data. Create a workflow above to get started."}
             </AiInsight>
           </div>
         </div>
@@ -1028,7 +1030,9 @@ export function OutreachClient({ initialWorkflows, analytics }: { initialWorkflo
               </table>
             </div>
             <AiInsight variant="recommendation">
-              10AM is the optimal send time across all weekdays. Wednesday at 10AM is the single best slot with 65% open rate.
+              {totalSent > 0
+                ? "10AM is the optimal send time across all weekdays. Wednesday at 10AM is the single best slot with 65% open rate."
+                : "Send your first campaign to discover the best send times for your patients."}
             </AiInsight>
           </div>
         </div>

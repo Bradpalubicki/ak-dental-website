@@ -102,7 +102,7 @@ export default function GenerateConsentPage() {
     resolver: zodResolver(generateSchema),
     defaultValues: {
       treatment: "",
-      state: "WI",
+      state: "NV",
       patientName: "",
       clinicName: "AK Ultimate Dental",
     },

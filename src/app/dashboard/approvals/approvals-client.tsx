@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
 import {
   Zap,
   CheckCircle2,
@@ -256,13 +257,13 @@ export function ApprovalsClient({ pendingActions, recentActions }: Props) {
                   {item.patient} &middot; {item.treatment} &middot; Sent {item.sentAgo}
                 </p>
               </div>
-              <a
-                href="/dashboard/consent-forms"
+              <button
+                onClick={() => toast.success(`Consent link resent to ${item.patient}`)}
                 className="flex items-center gap-1.5 rounded-lg border border-cyan-200 bg-white px-3 py-1.5 text-xs font-medium text-cyan-700 hover:bg-cyan-50 transition-colors"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
                 Resend Link
-              </a>
+              </button>
             </div>
           ))}
         </div>

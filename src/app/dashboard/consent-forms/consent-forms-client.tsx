@@ -459,14 +459,13 @@ function ActionButtons({ form }: { form: ConsentForm }) {
           <Send className="h-3.5 w-3.5" />
           {sending ? "Sending…" : "Resend Link"}
         </Button>
-        <a
-          href="/dashboard/settings?tab=integrations"
-          title="Connect consent engine key to view forms — click to configure"
+        <button
+          onClick={() => notifyConsentEngine("Form viewer — connect consent engine key to view. Configure in Settings → Integrations")}
           className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors"
         >
           <FileSignature className="h-3.5 w-3.5" />
           View Form
-        </a>
+        </button>
       </>
     );
   }

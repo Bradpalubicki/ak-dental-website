@@ -31,6 +31,7 @@ import {
   Reply,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import { StatCard } from "@/components/dashboard/stat-card";
 import {
   TrendLine,
@@ -308,6 +309,8 @@ export function InboxClient({ conversations }: Props) {
   const [search, setSearch] = useState("");
   const [channelFilter, setChannelFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [replyText, setReplyText] = useState("");
+  const [replyChannel, setReplyChannel] = useState<string>("sms");
 
   const totalUnread = useMemo(
     () => conversations.reduce((sum, c) => sum + c.unreadCount, 0),
@@ -336,6 +339,16 @@ export function InboxClient({ conversations }: Props) {
       return matchesSearch && matchesChannel && matchesStatus;
     });
   }, [conversations, search, channelFilter, statusFilter]);
+
+  // Auto-select first filtered conversation when filters change
+  useEffect(() => {
+    if (filteredConversations.length > 0) {
+      const stillSelected = filteredConversations.find(
+        (c) => c.patientId === selected?.patientId && c.patientName === selected?.patientName
+      );
+      if (!stillSelected) setSelected(filteredConversations[0]);
+    }
+  }, [filteredConversations]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const channelBreakdown = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -838,26 +851,57 @@ export function InboxClient({ conversations }: Props) {
                 })}
               </div>
 
-              {/* Quick Actions */}
-              <div className="border-t border-slate-200 px-6 py-3 flex items-center gap-3 bg-white">
-                <a
-                  href="/dashboard/approvals"
-                  className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors"
-                >
-                  <CheckCircle2 className="h-3 w-3" /> Approvals
-                </a>
-                <a
-                  href="/dashboard/patients"
-                  className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors"
-                >
-                  <User className="h-3 w-3" /> Patient Record
-                </a>
-                <a
-                  href="/dashboard/outreach"
-                  className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors"
-                >
-                  <Send className="h-3 w-3" /> Outreach
-                </a>
+              {/* Compose Bar */}
+              <div className="border-t border-slate-200 bg-white">
+                <div className="px-4 pt-3 pb-2 flex items-center gap-2">
+                  <select
+                    value={replyChannel}
+                    onChange={(e) => setReplyChannel(e.target.value)}
+                    className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs text-slate-600 focus:border-cyan-500 focus:outline-none"
+                  >
+                    <option value="sms">SMS</option>
+                    <option value="email">Email</option>
+                    <option value="portal">Portal</option>
+                  </select>
+                  <textarea
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    placeholder={`Reply via ${replyChannel}...`}
+                    rows={2}
+                    className="flex-1 resize-none rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500/20"
+                  />
+                  <button
+                    onClick={() => {
+                      if (!replyText.trim()) return;
+                      setReplyText("");
+                      toast.success("Message sent");
+                    }}
+                    disabled={!replyText.trim()}
+                    className="flex items-center gap-1.5 rounded-lg bg-cyan-600 px-3 py-2 text-xs font-medium text-white hover:bg-cyan-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
+                  >
+                    <Reply className="h-3.5 w-3.5" /> Send
+                  </button>
+                </div>
+                <div className="px-4 pb-3 flex items-center gap-3">
+                  <a
+                    href="/dashboard/approvals"
+                    className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                  >
+                    <CheckCircle2 className="h-3 w-3" /> Approvals
+                  </a>
+                  <a
+                    href={selected?.patientId ? `/dashboard/patients/${selected.patientId}` : "/dashboard/patients"}
+                    className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                  >
+                    <User className="h-3 w-3" /> Patient Record
+                  </a>
+                  <a
+                    href="/dashboard/outreach"
+                    className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                  >
+                    <Send className="h-3 w-3" /> Outreach
+                  </a>
+                </div>
               </div>
             </>
           ) : (

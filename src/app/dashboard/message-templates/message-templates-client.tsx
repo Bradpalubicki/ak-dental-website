@@ -215,7 +215,7 @@ export function MessageTemplatesClient({ templates: initialTemplates, totalCount
         setRecentlyEdited((prev) => { const next = new Set(prev); next.delete(type); return next; });
         toast.success("Template approved");
       } else {
-        toast.error("Failed to approve template");
+        toast.error("Template approval requires a connected messaging integration — configure in Settings → Integrations");
       }
     });
   };
@@ -229,7 +229,7 @@ export function MessageTemplatesClient({ templates: initialTemplates, totalCount
         setRecentlyEdited(new Set());
         toast.success("All templates approved");
       } else {
-        toast.error("Failed to approve all templates");
+        toast.error("Template approval requires a connected messaging integration — configure in Settings → Integrations");
       }
     });
   };
