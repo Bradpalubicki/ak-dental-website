@@ -34,6 +34,18 @@ export async function GET(req: NextRequest) {
     const pendingInsurance = insuranceRes.data || [];
     const unconfirmed = appointments.filter((a) => a.status === "scheduled").length;
 
+    // Get yesterday's production from billing claims
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    const { data: billingData } = await supabase
+      .from('oe_billing_claims')
+      .select('billed_amount')
+      .gte('created_at', yesterdayStr + 'T00:00:00Z')
+      .lte('created_at', yesterdayStr + 'T23:59:59Z');
+    const yesterdayProduction = billingData?.reduce((sum, r) => sum + (Number(r.billed_amount) || 0), 0) ?? 0;
+    const yesterdayCollections = Math.round(yesterdayProduction * 0.89); // ~89% collection rate until billing integration
+
     // Generate briefing via AI
     const briefing = await generateDailyBriefing({
       date: today,
@@ -41,9 +53,9 @@ export async function GET(req: NextRequest) {
       unconfirmed,
       newLeads: newLeads.length,
       pendingInsurance: pendingInsurance.length,
-      yesterdayProduction: 4250, // Would come from billing integration
-      yesterdayCollections: 3800,
-      noShows: 0,
+      yesterdayProduction,
+      yesterdayCollections,
+      noShows: appointments.filter((a) => a.status === 'no_show').length,
       aiActionsOvernight: 4,
     });
 
