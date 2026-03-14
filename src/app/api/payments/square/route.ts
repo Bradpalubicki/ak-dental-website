@@ -46,6 +46,14 @@ export async function POST(req: NextRequest) {
   }
 
   const supabase = createServiceSupabase();
+
+  // Get patient_id from treatment plan
+  const { data: plan } = await supabase
+    .from("oe_treatment_plans")
+    .select("patient_id, total_cost")
+    .eq("id", treatmentPlanId)
+    .single();
+
   await supabase
     .from("oe_treatment_plans")
     .update({
@@ -54,6 +62,18 @@ export async function POST(req: NextRequest) {
       notes: `Square payment ID: ${payment.id}`,
     })
     .eq("id", treatmentPlanId);
+
+  // Create billing claim record for this payment
+  await supabase.from("oe_billing_claims").insert({
+    patient_id: plan?.patient_id ?? null,
+    appointment_id: null,
+    billed_amount: amountCents / 100,
+    patient_responsibility: amountCents / 100,
+    insurance_paid: 0,
+    status: "paid",
+    paid_at: new Date().toISOString(),
+    notes: `Square payment ID: ${payment.id} | Treatment Plan: ${treatmentPlanId}`,
+  });
 
   return NextResponse.json({
     success: true,
