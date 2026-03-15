@@ -150,6 +150,8 @@ interface AnalyticsData {
   conversionFunnelData: FunnelItem[];
   hasLiveHourlyData: boolean;
   hasLiveFunnelData: boolean;
+  hasBillingData: boolean;
+  retentionRate: number;
 }
 
 /* ================================================================== */
@@ -378,6 +380,8 @@ export function AnalyticsClient({ data }: { data: AnalyticsData }) {
     conversionFunnelData,
     hasLiveHourlyData,
     hasLiveFunnelData,
+    hasBillingData,
+    retentionRate,
   } = data;
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [dateRange, setDateRange] = useState("this_month");
@@ -595,23 +599,34 @@ export function AnalyticsClient({ data }: { data: AnalyticsData }) {
                 </div>
               </div>
               <div className="p-4">
-                <DonutChart
-                  data={procedureMix}
-                  height={160}
-                  innerRadius={45}
-                  outerRadius={65}
-                  centerLabel="Procedures"
-                  centerValue="100%"
-                />
-                <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 px-2">
-                  {procedureMix.map((p) => (
-                    <div key={p.name} className="flex items-center gap-1.5">
-                      <div className="h-2 w-2 rounded-full" style={{ backgroundColor: p.color }} />
-                      <span className="text-[10px] text-slate-500">{p.name}</span>
-                      <span className="text-[10px] font-semibold text-slate-700 ml-auto">{p.value}%</span>
+                {hasBillingData ? (
+                  <>
+                    <DonutChart
+                      data={procedureMix}
+                      height={160}
+                      innerRadius={45}
+                      outerRadius={65}
+                      centerLabel="Procedures"
+                      centerValue="100%"
+                    />
+                    <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 px-2">
+                      {procedureMix.map((p) => (
+                        <div key={p.name} className="flex items-center gap-1.5">
+                          <div className="h-2 w-2 rounded-full" style={{ backgroundColor: p.color }} />
+                          <span className="text-[10px] text-slate-500">{p.name}</span>
+                          <span className="text-[10px] font-semibold text-slate-700 ml-auto">{p.value}%</span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-10 text-center gap-2">
+                    <FileText className="h-8 w-8 text-slate-300" />
+                    <p className="text-xs text-slate-500 max-w-[180px]">
+                      No billing data yet — procedure mix will appear after first claims are recorded.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -1020,11 +1035,11 @@ export function AnalyticsClient({ data }: { data: AnalyticsData }) {
               accentColor="#7c3aed"
             />
             <StatCard
-              title="Patient Satisfaction"
-              value="4.9"
-              change="Google rating"
-              trend="up"
-              icon={Star}
+              title="6-Month Retention"
+              value={`${retentionRate}%`}
+              change="Patients with 2+ visits"
+              trend={retentionRate >= 60 ? "up" : "down"}
+              icon={UserCheck}
               iconColor="bg-amber-50 text-amber-600"
               accentColor="#d97706"
             />

@@ -267,14 +267,76 @@ export default async function AnalyticsPage() {
     }));
 
   // --- Procedure mix from billing claims ---
-  const procedureMix = [
-    { name: "Cleanings", value: apptTypeMap["Recall/Hygiene"] ? Math.round((apptTypeMap["Recall/Hygiene"] / totalApptTypes) * 100) : 32, color: "#0891b2" },
-    { name: "Crowns", value: 18, color: "#2563eb" },
-    { name: "Fillings", value: 22, color: "#059669" },
-    { name: "Implants", value: 12, color: "#7c3aed" },
-    { name: "Whitening", value: apptTypeMap["Cosmetic"] ? Math.round((apptTypeMap["Cosmetic"] / totalApptTypes) * 100) : 8, color: "#d97706" },
-    { name: "Other", value: 8, color: "#64748b" },
-  ];
+  const { data: claimsData } = await supabase
+    .from("oe_billing_claims")
+    .select("procedure_codes")
+    .not("procedure_codes", "is", null)
+    .limit(500);
+
+  const procedureCounts: Record<string, number> = {};
+  for (const claim of claimsData ?? []) {
+    const codes = claim.procedure_codes as string[] | null;
+    if (Array.isArray(codes)) {
+      for (const code of codes) {
+        procedureCounts[code] = (procedureCounts[code] ?? 0) + 1;
+      }
+    }
+  }
+
+  // Patient retention rate (% with >1 appt in last 6 months)
+  const sixMonthsAgoDate = new Date();
+  sixMonthsAgoDate.setMonth(sixMonthsAgoDate.getMonth() - 6);
+  const { data: recentAppts } = await supabase
+    .from("oe_appointments")
+    .select("patient_id")
+    .gte("appointment_date", sixMonthsAgoDate.toISOString().split("T")[0])
+    .not("patient_id", "is", null);
+
+  const patientApptCounts: Record<string, number> = {};
+  for (const appt of recentAppts ?? []) {
+    if (appt.patient_id) patientApptCounts[appt.patient_id] = (patientApptCounts[appt.patient_id] ?? 0) + 1;
+  }
+  const totalRetentionPatients = Object.keys(patientApptCounts).length;
+  const returningPatients = Object.values(patientApptCounts).filter((c) => c > 1).length;
+  const retentionRate = totalRetentionPatients > 0 ? Math.round((returningPatients / totalRetentionPatients) * 100) : 0;
+
+  // CDT code → readable name map
+  const CDT_NAMES: Record<string, string> = {
+    D0120: "Periodic Exam",
+    D0150: "Comprehensive Exam",
+    D0210: "Full X-rays",
+    D0274: "Bitewing X-rays",
+    D1110: "Cleaning",
+    D1120: "Child Cleaning",
+    D2140: "Amalgam Filling",
+    D2160: "3-Surface Filling",
+    D2391: "Resin Filling",
+    D2750: "Crown (PFM)",
+    D2740: "All-Ceramic Crown",
+    D3310: "Root Canal",
+    D4341: "Periodontal Scaling",
+    D4910: "Perio Maintenance",
+    D7140: "Simple Extraction",
+    D7210: "Surgical Extraction",
+  };
+
+  const hasBillingData = Object.keys(procedureCounts).length > 0;
+  let procedureMix: { name: string; value: number; color: string }[];
+
+  if (hasBillingData) {
+    const totalCodes = Object.values(procedureCounts).reduce((s, v) => s + v, 0) || 1;
+    const PROC_COLORS = ["#0891b2", "#2563eb", "#059669", "#7c3aed", "#d97706", "#64748b"];
+    procedureMix = Object.entries(procedureCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([code, count], i) => ({
+        name: CDT_NAMES[code] ?? code,
+        value: Math.round((count / totalCodes) * 100),
+        color: PROC_COLORS[i % PROC_COLORS.length],
+      }));
+  } else {
+    procedureMix = [];
+  }
 
   // --- Hourly traffic from real appointments (last 30 days) ---
   const HOUR_LABELS = ["7am","8am","9am","10am","11am","12pm","1pm","2pm","3pm","4pm","5pm"];
@@ -372,6 +434,8 @@ export default async function AnalyticsPage() {
         conversionFunnelData,
         hasLiveHourlyData: hasHourlyData,
         hasLiveFunnelData: hasFunnelData,
+        hasBillingData,
+        retentionRate,
       }}
     />
   );
