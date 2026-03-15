@@ -43,6 +43,24 @@ const IntakeSchema = z.object({
   }),
 });
 
+export async function GET() {
+  const { patient, error } = await verifyPortalApiAuth();
+  if (error || !patient) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
+
+  const supabase = createServiceSupabase();
+  const { data } = await supabase
+    .from("oe_intake_submissions")
+    .select("id, submitted_at")
+    .eq("patient_id", patient.id)
+    .order("submitted_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  return NextResponse.json({ completed: !!data, submission: data });
+}
+
 export async function POST(req: NextRequest) {
   const { patient, error } = await verifyPortalApiAuth();
   if (error || !patient) {

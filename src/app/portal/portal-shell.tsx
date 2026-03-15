@@ -34,10 +34,12 @@ export function PortalShell({
   children,
   patientName,
   patientEmail,
+  intakeCompleted = true,
 }: {
   children: React.ReactNode;
   patientName: string;
   patientEmail: string;
+  intakeCompleted?: boolean;
 }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -152,6 +154,26 @@ export function PortalShell({
           </button>
           <p className="text-sm font-bold text-slate-900">Patient Portal</p>
         </header>
+
+        {/* Intake Banner (non-blocking) */}
+        {!intakeCompleted && (
+          <div className="border-b border-amber-200 bg-amber-50 px-4 py-2.5 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 min-w-0">
+                <ClipboardList className="h-4 w-4 text-amber-600 shrink-0" />
+                <p className="text-sm font-medium text-amber-800 truncate">
+                  Complete your intake forms before your visit
+                </p>
+              </div>
+              <Link
+                href="/portal/intake"
+                className="shrink-0 flex items-center gap-1 rounded-lg bg-amber-600 px-3 py-1 text-xs font-semibold text-white hover:bg-amber-700 transition-colors"
+              >
+                Start Now <ChevronRight className="h-3 w-3" />
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Page Content */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
