@@ -802,6 +802,11 @@ export function HrClient({ stats, recentDocuments, workforce }: Props) {
 
   return (
     <div className="space-y-6">
+      {/* ADP Sample Data Banner */}
+      <div className="mb-4 rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
+        <strong>Sample Data</strong> — Payroll figures shown are for demonstration. Connect ADP Workforce Now in Settings to display real payroll data.
+      </div>
+
       {/* Error Banner */}
       {errorMsg && (
         <div className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
