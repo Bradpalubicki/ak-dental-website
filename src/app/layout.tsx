@@ -40,11 +40,20 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     title: siteConfig.seo.defaultTitle,
     description: siteConfig.description,
+    images: [
+      {
+        url: "https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?w=1200&h=630&fit=crop&q=80",
+        width: 1200,
+        height: 630,
+        alt: "AK Dental Las Vegas — Modern Dental Care",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.seo.defaultTitle,
     description: siteConfig.description,
+    images: ["https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?w=1200&h=630&fit=crop&q=80"],
   },
   robots: {
     index: true,
