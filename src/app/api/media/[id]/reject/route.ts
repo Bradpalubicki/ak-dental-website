@@ -11,8 +11,6 @@ const BodySchema = z.object({
   reason: z.string().min(1, "Rejection reason required"),
 });
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 // POST /api/media/[id]/reject — NuStack admin rejects a pending asset
 export async function POST(req: NextRequest, context: RouteContext) {
   const auth = await requireApiAuth();
@@ -52,6 +50,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
 
   // Send rejection email via Resend
   try {
+    const resend = new Resend(process.env.RESEND_API_KEY);
     await resend.emails.send({
       from: `${siteConfig.name} <noreply@akultimatedental.com>`,
       to: [siteConfig.email],
