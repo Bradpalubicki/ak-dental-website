@@ -84,6 +84,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${job.title} | Careers at AK Ultimate Dental`,
     description: `${employmentTypeLabel(job.employment_type)} position in Las Vegas, NV. ${job.description.slice(0, 150)}`,
+    alternates: { canonical: `${siteConfig.url}/careers/${slug}` },
     openGraph: {
       title: `${job.title} — AK Ultimate Dental`,
       description: job.description.slice(0, 200),

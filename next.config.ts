@@ -174,6 +174,19 @@ const nextConfig: NextConfig = {
             key: "Strict-Transport-Security",
             value: "max-age=31536000; includeSubDomains",
           },
+          {
+            key: "Content-Security-Policy",
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.akultimatedental.com https://*.clerk.accounts.dev https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.google-analytics.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "font-src 'self' https://fonts.gstatic.com",
+              "img-src 'self' data: blob: https: http:",
+              "connect-src 'self' https://*.clerk.accounts.dev https://*.supabase.co https://www.google-analytics.com https://vitals.vercel-insights.com https://sentry.io https://*.sentry.io",
+              "frame-src 'self' https://*.clerk.accounts.dev",
+              "worker-src 'self' blob:",
+            ].join("; "),
+          },
         ],
       },
     ];

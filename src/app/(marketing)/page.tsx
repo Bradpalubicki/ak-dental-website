@@ -11,7 +11,7 @@ import { AnimatedCounter } from "@/components/marketing/animated-counter";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AK Ultimate Dental | Dentist in Las Vegas, NV",
+  title: "Dentist in Las Vegas, NV",
   description:
     "Top-rated dental care in Las Vegas, NV. General, cosmetic, and implant dentistry. Same-day CEREC crowns. Accepting new patients. Call (702) 935-4395.",
   alternates: { canonical: siteConfig.url },
