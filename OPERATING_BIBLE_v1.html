@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html>
+<head><title>AK Ultimate Dental — Operating Bible v1</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:1200px;margin:0 auto;padding:20px;color:#1a1a1a;background:#fafafa}
+h1{color:#0A1628;border-bottom:3px solid #F5C842;padding-bottom:10px}
+h2{color:#0A1628;background:#f0f4ff;padding:8px 12px;border-left:4px solid #3b82f6;margin-top:30px}
+h3{color:#374151}
+.section{background:white;border:1px solid #e5e7eb;border-radius:8px;padding:20px;margin:15px 0}
+.gap{background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:10px;margin:5px 0}
+.critical{background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:10px;margin:5px 0}
+.ok{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:10px;margin:5px 0}
+.score{font-size:2em;font-weight:bold;color:#0A1628}
+table{width:100%;border-collapse:collapse}
+th{background:#0A1628;color:white;padding:8px;text-align:left}
+td{padding:8px;border:1px solid #e5e7eb}
+tr:nth-child(even){background:#f9fafb}
+.tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:600}
+.tag-live{background:#dcfce7;color:#166534}
+.tag-broken{background:#fee2e2;color:#991b1b}
+.tag-test{background:#fef3c7;color:#92400e}
+.inherited{background:#f0f9ff;border:1px solid #bae6fd;padding:8px;border-radius:4px;font-style:italic;color:#0369a1}
+</style>
+</head>
+<body>
+<h1>AK Ultimate Dental — Operating Bible v1</h1>
+<p><strong>Generated:</strong> 2026-03-25 | <strong>Score:</strong> <span class="score">26/35</span></p>
+
+<div class="section">
+<h2>1. Product Identity</h2>
+<table>
+<tr><th>Field</th><th>Value</th></tr>
+<tr><td>Product Name</td><td>AK Ultimate Dental</td></tr>
+<tr><td>Package Name</td><td>ak-ultimate-dental</td></tr>
+<tr><td>Version</td><td>0.1.0</td></tr>
+<tr><td>Type</td><td>Client Engine — Dental Practice Management Platform</td></tr>
+<tr><td>Client</td><td>AK Ultimate Dental — Las Vegas, NV</td></tr>
+<tr><td>Description</td><td>Comprehensive dental practice management platform. Includes patient management, scheduling, clinical notes (CDT templates), treatment plans with AI-assisted presentation, proposals (Cherry financing, Good/Better/Best), insurance verification, billing/financials, HR, HIPAA compliance, SEO dashboard with GSC sync, Vapi AI phone integration, patient portal, and marketing outreach. Most feature-complete engine in the NuStack fleet.</td></tr>
+<tr><td>Repo Path</td><td>C:/Users/bradp/dev/ak-dental-website</td></tr>
+<tr><td>Table Prefix</td><td>oe_ (One Engine schema)</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>2. Business Model</h2>
+<table>
+<tr><th>Aspect</th><th>Details</th></tr>
+<tr><td>Revenue Model</td><td>NuStack monthly retainer for platform + SEO + AI-driven patient acquisition</td></tr>
+<tr><td>Payment Processing</td><td>Square (primary) + Stripe (legacy)</td></tr>
+<tr><td>Patient Portal</td><td>Full self-service: appointments, billing, treatments, messages, intake</td></tr>
+<tr><td>Cherry Financing</td><td>Integrated in proposals — patients can apply for treatment financing</td></tr>
+<tr><td>Location</td><td>Las Vegas, NV — single location</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>3. Tech Stack</h2>
+<table>
+<tr><th>Layer</th><th>Technology</th><th>Version</th></tr>
+<tr><td>Framework</td><td>Next.js (App Router)</td><td>^16.1.6</td></tr>
+<tr><td>Language</td><td>TypeScript (strict)</td><td>^5</td></tr>
+<tr><td>Database</td><td>Supabase (PostgreSQL)</td><td>^2.93.3</td></tr>
+<tr><td>Auth</td><td>Clerk</td><td>^6.37.1 — CRITICAL: sk_test_ key in use</td></tr>
+<tr><td>Payments PRIMARY</td><td>Square SDK</td><td>^44.0.0</td></tr>
+<tr><td>Payments LEGACY</td><td>Stripe</td><td>^20.3.0</td></tr>
+<tr><td>AI</td><td>Anthropic SDK</td><td>^0.72.1</td></tr>
+<tr><td>AI Phone</td><td>Vapi (via /api/vapi)</td><td>Internal</td></tr>
+<tr><td>Email</td><td>Resend</td><td>^6.9.1</td></tr>
+<tr><td>SMS</td><td>Twilio</td><td>^5.12.0</td></tr>
+<tr><td>Secrets Management</td><td>Infisical SDK</td><td>^4.0.6</td></tr>
+<tr><td>File Storage</td><td>Vercel Blob</td><td>^2.3.0</td></tr>
+<tr><td>PDF Generation</td><td>pdfkit</td><td>^0.17.2</td></tr>
+<tr><td>Charts</td><td>Recharts</td><td>^3.7.0</td></tr>
+<tr><td>Error Tracking</td><td>Sentry</td><td>^10.45.0</td></tr>
+<tr><td>Web Vitals</td><td>web-vitals</td><td>^5.1.0</td></tr>
+<tr><td>SEO Tools</td><td>Built-in: scripts/seo-validation.ts, scripts/site-health-check.ts</td><td>Internal</td></tr>
+<tr><td>Styling</td><td>Tailwind CSS 4 + shadcn/ui</td><td>^4</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>4. Architecture Overview</h2>
+<p>The most feature-complete engine in the NuStack fleet. 206 API routes across ~50 namespaces, 52 database migrations. Next.js App Router, Server Components default. Multi-section app: (gamma) AI-powered, (marketing) public pages, (public) additional public routes. 14 cron jobs for full marketing automation. SEO system with PageSpeed scores, Google Search Console sync, and auto-fix cron.</p>
+<h3>Key App Sections</h3>
+<ul>
+<li><code>(gamma)</code> — Gamma AI-enhanced dashboard</li>
+<li><code>(marketing)</code> — Public marketing pages</li>
+<li><code>(public)</code> — Additional public routes</li>
+<li><code>dashboard</code> — Practice management (all features)</li>
+<li><code>portal</code> — Patient self-service portal</li>
+<li><code>proposal</code> — Chairside treatment proposal presenter + Cherry financing</li>
+<li><code>auth, sign-in, sign-up</code> — Auth pages</li>
+</ul>
+<h3>Dashboard Modules (all production-ready per NOTES.md)</h3>
+<p>Patients, Appointments/Schedule, Clinical Notes (CDT), Treatments, Proposals, Insurance, Leads, Billing, Financials, Calls (Vapi), Inbox, Outreach, Message Templates, HR/Payroll, Licensing, Compliance/HIPAA, Benefits, Documents, Consent Forms, Approvals, SEO, Analytics, Training (6 modules with quizzes), Onboarding, Email Intelligence, Business Advisor, Settings, Providers, Waitlist, Dropbox</p>
+</div>
+
+<div class="section">
+<h2>5. Database Schema</h2>
+<p>52 migrations (001-052, with some duplicate numbers for parallel migrations). Table prefix: <code>oe_</code></p>
+<table>
+<tr><th>Migration Range</th><th>Major Tables / Features</th></tr>
+<tr><td>001-009</td><td>Core engine, remarketing, HR, dashboard prefs, SaaS infra, integrations/licensing/CRM, HR expanded, soft delete, RBAC</td></tr>
+<tr><td>010-019</td><td>Documents, SEO system, financials/expenses/AP, Stripe/payments/Vapi, outreach messages, workflows, audit, consent, data retention, file dropbox</td></tr>
+<tr><td>021-030</td><td>Clinical notes, providers/scheduling, benefits, appointment types/resources, waitlist, assessments/consent/recall, dental charts/CDT/lab cases, provider schema compat, SEO tables, onboarding state</td></tr>
+<tr><td>031-040</td><td>User invites, Gusto/Google/jobs, legal documents, offer letters, notifications, document signing, prefill data, realtime appointments, email system, email style</td></tr>
+<tr><td>041-052</td><td>RLS fixes, message templates/call logs, training completions, no-show/lead_id, intake submissions, proposals, media assets, media soft delete, SEO PageSpeed, postings/specials/hours, GSC data, treatment plans soft delete, SEO report narrative, mobile push tokens, patients Clerk user ID</td></tr>
+</table>
+<div class="ok">RLS enabled on all tables. RBAC from migration 009. HIPAA audit from migration 016.</div>
+</div>
+
+<div class="section">
+<h2>6. API Routes</h2>
+<p>206 routes across ~50 namespaces. Key highlights by category:</p>
+<table>
+<tr><th>Category</th><th>Namespaces</th></tr>
+<tr><td>Clinical</td><td>appointments, appointment-types, clinical-notes, treatments, assessments, consent-forms</td></tr>
+<tr><td>Patient</td><td>patients, portal, intake submissions, waitlist</td></tr>
+<tr><td>Billing</td><td>payments, billing, insurance, invoices, proposals, accounting, accounts-payable</td></tr>
+<tr><td>Marketing</td><td>leads, outreach, referrals, notifications, email, seo, search</td></tr>
+<tr><td>Operations</td><td>scheduling, providers, resources, documents, upload, media</td></tr>
+<tr><td>AI</td><td>ai, vapi, booking (AI booking assistant)</td></tr>
+<tr><td>HR</td><td>hr, benefits, training, approvals, rbac, users, onboarding, postings</td></tr>
+<tr><td>Compliance</td><td>audit, documents (legal), consent-forms, data retention (cron)</td></tr>
+<tr><td>SEO</td><td>seo, /api/cron/seo-health-check, seo-auto-fix, seo-gsc-sync, seo-report</td></tr>
+<tr><td>System</td><td>cron (14 jobs), health, settings, seed, test, agency, webhooks, pms</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>7. Authentication &amp; Authorization</h2>
+<table>
+<tr><th>Aspect</th><th>Details</th></tr>
+<tr><td>Provider</td><td>Clerk (@clerk/nextjs ^6.37.1)</td></tr>
+<tr><td>RBAC</td><td>oe_roles, oe_user_roles, oe_permissions (migration 009). /api/rbac routes.</td></tr>
+<tr><td>Patient Portal Auth</td><td>Separate Clerk auth path for patients</td></tr>
+<tr><td>Proposal Auth</td><td>Token-based for chairside proposals (/proposal/[token])</td></tr>
+<tr><td>Cron Auth</td><td>verifyCronSecret() helper on all cron routes</td></tr>
+<tr><td>Agency Auth</td><td>verifyAgencySecret() on snapshot routes</td></tr>
+</table>
+<div class="critical">CRITICAL: Clerk sk_test_ key detected in production. This means Clerk is running in TEST mode in the production environment. Real users may not be able to authenticate properly, or test data may leak into production. Replace CLERK_SECRET_KEY and NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY with sk_live_ and pk_live_ keys immediately.</div>
+</div>
+
+<div class="section">
+<h2>8. Payment Processing</h2>
+<table>
+<tr><th>Processor</th><th>Usage</th><th>Status</th></tr>
+<tr><td>Square</td><td>Primary payment processing — chairside payments, portal billing</td><td><span class="tag tag-live">PRIMARY</span></td></tr>
+<tr><td>Stripe</td><td>Legacy — existing code. Do not extend. Migration path to Square pending.</td><td><span class="tag tag-test">LEGACY</span></td></tr>
+<tr><td>Cherry Financing</td><td>Patient treatment financing integration in proposals</td><td><span class="tag tag-live">ACTIVE</span></td></tr>
+</table>
+<p>Square credentials: SQUARE_ACCESS_TOKEN, SQUARE_LOCATION_ID, SQUARE_WEBHOOK_SIGNATURE_KEY — must be provided by practice owner. Cannot be retrieved autonomously.</p>
+</div>
+
+<div class="section">
+<h2>9. Email &amp; SMS Automation</h2>
+<table>
+<tr><th>Service</th><th>Usage</th><th>Status</th></tr>
+<tr><td>Resend</td><td>Daily briefing, recall, lead nurture, reactivation, email alerts, reminders, email sequences, email style</td><td><span class="tag tag-live">ACTIVE</span></td></tr>
+<tr><td>Twilio</td><td>SMS reminders, no-show notifications, lead responses</td><td><span class="tag tag-live">ACTIVE</span></td></tr>
+</table>
+<p>14 cron jobs drive automated email and SMS sequences. Message templates managed in dashboard. Email style refreshes weekly via cron.</p>
+<div class="gap">A2P 10DLC registration status not confirmed. Same risk as MindStar — verify with Twilio before launch to prevent SMS filtering.</div>
+</div>
+
+<div class="section">
+<h2>10. Background Jobs &amp; Crons</h2>
+<p>14 cron jobs — most comprehensive cron suite in the fleet.</p>
+<table>
+<tr><th>Route</th><th>Schedule</th><th>Purpose</th></tr>
+<tr><td>/api/cron/daily-briefing</td><td>0 14 * * 1-4 (2pm Mon-Thu)</td><td>AI briefing email with appointments, leads, financials</td></tr>
+<tr><td>/api/cron/recall</td><td>0 17 * * 1 (5pm Mondays)</td><td>Patient recall outreach for lapsed patients</td></tr>
+<tr><td>/api/cron/lead-nurture</td><td>0 14,16,18,20 * * 1-4</td><td>Lead nurture sequences (4x/day weekdays)</td></tr>
+<tr><td>/api/cron/reactivation</td><td>0 15 * * 1-5 (3pm weekdays)</td><td>Reactivation outreach to inactive patients</td></tr>
+<tr><td>/api/cron/seo-health-check</td><td>0 13 * * * (1pm daily)</td><td>PageSpeed score check + SEO health metrics</td></tr>
+<tr><td>/api/cron/seo-auto-fix</td><td>0 6 * * 1 (6am Mondays)</td><td>Auto-fix detected SEO issues</td></tr>
+<tr><td>/api/cron/seo-gsc-sync</td><td>0 8 * * * (8am daily)</td><td>Sync Google Search Console data</td></tr>
+<tr><td>/api/cron/seo-report</td><td>0 9 1 * * (9am 1st of month)</td><td>Monthly SEO report generation</td></tr>
+<tr><td>/api/cron/data-retention</td><td>0 3 * * 0 (3am Sundays)</td><td>HIPAA data retention enforcement</td></tr>
+<tr><td>/api/cron/email-style-refresh</td><td>0 4 * * 1 (4am Mondays)</td><td>Refresh AI email style config</td></tr>
+<tr><td>/api/cron/email-alerts</td><td>0 9 * * 1-5 (9am weekdays)</td><td>Operational email alerts</td></tr>
+<tr><td>/api/cron/reminders</td><td>0 20 * * * (8pm daily)</td><td>Appointment reminder SMS/email</td></tr>
+<tr><td>/api/cron/no-show</td><td>*/30 13-20 * * 1-6 (every 30min 1-8pm Mon-Sat)</td><td>No-show detection and recovery messaging</td></tr>
+<tr><td>/api/cron/expire-postings</td><td>0 2 * * * (2am daily)</td><td>Expire old job postings/specials</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>11. AI Integration</h2>
+<table>
+<tr><th>Feature</th><th>Provider</th><th>Route/Service</th></tr>
+<tr><td>Daily Briefing</td><td>Anthropic Claude</td><td>/api/cron/daily-briefing</td></tr>
+<tr><td>Business Advisor</td><td>Anthropic Claude</td><td>/api/ai (advisor sidebar)</td></tr>
+<tr><td>Clinical Notes AI Assist</td><td>Anthropic Claude</td><td>/api/clinical-notes</td></tr>
+<tr><td>Treatment Plan AI Summary</td><td>Anthropic Claude</td><td>/api/treatments</td></tr>
+<tr><td>Insurance Appeal Letter AI</td><td>Anthropic Claude</td><td>/api/billing</td></tr>
+<tr><td>Inbox AI Draft Replies</td><td>Anthropic Claude</td><td>Dashboard inbox</td></tr>
+<tr><td>Lead AI Response</td><td>Anthropic Claude</td><td>/api/leads</td></tr>
+<tr><td>Email Intelligence</td><td>Anthropic Claude</td><td>Email inbox AI drafts + bill detection</td></tr>
+<tr><td>SEO Auto-Fix</td><td>Anthropic Claude</td><td>/api/cron/seo-auto-fix</td></tr>
+<tr><td>Vapi AI Phone</td><td>Vapi</td><td>/api/vapi — AI call handling, transcripts, summaries</td></tr>
+<tr><td>Booking AI Assistant</td><td>Anthropic/Vapi</td><td>/api/booking</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>12. Environment Variables</h2>
+<table>
+<tr><th>Variable</th><th>Purpose</th><th>Notes</th></tr>
+<tr><td>NEXT_PUBLIC_SUPABASE_URL</td><td>Supabase URL</td><td>Required</td></tr>
+<tr><td>NEXT_PUBLIC_SUPABASE_ANON_KEY</td><td>Supabase anon key</td><td>Required</td></tr>
+<tr><td>SUPABASE_SERVICE_ROLE_KEY</td><td>Admin DB access</td><td>Required</td></tr>
+<tr><td style="color:#dc2626;font-weight:bold;">NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</td><td>Clerk public key</td><td style="color:#dc2626;font-weight:bold;">CRITICAL: Must be pk_live_ (not pk_test_)</td></tr>
+<tr><td style="color:#dc2626;font-weight:bold;">CLERK_SECRET_KEY</td><td>Clerk secret</td><td style="color:#dc2626;font-weight:bold;">CRITICAL: Must be sk_live_ (not sk_test_)</td></tr>
+<tr><td>ANTHROPIC_API_KEY</td><td>Claude AI</td><td>Required</td></tr>
+<tr><td>SQUARE_ACCESS_TOKEN</td><td>Square payments</td><td>Client-provided</td></tr>
+<tr><td>SQUARE_LOCATION_ID</td><td>Square location</td><td>Client-provided</td></tr>
+<tr><td>SQUARE_WEBHOOK_SIGNATURE_KEY</td><td>Square webhook verification</td><td>Client-provided</td></tr>
+<tr><td>STRIPE_SECRET_KEY</td><td>Legacy Stripe</td><td>Legacy only</td></tr>
+<tr><td>VAPI_API_KEY</td><td>Vapi AI phone</td><td>Required</td></tr>
+<tr><td>VAPI_PHONE_NUMBER_ID</td><td>Vapi phone number</td><td>Required</td></tr>
+<tr><td>RESEND_API_KEY</td><td>Email delivery</td><td>Required</td></tr>
+<tr><td>TWILIO_ACCOUNT_SID</td><td>SMS delivery</td><td>Required</td></tr>
+<tr><td>TWILIO_AUTH_TOKEN</td><td>Twilio auth</td><td>Required</td></tr>
+<tr><td>INFISICAL_URL</td><td>Infisical server URL</td><td>Required</td></tr>
+<tr><td>INFISICAL_CLIENT_ID</td><td>Infisical auth</td><td>Required</td></tr>
+<tr><td>INFISICAL_CLIENT_SECRET</td><td>Infisical auth</td><td>Required</td></tr>
+<tr><td>GOOGLE_CLIENT_ID / SECRET</td><td>Google OAuth for GSC</td><td>Required for SEO GSC sync</td></tr>
+<tr><td>CRON_SECRET</td><td>Vercel cron auth</td><td>Required</td></tr>
+<tr><td>AGENCY_SNAPSHOT_SECRET</td><td>Agency engine auth</td><td>Required</td></tr>
+<tr><td>SENTRY_DSN</td><td>Error tracking</td><td>Required</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>13. Deployment</h2>
+<table>
+<tr><th>Aspect</th><th>Details</th></tr>
+<tr><td>Platform</td><td>Vercel</td></tr>
+<tr><td>Auto-deploy</td><td>Yes — from main branch</td></tr>
+<tr><td>Crons</td><td>14 cron jobs (see section 10)</td></tr>
+<tr><td>Secrets</td><td>Infisical (self-hosted Railway) — wired to this engine</td></tr>
+<tr><td>Sentry</td><td>sentry.client.config.ts, sentry.edge.config.ts, sentry.server.config.ts present</td></tr>
+<tr><td>SEO Scripts</td><td>npm run seo:validate, npm run health-check — ts-node scripts</td></tr>
+<tr><td>Migrations</td><td>52 migrations applied to Supabase</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>14. Monitoring &amp; Observability</h2>
+<table>
+<tr><th>Tool</th><th>Coverage</th><th>Status</th></tr>
+<tr><td>Sentry</td><td>Client + Edge + Server</td><td><span class="tag tag-live">LIVE</span></td></tr>
+<tr><td>/api/health</td><td>Infisical connectivity + service status</td><td><span class="tag tag-live">LIVE</span></td></tr>
+<tr><td>/api/agency/snapshot</td><td>Agency metrics (POST)</td><td><span class="tag tag-live">LIVE</span></td></tr>
+<tr><td>SEO health cron</td><td>Daily PageSpeed score tracking in seo_pagespeed_scores</td><td><span class="tag tag-live">ACTIVE</span></td></tr>
+<tr><td>web-vitals</td><td>Core Web Vitals tracking</td><td><span class="tag tag-live">ACTIVE</span></td></tr>
+<tr><td>scripts/site-health-check.ts</td><td>Manual site health check script</td><td><span class="tag tag-live">AVAILABLE</span></td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>15. Error Handling</h2>
+<p>Sentry on all surfaces. error.tsx present. verifyCronSecret() and verifyAgencySecret() on protected routes. Infisical falls back to env vars. API routes return structured JSON errors. PDFKit errors handled server-side. Vapi webhook errors tracked via Sentry.</p>
+</div>
+
+<div class="section">
+<h2>16. Security Posture</h2>
+<div class="critical">CRITICAL: Clerk sk_test_ key in production. Authentication is running in test mode. Immediately rotate to sk_live_ / pk_live_ keys in Vercel env vars.</div>
+<div class="ok">RBAC tables present (migration 009).</div>
+<div class="ok">HIPAA compliance tables (oe_audit_logs, oe_hipaa_events) in place.</div>
+<div class="ok">Infisical for secrets management.</div>
+<div class="ok">Sentry on all surfaces.</div>
+<div class="ok">Data retention cron (Sundays 3am) enforcing HIPAA retention policies.</div>
+<div class="gap">A2P 10DLC registration status not confirmed for Twilio. Verify before SMS campaigns run.</div>
+<div class="gap">VAPI webhook authentication — verify VAPI_WEBHOOK_SECRET is validated on /api/vapi.</div>
+</div>
+
+<div class="section">
+<h2>17. Multi-Tenancy</h2>
+<p>Single dental practice — single tenant deployment. Clerk auth scopes all data to the practice. RBAC handles staff role differentiation (dentist vs front desk vs admin). No multi-org setup required. Agency engine accesses this engine via /api/agency/snapshot.</p>
+</div>
+
+<div class="section">
+<h2>18. User Roles &amp; Permissions</h2>
+<table>
+<tr><th>Role</th><th>Access</th></tr>
+<tr><td>Practice Admin</td><td>Full dashboard — all 30+ modules including HR, financials, settings</td></tr>
+<tr><td>Dentist/Provider</td><td>Schedule, clinical notes (CDT), treatments, treatment plans, AI assist, AI advisor</td></tr>
+<tr><td>Front Desk</td><td>Appointments, leads, patients, messages, billing, proposals, outreach</td></tr>
+<tr><td>Hygienist</td><td>Clinical notes, appointments, patient chart</td></tr>
+<tr><td>Patient</td><td>Portal — appointments, billing, treatments, messages, intake, profile</td></tr>
+</table>
+<div class="ok">RBAC system in place. 5 staff role onboarding flows in onboarding wizard.</div>
+</div>
+
+<div class="section">
+<h2>19. Onboarding Flow</h2>
+<p>5-role onboarding wizard (admin, dentist, front desk, hygienist, billing). Setup checklist with auto-checks. Go-live gate with launch checklist. Test mode toggle in settings. Seed data available via /api/seed. Onboarding state tracked in oe_onboarding_state (migration 030). Training modules with quizzes for 6 topics: HIPAA, OSHA, Clinical Documentation, Scheduling/Insurance, Treatment Presentation, Collections/Financials.</p>
+</div>
+
+<div class="section">
+<h2>20. Core User Journeys</h2>
+<ol>
+<li><strong>New Patient Intake:</strong> Lead → AI draft response → Convert to patient → Send intake form → Patient completes at /portal/intake → Appointment booked → Insurance verified</li>
+<li><strong>Clinical Visit:</strong> Check-in → Clinical notes (CDT template + AI assist) → X-rays (media upload) → Treatment plan presented → Proposal built (Good/Better/Best) → Cherry financing if needed → Patient e-signs at /proposal/[token]</li>
+<li><strong>Billing Flow:</strong> Appointment → Insurance claim → Eligibility check → Payment (Square) → Invoice generated → Write-off tracking if needed</li>
+<li><strong>AI Phone Call:</strong> Patient calls → Vapi AI handles → Transcript + summary stored → Staff reviews in Calls dashboard</li>
+<li><strong>SEO Dashboard:</strong> Daily cron pulls PageSpeed scores → Weekly GSC sync → SEO auto-fix runs Mondays → Monthly SEO report generated and emailed</li>
+<li><strong>No-Show Recovery:</strong> No-show detected every 30 min (Mon-Sat, 1-8pm) → Recovery message sent via SMS/email → Rebook tracked</li>
+</ol>
+</div>
+
+<div class="section">
+<h2>21. Integrations Map</h2>
+<table>
+<tr><th>Integration</th><th>Purpose</th><th>Status</th></tr>
+<tr><td>Square</td><td>Payment processing (primary)</td><td><span class="tag tag-live">ACTIVE</span></td></tr>
+<tr><td>Stripe</td><td>Legacy payments</td><td><span class="tag tag-test">LEGACY</span></td></tr>
+<tr><td>Cherry Financing</td><td>Patient treatment financing in proposals</td><td><span class="tag tag-live">ACTIVE</span></td></tr>
+<tr><td>Vapi</td><td>AI phone call handling, transcripts, summaries</td><td><span class="tag tag-live">ACTIVE</span></td></tr>
+<tr><td>Anthropic Claude</td><td>Clinical notes, briefing, treatment AI, inbox drafts, SEO</td><td><span class="tag tag-live">ACTIVE</span></td></tr>
+<tr><td>Resend</td><td>All email automation (14 cron-driven)</td><td><span class="tag tag-live">ACTIVE</span></td></tr>
+<tr><td>Twilio</td><td>SMS reminders + no-show + lead responses</td><td><span class="tag tag-test">AT RISK — verify A2P 10DLC</span></td></tr>
+<tr><td>Google Search Console</td><td>SEO performance data (daily sync)</td><td><span class="tag tag-live">ACTIVE</span></td></tr>
+<tr><td>PageSpeed API</td><td>PageSpeed scores (daily cron)</td><td><span class="tag tag-live">ACTIVE</span></td></tr>
+<tr><td>Infisical</td><td>Secrets management (Railway)</td><td><span class="tag tag-live">ACTIVE</span></td></tr>
+<tr><td>Vercel Blob</td><td>Media assets + documents</td><td><span class="tag tag-live">ACTIVE</span></td></tr>
+<tr><td>NuStack Agency Engine</td><td>Metrics snapshot (POST /api/agency/snapshot)</td><td><span class="tag tag-live">WIRED</span></td></tr>
+<tr><td>PMS (Dental Software)</td><td>/api/pms — practice management system integration</td><td><span class="tag tag-test">SCOPE UNCLEAR</span></td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>22. Known Issues &amp; Bugs</h2>
+<div class="critical">CRITICAL: Clerk sk_test_ key in production — authentication running in test mode. Users may experience auth issues or test/production data mixing.</div>
+<div class="gap">A2P 10DLC registration status not confirmed — SMS compliance risk.</div>
+<div class="gap">Migration 033 has two files (033_legal_documents.sql + 033_offer_letters_onboarding.sql) — check for conflicts and which ran.</div>
+<div class="gap">Migration 035 has two files (035_document_signing.sql + 035_prefill_data.sql) — same issue.</div>
+<div class="gap">/api/pms integration scope unclear — check if PMS (dental software like Dentrix/Eaglesoft) is actually connected.</div>
+<div class="gap">SPEC-dental-gaps-2026-03-14.md in root — gap analysis from March. Review to confirm gaps have been addressed.</div>
+</div>
+
+<div class="section">
+<h2>23. Performance Considerations</h2>
+<ul>
+<li>206 API routes — largest engine. Ensure Vercel function cold starts are acceptable.</li>
+<li>14 cron jobs — risk of Supabase connection pool exhaustion if crons fire simultaneously. Stagger execution times where possible.</li>
+<li>Media uploads (Vercel Blob) — CDN-backed, fast for patient and staff access.</li>
+<li>Recharts for analytics — SSR-safe config required.</li>
+<li>Web vitals tracking active — use data to optimize LCP/CLS on patient-facing pages.</li>
+<li>SEO health check daily — PageSpeed data available for continuous optimization.</li>
+<li>Vapi transcripts — can be large; ensure /api/vapi route handles large payloads without timeout.</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>24. Rate Limiting</h2>
+<div class="gap">@upstash/ratelimit not found in ak-dental package.json (unlike mindstar). No rate limiting on AI endpoints or public portal APIs. Add Upstash for AI routes, booking, and external-facing APIs. With 206 routes and public portal, this is a significant gap.</div>
+</div>
+
+<div class="section">
+<h2>25. Data Retention &amp; Privacy</h2>
+<div class="ok">Data retention cron implemented: /api/cron/data-retention runs Sundays at 3am.</div>
+<div class="ok">Migration 018_data_retention — data retention policy tables in DB.</div>
+<div class="ok">HIPAA audit logs from migration 016.</div>
+<div class="gap">Verify Nevada dental record retention law (minimum 10 years for adults, 3 years after minor turns 18). Ensure data-retention cron aligns with state law.</div>
+</div>
+
+<div class="section">
+<h2>26. Compliance Requirements</h2>
+<table>
+<tr><th>Requirement</th><th>Status</th></tr>
+<tr><td>HIPAA — PHI protection</td><td>Implemented — oe_audit_logs, oe_hipaa_events, data retention cron, HIPAA training module</td></tr>
+<tr><td>Nevada dental record retention</td><td>Data retention cron exists. Verify NV-specific periods.</td></tr>
+<tr><td>Good Faith Estimates</td><td>Implemented in proposals — /api/proposals includes GFE generation</td></tr>
+<tr><td>Cherry Financing disclosures</td><td>Cherry integration active — verify financing disclosure language in proposal UI</td></tr>
+<tr><td>A2P 10DLC (SMS)</td><td>NOT CONFIRMED — verify with Twilio</td></tr>
+<tr><td>PCI DSS</td><td>N/A — Square handles all card data. No PAN stored in DB.</td></tr>
+<tr><td>Clerk sk_live_ in production</td><td>NOT DONE — CRITICAL gap (see section 16)</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>27. Disaster Recovery</h2>
+<table>
+<tr><th>Aspect</th><th>Status</th></tr>
+<tr><td>Database backups</td><td>Supabase managed backups (daily on Pro plan)</td></tr>
+<tr><td>Media files</td><td>Vercel Blob (S3-backed, redundant)</td></tr>
+<tr><td>Secrets</td><td>Infisical on Railway + Vercel env fallback</td></tr>
+<tr><td>Code</td><td>GitHub</td></tr>
+<tr><td>Vapi dependency</td><td>If Vapi down, AI phone calls fail. Fallback: forward to real number.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>28. Secrets Contract</h2>
+<table>
+<tr><th>Secret</th><th>Where Stored</th><th>Security Tier</th></tr>
+<tr><td style="color:#dc2626;font-weight:bold;">CLERK_SECRET_KEY</td><td>Vercel env</td><td style="color:#dc2626;font-weight:bold;">CRITICAL — currently sk_test_. Must rotate to sk_live_.</td></tr>
+<tr><td>SUPABASE_SERVICE_ROLE_KEY</td><td>Vercel env + Infisical</td><td>Critical</td></tr>
+<tr><td>ANTHROPIC_API_KEY</td><td>Infisical</td><td>Critical</td></tr>
+<tr><td>SQUARE_ACCESS_TOKEN</td><td>Client-provided (practice owner)</td><td>Critical — cannot be autonomously retrieved</td></tr>
+<tr><td>VAPI_API_KEY</td><td>Vercel env / Infisical</td><td>Critical</td></tr>
+<tr><td>TWILIO credentials</td><td>Infisical</td><td>Critical</td></tr>
+<tr><td>RESEND_API_KEY</td><td>Infisical</td><td>High</td></tr>
+<tr><td>GOOGLE_CLIENT_ID / SECRET</td><td>Infisical (OAuth for GSC)</td><td>High</td></tr>
+<tr><td>CRON_SECRET</td><td>Vercel env</td><td>High</td></tr>
+<tr><td>AGENCY_SNAPSHOT_SECRET</td><td>Vercel env</td><td>High</td></tr>
+</table>
+<div class="critical">CLERK_SECRET_KEY is sk_test_ in production. Rotate immediately. sk_test_ keys expose test user data and bypass production auth security.</div>
+<div class="ok">No other secrets found hardcoded in source. .env.local NOT committed.</div>
+</div>
+
+<div class="section">
+<h2>29. Third-Party Dependencies</h2>
+<table>
+<tr><th>Package</th><th>Version</th><th>Purpose</th></tr>
+<tr><td>square</td><td>^44.0.0</td><td>Payment processing</td></tr>
+<tr><td>@infisical/sdk</td><td>^4.0.6</td><td>Secrets management</td></tr>
+<tr><td>@vercel/blob</td><td>^2.3.0</td><td>File/media storage</td></tr>
+<tr><td>pdfkit</td><td>^0.17.2</td><td>PDF generation for proposals/documents</td></tr>
+<tr><td>recharts</td><td>^3.7.0</td><td>Analytics charts</td></tr>
+<tr><td>web-vitals</td><td>^5.1.0</td><td>Core Web Vitals tracking</td></tr>
+<tr><td>zustand</td><td>^5.0.11</td><td>Client state management</td></tr>
+<tr><td>@next/third-parties</td><td>^16.1.6</td><td>Google Analytics / Tag Manager</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>30. Changelog</h2>
+<table>
+<tr><th>Reference</th><th>Changes</th></tr>
+<tr><td>CHANGELOG_ONE_ENGINE.md</td><td>One Engine schema evolution changelog</td></tr>
+<tr><td>CHANGELOG_REMARKETING.md</td><td>Remarketing system changelog</td></tr>
+<tr><td>NOTES.md (2026-03-05)</td><td>Full audit — 30+ dashboard modules marked production-ready</td></tr>
+<tr><td>SPEC-dental-gaps-2026-03-14.md</td><td>Gap analysis — review for unresolved items</td></tr>
+<tr><td>Migrations 001-052</td><td>52 schema migrations — full audit trail in supabase/migrations/</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>31. Roadmap</h2>
+<ul>
+<li>IMMEDIATE: Rotate Clerk sk_test_ to sk_live_ in Vercel env</li>
+<li>Verify A2P 10DLC registration with Twilio</li>
+<li>Resolve duplicate migration numbers (033, 035) — check which ran, consolidate</li>
+<li>Clarify /api/pms integration scope</li>
+<li>Review SPEC-dental-gaps-2026-03-14.md for unresolved gaps</li>
+<li>Add Upstash rate limiting (not in package.json)</li>
+<li>Verify Nevada dental record retention compliance in data-retention cron</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>32. NuStack Agency Connection</h2>
+<div class="ok">Agency snapshot: POST /api/agency/snapshot — captures appointments, patients, proposals, new patients, metrics</div>
+<div class="ok">Agency status, metrics, integrations, SEO endpoints all present</div>
+<div class="ok">This engine is confirmed as one of 11 engines fully wired to agency dashboard</div>
+</div>
+
+<div class="section">
+<h2>33. Client Handoff Checklist</h2>
+<table>
+<tr><th>Item</th><th>Status</th></tr>
+<tr><td style="color:#dc2626;">Rotate Clerk keys to sk_live_ / pk_live_</td><td style="color:#dc2626;">NOT DONE — CRITICAL</td></tr>
+<tr><td>All 52 Supabase migrations applied</td><td>Verify (note: 033 and 035 duplicates)</td></tr>
+<tr><td>Square credentials from practice owner</td><td>Client action required</td></tr>
+<tr><td>Vapi phone number configured</td><td>Verify VAPI_PHONE_NUMBER_ID</td></tr>
+<tr><td>Google Search Console OAuth configured</td><td>Verify GSC access granted (Little Roots pattern)</td></tr>
+<tr><td>Twilio A2P 10DLC registered</td><td>Verify</td></tr>
+<tr><td>Infisical wired and Railway running</td><td>Verify /api/health</td></tr>
+<tr><td>All 14 cron jobs firing in Vercel</td><td>Check Vercel cron logs</td></tr>
+<tr><td>HIPAA audit log capturing PHI access</td><td>Verify oe_audit_logs</td></tr>
+<tr><td>Cherry Financing integration tested</td><td>Test in staging</td></tr>
+<tr><td>Staff training modules completed</td><td>Run /api/seed if needed</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>34. Critical Gaps</h2>
+<div class="critical">1. Clerk sk_test_ key in production — IMMEDIATE action required. Rotate to sk_live_. This is the most critical security issue in the fleet.</div>
+<div class="critical">2. Duplicate migration files (033, 035) — schema integrity risk. Verify which migrations ran and resolve conflicts.</div>
+<div class="gap">3. No rate limiting — 206 routes, public portal, AI endpoints all unprotected from abuse. Add @upstash/ratelimit.</div>
+<div class="gap">4. A2P 10DLC not confirmed — Twilio SMS compliance gap.</div>
+<div class="gap">5. /api/pms integration scope unclear — unknown integration status.</div>
+</div>
+
+<div class="section">
+<h2>35. Bible Score Card</h2>
+<table>
+<tr><th>Section</th><th>Score</th><th>Notes</th></tr>
+<tr><td>1-5 Identity, Business Model, Stack, Architecture, DB</td><td>5/5</td><td>Fully documented — most complete engine</td></tr>
+<tr><td>6-10 API, Auth, Payments, Email, Crons</td><td>3/5</td><td>-1 auth: sk_test_ CRITICAL, -1 crons: 14 jobs unverified</td></tr>
+<tr><td>11-15 AI, Env, Deploy, Monitoring, Errors</td><td>5/5</td><td>All documented, web-vitals + SEO monitoring</td></tr>
+<tr><td>16-20 Security, Multi-tenancy, Roles, Onboarding, Journeys</td><td>3/5</td><td>-1 security: sk_test_ CRITICAL, -1 rate limiting missing</td></tr>
+<tr><td>21-25 Integrations, Issues, Performance, Rate Limiting, Retention</td><td>3/5</td><td>-1 issues: criticals present, -1 rate limiting: absent</td></tr>
+<tr><td>26-30 Compliance, DR, Secrets, Dependencies, Changelog</td><td>4/5</td><td>-1 secrets: sk_test_ critical flagged in section 28</td></tr>
+<tr><td>31-35 Roadmap, Agency, Handoff, Gaps, Scorecard</td><td>3/5</td><td>-1 handoff: Clerk critical, -1 gaps: migration conflicts</td></tr>
+</table>
+<p><strong>Final Score: 26/35</strong></p>
+<h3>Top 3 Gaps</h3>
+<div class="critical">1. Clerk sk_test_ key in production — rotate to sk_live_ immediately</div>
+<div class="critical">2. Duplicate migrations (033, 035) — schema integrity risk, resolve before next migration</div>
+<div class="gap">3. No rate limiting — 206 routes + public portal exposed without abuse protection</div>
+</div>
+
+</body>
+</html>
