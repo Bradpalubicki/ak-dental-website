@@ -24,7 +24,7 @@ tr:nth-child(even){background:#f9fafb}
 </head>
 <body>
 <h1>AK Ultimate Dental — Operating Bible v1</h1>
-<p><strong>Generated:</strong> 2026-03-25 | <strong>Score:</strong> <span class="score">26/35</span></p>
+<p><strong>Generated:</strong> 2026-03-25 | <strong>Updated:</strong> 2026-03-27 | <strong>Score:</strong> <span class="score">28/37</span></p>
 
 <div class="section">
 <h2>1. Product Identity</h2>
@@ -497,12 +497,96 @@ tr:nth-child(even){background:#f9fafb}
 <tr><td>21-25 Integrations, Issues, Performance, Rate Limiting, Retention</td><td>3/5</td><td>-1 issues: criticals present, -1 rate limiting: absent</td></tr>
 <tr><td>26-30 Compliance, DR, Secrets, Dependencies, Changelog</td><td>4/5</td><td>-1 secrets: sk_test_ critical flagged in section 28</td></tr>
 <tr><td>31-35 Roadmap, Agency, Handoff, Gaps, Scorecard</td><td>3/5</td><td>-1 handoff: Clerk critical, -1 gaps: migration conflicts</td></tr>
+<tr><td>36-37 Launch Checklist, Live State</td><td>2/2</td><td>Added 2026-03-27 — 19-point checklist + live state documented</td></tr>
 </table>
-<p><strong>Final Score: 26/35</strong></p>
+<p><strong>Final Score: 28/37</strong></p>
 <h3>Top 3 Gaps</h3>
-<div class="critical">1. Clerk sk_test_ key in production — rotate to sk_live_ immediately</div>
+<div class="critical">1. Clerk sk_test_ key in production — rotate to sk_live_ immediately (Brad must do at clerk.com)</div>
 <div class="critical">2. Duplicate migrations (033, 035) — schema integrity risk, resolve before next migration</div>
 <div class="gap">3. No rate limiting — 206 routes + public portal exposed without abuse protection</div>
+</div>
+
+<div class="section">
+<h2>36. Launch Checklist (4-Tier, 19-Point)</h2>
+<h3>Tier 1 — Security &amp; Auth (CRITICAL — block launch)</h3>
+<table>
+<tr><th>#</th><th>Check</th><th>Status</th><th>Owner</th></tr>
+<tr><td>1</td><td>Clerk PUBLISHABLE_KEY uses pk_live_ prefix</td><td><span class="tag tag-broken">FAIL — pk_test_ in prod</span></td><td>Brad — rotate at clerk.com</td></tr>
+<tr><td>2</td><td>Clerk SECRET_KEY uses sk_live_ prefix</td><td><span class="tag tag-broken">FAIL — sk_test_ in prod</span></td><td>Brad — rotate at clerk.com</td></tr>
+<tr><td>3</td><td>SENTRY_DSN set in Vercel production</td><td><span class="tag tag-live">PASS</span></td><td>Done 2026-03-24</td></tr>
+<tr><td>4</td><td>NEXT_PUBLIC_SENTRY_DSN set in all environments</td><td><span class="tag tag-live">PASS</span></td><td>Done</td></tr>
+<tr><td>5</td><td>No API keys hardcoded in source files</td><td><span class="tag tag-live">PASS</span></td><td>All via env vars</td></tr>
+</table>
+
+<h3>Tier 2 — Domain &amp; DNS (required for client access)</h3>
+<table>
+<tr><th>#</th><th>Check</th><th>Status</th><th>Action Required</th></tr>
+<tr><td>6</td><td>akultimatedental.com added to Vercel project</td><td><span class="tag tag-live">PASS</span></td><td>Done 2026-03-27</td></tr>
+<tr><td>7</td><td>DNS A record: akultimatedental.com → 76.76.21.21</td><td><span class="tag tag-broken">PENDING</span></td><td>Brad — update at GoDaddy/ProSites. Current NS: ns1-3.prosites.com</td></tr>
+<tr><td>8</td><td>www.akultimatedental.com CNAME → cname.vercel-dns.com</td><td><span class="tag tag-broken">PENDING</span></td><td>Add after A record propagates</td></tr>
+<tr><td>9</td><td>SSL certificate issued by Vercel</td><td><span class="tag tag-broken">PENDING</span></td><td>Auto-issued after DNS propagation (~24-48h)</td></tr>
+<tr><td>10</td><td>Clerk production domain whitelist includes akultimatedental.com</td><td><span class="tag tag-broken">PENDING</span></td><td>Brad — add in Clerk dashboard → Domains after Clerk live key rotation</td></tr>
+</table>
+
+<h3>Tier 3 — Infrastructure (required for production reliability)</h3>
+<table>
+<tr><th>#</th><th>Check</th><th>Status</th><th>Notes</th></tr>
+<tr><td>11</td><td>Vercel latest deploy: READY</td><td><span class="tag tag-live">PASS</span></td><td>dpl_GtTmTfV9 — 2026-03-21</td></tr>
+<tr><td>12</td><td>Supabase RLS enabled on all oe_ tables</td><td><span class="tag tag-live">PASS</span></td><td>Verified in build</td></tr>
+<tr><td>13</td><td>Sentry error monitoring receiving events</td><td><span class="tag tag-test">VERIFY</span></td><td>DSN set — trigger test error to confirm</td></tr>
+<tr><td>14</td><td>Inngest background jobs registered and healthy</td><td><span class="tag tag-test">VERIFY</span></td><td>14 cron jobs — confirm in Inngest dashboard</td></tr>
+<tr><td>15</td><td>Twilio A2P 10DLC campaign registered</td><td><span class="tag tag-broken">PENDING</span></td><td>SMS compliance gap — register before sending patient SMS</td></tr>
+</table>
+
+<h3>Tier 4 — Client Readiness (required before client handoff)</h3>
+<table>
+<tr><th>#</th><th>Check</th><th>Status</th><th>Notes</th></tr>
+<tr><td>16</td><td>Test user akultimatedentalpc@yahoo.com can log in</td><td><span class="tag tag-test">VERIFY after Clerk rotation</span></td><td>Test with live keys after rotation</td></tr>
+<tr><td>17</td><td>Patient portal accessible at /patient-portal</td><td><span class="tag tag-live">PASS</span></td><td>Built and deployed</td></tr>
+<tr><td>18</td><td>Stripe payment flow tested in production mode</td><td><span class="tag tag-test">VERIFY</span></td><td>Confirm Stripe is in live mode (not test mode)</td></tr>
+<tr><td>19</td><td>Staff brief delivered and practice trained</td><td><span class="tag tag-broken">PENDING</span></td><td>Required before go-live per NuStack OS standard</td></tr>
+</table>
+
+<h3>Clerk Rotation — Exact Steps for Brad</h3>
+<div class="critical">
+<strong>Step 1:</strong> Go to <a href="https://clerk.com">clerk.com</a> → Sign in → Select "AK Ultimate Dental" application<br>
+<strong>Step 2:</strong> In left sidebar → API Keys → Copy "Publishable key" (starts with pk_live_) and "Secret keys" → Copy secret key (starts with sk_live_)<br>
+<strong>Step 3:</strong> In Vercel → ak-dental-website project → Settings → Environment Variables:<br>
+&nbsp;&nbsp;• Update NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY → paste pk_live_ value (Production)<br>
+&nbsp;&nbsp;• Update CLERK_SECRET_KEY → paste sk_live_ value (Production)<br>
+<strong>Step 4:</strong> In Clerk dashboard → Domains → Add Production Domain → akultimatedental.com<br>
+<strong>Step 5:</strong> Redeploy Vercel (Settings → Deployments → Redeploy latest)<br>
+<strong>Step 6:</strong> Test login with akultimatedentalpc@yahoo.com / AKDental2026!<br>
+<strong>Note:</strong> You CANNOT use pk_test_/sk_test_ keys on a custom production domain — Clerk will reject auth requests.
+</div>
+</div>
+
+<div class="section">
+<h2>37. Live State (as of 2026-03-27)</h2>
+<table>
+<tr><th>System</th><th>State</th><th>Details</th></tr>
+<tr><td>Vercel Deploy</td><td><span class="tag tag-live">READY</span></td><td>dpl_GtTmTfV9GGWS5NQGzESxYZY4edgm — ak-dental-website-pe953o09h</td></tr>
+<tr><td>Live URL</td><td><span class="tag tag-live">LIVE</span></td><td>ak-dental-website.vercel.app</td></tr>
+<tr><td>Custom Domain</td><td><span class="tag tag-broken">DNS PENDING</span></td><td>akultimatedental.com added to Vercel — awaiting DNS A record update at ProSites/GoDaddy → 76.76.21.21</td></tr>
+<tr><td>Clerk Auth</td><td><span class="tag tag-broken">CRITICAL</span></td><td>sk_test_ / pk_test_ in production — must rotate to live keys</td></tr>
+<tr><td>Sentry</td><td><span class="tag tag-live">WIRED</span></td><td>SENTRY_DSN + NEXT_PUBLIC_SENTRY_DSN set in all environments</td></tr>
+<tr><td>Supabase DB</td><td><span class="tag tag-live">LIVE</span></td><td>PostgreSQL + RLS — all oe_ tables migrated</td></tr>
+<tr><td>Stripe Payments</td><td><span class="tag tag-test">VERIFY MODE</span></td><td>Confirm live vs test mode in Stripe dashboard</td></tr>
+<tr><td>Twilio SMS</td><td><span class="tag tag-test">CONFIGURED</span></td><td>Keys set — A2P 10DLC not registered (SMS compliance gap)</td></tr>
+<tr><td>Inngest Jobs</td><td><span class="tag tag-test">VERIFY</span></td><td>14 cron jobs registered — confirm active in Inngest dashboard</td></tr>
+<tr><td>Rate Limiting</td><td><span class="tag tag-broken">ABSENT</span></td><td>206 routes unprotected — @upstash/ratelimit not implemented</td></tr>
+<tr><td>Agency Connection</td><td><span class="tag tag-live">WIRED</span></td><td>nustack-agency-engine connected</td></tr>
+<tr><td>NuStack Bible</td><td><span class="tag tag-live">28/37</span></td><td>Updated 2026-03-27 — 37-section v1 with launch checklist + live state</td></tr>
+</table>
+
+<h3>Immediate Action Queue (Priority Order)</h3>
+<div class="critical">🔴 P0 — Rotate Clerk keys to sk_live_/pk_live_ (see Section 36 steps). Blocks all production auth.</div>
+<div class="critical">🔴 P0 — Update DNS: akultimatedental.com A record → 76.76.21.21 at ProSites control panel. Blocks custom domain.</div>
+<div class="gap">🟡 P1 — Add akultimatedental.com to Clerk production domains (after key rotation)</div>
+<div class="gap">🟡 P1 — Register Twilio A2P 10DLC campaign before sending any patient SMS</div>
+<div class="gap">🟡 P2 — Implement @upstash/ratelimit on API routes and public portal</div>
+<div class="gap">🟡 P2 — Verify Inngest 14 cron jobs active in dashboard</div>
+<div class="gap">🟡 P3 — Resolve duplicate migrations 033 + 035</div>
 </div>
 
 </body>
