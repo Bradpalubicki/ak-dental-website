@@ -40,15 +40,32 @@ export async function POST(req: NextRequest) {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
+        const amountDollars = (session.amount_total || 0) / 100;
         await supabase.from("oe_billing_claims").insert({
           stripe_session_id: session.id,
-          stripe_customer_id: session.customer as string,
-          amount_total: (session.amount_total || 0) / 100,
+          stripe_customer_id: session.customer as string | null,
+          amount_total: amountDollars,
           currency: session.currency || "usd",
           status: "paid",
           payment_type: "checkout",
           metadata: session.metadata || {},
+          // Required NOT NULL columns — patient/insurance resolved by payment flow, not webhook
+          billed_amount: amountDollars,
+          patient_responsibility: amountDollars,
+          insurance_paid: 0,
         });
+
+        // Also mark the oe_payments record as completed if we have one
+        if (session.id) {
+          await supabase
+            .from("oe_payments")
+            .update({
+              status: "completed",
+              stripe_payment_intent_id: session.payment_intent as string | null,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("stripe_checkout_session_id", session.id);
+        }
         break;
       }
 

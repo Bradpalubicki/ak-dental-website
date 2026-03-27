@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
     const session = await stripe.checkout.sessions.create(sessionParams);
 
     // Record pending payment
-    await supabase.from("oe_payments").insert({
+    const { error: insertError } = await supabase.from("oe_payments").insert({
       patient_id: patientId,
       treatment_plan_id: treatmentPlanId,
       stripe_checkout_session_id: session.id,
@@ -137,6 +137,11 @@ export async function POST(req: NextRequest) {
       payment_method: "card",
       description: `Payment for: ${plan.title}`,
     });
+
+    if (insertError) {
+      console.error("oe_payments insert error:", insertError.message);
+      // Non-fatal: session was created, return URL even if DB record fails
+    }
 
     return NextResponse.json({ url: session.url, sessionId: session.id });
   } catch (error) {
