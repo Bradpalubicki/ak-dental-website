@@ -66,3 +66,108 @@ Color system for Accrefi/NuStack work:
 - Green: #16A34A (free/per-transaction tools)
 - Gold chips: NuStack-built tools
 
+
+
+---
+
+## RUN QUESTIONS
+Trigger: Brad types "Run Questions" or /rq
+Action: STOP all build work immediately. Run the full loop before writing a single line of code.
+
+---
+
+Q1 — 10 MUST-HAVE ITEMS
+List the 10 universal must-haves. For each one, state: PRESENT or MISSING.
+1. /api/health endpoint — runtime dependency check
+2. CLAUDE.md with populated Briefing Card block
+3. Sentry DSN confirmed in Vercel production env
+4. All Clerk keys are LIVE (no sk_test_ in production)
+5. Bible score is linter-verified (not self-reported)
+6. Zone 1 / Zone 2 sections defined in Bible
+7. Every cron in vercel.json documented with schedule + status
+8. Every DB table documented from schema source files
+9. Operator access model explicit (Brad / Ken / CC / CFC)
+10. Dependency map — what connects to this engine
+Add project-specific must-haves as needed.
+
+---
+
+Q2 — 10 IMPROVEMENTS
+Read: current Bible, Sentry top issues, last 3 build results, Briefing Card.
+List 10 improvements. Tag each P1 / P2 / P3.
+P1 = blocking production or blocking next build.
+P2 = high impact, not blocking.
+P3 = enhancement, schedulable.
+Format: [P1] Fix: description — NUS-XXX or file new Linear issue.
+
+---
+
+Q3 — BUILD WITHOUT ASSUMING
+Run ALL of these commands and report every result before answering Q3:
+
+  find src/app/api -name "route.ts" | wc -l
+  find src/app/api -name "route.ts" | sed 's|src/app/api/||' | cut -d'/' -f1 | sort | uniq -c
+  cat vercel.json | grep path
+  find src -name "*.ts" -path "*/db/schema*" | xargs cat
+  ls supabase/migrations/ | sort
+  cat CLAUDE.md
+  cat .env.local | grep -v "#" | cut -d= -f1
+  Vercel MCP: last deploy status + commit hash
+  Sentry MCP: open issue count + top 5 errors by frequency
+
+Then answer:
+- What is missing that would block the build?
+- What Brad decisions are needed before code is written?
+
+---
+
+Q4 — 100 USERS TODAY
+Evaluate each category. State the failure mode and severity.
+Database: N+1 queries? Missing indexes? RLS gaps?
+Crons: Race conditions at volume?
+Auth: Clerk rate limits at concurrent sessions?
+Storage: Bucket scope verified in browser?
+Payments: Stripe idempotency? Duplicate charge risk?
+Email: Resend rate limits at user volume?
+AI: Anthropic per-minute throttle risk?
+Monitoring: Sentry noise masking real errors?
+Onboarding: Cold account first-run tested?
+Data isolation: Client A data visible to Client B in browser?
+
+---
+
+Q5 — GAPS THAT FORCE A REBUILD
+List every gap discovered in Q3 and Q4 that, if found after this session ends,
+would require a rebuild or rollback.
+For each: file a Linear issue tagged research-gap.
+
+---
+
+STANDING RULES — These apply on every build, not just on Run Questions:
+
+ROLLBACK: Before pushing any commit, identify the last known-good commit hash
+and document the revert command. State it in the build result.
+
+SUCCESS SIGNAL: TypeScript compiling is NOT a success signal. tsc --noEmit
+passing means nothing about runtime. Every build requires a runtime smoke test:
+hit /api/health, test one authenticated route, confirm one DB write returned
+the expected result.
+
+MIGRATIONS: Before any session touching the DB schema, run:
+  ls supabase/migrations/ | sort
+Confirm no gaps in the sequence. A missing migration is a silent production killer.
+
+ENV VAR PARITY: .env.local, Vercel Preview, and Vercel Production are three
+separate environments. Confirm key parity across all three before any build
+that adds or changes env vars.
+
+USER TYPE: Before writing any page or route, confirm: who is the authenticated
+user for this surface? Brad only? Client with Clerk account? Unauthenticated
+borrower? Anonymous public? State it before writing.
+
+INNGEST: An event-driven feature is not complete until Inngest function
+registration is confirmed. A deployed but unregistered function silently never
+fires. Confirm registration before closing any Inngest task.
+
+FILE GAPS: Every P1 gap from Q3 or Q4 goes to Linear with label research-gap
+before code is written. Gaps do not live only in this terminal session.
