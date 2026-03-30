@@ -171,3 +171,31 @@ fires. Confirm registration before closing any Inngest task.
 
 FILE GAPS: Every P1 gap from Q3 or Q4 goes to Linear with label research-gap
 before code is written. Gaps do not live only in this terminal session.
+
+
+---
+
+## CHALLENGE PROTOCOL
+
+Before writing each file:
+State whether the spec's assumption for that file is still valid
+given everything built so far. If it is not: stop and surface to CA
+before continuing.
+
+If you find yourself writing logic the spec never specified:
+Stop. State the assumption explicitly. Surface to CA before continuing.
+
+Mid-build checkpoint — mandatory:
+After the DB layer is complete, before writing any route or component:
+Ask: does this schema actually produce what the UI spec describes?
+If the answer is no or unclear: stop. Surface to CA before continuing.
+
+CA does not want to hear about this after the file is written.
+CA wants to hear about it before.
+
+## SECRETS RULE
+All API keys and secrets live in Doppler.
+Never create credentials.md or any secrets file.
+Never paste a key into chat, Notion, or a .env file committed to git.
+To get a key: doppler run -- [command] or vault_get_key from Brain MCP.
+To add a new key: doppler secrets set KEY_NAME=value --project nustack-[engine] --config prd
