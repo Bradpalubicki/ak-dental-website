@@ -1,3 +1,11 @@
+## REPO IDENTITY
+ENGINE_NAME: AK Dental
+NOTION_BIBLE_PAGE_ID: 32f663704e4081afb964eddeab7b40e1
+DOPPLER_PROJECT: nustack-ak-dental
+LAST_UPDATED: 2026-04-04
+GLOBAL_HUB_PAGE_ID: PENDING
+# Hub instruction: when GLOBAL_HUB_PAGE_ID is no longer PENDING, fetch that Notion page at session start before doing anything else.
+
 # NuStack Global Session Protocol
 > This block is the same in every NuStack repo. Do not edit it locally.
 > Last updated: 2026-03-28
