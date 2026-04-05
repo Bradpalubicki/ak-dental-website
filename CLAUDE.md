@@ -79,8 +79,9 @@ Color system for Accrefi/NuStack work:
 ---
 
 ## RUN QUESTIONS
-Trigger: Brad types "Run Questions" or /rq
-Action: STOP all build work immediately. Run the full loop before writing a single line of code.
+Run Questions: https://www.notion.so/338663704e4081e3939de2f3b7b6c4d3 (v4.3 OPERATIVE — reference only, do not copy)
+Trigger: Brad says "run the questions" or "/run-questions" — Two-Pass default
+Single-pass: Brad says "quick pass" or "CC only"
 
 ---
 
