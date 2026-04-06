@@ -211,3 +211,12 @@ Never create credentials.md or any secrets file.
 Never paste a key into chat, Notion, or a .env file committed to git.
 To get a key: doppler run -- [command] or vault_get_key from Brain MCP.
 To add a new key: doppler secrets set KEY_NAME=value --project nustack-[engine] --config prd
+
+## Brad Visibility Rules
+Brad Visibility Rules: https://www.notion.so/33a663704e408157bfc5e85d034895cb
+Before writing any NEEDS BRAD item:
+  - Tier 1 (system handles it): do NOT surface to Brad. Log in CLAUDE.md only.
+  - Tier 2 (action card needed): file to /api/credential-actions. Do NOT put in chat.
+  - Tier 3 (production affected): fire Twilio SMS via agency-engine. Then log.
+  - Tier 4 (genuine decision): surface to Brad in chat as A vs B with CA recommendation.
+Default: if you're unsure which tier, it's Tier 2. File a card, not a chat message.
