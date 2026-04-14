@@ -220,3 +220,43 @@ Before writing any NEEDS BRAD item:
   - Tier 3 (production affected): fire Twilio SMS via agency-engine. Then log.
   - Tier 4 (genuine decision): surface to Brad in chat as A vs B with CA recommendation.
 Default: if you're unsure which tier, it's Tier 2. File a card, not a chat message.
+
+## Hero Section Standard
+
+Every marketing page / homepage MUST have a hero section with:
+
+### Layout
+- Desktop: Two-column grid — text LEFT, visual RIGHT
+- Mobile: Single column — text first, visual below
+- Min height: 80vh
+- Character fills right column with shadow + rounded corners
+
+### Left column (text) must include IN ORDER:
+1. Social proof pill at top (star rating + one testimonial quote, customer name + city)
+2. H1 — bold, brand primary color, with ONE accent phrase in brand orange/accent
+3. Subline — 1-2 sentences, what it is + who it's for + key differentiator
+4. Trust bullets — 3 items max, checkmark + short phrase
+5. Two CTAs — primary (filled, brand orange) + secondary (outlined, brand green/dark)
+
+### Right column (visual):
+- Hero image or product shot
+- Rounded corners, drop shadow
+- Floating stat badge on image (bottom-left preferred): big number + label
+
+### Bottom of hero — HIGHLIGHT STRIP (MANDATORY)
+- Full-width dark brand color bar (dark green, navy, or primary dark)
+- 4 columns on desktop, 2x2 on mobile
+- Each column: large bold stat or label + small descriptor below in lighter color
+- Content: the 4 most compelling differentiators for that specific vertical
+- Height: ~60-80px
+- Sits at the absolute bottom of the hero section, flush
+
+### Example strip content by vertical:
+| Vertical | Col 1 | Col 2 | Col 3 | Col 4 |
+|---|---|---|---|---|
+| Kids art/education | 48hrs — Art returned | Local Only — Never shipped | No Surprises — Fixed pricing | Female-Owned — Las Vegas, NV |
+| Dental | Same-Day — Emergency slots | In-Network — Most insurances | 5★ Reviews — 200+ patients | Local — [City], [State] |
+| Legal/attorney | Free — Initial consultation | 20+ Years — Combined experience | No Fee — Unless you win | Local — [City] courts |
+| Equipment rental | Same-Day — Delivery available | No Deposit — Credit card hold | Local Fleet — [City] area | 24/7 — Emergency line |
+| Counseling/therapy | Private — HIPAA compliant | Same-Week — New patient slots | Sliding Scale — Available | Telehealth — All Nevada |
+| SaaS/tech | Free Trial — 14 days | No Card — Required to start | Cancel — Anytime | Live Support — Real humans |
