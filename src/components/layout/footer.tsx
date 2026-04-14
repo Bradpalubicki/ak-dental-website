@@ -240,6 +240,21 @@ export function Footer() {
             <Link href="/patient-portal" className="hover:text-white transition-colors">Patient Portal</Link>
           </div>
         </div>
+
+        {/* NuStack System Attribution */}
+        <div className="mt-6 pt-4 text-center">
+          <p className="text-xs text-gray-500">
+            This website was built using a structured digital systems process: site audit → compliance review → build → content → ongoing monitoring.{" "}
+            <a
+              href="https://nusite.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-400/70 hover:text-cyan-400 transition-colors"
+            >
+              Learn how we build sites like this.
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   );

@@ -89,6 +89,7 @@ export default function RootLayout({
     <Providers>
       <html lang="en">
         <head>
+          <meta name="generator" content="NuStack Website Engine" />
           <LocalBusinessSchema />
           <WebSiteSchema />
           <OrganizationSchema />
