@@ -17,15 +17,6 @@ export const metadata: Metadata = {
   },
 };
 
-const beforeAfters = [
-  { src: "/images/crowns-bridges/ba-full-smile-male-crowns.jpg",    alt: "Before and after full smile crown restoration — Dr. Chireau Las Vegas" },
-  { src: "/images/crowns-bridges/ba-upper-arch-full-crowns.jpg",    alt: "Before and after full upper arch porcelain crowns" },
-  { src: "/images/crowns-bridges/ba-anterior-crowns-akdental.jpg",  alt: "Before and after anterior crown restoration — AK Ultimate Dental" },
-  { src: "/images/crowns-bridges/ba-full-arch-worn-to-crowns.jpg",  alt: "Before and after worn teeth rebuilt with porcelain crowns" },
-  { src: "/images/crowns-bridges/ba-upper-anterior-crowns-1.jpg",   alt: "Before and after upper anterior porcelain crowns" },
-  { src: "/images/crowns-bridges/ba-anterior-crowns-closeup.jpg",   alt: "Before and after anterior crown closeup — Dr. Alex Chireau" },
-];
-
 export default function CrownsMayPage() {
   return (
     <div className="min-h-screen" style={{ background: "#05090f", color: "#f0f0f0", fontFamily: "'Inter', system-ui, sans-serif" }}>
@@ -59,7 +50,6 @@ export default function CrownsMayPage() {
 
       {/* ── HERO ───────────────────────────────────────────── */}
       <section className="relative px-5 md:px-10 pt-10 pb-14 md:pt-16 md:pb-20 overflow-hidden">
-
         {/* Ambient glow */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div style={{ position: "absolute", top: "-10%", left: "-5%", width: "55%", height: "70%", background: "radial-gradient(ellipse, rgba(245,200,66,0.07) 0%, transparent 70%)", borderRadius: "50%" }} />
@@ -79,7 +69,6 @@ export default function CrownsMayPage() {
                 <span className="text-xs font-medium" style={{ color: "#c8c8c8" }}>{siteConfig.ratings.count} Five-Star Google Reviews</span>
               </div>
 
-              {/* Headline */}
               <h1 className="font-black leading-[1.08] mb-5" style={{ fontSize: "clamp(2.4rem, 6vw, 4rem)", letterSpacing: "-0.02em" }}>
                 <span style={{ color: "#e8e8e8" }}>A Crown Worth</span>{" "}
                 <br className="hidden sm:block" />
@@ -103,7 +92,6 @@ export default function CrownsMayPage() {
                 Once they fill, pricing returns to standard. No exceptions.
               </p>
 
-              {/* Bullets */}
               <div className="space-y-3 mb-9">
                 {[
                   "Permanent CEREC crown designed, milled & placed same day — no temporaries",
@@ -120,7 +108,6 @@ export default function CrownsMayPage() {
                 ))}
               </div>
 
-              {/* CTAs */}
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link
                   href="/appointment"
@@ -146,21 +133,19 @@ export default function CrownsMayPage() {
               </p>
             </div>
 
-            {/* RIGHT — hero image */}
+            {/* RIGHT — best B/A photo as hero */}
             <div className="relative mt-2 lg:mt-0">
-              {/* Price badge */}
               <div className="absolute -top-3 -right-3 md:-top-5 md:-right-5 z-20 text-center rounded-2xl px-4 py-3 shadow-2xl" style={{ background: "linear-gradient(135deg, #f5c842 0%, #d4a017 100%)", boxShadow: "0 12px 40px rgba(245,200,66,0.4)" }}>
                 <p className="text-black text-[10px] font-black uppercase tracking-widest">May Rate</p>
                 <p className="text-black text-2xl md:text-3xl font-black leading-none">$1,500</p>
                 <p className="text-black/50 text-xs line-through">$3,000</p>
               </div>
 
-              {/* Main image */}
               <div className="relative rounded-2xl md:rounded-3xl overflow-hidden" style={{ border: "1px solid rgba(245,200,66,0.2)", boxShadow: "0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05)" }}>
-                <div className="relative aspect-[4/5] w-full">
+                <div className="relative w-full" style={{ aspectRatio: "4/5" }}>
                   <Image
                     src="/images/crowns-bridges/ba-full-smile-male-crowns.jpg"
-                    alt="Real patient before and after full smile crown restoration — Dr. Alex Chireau, AK Ultimate Dental Las Vegas"
+                    alt="Real patient — full smile crown restoration by Dr. Alex Chireau, Las Vegas"
                     fill
                     className="object-cover"
                     priority
@@ -170,13 +155,12 @@ export default function CrownsMayPage() {
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5">
                   <div className="rounded-xl px-4 py-3" style={{ background: "rgba(5,9,15,0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(245,200,66,0.2)" }}>
-                    <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: "#f5c842" }}>Real Patient · @Dr.Chireu</p>
+                    <p className="text-xs font-bold uppercase tracking-wider mb-0.5" style={{ color: "#f5c842" }}>Real Patient · Dr. Chireau</p>
                     <p className="text-sm font-semibold text-white">Full smile restoration — custom porcelain crowns</p>
                   </div>
                 </div>
               </div>
 
-              {/* Slots remaining */}
               <div className="mt-3 flex items-center justify-center gap-2 rounded-xl py-2.5 px-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
                 <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
                 <p className="text-xs font-medium" style={{ color: "#9aa5b4" }}>30 Grand Opening slots available · Las Vegas, NV</p>
@@ -214,8 +198,38 @@ export default function CrownsMayPage() {
         </div>
       </section>
 
+      {/* ── RESULT #1 — full-width feature ────────────────── */}
+      <section className="px-5 py-14 md:py-20">
+        <div className="max-w-5xl mx-auto">
+          <p className="text-xs uppercase tracking-[0.2em] font-semibold mb-6 text-center" style={{ color: "#f5c842" }}>Real Patient Results</p>
+          <div className="relative rounded-2xl md:rounded-3xl overflow-hidden w-full" style={{ aspectRatio: "16/7", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)" }}>
+            <Image
+              src="/images/crowns-bridges/ba-upper-arch-full-crowns.jpg"
+              alt="Before and after — full upper arch porcelain crown restoration by Dr. Alex Chireau"
+              fill
+              className="object-cover object-center"
+              sizes="100vw"
+            />
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(5,9,15,0.65) 0%, transparent 55%)" }} />
+            <div className="absolute bottom-0 left-0 right-0 p-5 md:p-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: "#f5c842" }}>Full Upper Arch Restoration</p>
+                <p className="text-white font-semibold text-sm md:text-base">Custom porcelain crowns — designed and placed same day</p>
+              </div>
+              <Link
+                href="/appointment"
+                className="inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold whitespace-nowrap"
+                style={{ background: "linear-gradient(135deg, #f5c842 0%, #e8a020 100%)", color: "#000" }}
+              >
+                Get This Result <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── ABOUT DR. ALEX ─────────────────────────────────── */}
-      <section className="py-16 md:py-24 px-5">
+      <section className="py-16 md:py-24 px-5 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
 
@@ -250,7 +264,7 @@ export default function CrownsMayPage() {
             </div>
 
             <div className="relative order-1 md:order-2">
-              <div className="relative rounded-2xl md:rounded-3xl overflow-hidden aspect-[3/4]" style={{ border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 24px 80px rgba(0,0,0,0.5)" }}>
+              <div className="relative rounded-2xl md:rounded-3xl overflow-hidden" style={{ aspectRatio: "3/4", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 24px 80px rgba(0,0,0,0.5)" }}>
                 <Image
                   src="/dr-alex-headshot.jpg"
                   alt="Dr. Alex Chireau — AK Ultimate Dental, Las Vegas, NV"
@@ -273,47 +287,40 @@ export default function CrownsMayPage() {
         </div>
       </section>
 
-      {/* ── BEFORE & AFTER GALLERY ─────────────────────────── */}
-      <section className="py-16 md:py-24 px-5 border-t" style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.015)" }}>
+      {/* ── RESULT PAIR #2 — after Dr. Alex ───────────────── */}
+      <section className="px-5 py-10 md:py-14" style={{ background: "rgba(255,255,255,0.015)" }}>
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10 md:mb-14">
-            <p className="text-xs uppercase tracking-[0.2em] font-semibold mb-3" style={{ color: "#f5c842" }}>The Results</p>
-            <h2 className="font-black leading-tight mb-4" style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", letterSpacing: "-0.02em", color: "#f0f0f0" }}>
-              Real Patients. No Filters.
-            </h2>
-            <p className="text-base max-w-2xl mx-auto" style={{ color: "#9aa5b4" }}>
-              Every photo below is Dr. Chireau&apos;s own clinical work — photographed in-office at AK Ultimate Dental.
-              Before and after. Zero editing.
-            </p>
-          </div>
-
-          {/* Gallery grid — 1 large + 5 smaller on mobile: 2-col; desktop: 3-col */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-            {beforeAfters.map((img, i) => (
-              <div
-                key={i}
-                className={`relative overflow-hidden group ${i === 0 ? "col-span-2 md:col-span-1 md:row-span-2" : ""}`}
-                style={{ borderRadius: "16px", border: "1px solid rgba(255,255,255,0.08)", aspectRatio: i === 0 ? "1/1" : "1/1", boxShadow: "0 8px 32px rgba(0,0,0,0.4)" }}
-              >
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  sizes="(max-width: 768px) 50vw, 33vw"
-                />
-                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(5,9,15,0.5) 0%, transparent 60%)", opacity: 0, transition: "opacity 0.3s" }} className="group-hover:opacity-100" />
-                {i === 0 && (
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <div className="rounded-lg px-3 py-2" style={{ background: "rgba(5,9,15,0.8)", backdropFilter: "blur(8px)", border: "1px solid rgba(245,200,66,0.2)" }}>
-                      <p className="text-xs font-bold" style={{ color: "#f5c842" }}>@Dr.Chireu · Real Patient</p>
-                    </div>
-                  </div>
-                )}
+          <div className="grid grid-cols-2 gap-3 md:gap-5">
+            <div className="relative rounded-2xl overflow-hidden" style={{ aspectRatio: "3/4", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
+              <Image
+                src="/images/crowns-bridges/ba-anterior-crowns-akdental.jpg"
+                alt="Before and after — anterior crown restoration, real patient AK Ultimate Dental"
+                fill
+                className="object-cover"
+                sizes="50vw"
+              />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(5,9,15,0.6) 0%, transparent 50%)" }} />
+              <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4">
+                <p className="text-xs font-bold" style={{ color: "#f5c842" }}>Anterior Crowns</p>
+                <p className="text-xs text-white mt-0.5 hidden sm:block">Front teeth — natural ceramic</p>
               </div>
-            ))}
+            </div>
+            <div className="relative rounded-2xl overflow-hidden" style={{ aspectRatio: "3/4", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
+              <Image
+                src="/images/crowns-bridges/ba-full-arch-worn-to-crowns.jpg"
+                alt="Before and after — severely worn teeth rebuilt with porcelain crowns"
+                fill
+                className="object-cover"
+                sizes="50vw"
+              />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(5,9,15,0.6) 0%, transparent 50%)" }} />
+              <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4">
+                <p className="text-xs font-bold" style={{ color: "#f5c842" }}>Worn Teeth → Crowns</p>
+                <p className="text-xs text-white mt-0.5 hidden sm:block">Full rebuild in one visit</p>
+              </div>
+            </div>
           </div>
-          <p className="text-xs text-center mt-5" style={{ color: "#374151" }}>Photos by Dr. Alex Chireau · AK Ultimate Dental · Las Vegas, NV · Results may vary by patient</p>
+          <p className="text-xs text-center mt-4" style={{ color: "#374151" }}>Real patients · Dr. Alex Chireau · AK Ultimate Dental · Las Vegas, NV</p>
         </div>
       </section>
 
@@ -322,15 +329,14 @@ export default function CrownsMayPage() {
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
 
-            {/* Lab images */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="relative col-span-2 overflow-hidden rounded-2xl aspect-video" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+              <div className="relative col-span-2 overflow-hidden rounded-2xl" style={{ aspectRatio: "16/9", border: "1px solid rgba(255,255,255,0.08)" }}>
                 <Image src="/images/crowns-bridges/crown-model-upper-arch.jpg" alt="Full upper arch ceramic crown model — lab precision" fill className="object-cover" sizes="100vw" />
               </div>
-              <div className="relative overflow-hidden rounded-xl aspect-square" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+              <div className="relative overflow-hidden rounded-xl" style={{ aspectRatio: "1/1", border: "1px solid rgba(255,255,255,0.08)" }}>
                 <Image src="/images/crowns-bridges/zirconia-crown-closeup.jpg" alt="Zirconia crown closeup — natural translucency" fill className="object-cover" sizes="50vw" />
               </div>
-              <div className="relative overflow-hidden rounded-xl aspect-square" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+              <div className="relative overflow-hidden rounded-xl" style={{ aspectRatio: "1/1", border: "1px solid rgba(255,255,255,0.08)" }}>
                 <Image src="/images/crowns-bridges/cerec-crown-model-frontal.jpg" alt="CEREC crown model — same-day precision" fill className="object-cover" sizes="50vw" />
               </div>
             </div>
@@ -368,6 +374,41 @@ export default function CrownsMayPage() {
         </div>
       </section>
 
+      {/* ── RESULT PAIR #3 — after CEREC ──────────────────── */}
+      <section className="px-5 pb-14 md:pb-20">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 gap-3 md:gap-5">
+            <div className="relative rounded-2xl overflow-hidden" style={{ aspectRatio: "3/4", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
+              <Image
+                src="/images/crowns-bridges/ba-upper-anterior-crowns-1.jpg"
+                alt="Before and after — upper anterior crown restoration Las Vegas"
+                fill
+                className="object-cover"
+                sizes="50vw"
+              />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(5,9,15,0.6) 0%, transparent 50%)" }} />
+              <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4">
+                <p className="text-xs font-bold" style={{ color: "#f5c842" }}>Upper Anterior Crowns</p>
+              </div>
+            </div>
+            <div className="relative rounded-2xl overflow-hidden" style={{ aspectRatio: "3/4", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
+              <Image
+                src="/images/crowns-bridges/ba-anterior-crowns-closeup.jpg"
+                alt="Before and after — anterior porcelain crown closeup Las Vegas"
+                fill
+                className="object-cover"
+                sizes="50vw"
+              />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(5,9,15,0.6) 0%, transparent 50%)" }} />
+              <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4">
+                <p className="text-xs font-bold" style={{ color: "#f5c842" }}>Ceramic Closeup — Zero Metal</p>
+              </div>
+            </div>
+          </div>
+          <p className="text-xs text-center mt-4" style={{ color: "#374151" }}>Results may vary · Photos by Dr. Alex Chireau · No filters</p>
+        </div>
+      </section>
+
       {/* ── PRICING ────────────────────────────────────────── */}
       <section className="py-16 md:py-24 px-5 border-t" style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.015)" }}>
         <div className="max-w-3xl mx-auto">
@@ -379,7 +420,6 @@ export default function CrownsMayPage() {
           </div>
 
           <div className="rounded-2xl overflow-hidden mb-8" style={{ border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 24px 60px rgba(0,0,0,0.4)" }}>
-            {/* Header */}
             <div className="grid grid-cols-3 py-3 px-5" style={{ background: "rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
               <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#6b7280" }}>Item</p>
               <p className="text-xs font-bold uppercase tracking-widest text-center" style={{ color: "#6b7280" }}>Standard</p>
@@ -433,6 +473,35 @@ export default function CrownsMayPage() {
         </div>
       </section>
 
+      {/* ── CLOSING RESULT — full width before final CTA ─── */}
+      <section className="px-5 py-10 md:py-14 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+        <div className="max-w-5xl mx-auto">
+          <div className="relative rounded-2xl md:rounded-3xl overflow-hidden w-full" style={{ aspectRatio: "16/7", border: "1px solid rgba(245,200,66,0.15)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)" }}>
+            <Image
+              src="/images/crowns-bridges/ba-upper-arch-crowns-male.jpg"
+              alt="Before and after — male patient full upper arch crown restoration Las Vegas"
+              fill
+              className="object-cover object-center"
+              sizes="100vw"
+            />
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(5,9,15,0.75) 0%, rgba(5,9,15,0.2) 60%, transparent 100%)" }} />
+            <div className="absolute inset-0 flex flex-col justify-center p-6 md:p-12 max-w-lg">
+              <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: "#f5c842" }}>Real Patient · Las Vegas</p>
+              <p className="font-black leading-tight text-white mb-5" style={{ fontSize: "clamp(1.4rem, 3vw, 2.2rem)" }}>
+                This could be your smile.<br />30 slots. May only.
+              </p>
+              <Link
+                href="/appointment"
+                className="self-start inline-flex items-center gap-2 rounded-xl px-6 py-3.5 text-sm font-bold"
+                style={{ background: "linear-gradient(135deg, #f5c842 0%, #e8a020 100%)", color: "#000" }}
+              >
+                Claim My Slot <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── FINAL CTA STRIP ────────────────────────────────── */}
       <section className="py-14 md:py-20 px-5 border-t" style={{ borderColor: "rgba(255,255,255,0.06)", background: "linear-gradient(135deg, rgba(245,200,66,0.07) 0%, rgba(5,9,15,0) 60%)" }}>
         <div className="max-w-3xl mx-auto text-center">
@@ -475,8 +544,8 @@ export default function CrownsMayPage() {
             <p className="text-xs mt-0.5" style={{ color: "#374151" }}>{siteConfig.address.full}</p>
           </div>
           <div className="flex items-center gap-5">
-            <a href={siteConfig.phoneHref} className="text-sm font-semibold transition-colors" style={{ color: "#f5c842" }}>{siteConfig.phone}</a>
-            <Link href="/" className="text-xs transition-colors" style={{ color: "#374151" }}>Main Site →</Link>
+            <a href={siteConfig.phoneHref} className="text-sm font-semibold" style={{ color: "#f5c842" }}>{siteConfig.phone}</a>
+            <Link href="/" className="text-xs" style={{ color: "#374151" }}>Main Site →</Link>
           </div>
         </div>
         <div className="max-w-5xl mx-auto mt-6 pt-5" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
