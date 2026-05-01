@@ -18,6 +18,7 @@ export {
   services,
   serviceImages,
   serviceContentImages,
+  serviceGalleryImages,
   servicePromotions,
   getPublicServices,
   getAllRenderableServices,

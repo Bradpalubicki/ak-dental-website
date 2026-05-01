@@ -205,7 +205,7 @@ export const serviceImages: Record<string, string> = {
   "cleanings-prevention": "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=800&h=600&fit=crop&q=80",
   "cosmetic-dentistry": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop&q=80",
   "dental-implants": "https://images.unsplash.com/photo-1468493858157-0da44aaf1d13?w=800&h=600&fit=crop&q=80",
-  "crowns-bridges": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&h=600&fit=crop&q=80",
+  "crowns-bridges": "/images/crowns-bridges/crown-model-upper-arch.jpg",
   "root-canal": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&h=600&fit=crop&q=80",
   "oral-surgery": "https://images.unsplash.com/photo-1588776813677-77aaf5595b83?w=800&h=600&fit=crop&q=80",
   "periodontics": "https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?w=800&h=600&fit=crop&q=80",
@@ -213,31 +213,31 @@ export const serviceImages: Record<string, string> = {
   "pediatric-dentistry": "https://images.unsplash.com/photo-1619236233405-bb5d430f0620?w=800&h=600&fit=crop&q=80",
   // Standalone procedure pages — distinct images per procedure
   "porcelain-veneers": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&h=600&fit=crop&q=80",
-  "dental-crowns": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&h=600&fit=crop&q=80",
-  "dental-bridges": "https://images.unsplash.com/photo-1600170311833-c2cf5280ce49?w=800&h=600&fit=crop&q=80",
+  "dental-crowns": "/images/crowns-bridges/cerec-crown-model-frontal.jpg",
+  "dental-bridges": "/images/crowns-bridges/bridge-model-upper-arch.jpg",
   // Location variants share parent hero image
   "porcelain-veneers-las-vegas": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&h=600&fit=crop&q=80",
   "porcelain-veneers-henderson": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&h=600&fit=crop&q=80",
-  "dental-crowns-las-vegas": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&h=600&fit=crop&q=80",
-  "dental-crowns-henderson": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&h=600&fit=crop&q=80",
-  "dental-bridges-las-vegas": "https://images.unsplash.com/photo-1600170311833-c2cf5280ce49?w=800&h=600&fit=crop&q=80",
-  "dental-bridges-henderson": "https://images.unsplash.com/photo-1600170311833-c2cf5280ce49?w=800&h=600&fit=crop&q=80",
+  "dental-crowns-las-vegas": "/images/crowns-bridges/cerec-crown-model-frontal.jpg",
+  "dental-crowns-henderson": "/images/crowns-bridges/cerec-crown-model-frontal.jpg",
+  "dental-bridges-las-vegas": "/images/crowns-bridges/bridge-model-upper-arch.jpg",
+  "dental-bridges-henderson": "/images/crowns-bridges/bridge-model-upper-arch.jpg",
   "same-day-dentistry": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&h=600&fit=crop&q=80",
 };
 
 /** Secondary images displayed inline within service page content */
 export const serviceContentImages: Record<string, string> = {
   "porcelain-veneers": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=500&fit=crop&q=80",
-  "dental-crowns": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&h=500&fit=crop&q=80",
-  "dental-bridges": "https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?w=800&h=500&fit=crop&q=80",
+  "dental-crowns": "/images/crowns-bridges/crown-model-lower-frontal.jpg",
+  "dental-bridges": "/images/crowns-bridges/ba-full-arch-worn-to-crowns.jpg",
   "porcelain-veneers-las-vegas": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=500&fit=crop&q=80",
   "porcelain-veneers-henderson": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=500&fit=crop&q=80",
-  "dental-crowns-las-vegas": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&h=500&fit=crop&q=80",
-  "dental-crowns-henderson": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&h=500&fit=crop&q=80",
-  "dental-bridges-las-vegas": "https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?w=800&h=500&fit=crop&q=80",
-  "dental-bridges-henderson": "https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?w=800&h=500&fit=crop&q=80",
+  "dental-crowns-las-vegas": "/images/crowns-bridges/crown-model-lower-frontal.jpg",
+  "dental-crowns-henderson": "/images/crowns-bridges/crown-model-lower-frontal.jpg",
+  "dental-bridges-las-vegas": "/images/crowns-bridges/ba-full-arch-worn-to-crowns.jpg",
+  "dental-bridges-henderson": "/images/crowns-bridges/ba-full-arch-worn-to-crowns.jpg",
   "same-day-dentistry": "https://images.unsplash.com/photo-1600170311833-c2cf5280ce49?w=800&h=500&fit=crop&q=80",
-  "crowns-bridges": "https://images.unsplash.com/photo-1468493858157-0da44aaf1d13?w=800&h=500&fit=crop&q=80",
+  "crowns-bridges": "/images/crowns-bridges/bridge-model-upper-arch.jpg",
   "cleanings-prevention": "https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?w=800&h=500&fit=crop&q=80",
   "cosmetic-dentistry": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&h=500&fit=crop&q=80",
   "dental-implants": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&h=500&fit=crop&q=80",
@@ -246,6 +246,29 @@ export const serviceContentImages: Record<string, string> = {
   "periodontics": "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=800&h=500&fit=crop&q=80",
   "orthodontics": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&h=500&fit=crop&q=80",
   "pediatric-dentistry": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=500&fit=crop&q=80",
+};
+
+/** Before/after gallery images per service slug — shown as a client results grid */
+export const serviceGalleryImages: Record<string, Array<{ src: string; alt: string }>> = {
+  "crowns-bridges": [
+    { src: "/images/crowns-bridges/ba-full-smile-male-crowns.jpg",       alt: "Before and after — full smile restored with porcelain crowns" },
+    { src: "/images/crowns-bridges/ba-upper-arch-full-crowns.jpg",       alt: "Before and after — full upper arch porcelain crowns" },
+    { src: "/images/crowns-bridges/ba-anterior-crowns-akdental.jpg",     alt: "Before and after — anterior crown restoration" },
+    { src: "/images/crowns-bridges/ba-full-arch-worn-to-crowns.jpg",     alt: "Before and after — severely worn teeth replaced with crowns" },
+    { src: "/images/crowns-bridges/ba-upper-anterior-crowns-1.jpg",      alt: "Before and after — upper anterior crown restoration" },
+    { src: "/images/crowns-bridges/ba-anterior-crowns-closeup.jpg",      alt: "Before and after — anterior porcelain crown closeup" },
+  ],
+  "dental-crowns": [
+    { src: "/images/crowns-bridges/ba-molar-crown-procedure.jpg",        alt: "Before and after — molar ceramic crown placement" },
+    { src: "/images/crowns-bridges/ba-upper-arch-crowns-male.jpg",       alt: "Before and after — upper arch crown restoration" },
+    { src: "/images/crowns-bridges/ba-anterior-worn-to-crowns.jpg",      alt: "Before and after — chipped teeth restored with crowns" },
+    { src: "/images/crowns-bridges/ba-upper-anterior-crowns-2.jpg",      alt: "Before and after — upper anterior crown restoration" },
+  ],
+  "dental-bridges": [
+    { src: "/images/crowns-bridges/ba-full-arch-worn-to-crowns.jpg",     alt: "Before and after — full arch bridge restoration" },
+    { src: "/images/crowns-bridges/ba-full-smile-male-crowns.jpg",       alt: "Before and after — dental bridge smile transformation" },
+    { src: "/images/crowns-bridges/ba-upper-arch-full-crowns.jpg",       alt: "Before and after — upper arch bridge and crowns" },
+  ],
 };
 
 export const engineConfig: EngineConfig = {

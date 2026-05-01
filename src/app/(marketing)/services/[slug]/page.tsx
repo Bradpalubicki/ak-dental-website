@@ -22,6 +22,7 @@ import {
   siteConfig,
   serviceImages,
   serviceContentImages,
+  serviceGalleryImages,
   getAllRenderableServices,
   getServicePromotion,
 } from "@/lib/config";
@@ -97,6 +98,7 @@ export default async function ServicePage({ params }: PageProps) {
   const promotion = getServicePromotion(slug);
   const heroImage = serviceImages[slug];
   const contentImage = serviceContentImages[slug];
+  const galleryImages = serviceGalleryImages[slug] ?? [];
   const imageAlt = getImageAlt(content.title, serviceInfo.location);
 
   const relatedServiceInfo = content.relatedServices
@@ -323,6 +325,40 @@ export default async function ServicePage({ params }: PageProps) {
           </div>
         </div>
       </section>
+
+      {/* Before & After Gallery — shown when client photos are available */}
+      {galleryImages.length > 0 && (
+        <section className="py-16 md:py-20 bg-gray-50 border-t border-gray-100">
+          <div className="container mx-auto px-4">
+            <div className="max-w-5xl mx-auto">
+              <div className="text-center mb-10">
+                <h2 className="text-3xl font-bold text-gray-900 mb-3">
+                  Real Patient Results
+                </h2>
+                <p className="text-muted-foreground max-w-2xl mx-auto">
+                  Every smile below is a real patient of Dr. Alex Chireau at AK Ultimate Dental in Las Vegas. Before &amp; after photos, no filters.
+                </p>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {galleryImages.map((img, i) => (
+                  <div key={i} className="relative aspect-square rounded-xl overflow-hidden shadow-md group">
+                    <Image
+                      src={img.src}
+                      alt={img.alt}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 768px) 50vw, 33vw"
+                    />
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-center text-muted-foreground mt-6">
+                Photos by Dr. Alex Chireau · AK Ultimate Dental · Las Vegas, NV · Results may vary
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Financing Callout — shown for high-ticket services */}
       {["dental-implants", "porcelain-veneers", "cosmetic-dentistry", "dental-crowns", "orthodontics", "oral-surgery"].includes(slug) && (
