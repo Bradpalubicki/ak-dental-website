@@ -276,94 +276,52 @@ export default function CrownsMayPage() {
       </section>
 
       {/* ── 4. BEFORE / AFTER GALLERY ───────────────────────── */}
-      <section style={{ background: BG, padding: "88px 0" }} className="section-divide">
+      <section style={{ background: BG, padding: "88px 24px" }} className="section-divide">
         <style>{`
-          .gallery-card { position: relative; overflow: hidden; cursor: default; }
-          .gallery-card img { transition: transform 0.55s ease; }
-          .gallery-card:hover img { transform: scale(1.04); }
-          .gallery-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(13,11,9,0.92) 0%, rgba(13,11,9,0.18) 45%, transparent 70%); pointer-events: none; }
-          .gallery-caption { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px 20px 18px; }
-          .gallery-tag { display: inline-block; background: ${GOLD}; color: #0D0B09; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; margin-bottom: 7px; }
-          .gallery-note { font-size: 12px; color: rgba(245,240,232,0.85); line-height: 1.5; }
-          .ba-label { position: absolute; top: 14px; left: 14px; display: flex; align-items: center; gap: 6px; background: rgba(13,11,9,0.72); border: 1px solid rgba(212,175,55,0.35); padding: 4px 10px; }
-          .ba-label span { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: ${GOLD_LT}; font-weight: 600; }
+          .gc { position: relative; overflow: hidden; background: #060504; border-radius: 2px; }
+          .gc:hover .gc-img { transform: scale(1.03); }
+          .gc-img { transition: transform 0.5s ease; width: 100%; height: 100%; object-fit: contain; }
+          .gc-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(13,11,9,0.9) 0%, rgba(13,11,9,0.1) 50%, transparent 100%); pointer-events: none; }
+          .gc-body { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px 16px 14px; }
+          .gc-pill { display: inline-block; background: ${GOLD}; color: #0D0B09; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; margin-bottom: 6px; }
+          .gc-note { font-size: 11px; color: rgba(245,240,232,0.82); line-height: 1.45; margin: 0; }
+          .gc-ba { position: absolute; top: 10px; right: 10px; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: ${GOLD_LT}; background: rgba(13,11,9,0.7); border: 1px solid rgba(212,175,55,0.3); padding: 3px 8px; font-weight: 600; }
+          @media (max-width: 640px) { .gallery-grid { grid-template-columns: 1fr 1fr !important; } }
         `}</style>
 
-        {/* Section header */}
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px 48px" }}>
-          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
-            <div>
-              <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>Real Patients · Real Results</p>
-              <h2 className="serif" style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", fontWeight: 600, color: TEXT, lineHeight: 1.15 }}>
-                Before &amp; after.
-              </h2>
-            </div>
-            <div style={{ textAlign: "right" }}>
-              <p className="serif" style={{ fontSize: "2.2rem", fontWeight: 700, color: GOLD, lineHeight: 1 }}>8</p>
-              <p style={{ fontSize: 11, color: MUTED, letterSpacing: "0.08em" }}>real cases shown</p>
-              <p style={{ fontSize: 10, color: "#3A3530", marginTop: 4 }}>No filters. No stock imagery.</p>
-            </div>
+        {/* Header */}
+        <div style={{ maxWidth: 1100, margin: "0 auto 40px" }}>
+          <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>Real Patients · Real Results</p>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 20, flexWrap: "wrap" }}>
+            <h2 className="serif" style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", fontWeight: 600, color: TEXT, lineHeight: 1.15 }}>Before &amp; after.</h2>
+            <p style={{ fontSize: 13, color: MUTED }}>8 real cases · Dr. Chireau&apos;s own work · no filters · no stock</p>
           </div>
         </div>
 
-        {/* Row 1 — hero full-width */}
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", marginBottom: 3 }}>
-          <div className="gallery-card" style={{ aspectRatio: "16/9" }}>
-            <Image src={GALLERY[0].src} alt={GALLERY[0].tag} fill className="object-contain" loading="eager" sizes="(max-width: 768px) 100vw, 1100px" style={{ background: "#060504" }} />
-            <div className="gallery-overlay" />
-            <div className="ba-label"><span>Before → After</span></div>
-            <div className="gallery-caption">
-              <div className="gallery-tag">{GALLERY[0].tag}</div>
-              <p className="gallery-note">{GALLERY[0].note}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Row 2 — two equal columns */}
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3, marginBottom: 3 }}>
-          {[GALLERY[1], GALLERY[2]].map((photo, i) => (
-            <div key={i} className="gallery-card" style={{ aspectRatio: "1/1" }}>
-              <Image src={photo.src} alt={photo.tag} fill className="object-contain" loading="lazy" sizes="(max-width: 768px) 50vw, 550px" style={{ background: "#060504" }} />
-              <div className="gallery-overlay" />
-              <div className="ba-label"><span>Before → After</span></div>
-              <div className="gallery-caption">
-                <div className="gallery-tag">{photo.tag}</div>
-                <p className="gallery-note">{photo.note}</p>
+        {/* Uniform 4-col grid — 2 rows of 4 */}
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 4 }} className="gallery-grid">
+          {GALLERY.map((photo, i) => (
+            <div key={i} className="gc" style={{ aspectRatio: "1/1" }}>
+              <Image
+                src={photo.src}
+                alt={photo.tag}
+                fill
+                className="gc-img object-contain"
+                loading={i < 4 ? "eager" : "lazy"}
+                sizes="(max-width: 640px) 50vw, 275px"
+                style={{ background: "#060504" }}
+              />
+              <div className="gc-overlay" />
+              <div className="gc-ba">B → A</div>
+              <div className="gc-body">
+                <div className="gc-pill">{photo.tag}</div>
+                <p className="gc-note">{photo.note}</p>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Row 3 — hero full-width */}
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", marginBottom: 3 }}>
-          <div className="gallery-card" style={{ aspectRatio: "16/9" }}>
-            <Image src={GALLERY[3].src} alt={GALLERY[3].tag} fill className="object-contain" loading="lazy" sizes="(max-width: 768px) 100vw, 1100px" style={{ background: "#060504" }} />
-            <div className="gallery-overlay" />
-            <div className="ba-label"><span>Before → After</span></div>
-            <div className="gallery-caption">
-              <div className="gallery-tag">{GALLERY[3].tag}</div>
-              <p className="gallery-note">{GALLERY[3].note}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Row 4 — three columns */}
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 3 }} className="gallery-three-col">
-          <style>{`@media (max-width: 640px) { .gallery-three-col { grid-template-columns: 1fr 1fr !important; } }`}</style>
-          {[GALLERY[4], GALLERY[5], GALLERY[6]].map((photo, i) => (
-            <div key={i} className="gallery-card" style={{ aspectRatio: "1/1" }}>
-              <Image src={photo.src} alt={photo.tag} fill className="object-contain" loading="lazy" sizes="(max-width: 640px) 50vw, 370px" style={{ background: "#060504" }} />
-              <div className="gallery-overlay" />
-              <div className="ba-label"><span>Before → After</span></div>
-              <div className="gallery-caption">
-                <div className="gallery-tag" style={{ fontSize: 9 }}>{photo.tag}</div>
-                <p className="gallery-note" style={{ fontSize: 11 }}>{photo.note}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ maxWidth: 1100, margin: "12px auto 0", padding: "0 24px" }}>
+        <div style={{ maxWidth: 1100, margin: "10px auto 0" }}>
           <p style={{ fontSize: 11, color: "#3A3530" }}>Real patients of Dr. Alex Chireau, DMD · AK Ultimate Dental · Results may vary</p>
         </div>
       </section>
