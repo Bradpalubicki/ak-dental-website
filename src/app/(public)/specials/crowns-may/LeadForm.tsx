@@ -8,6 +8,12 @@ const ACCENT = "#D4AF37";
 const BG_DARK = "#0D0B09";
 const TEXT_LIGHT = "#F5F0E8";
 const TEXT_MUTED = "#9A8F7A";
+// Form sits on gold (#D4AF37) background — inputs must be dark-on-light
+const INPUT_BG = "rgba(255,255,255,0.92)";
+const INPUT_TEXT = "#1A1410";
+const INPUT_BORDER = "1px solid rgba(26,20,16,0.25)";
+const LABEL_COLOR = "#1A1410";
+const PLACEHOLDER_COLOR = "rgba(26,20,16,0.45)";
 
 export default function LeadForm() {
   const [done, setDone] = useState(false);
@@ -50,13 +56,14 @@ export default function LeadForm() {
 
   const inputStyle: React.CSSProperties = {
     width: "100%",
-    background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(212,175,55,0.25)",
-    color: TEXT_LIGHT,
+    background: INPUT_BG,
+    border: INPUT_BORDER,
+    color: INPUT_TEXT,
     padding: "14px 16px",
     fontSize: 15,
     outline: "none",
     fontFamily: "'DM Sans', system-ui, sans-serif",
+    minHeight: 48,
   };
 
   const labelStyle: React.CSSProperties = {
@@ -64,13 +71,22 @@ export default function LeadForm() {
     fontSize: 11,
     letterSpacing: "0.12em",
     textTransform: "uppercase" as const,
-    color: TEXT_MUTED,
+    color: LABEL_COLOR,
     marginBottom: 6,
-    fontWeight: 600,
+    fontWeight: 700,
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 480, margin: "0 auto", display: "flex", flexDirection: "column", gap: 16 }}>
+    <form onSubmit={handleSubmit} className="ak-lead-form" style={{ maxWidth: 480, margin: "0 auto", display: "flex", flexDirection: "column", gap: 16, width: "100%" }}>
+      <style>{`
+        .ak-lead-form input::placeholder,
+        .ak-lead-form select::placeholder { color: ${PLACEHOLDER_COLOR} !important; }
+        .ak-lead-form select option { background: #fff; color: #1A1410; }
+        @media (max-width: 768px) {
+          .ak-lead-form { width: 100% !important; }
+          .ak-lead-form input, .ak-lead-form select { font-size: 16px !important; }
+        }
+      `}</style>
       <div>
         <label style={labelStyle} htmlFor="name">Your Name</label>
         <input id="name" name="name" type="text" required placeholder="First and last name" style={inputStyle} />
@@ -116,7 +132,7 @@ export default function LeadForm() {
         {isPending ? "Submitting..." : <>Claim My Spot <ArrowRight size={16} /></>}
       </button>
 
-      <p style={{ fontSize: 11, color: TEXT_MUTED, textAlign: "center", lineHeight: 1.7 }}>
+      <p style={{ fontSize: 11, color: "rgba(26,20,16,0.6)", textAlign: "center", lineHeight: 1.7 }}>
         By submitting, you agree to be contacted by AK Ultimate Dental. We never share your information.
       </p>
     </form>

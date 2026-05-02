@@ -6,13 +6,13 @@ import path from "path";
 import LeadForm from "./LeadForm";
 
 export const metadata: Metadata = {
-  title: "Same-Day Porcelain Crown — $630 Founding Rate | AK Ultimate Dental Las Vegas",
+  title: "Same-Day Porcelain Crown — $630 Special Rate | AK Ultimate Dental Las Vegas",
   description:
-    "Dr. Alex Chireau is accepting 30 founding patients for same-day CEREC porcelain crowns starting at $630. Free consultation. Lifetime warranty. Las Vegas.",
+    "Dr. Alex Chireau is accepting 30 patients for same-day CEREC porcelain crowns starting at $630. Free consultation. Lifetime warranty. Las Vegas.",
   robots: { index: false, follow: false },
   openGraph: {
     title: "$630 Same-Day Crown — AK Ultimate Dental Las Vegas",
-    description: "30 founding patient spots. CEREC same-day. Lifetime warranty. Free consultation.",
+    description: "30 patient spots. CEREC same-day. Lifetime warranty. Free consultation.",
     images: [{ url: "/images/crowns-lp/hero-main.webp", width: 1920, height: 1080 }],
   },
 };
@@ -64,10 +64,10 @@ const TICKER = [
   `★★★★★  "Precise, professional, and genuinely cared about my result."  — Verified Google Review`,
 ];
 
-// ── Before/after pairs — only confirmed matching pairs ─────
-const BA_PAIRS = [
-  { before: "/images/crowns-lp/ba-before.webp",  after: "/images/crowns-lp/ba-after.webp",   label: "Full arch restoration" },
-  { before: "/images/crowns-lp/ba-extra-1.webp", after: "/images/crowns-lp/ba-extra-2.webp", label: "Crown restoration" },
+// ── Gallery photos ─────────────────────────────────────────
+const GALLERY = [
+  { src: "/images/crowns-lp/ba-primary.webp",   label: "Full arch restoration · Dr. Alex Chireau" },
+  { src: "/images/crowns-lp/ba-secondary.webp", label: "Crown restoration · Dr. Alex Chireau" },
 ];
 
 export default function CrownsMayPage() {
@@ -95,6 +95,7 @@ export default function CrownsMayPage() {
           .hero-grid { grid-template-columns: 1fr !important; }
           .hero-img { order: -1; height: 60vw !important; min-height: 240px !important; }
           .hero-text { padding: 28px 20px 20px !important; }
+          .hero-text a[href="#claim"] { align-self: stretch !important; justify-content: center !important; }
           .ba-row { flex-direction: column !important; }
           .ba-row > div { width: 100% !important; }
           .cards-grid { grid-template-columns: 1fr 1fr !important; }
@@ -104,6 +105,18 @@ export default function CrownsMayPage() {
           .topbar-logo { display: none !important; }
           .mobile-cta-bar { display: flex !important; }
           .desktop-phone { display: none !important; }
+          /* Video: constrain to viewport */
+          video { max-width: 100% !important; height: auto !important; }
+          /* Prevent horizontal scroll */
+          section, footer, div { max-width: 100vw; }
+          /* Readable body text */
+          p { font-size: max(14px, 1em) !important; }
+          h1 { font-size: clamp(1.8rem, 8vw, 3rem) !important; }
+          h2 { font-size: clamp(1.5rem, 6vw, 2.5rem) !important; }
+          /* Full-width CTAs */
+          section a[href="#claim"], section a[href^="tel"] { width: 100% !important; justify-content: center !important; box-sizing: border-box !important; }
+          /* Gallery images: natural aspect on mobile */
+          .gallery-card { aspect-ratio: auto !important; }
         }
         @media (min-width: 769px) {
           .mobile-cta-bar { display: none !important; }
@@ -228,7 +241,7 @@ export default function CrownsMayPage() {
           {[
             { stat: "145",      label: "Five-Star Reviews",   sub: "Google Verified · Las Vegas" },
             { stat: "CEREC",    label: "Same-Day Crowns",      sub: "No lab wait. One appointment." },
-            { stat: "50%",      label: "Founding Rate",        sub: "First 30 patients only" },
+            { stat: "50%",      label: "$630 Rate",             sub: "First 30 patients only" },
             { stat: "Lifetime", label: "Crown Warranty",       sub: "Replace or rebond — free, forever" },
           ].map((col, i) => (
             <div key={i} style={{ padding: "16px 20px", borderLeft: i > 0 ? `1px solid rgba(212,175,55,0.2)` : "none" }}>
@@ -266,18 +279,19 @@ export default function CrownsMayPage() {
           <p style={{ color: MUTED, fontSize: 14, marginBottom: 40, lineHeight: 1.7 }}>Every photo is Dr. Chireau&apos;s own clinical work. No filters. No stock imagery.</p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-            {BA_PAIRS.map((pair, i) => (
-              <div key={i} style={{ display: "flex", gap: 3 }} className="ba-row">
-                <div style={{ flex: 1, position: "relative", aspectRatio: "3/2", overflow: "hidden" }}>
-                  <Image src={pair.before} alt={`Before — ${pair.label}`} fill className="object-cover object-top" loading="lazy" sizes="50vw" />
-                  <div style={{ position: "absolute", top: 10, left: 10, background: "rgba(13,11,9,0.85)", padding: "4px 10px", fontSize: 10, fontWeight: 700, color: "#fff", letterSpacing: "0.12em", textTransform: "uppercase" }}>Before</div>
-                </div>
-                <div style={{ flex: 1, position: "relative", aspectRatio: "3/2", overflow: "hidden" }}>
-                  <Image src={pair.after} alt={`After — ${pair.label} — Dr. Chireau`} fill className="object-cover object-top" loading="lazy" sizes="50vw" />
-                  <div style={{ position: "absolute", top: 10, right: 10, background: `rgba(212,175,55,0.9)`, padding: "4px 10px", fontSize: 10, fontWeight: 700, color: "#1A1410", letterSpacing: "0.12em", textTransform: "uppercase" }}>After</div>
-                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "8px 12px", background: "rgba(13,11,9,0.75)" }}>
-                    <p style={{ fontSize: 11, color: GOLD_LT }}>{pair.label} · Dr. Alex Chireau</p>
-                  </div>
+            {GALLERY.map((photo, i) => (
+              <div key={i} style={{ position: "relative", width: "100%", aspectRatio: "1/1", overflow: "hidden" }}>
+                <Image
+                  src={photo.src}
+                  alt={photo.label}
+                  fill
+                  className="object-contain"
+                  loading="lazy"
+                  sizes="(max-width: 768px) 100vw, 1000px"
+                  style={{ background: "#080706" }}
+                />
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "10px 14px", background: "rgba(13,11,9,0.75)" }}>
+                  <p style={{ fontSize: 11, color: GOLD_LT }}>{photo.label}</p>
                 </div>
               </div>
             ))}
@@ -289,16 +303,16 @@ export default function CrownsMayPage() {
       {/* ── 5. TREATMENT CARDS ──────────────────────────────── */}
       <section style={{ background: BG_MID, padding: "88px 24px" }} className="section-divide">
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>Founding Patient Pricing</p>
+          <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>Special Pricing</p>
           <h2 className="serif" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 600, color: TEXT, marginBottom: 48, lineHeight: 1.15 }}>
-            Four treatments. One founding rate.
+            Four treatments. One special rate.
           </h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 2, background: `rgba(212,175,55,0.1)` }} className="cards-grid">
             {[
               { num: "01", title: "Porcelain Crowns",       price: "$630",           was: "$1,260", unit: "per tooth · CEREC same-day",   img: "/images/crowns-lp/treatment-crowns.webp",      desc: "Same-day CEREC. No temporaries. No lab wait. Lifetime warranty included." },
-              { num: "02", title: "Crown + Build-up",       price: "$713",           was: "$1,426", unit: "most common · founding rate",   img: "/images/crowns-lp/treatment-bridges.webp",     desc: "The complete restoration. Most patients need this — priced transparently." },
-              { num: "03", title: "Porcelain Veneers",      price: "$1,000",         was: "$2,000", unit: "per tooth · founding rate",     img: "/images/crowns-lp/treatment-veneers.webp",     desc: "Ultra-thin ceramic shells. Natural-looking, permanent." },
-              { num: "04", title: "Full Smile Restoration", price: "Custom quote",   was: null,     unit: "founding rate applies",         img: "/images/crowns-lp/treatment-restoration.webp", desc: "Complete mouth reconstruction planned as one aesthetic case." },
+              { num: "02", title: "Crown + Build-up",       price: "$713",           was: "$1,426", unit: "most common · special rate",    img: "/images/crowns-lp/treatment-bridges.webp",     desc: "The complete restoration. Most patients need this — priced transparently." },
+              { num: "03", title: "Porcelain Veneers",      price: "$1,000",         was: "$2,000", unit: "per tooth · special rate",      img: "/images/crowns-lp/treatment-veneers.webp",     desc: "Ultra-thin ceramic shells. Natural-looking, permanent." },
+              { num: "04", title: "Full Smile Restoration", price: "Custom quote",   was: null,     unit: "special rate applies",          img: "/images/crowns-lp/treatment-restoration.webp", desc: "Complete mouth reconstruction planned as one aesthetic case." },
             ].map((card) => (
               <div key={card.num} style={{ background: BG, overflow: "hidden" }}>
                 <div style={{ position: "relative", aspectRatio: "4/3" }}>
@@ -495,7 +509,7 @@ export default function CrownsMayPage() {
             <Shield size={22} color={GOLD_LT} style={{ flexShrink: 0, marginTop: 2 }} />
             <div>
               <p style={{ fontWeight: 700, color: TEXT, fontSize: 14, marginBottom: 3 }}>From $630 per crown — lower than any dental chain in Las Vegas.</p>
-              <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.7 }}>Lifetime warranty included. CEREC same-day. No lab wait. First 30 founding patients only.</p>
+              <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.7 }}>Lifetime warranty included. CEREC same-day. No lab wait. First 30 patients only.</p>
             </div>
           </div>
 
@@ -503,7 +517,7 @@ export default function CrownsMayPage() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr auto auto", background: `rgba(212,175,55,0.12)`, padding: "11px 22px", gap: 16 }}>
               <p style={{ fontSize: 11, color: MUTED, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Service</p>
               <p style={{ fontSize: 11, color: MUTED, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textAlign: "right", whiteSpace: "nowrap" }}>Standard</p>
-              <p style={{ fontSize: 11, color: GOLD_LT, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textAlign: "right", whiteSpace: "nowrap", minWidth: 110 }}>Founding Rate</p>
+              <p style={{ fontSize: 11, color: GOLD_LT, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textAlign: "right", whiteSpace: "nowrap", minWidth: 110 }}>Your Rate</p>
             </div>
             {[
               { service: "Standard Crown (per tooth)",  standard: "$1,260",   rate: "$630",    strike: true },
@@ -522,12 +536,12 @@ export default function CrownsMayPage() {
           </div>
 
           <p style={{ fontSize: 11, color: "#4A423A", lineHeight: 1.75, marginBottom: 36 }}>
-            Founding patient rate locks at consultation booking. Valid for treatment accepted within 30 days. New patients only. Cannot be combined with insurance or other offers. First 30 slots only.
+            Special rate locks at consultation booking. Valid for treatment accepted within 30 days. New patients only. Cannot be combined with insurance or other offers. First 30 slots only.
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-start" }}>
             <a href="#claim" style={{ background: GOLD, color: "#1A1410", padding: "16px 28px", fontWeight: 700, fontSize: 15, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8 }}>
-              Lock In My Founding Rate <ArrowRight size={16} />
+              Reserve My Spot <ArrowRight size={16} />
             </a>
             <a href={PHONE_HREF} style={{ color: GOLD_LT, fontSize: 14, fontWeight: 500, textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}>
               <Phone size={14} />Or call/text: {PHONE}
@@ -614,10 +628,10 @@ export default function CrownsMayPage() {
               { q: "How long does a same-day crown actually take?", a: "Most CEREC crown appointments run 90 minutes to 2 hours — including the scan, design, milling, and placement. You leave with a permanent crown the same day." },
               { q: "Is a CEREC crown as strong as a traditional crown?", a: "Yes. CEREC uses the same high-strength porcelain as lab-made crowns. The material is milled from a single solid block, which is actually stronger than crowns built up in layers. Dr. Chireau backs every crown with a lifetime warranty." },
               { q: "Does it hurt?", a: "No. The procedure is done under local anesthesia. Most patients report the consultation is the most anxiety-inducing part — the actual crown placement is comfortable. Any sensitivity after typically resolves within a few days." },
-              { q: "Why is the price so much lower than other Las Vegas dentists?", a: "The founding patient rate exists because Dr. Chireau is growing his cosmetic practice and wants to build long-term patient relationships. The clinical quality — materials, technology, technique — is identical to what he charges at full price." },
+              { q: "Why is the price so much lower than other Las Vegas dentists?", a: "This special rate exists because Dr. Chireau is growing his cosmetic practice and wants to build long-term patient relationships. The clinical quality — materials, technology, technique — is identical to what he charges at full price." },
               { q: "What does the lifetime warranty cover?", a: "The warranty covers crown failure or debonding due to clinical factors. Dr. Chireau will replace or rebond the crown at no charge. Exclusions: damage from trauma, grinding without a prescribed night guard, or failure to attend recommended follow-up care." },
-              { q: "Do I need to have insurance?", a: "No. The founding rate is for self-pay patients. The rate cannot be combined with insurance or other promotions. If you have insurance, Dr. Chireau's team will help you understand what your plan covers separately." },
-              { q: "How do I lock in the founding rate?", a: "Fill out the form below — Dr. Chireau's team will call you within one business day to confirm your spot and schedule your free consultation. The rate locks when you book." },
+              { q: "Do I need to have insurance?", a: "No. This special rate is for self-pay patients. It cannot be combined with insurance or other promotions. If you have insurance, Dr. Chireau's team will help you understand what your plan covers separately." },
+              { q: "How do I lock in this rate?", a: "Fill out the form below — Dr. Chireau's team will call you within one business day to confirm your spot and schedule your free consultation. The rate locks when you book." },
             ].map((item, i) => (
               <details key={i} style={{ background: "#EFEBE5", borderTop: `1px solid rgba(139,111,71,0.2)` }}>
                 <summary style={{ padding: "18px 22px", cursor: "pointer", fontWeight: 600, fontSize: 15, color: "#1A1410", listStyle: "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -636,7 +650,7 @@ export default function CrownsMayPage() {
         <div style={{ maxWidth: 680, margin: "0 auto", textAlign: "center" }}>
           <Star size={22} color="rgba(26,20,16,0.5)" style={{ margin: "0 auto 20px" }} />
           <h2 className="serif" style={{ fontSize: "clamp(2rem, 4.5vw, 3rem)", fontWeight: 700, color: "#1A1410", lineHeight: 1.2, marginBottom: 12, letterSpacing: "-0.01em" }}>
-            First 30 patients receive the founding rate.
+            First 30 patients receive this rate.
           </h2>
           <p style={{ fontSize: 16, color: "rgba(26,20,16,0.7)", lineHeight: 1.7, marginBottom: 40 }}>
             Don&apos;t miss it. Fill out the form — Dr. Chireau&apos;s team will call you within one business day to confirm your spot.
@@ -670,7 +684,7 @@ export default function CrownsMayPage() {
         </div>
         <div style={{ maxWidth: 1100, margin: "24px auto 0", borderTop: `1px solid rgba(139,111,71,0.2)`, paddingTop: 16 }}>
           <p style={{ fontSize: 11, color: "#9A8F7A", lineHeight: 1.85 }}>
-            Founding patient rate of 50% applies to new patients who schedule and attend a consultation at AK Ultimate Dental. First 30 slots only. Rate locks at consultation booking, valid for treatment accepted within 30 days. Cannot be combined with insurance benefits or other promotional offers. Flexible financing subject to third-party approval. Individual results may vary. All patient photographs are real clinical results by Dr. Alex Chireau, DMD.{" "}
+            Special rate of 50% applies to new patients who schedule and attend a consultation at AK Ultimate Dental. First 30 slots only. Rate locks at consultation booking, valid for treatment accepted within 30 days. Cannot be combined with insurance benefits or other promotional offers. Flexible financing subject to third-party approval. Individual results may vary. All patient photographs are real clinical results by Dr. Alex Chireau, DMD.{" "}
             Lifetime Warranty: Applies to crowns placed by Dr. Alex Chireau, DMD at AK Ultimate Dental. Covers crown failure or debonding due to clinical factors. Does not cover damage resulting from trauma, grinding without a prescribed night guard, or failure to attend recommended follow-up care.{" "}
             © 2026 AK Ultimate Dental. All rights reserved.
           </p>
