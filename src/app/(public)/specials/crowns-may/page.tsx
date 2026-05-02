@@ -140,7 +140,7 @@ export default function CrownsMayPage() {
 
       {/* ── 2. HERO ─────────────────────────────────────────── */}
       <section style={{ height: `calc(100svh - ${TOPBAR_H}px)`, display: "flex", flexDirection: "column" }} className="section-divide">
-        <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: 0 }} className="hero-grid">
+        <div style={{ flex: 1, display: "grid", gridTemplateColumns: "55fr 45fr", minHeight: 0 }} className="hero-grid">
           {/* LEFT: text */}
           <div style={{
             padding: "40px 48px 32px",
@@ -192,12 +192,14 @@ export default function CrownsMayPage() {
           </div>
 
           {/* RIGHT: hero photo */}
-          <div className="hero-img" style={{ position: "relative", overflow: "hidden" }}>
-            <Image
-              src="/images/crowns-lp/hero-main.webp"
-              alt="Before and after full arch porcelain crown restoration by Dr. Alex Chireau, AK Ultimate Dental Las Vegas"
-              fill className="object-cover object-center" priority sizes="(max-width: 768px) 100vw, 50vw"
-            />
+          <div className="hero-img" style={{ position: "relative", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", background: BG }}>
+            <div style={{ position: "relative", width: "100%", maxWidth: 520, height: "100%", maxHeight: "88%" }}>
+              <Image
+                src="/images/crowns-lp/hero-main.webp"
+                alt="Before and after full arch porcelain crown restoration by Dr. Alex Chireau, AK Ultimate Dental Las Vegas"
+                fill className="object-cover object-center" priority sizes="(max-width: 768px) 100vw, 45vw"
+              />
+            </div>
           </div>
         </div>
 
@@ -389,16 +391,16 @@ export default function CrownsMayPage() {
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "start" }} className="doctor-grid">
           <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
             {hasFamily ? (
-              <div style={{ position: "relative", aspectRatio: "4/3", overflow: "hidden" }}>
-                <Image src="/dr-alex-family.jpg" alt="Dr. Alex Chireau" fill className="object-cover object-center" loading="lazy" sizes="50vw" />
+              <div style={{ position: "relative", aspectRatio: "3/4", overflow: "hidden" }}>
+                <Image src="/dr-alex-family.jpg" alt="Dr. Alex Chireau" fill className="object-cover object-top" loading="lazy" sizes="50vw" />
               </div>
             ) : (
-              <div style={{ position: "relative", aspectRatio: "4/3", overflow: "hidden" }}>
-                <Image src="/dr-alex-headshot.jpg" alt="Dr. Alex Chireau, DMD" fill className="object-cover object-center" loading="lazy" sizes="50vw" />
+              <div style={{ position: "relative", aspectRatio: "3/4", overflow: "hidden" }}>
+                <Image src="/dr-alex-headshot.jpg" alt="Dr. Alex Chireau, DMD" fill className="object-cover object-top" loading="lazy" sizes="50vw" />
               </div>
             )}
             {hasGraduation && (
-              <div style={{ position: "relative", aspectRatio: "4/3", overflow: "hidden" }}>
+              <div style={{ position: "relative", aspectRatio: "3/4", overflow: "hidden" }}>
                 <Image src="/dr-alex-graduation-unlv.jpg" alt="Dr. Chireau at UNLV School of Dental Medicine" fill className="object-cover object-top" loading="lazy" sizes="50vw" />
                 <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "10px 14px", background: "rgba(13,11,9,0.8)" }}>
                   <p style={{ fontSize: 11, color: GOLD_LT }}>UNLV School of Dental Medicine · Class of 2022</p>
