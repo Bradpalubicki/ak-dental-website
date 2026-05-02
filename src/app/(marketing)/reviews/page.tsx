@@ -162,6 +162,56 @@ export default function ReviewsPage() {
         </div>
       </section>
 
+      {/* Video Testimonials */}
+      {(process.env.NEXT_PUBLIC_TESTIMONIAL_1_URL || process.env.NEXT_PUBLIC_TESTIMONIAL_2_URL) && (
+        <section className="py-16 md:py-24 bg-gray-900">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto text-center mb-12">
+              <h2 className="text-3xl font-bold text-white mb-3">Hear It From Our Patients</h2>
+              <p className="text-gray-400">Real results, real stories — recorded by patients in their own words.</p>
+            </div>
+            <div className={`grid gap-8 max-w-5xl mx-auto ${process.env.NEXT_PUBLIC_TESTIMONIAL_1_URL && process.env.NEXT_PUBLIC_TESTIMONIAL_2_URL ? "md:grid-cols-2" : "md:grid-cols-1 max-w-2xl"}`}>
+              {process.env.NEXT_PUBLIC_TESTIMONIAL_1_URL && (
+                <div className="rounded-2xl overflow-hidden shadow-2xl bg-black">
+                  <video
+                    src={process.env.NEXT_PUBLIC_TESTIMONIAL_1_URL}
+                    controls
+                    playsInline
+                    preload="metadata"
+                    className="w-full aspect-video object-cover"
+                    aria-label="Patient testimonial video 1"
+                  />
+                  <div className="p-4 bg-gray-800">
+                    <div className="flex gap-1 mb-1">
+                      {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />)}
+                    </div>
+                    <p className="text-white text-sm font-medium">Verified Patient · Las Vegas, NV</p>
+                  </div>
+                </div>
+              )}
+              {process.env.NEXT_PUBLIC_TESTIMONIAL_2_URL && (
+                <div className="rounded-2xl overflow-hidden shadow-2xl bg-black">
+                  <video
+                    src={process.env.NEXT_PUBLIC_TESTIMONIAL_2_URL}
+                    controls
+                    playsInline
+                    preload="metadata"
+                    className="w-full aspect-video object-cover"
+                    aria-label="Patient testimonial video 2"
+                  />
+                  <div className="p-4 bg-gray-800">
+                    <div className="flex gap-1 mb-1">
+                      {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />)}
+                    </div>
+                    <p className="text-white text-sm font-medium">Verified Patient · Las Vegas, NV</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Review Highlights */}
       <section className="py-16 md:py-24 bg-gray-50">
         <div className="container mx-auto px-4">
