@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "AK Ultimate Dental — May Founding Patient Rate · Lifetime Warranty",
     description: "30 slots. Lifetime warranty included. Dr. Alex Chireau, Las Vegas.",
-    images: [{ url: "/images/crowns-lp/ba-extra-2.webp", width: 1200, height: 1200 }],
+    images: [{ url: "/images/crowns-lp/gallery-g3.webp", width: 1200, height: 1200 }],
   },
 };
 
@@ -73,52 +73,54 @@ export default function CrownsMayV3Page() {
       </div>
 
       {/* ── HERO ────────────────────────────────────────── */}
-      <section style={{ minHeight: "calc(100svh - 56px)", display: "grid", gridTemplateColumns: "1fr 1fr" }} className="hero-grid">
-        <div style={{ padding: "72px 48px", display: "flex", flexDirection: "column", justifyContent: "center", background: BG_DARK }} className="hero-text-col">
-          <p style={{ color: ACCENT_LIGHT, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 24, fontWeight: 500 }}>
-            May 2026 · Limited Cosmetic Calendar · Las Vegas
-          </p>
-          <h1 className="serif" style={{ fontSize: "clamp(2.4rem, 4.5vw, 3.8rem)", fontWeight: 600, lineHeight: 1.1, color: TEXT_DARK, marginBottom: 24, letterSpacing: "-0.01em" }}>
-            The smile you&apos;ve<br />considered.<br />
-            <em style={{ color: ACCENT_LIGHT }}>Finally done right.</em>
-          </h1>
-          <p style={{ color: TEXT_MUTED, fontSize: 16, lineHeight: 1.75, marginBottom: 36, maxWidth: 460 }}>
-            Dr. Alex Chireau is personally accepting 30 new cosmetic cases this May — crowns, bridges, veneers, and full smile restorations — at a founding patient rate that will not be offered again.
-          </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 36 }}>
-            <a href="#consult" id="consult" style={{ background: ACCENT, color: "#fff", padding: "16px 28px", fontWeight: 600, fontSize: 15, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8, alignSelf: "flex-start", letterSpacing: "0.02em" }}>
-              Request a Complimentary Consultation <ArrowRight size={16} />
-            </a>
-            <a href={PHONE_HREF} style={{ color: ACCENT_LIGHT, fontSize: 14, fontWeight: 500, textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}>
-              <Phone size={14} />{PHONE} · Call or Text
-            </a>
+      <section style={{ minHeight: "calc(100svh - 56px)", display: "flex", flexDirection: "column" }}>
+        {/* Two-col content */}
+        <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr" }} className="hero-grid">
+          <div style={{ padding: "72px 48px", display: "flex", flexDirection: "column", justifyContent: "center", background: BG_DARK }} className="hero-text-col">
+            <p style={{ color: ACCENT_LIGHT, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 24, fontWeight: 500 }}>
+              May 2026 · Limited Cosmetic Calendar · Las Vegas
+            </p>
+            <h1 className="serif" style={{ fontSize: "clamp(2.4rem, 4.5vw, 3.8rem)", fontWeight: 600, lineHeight: 1.1, color: TEXT_DARK, marginBottom: 24, letterSpacing: "-0.01em" }}>
+              The smile you&apos;ve<br />considered.<br />
+              <em style={{ color: ACCENT_LIGHT }}>Finally done right.</em>
+            </h1>
+            <p style={{ color: TEXT_MUTED, fontSize: 16, lineHeight: 1.75, marginBottom: 36, maxWidth: 460 }}>
+              Dr. Alex Chireau is personally accepting 30 new cosmetic cases this May — crowns, bridges, veneers, and full smile restorations — at a founding patient rate that will not be offered again.
+            </p>
+            {/* Lifetime warranty trust signal #1 */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 28, padding: "10px 16px", background: "rgba(196,168,130,0.07)", border: "1px solid rgba(196,168,130,0.2)", alignSelf: "flex-start" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={ACCENT_LIGHT} strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span style={{ fontSize: 12, color: ACCENT_LIGHT, fontWeight: 600 }}>Lifetime Warranty Included</span>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <a href="#consult" id="consult" style={{ background: ACCENT, color: "#fff", padding: "16px 28px", fontWeight: 600, fontSize: 15, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8, alignSelf: "flex-start", letterSpacing: "0.02em" }}>
+                Request a Complimentary Consultation <ArrowRight size={16} />
+              </a>
+              <a href={PHONE_HREF} style={{ color: ACCENT_LIGHT, fontSize: 14, fontWeight: 500, textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}>
+                <Phone size={14} />{PHONE} · Call or Text
+              </a>
+            </div>
           </div>
-          {/* Trust bar — lifetime warranty #1 */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "14px 20px", paddingTop: 24, borderTop: "1px solid rgba(196,168,130,0.15)" }}>
-            {["128 Five-Star Reviews", "CEREC Same-Day Crown", "UNLV DMD Trained", "Lifetime Warranty Included"].map((t) => (
-              <div key={t} style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                <CheckCircle size={13} style={{ color: ACCENT }} />
-                <span style={{ fontSize: 12, color: TEXT_MUTED, fontWeight: 500 }}>{t}</span>
-              </div>
-            ))}
+          {/* Hero image — gallery-g3: dramatic before/after, decay → perfect white */}
+          <div className="hero-img-col" style={{ position: "relative", overflow: "hidden" }}>
+            <Image src="/images/crowns-lp/gallery-g3.webp" alt="Before and after full mouth crown restoration — crumbling decay to perfect white porcelain, Dr. Alex Chireau AK Ultimate Dental Las Vegas" fill className="object-cover object-center" priority sizes="(max-width: 768px) 100vw, 50vw" />
           </div>
         </div>
-        {/* Hero image — ba-extra-2: best dramatic full-mouth B/A */}
-        <div className="hero-img-col" style={{ position: "relative", overflow: "hidden" }}>
-          <Image src="/images/crowns-lp/ba-extra-2.webp" alt="Before and after full mouth porcelain crown restoration by Dr. Alex Chireau, AK Ultimate Dental Las Vegas" fill className="object-cover object-top" priority sizes="(max-width: 768px) 100vw, 50vw" />
-        </div>
-      </section>
 
-      {/* ── REVIEW STRIP ────────────────────────────────── */}
-      <section style={{ background: "#1A1714", padding: "40px 24px", textAlign: "center", borderTop: "1px solid rgba(196,168,130,0.1)" }}>
-        <div style={{ maxWidth: 680, margin: "0 auto" }}>
-          <div style={{ display: "flex", justifyContent: "center", gap: 4, marginBottom: 16 }}>
-            {[...Array(5)].map((_, i) => <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill={ACCENT}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
-          </div>
-          <blockquote className="serif" style={{ fontSize: "clamp(1.2rem, 2.5vw, 1.6rem)", fontStyle: "italic", color: TEXT_DARK, lineHeight: 1.55, marginBottom: 16 }}>
-            &ldquo;I&apos;ve been to a lot of dentists in Las Vegas. Dr. Chireau&apos;s work is in a completely different category.&rdquo;
-          </blockquote>
-          <p style={{ fontSize: 12, color: TEXT_MUTED, letterSpacing: "0.1em", textTransform: "uppercase" }}>Verified Google Review</p>
+        {/* ── HIGHLIGHT STRIP — flush bottom of hero ──────── */}
+        <div style={{ background: "#0A0806", borderTop: "1px solid rgba(196,168,130,0.2)", display: "grid", gridTemplateColumns: "repeat(4, 1fr)" }}>
+          {[
+            { stat: "128", label: "Five-Star Google Reviews", sub: "Verified · Las Vegas" },
+            { stat: "CEREC", label: "Same-Day Crowns", sub: "No lab. Done in one visit." },
+            { stat: "50%", label: "Off Standard Rate", sub: "May founding patients only" },
+            { stat: "Lifetime", label: "Crown Warranty", sub: "Replace or rebond — free, forever" },
+          ].map((col, i) => (
+            <div key={i} style={{ padding: "22px 24px", borderLeft: i > 0 ? "1px solid rgba(196,168,130,0.1)" : "none", display: "flex", flexDirection: "column", gap: 2 }}>
+              <p style={{ fontSize: "clamp(1.1rem, 1.8vw, 1.5rem)", fontWeight: 700, color: ACCENT_LIGHT, fontFamily: "'Cormorant Garamond', Georgia, serif", letterSpacing: "-0.01em", lineHeight: 1 }}>{col.stat}</p>
+              <p style={{ fontSize: 12, fontWeight: 600, color: TEXT_DARK, marginTop: 4 }}>{col.label}</p>
+              <p style={{ fontSize: 11, color: TEXT_MUTED }}>{col.sub}</p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -136,11 +138,11 @@ export default function CrownsMayV3Page() {
           {/* 2-col grid — large B/As side by side */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3, marginBottom: 3 }} className="gallery-3col" >
             {[
-              { src: "/images/crowns-lp/ba-extra-5.webp", label: "Full upper arch crowns", caption: "Complete upper arch · porcelain crowns" },
-              { src: "/images/crowns-lp/ba-extra-7.webp", label: "Chipped anteriors → crowns", caption: "Damaged front teeth · same-day CEREC · @AK Ultimate Dental" },
+              { src: "/images/crowns-lp/ba-extra-5.webp", label: "Full upper arch crowns", caption: "Complete upper arch · porcelain crowns", pos: "object-top" },
+              { src: "/images/crowns-lp/ba-extra-7.webp", label: "Chipped anteriors → crowns", caption: "Damaged front teeth · same-day CEREC · @AK Ultimate Dental", pos: "object-center" },
             ].map((img) => (
               <div key={img.src} style={{ position: "relative", overflow: "hidden", aspectRatio: "1/1" }}>
-                <Image src={img.src} alt={img.label} fill className="object-cover" loading="lazy" sizes="50vw" />
+                <Image src={img.src} alt={img.label} fill className={`object-cover ${img.pos}`} loading="lazy" sizes="50vw" />
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(13,11,9,0.65) 0%, transparent 55%)" }} />
                 <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "16px 20px" }}>
                   <p style={{ fontSize: 12, color: ACCENT_LIGHT, fontWeight: 600, marginBottom: 2 }}>{img.label}</p>
@@ -345,7 +347,7 @@ export default function CrownsMayV3Page() {
           </h2>
           {hasVideo ? (
             <div style={{ position: "relative", width: "100%", background: "#000" }}>
-              <video controls preload="metadata" style={{ width: "100%", display: "block", maxHeight: 540 }} poster="/images/crowns-lp/ba-extra-2.webp">
+              <video controls preload="metadata" style={{ width: "100%", display: "block", maxHeight: 540 }} poster="/images/crowns-lp/gallery-g3.webp">
                 <source src="/videos/alex-intro.mp4" type="video/mp4" />
               </video>
             </div>
