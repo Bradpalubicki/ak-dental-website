@@ -66,8 +66,14 @@ const TICKER = [
 
 // ── Gallery photos ─────────────────────────────────────────
 const GALLERY = [
-  { src: "/images/crowns-lp/ba-primary.webp",   label: "Full arch restoration · Dr. Alex Chireau" },
-  { src: "/images/crowns-lp/ba-secondary.webp", label: "Crown restoration · Dr. Alex Chireau" },
+  { src: "/images/crowns-lp/gallery-05.webp", label: "Full arch restoration · Dr. Alex Chireau" },
+  { src: "/images/crowns-lp/gallery-04.webp", label: "Crown restoration · Dr. Alex Chireau" },
+  { src: "/images/crowns-lp/gallery-01.webp", label: "Smile makeover · Dr. Alex Chireau" },
+  { src: "/images/crowns-lp/gallery-02.webp", label: "Crown restoration · Dr. Alex Chireau" },
+  { src: "/images/crowns-lp/gallery-03.webp", label: "Porcelain crowns · AK Ultimate Dental" },
+  { src: "/images/crowns-lp/gallery-06.webp", label: "Crown restoration · Dr. Alex Chireau" },
+  { src: "/images/crowns-lp/gallery-07.webp", label: "Full arch crowns · Dr. Alex Chireau" },
+  { src: "/images/crowns-lp/gallery-08.webp", label: "Front crown restoration · Dr. Alex Chireau" },
 ];
 
 export default function CrownsMayPage() {
@@ -278,7 +284,7 @@ export default function CrownsMayPage() {
           </h2>
           <p style={{ color: MUTED, fontSize: 14, marginBottom: 40, lineHeight: 1.7 }}>Every photo is Dr. Chireau&apos;s own clinical work. No filters. No stock imagery.</p>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 3 }}>
             {GALLERY.map((photo, i) => (
               <div key={i} style={{ position: "relative", width: "100%", aspectRatio: "1/1", overflow: "hidden" }}>
                 <Image
@@ -286,12 +292,12 @@ export default function CrownsMayPage() {
                   alt={photo.label}
                   fill
                   className="object-contain"
-                  loading="lazy"
-                  sizes="(max-width: 768px) 100vw, 1000px"
+                  loading={i < 2 ? "eager" : "lazy"}
+                  sizes="(max-width: 768px) 50vw, 500px"
                   style={{ background: "#080706" }}
                 />
-                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "10px 14px", background: "rgba(13,11,9,0.75)" }}>
-                  <p style={{ fontSize: 11, color: GOLD_LT }}>{photo.label}</p>
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "8px 12px", background: "rgba(13,11,9,0.75)" }}>
+                  <p style={{ fontSize: 10, color: GOLD_LT }}>{photo.label}</p>
                 </div>
               </div>
             ))}
