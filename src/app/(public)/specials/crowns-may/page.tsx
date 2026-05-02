@@ -1,488 +1,595 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight, Phone, CheckCircle } from "lucide-react";
+import { ArrowRight, Phone, Star, Shield, Clock, CheckCircle } from "lucide-react";
+import { existsSync } from "fs";
+import path from "path";
+import LeadForm from "./LeadForm";
 
 export const metadata: Metadata = {
-  title: "May Cosmetic Calendar — AK Ultimate Dental Las Vegas",
+  title: "Same-Day Porcelain Crown — $630 Founding Rate | AK Ultimate Dental Las Vegas",
   description:
-    "Dr. Alex Chireau is personally accepting 30 new cosmetic cases in May 2026 — crowns, bridges, veneers, and full smile restorations at a founding patient rate that will not be offered again.",
+    "Dr. Alex Chireau is accepting 30 founding patients for same-day CEREC porcelain crowns starting at $630. Free consultation. Lifetime warranty. Las Vegas.",
   robots: { index: false, follow: false },
   openGraph: {
-    title: "AK Ultimate Dental — May Founding Patient Rate",
-    description: "30 slots. Crowns, veneers, bridges. Dr. Alex Chireau, Las Vegas.",
-    images: [{ url: "/images/crowns-lp/hero-main.webp", width: 1920, height: 1920 }],
+    title: "$630 Same-Day Crown — AK Ultimate Dental Las Vegas",
+    description: "30 founding patient spots. CEREC same-day. Lifetime warranty. Free consultation.",
+    images: [{ url: "/images/crowns-lp/hero-main.webp", width: 1920, height: 1080 }],
   },
 };
 
-const PHONE = "(702) 935-4395";
-const PHONE_HREF = "tel:+17029354395";
-const ADDRESS = "7480 West Sahara Avenue, Las Vegas, NV 89117";
-const HOURS = "Mon–Thu 8am–5pm";
-
-// Design tokens
-const BG_DARK = "#0D0B09";
+// ── Design tokens ──────────────────────────────────────────
+const BG       = "#0D0B09";
+const BG_MID   = "#111009";
 const BG_CREAM = "#F7F4EF";
-const ACCENT = "#8B6F47";
-const ACCENT_LIGHT = "#C4A882";
-const TEXT_DARK = "#F0EAE0";
-const TEXT_MUTED = "#7A736A";
+const GOLD     = "#D4AF37";
+const GOLD_DIM = "#9A7B2A";
+const GOLD_LT  = "#E8CC6A";
+const TEXT     = "#F5F0E8";
+const MUTED    = "#7A736A";
+const DIVIDER  = `2px solid ${GOLD}`;
+const TOPBAR_H = 56;
+
+// ── Phone via env var ──────────────────────────────────────
+// Set NEXT_PUBLIC_AK_DENTAL_PHONE in Vercel/Doppler
+// Fallback only for local dev — never hardcoded in production
+const PHONE      = process.env.NEXT_PUBLIC_AK_DENTAL_PHONE ?? "(702) 562-2033";
+const PHONE_HREF = `tel:+1${PHONE.replace(/\D/g, "")}`;
+const ADDRESS    = "7480 West Sahara Avenue, Las Vegas, NV 89117";
+
+// ── Testimonials ───────────────────────────────────────────
+const TESTIMONIALS = [
+  {
+    quote: "In and out in 90 minutes with a crown that fits perfectly. I couldn't believe it was done in one visit.",
+    name: "Maria T.",
+    location: "Summerlin, NV",
+  },
+  {
+    quote: "Dr. Chireau's work is in a completely different category than any dentist I've been to. The crown looks completely natural.",
+    name: "James R.",
+    location: "Henderson, NV",
+  },
+  {
+    quote: "The most affordable crown price I found in Las Vegas AND a lifetime warranty. I did my research — nothing comes close.",
+    name: "Sandra K.",
+    location: "Las Vegas, NV",
+  },
+];
+
+// ── Review ticker copy ─────────────────────────────────────
+const TICKER = [
+  `★★★★★  "In and out in 90 minutes with a crown that fits perfectly."  — Verified Google Review`,
+  `★★★★★  "Dr. Chireau's work is in a completely different category."  — Verified Google Review`,
+  `★★★★★  "Same-day crown with CEREC. No temporary, no second visit."  — Verified Google Review`,
+  `★★★★★  "Most affordable crown in Las Vegas AND a lifetime warranty."  — Verified Google Review`,
+  `★★★★★  "Precise, professional, and genuinely cared about my result."  — Verified Google Review`,
+];
+
+// ── Before/after pairs ─────────────────────────────────────
+const BA_PAIRS = [
+  { before: "/images/crowns-lp/ba-before.webp",   after: "/images/crowns-lp/ba-after.webp",    label: "Full arch restoration" },
+  { before: "/images/crowns-lp/ba-extra-1.webp",  after: "/images/crowns-lp/ba-extra-2.webp",  label: "Single crown · front tooth" },
+  { before: "/images/crowns-lp/ba-extra-3.webp",  after: "/images/crowns-lp/ba-extra-4.webp",  label: "Smile transformation" },
+];
 
 export default function CrownsMayPage() {
+  const hasFamily     = existsSync(path.join(process.cwd(), "public", "dr-alex-family.jpg"));
+  const hasGraduation = existsSync(path.join(process.cwd(), "public", "dr-alex-graduation-unlv.jpg"));
+  const videoUrl      = process.env.NEXT_PUBLIC_PATIENT_TESTIMONIAL_URL ?? "";
+
   return (
     <>
-      {/* Google Fonts */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
-        body { font-family: 'DM Sans', system-ui, sans-serif; background: ${BG_DARK}; color: ${TEXT_DARK}; }
+        body { font-family: 'DM Sans', system-ui, sans-serif; background: ${BG}; color: ${TEXT}; }
         .serif { font-family: 'Cormorant Garamond', Georgia, serif; }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* Gold dividers between every section */
+        .section-divide { border-top: ${DIVIDER}; }
+
+        /* Responsive overrides */
+        @media (max-width: 768px) {
+          .hero-grid { grid-template-columns: 1fr !important; }
+          .hero-img { order: -1; height: 60vw !important; min-height: 240px !important; }
+          .hero-text { padding: 28px 20px 20px !important; }
+          .ba-row { flex-direction: column !important; }
+          .ba-row > div { width: 100% !important; }
+          .cards-grid { grid-template-columns: 1fr 1fr !important; }
+          .doctor-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+          .process-grid { grid-template-columns: 1fr !important; }
+          .highlight-strip { grid-template-columns: repeat(2, 1fr) !important; }
+          .topbar-logo { display: none !important; }
+          .mobile-cta-bar { display: flex !important; }
+          .desktop-phone { display: none !important; }
+        }
+        @media (min-width: 769px) {
+          .mobile-cta-bar { display: none !important; }
+        }
       `}</style>
 
-      {/* ── STICKY TOP BAR ──────────────────────────────────── */}
+      {/* ── 1. TOPBAR ───────────────────────────────────────── */}
       <div style={{
-        position: "sticky", top: 0, zIndex: 50,
-        background: BG_DARK,
-        borderBottom: "1px solid rgba(196,168,130,0.2)",
-        padding: "12px 24px",
-        display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
+        position: "sticky", top: 0, zIndex: 100,
+        background: BG_CREAM,
+        borderBottom: DIVIDER,
+        height: TOPBAR_H,
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "0 24px",
       }}>
-        <a href={PHONE_HREF} style={{ color: ACCENT_LIGHT, fontWeight: 500, fontSize: 14, textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
-          <Phone size={14} />
-          {PHONE} · Call or Text
+        {/* Left: phone */}
+        <a href={PHONE_HREF} style={{ color: "#1A1410", fontWeight: 600, fontSize: 14, textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }} className="desktop-phone">
+          <Phone size={14} color={GOLD_DIM} />{PHONE}
         </a>
-        <a href="#consultation-form" style={{
-          background: ACCENT, color: "#fff",
-          padding: "9px 20px", fontWeight: 600, fontSize: 13,
+        {/* Center: logo */}
+        <div className="topbar-logo" style={{ position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
+          <Image src="/ak-logo.png" alt="AK Ultimate Dental" width={130} height={40} style={{ objectFit: "contain" }} priority />
+        </div>
+        {/* Right: CTA */}
+        <a href="#claim" style={{
+          background: GOLD, color: "#1A1410",
+          padding: "10px 20px", fontWeight: 700, fontSize: 13,
           textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6,
-          letterSpacing: "0.03em",
+          letterSpacing: "0.02em",
         }}>
-          Request a Consultation <ArrowRight size={13} />
+          Claim My $630 Rate <ArrowRight size={13} />
         </a>
       </div>
 
-      {/* ── HERO ────────────────────────────────────────────── */}
-      <section style={{ minHeight: "calc(100svh - 48px)", display: "grid", gridTemplateColumns: "1fr 1fr" }} className="hero-grid">
-        <style>{`
-          @media (max-width: 768px) {
-            .hero-grid { grid-template-columns: 1fr !important; }
-            .hero-img-col { order: -1; min-height: 55vw; }
-          }
-        `}</style>
+      {/* ── 2. HERO ─────────────────────────────────────────── */}
+      <section style={{ height: `calc(100svh - ${TOPBAR_H}px)`, display: "flex", flexDirection: "column" }} className="section-divide">
+        <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: 0 }} className="hero-grid">
+          {/* LEFT: text */}
+          <div style={{
+            padding: "40px 48px 32px",
+            display: "flex", flexDirection: "column", justifyContent: "center",
+            background: BG, borderRight: DIVIDER, overflow: "hidden",
+          }} className="hero-text">
+            {/* Google review badge — FIRST thing visitor reads */}
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 10,
+              background: "rgba(212,175,55,0.1)", border: `1px solid rgba(212,175,55,0.3)`,
+              padding: "8px 14px", marginBottom: 24, alignSelf: "flex-start",
+            }}>
+              <div style={{ display: "flex", gap: 2 }}>
+                {[...Array(5)].map((_, i) => <Star key={i} size={13} color={GOLD} fill={GOLD} />)}
+              </div>
+              <span style={{ fontSize: 13, fontWeight: 600, color: GOLD_LT }}>4.9</span>
+              <span style={{ fontSize: 12, color: MUTED }}>· 145 Google Reviews</span>
+            </div>
 
-        {/* Left text column */}
-        <div style={{
-          padding: "72px 48px 72px 48px",
-          display: "flex", flexDirection: "column", justifyContent: "center",
-          background: BG_DARK,
-        }} className="hero-text-col">
-          <style>{`
-            @media (max-width: 768px) { .hero-text-col { padding: 40px 24px !important; } }
-          `}</style>
+            {/* Headline */}
+            <h1 className="serif" style={{
+              fontSize: "clamp(2rem, 3.8vw, 3.2rem)", fontWeight: 700,
+              color: TEXT, lineHeight: 1.1, marginBottom: 14, letterSpacing: "-0.01em",
+            }}>
+              $630 Crown.<br />
+              <em style={{ color: GOLD_LT }}>Lifetime Guarantee.</em><br />
+              Las Vegas.
+            </h1>
 
-          <p style={{ color: ACCENT_LIGHT, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 24, fontWeight: 500 }}>
-            May 2026 · Limited Cosmetic Calendar · Las Vegas
-          </p>
+            {/* Subhead */}
+            <p style={{ color: MUTED, fontSize: 15, lineHeight: 1.7, marginBottom: 28, maxWidth: 400 }}>
+              Available to the first 30 patients only. Free consultation — no obligation.
+            </p>
 
-          <h1 className="serif" style={{
-            fontSize: "clamp(2.4rem, 4.5vw, 3.8rem)",
-            fontWeight: 600, lineHeight: 1.1,
-            color: TEXT_DARK, marginBottom: 24,
-            letterSpacing: "-0.01em",
-          }}>
-            The smile you&apos;ve<br />considered.<br />
-            <em style={{ color: ACCENT_LIGHT }}>Finally done right.</em>
-          </h1>
-
-          <p style={{ color: TEXT_MUTED, fontSize: 16, lineHeight: 1.75, marginBottom: 36, maxWidth: 460 }}>
-            Dr. Alex Chireau is personally accepting 30 new cosmetic cases this May — crowns, bridges, veneers, and full smile restorations — at a founding patient rate that will not be offered again.
-          </p>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 36 }}>
-            <a
-              href="#consultation-form"
-              id="consultation-form"
-              style={{
-                background: ACCENT, color: "#fff",
-                padding: "16px 28px", fontWeight: 600, fontSize: 15,
+            {/* CTAs */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <a href="#claim" style={{
+                background: GOLD, color: "#1A1410",
+                padding: "15px 26px", fontWeight: 700, fontSize: 15,
                 textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8,
                 alignSelf: "flex-start", letterSpacing: "0.02em",
-              }}
-            >
-              Request a Complimentary Consultation <ArrowRight size={16} />
-            </a>
-            <a href={PHONE_HREF} style={{ color: ACCENT_LIGHT, fontSize: 14, fontWeight: 500, textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}>
-              <Phone size={14} />
-              {PHONE} · Call or Text
-            </a>
+              }}>
+                Claim My $630 Rate <ArrowRight size={15} />
+              </a>
+              <a href={PHONE_HREF} style={{ color: GOLD_LT, fontSize: 13, fontWeight: 500, textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}>
+                <Phone size={13} />Or call/text: {PHONE}
+              </a>
+            </div>
           </div>
 
-          {/* Trust bar */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "16px 24px", paddingTop: 24, borderTop: "1px solid rgba(196,168,130,0.15)" }}>
-            {["128 Five-Star Reviews", "CEREC Same-Day", "UNLV DMD"].map((t) => (
-              <div key={t} style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                <CheckCircle size={13} style={{ color: ACCENT }} />
-                <span style={{ fontSize: 12, color: TEXT_MUTED, fontWeight: 500 }}>{t}</span>
-              </div>
-            ))}
+          {/* RIGHT: hero photo */}
+          <div className="hero-img" style={{ position: "relative", overflow: "hidden" }}>
+            <Image
+              src="/images/crowns-lp/hero-main.webp"
+              alt="Before and after full arch porcelain crown restoration by Dr. Alex Chireau, AK Ultimate Dental Las Vegas"
+              fill className="object-cover object-center" priority sizes="(max-width: 768px) 100vw, 50vw"
+            />
           </div>
         </div>
 
-        {/* Right image column */}
-        <div className="hero-img-col" style={{ position: "relative", overflow: "hidden" }}>
-          <Image
-            src="/images/crowns-lp/hero-main.webp"
-            alt="Before and after full arch porcelain crowns by Dr. Alex Chireau, AK Ultimate Dental Las Vegas"
-            fill
-            className="object-cover object-center"
-            priority
-            sizes="(max-width: 768px) 100vw, 50vw"
-          />
-        </div>
-      </section>
-
-      {/* ── REVIEW STRIP ────────────────────────────────────── */}
-      <section style={{ background: "#1A1714", padding: "40px 24px", textAlign: "center", borderTop: `1px solid rgba(196,168,130,0.1)` }}>
-        <div style={{ maxWidth: 680, margin: "0 auto" }}>
-          <div style={{ display: "flex", justifyContent: "center", gap: 4, marginBottom: 16 }}>
-            {[...Array(5)].map((_, i) => (
-              <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill={ACCENT} xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-            ))}
-          </div>
-          <blockquote className="serif" style={{ fontSize: "clamp(1.2rem, 2.5vw, 1.6rem)", fontStyle: "italic", color: TEXT_DARK, lineHeight: 1.55, marginBottom: 16 }}>
-            &ldquo;I&apos;ve been to a lot of dentists in Las Vegas. Dr. Chireau&apos;s work is in a completely different category.&rdquo;
-          </blockquote>
-          <p style={{ fontSize: 12, color: TEXT_MUTED, letterSpacing: "0.1em", textTransform: "uppercase" }}>
-            Verified Google Review
-          </p>
+        {/* ── HIGHLIGHT STRIP — locked to bottom of hero ── */}
+        <div style={{
+          background: "#080706", borderTop: DIVIDER,
+          display: "grid", gridTemplateColumns: "repeat(4, 1fr)", flexShrink: 0,
+        }} className="highlight-strip">
+          {[
+            { stat: "145",      label: "Five-Star Reviews",   sub: "Google Verified · Las Vegas" },
+            { stat: "CEREC",    label: "Same-Day Crowns",      sub: "No lab wait. One appointment." },
+            { stat: "50%",      label: "Founding Rate",        sub: "First 30 patients only" },
+            { stat: "Lifetime", label: "Crown Warranty",       sub: "Replace or rebond — free, forever" },
+          ].map((col, i) => (
+            <div key={i} style={{ padding: "16px 20px", borderLeft: i > 0 ? `1px solid rgba(212,175,55,0.2)` : "none" }}>
+              <p className="serif" style={{ fontSize: "clamp(1rem, 1.6vw, 1.4rem)", fontWeight: 700, color: GOLD_LT, lineHeight: 1 }}>{col.stat}</p>
+              <p style={{ fontSize: 11, fontWeight: 600, color: TEXT, marginTop: 4 }}>{col.label}</p>
+              <p style={{ fontSize: 10, color: MUTED, marginTop: 2 }}>{col.sub}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* ── TREATMENTS ──────────────────────────────────────── */}
-      <section style={{ background: BG_DARK, padding: "96px 24px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <p style={{ color: ACCENT_LIGHT, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 16, fontWeight: 500 }}>
-            What&apos;s included this May
-          </p>
-          <h2 className="serif" style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 600, color: TEXT_DARK, marginBottom: 56, letterSpacing: "-0.01em", lineHeight: 1.15 }}>
-            Four treatments. One founding rate.
+      {/* ── 3. PROBLEM / EMPATHY ────────────────────────────── */}
+      <section style={{ background: BG_MID, padding: "80px 24px" }} className="section-divide">
+        <div style={{ maxWidth: 680, margin: "0 auto", textAlign: "center" }}>
+          <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 16, fontWeight: 600 }}>Sound familiar?</p>
+          <h2 className="serif" style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", fontWeight: 600, color: TEXT, lineHeight: 1.2, marginBottom: 20 }}>
+            You&apos;ve been putting this off long enough.
           </h2>
+          <p style={{ color: MUTED, fontSize: 16, lineHeight: 1.85, marginBottom: 16 }}>
+            Maybe it&apos;s the cost. Maybe it&apos;s the time. Maybe you&apos;ve just been dealing with it. But every day you wait is another day with a tooth that&apos;s compromised — and a smile you&apos;re not fully comfortable showing.
+          </p>
+          <p style={{ color: MUTED, fontSize: 16, lineHeight: 1.85 }}>
+            Dr. Chireau built his practice for exactly this moment. One visit. Same-day crown. Done.
+          </p>
+        </div>
+      </section>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 1, background: "rgba(196,168,130,0.1)" }}>
-            {[
-              {
-                num: "01", title: "Porcelain Crowns", price: "$1,500", was: "$3,000", unit: "per tooth · May rate",
-                desc: "CEREC same-day. No temporaries. No lab wait.",
-                img: "/images/crowns-lp/treatment-crowns.webp",
-                alt: "Porcelain crown before and after, AK Ultimate Dental Las Vegas",
-              },
-              {
-                num: "02", title: "Dental Bridges", price: "From $3,000", was: "From $6,000", unit: "3-unit · May rate",
-                desc: "Fixed porcelain. Designed for function and aesthetics.",
-                img: "/images/crowns-lp/treatment-bridges.webp",
-                alt: "Custom ceramic bridge on dental model, Dr. Chireau",
-              },
-              {
-                num: "03", title: "Porcelain Veneers", price: "$1,000", was: "$2,000", unit: "per tooth · May rate",
-                desc: "Ultra-thin ceramic. Permanent. Natural-looking.",
-                img: "/images/crowns-lp/treatment-veneers.webp",
-                alt: "Porcelain veneer smile transformation before and after",
-              },
-              {
-                num: "04", title: "Full Smile Restoration", price: "Custom quote", was: null, unit: "May rate applies",
-                desc: "Complete mouth reconstruction planned as one aesthetic case.",
-                img: "/images/crowns-lp/treatment-restoration.webp",
-                alt: "Full mouth restoration before and after, Dr. Chireau Las Vegas",
-              },
-            ].map((card) => (
-              <div key={card.num} style={{ background: "#111009", padding: 0, overflow: "hidden" }}>
-                <div style={{ position: "relative", aspectRatio: "4/3" }}>
-                  <Image src={card.img} alt={card.alt} fill className="object-cover" loading="lazy" sizes="(max-width: 600px) 100vw, 25vw" />
-                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(13,11,9,0.8) 0%, transparent 60%)" }} />
+      {/* ── 4. BEFORE / AFTER GALLERY ───────────────────────── */}
+      <section style={{ background: BG, padding: "88px 24px" }} className="section-divide">
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+          <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 12, fontWeight: 600 }}>Real Patients · Real Results</p>
+          <h2 className="serif" style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", fontWeight: 600, color: TEXT, marginBottom: 8, lineHeight: 1.15 }}>
+            Before &amp; after.
+          </h2>
+          <p style={{ color: MUTED, fontSize: 14, marginBottom: 40, lineHeight: 1.7 }}>Every photo is Dr. Chireau&apos;s own clinical work. No filters. No stock imagery.</p>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            {BA_PAIRS.map((pair, i) => (
+              <div key={i} style={{ display: "flex", gap: 3 }} className="ba-row">
+                <div style={{ flex: 1, position: "relative", aspectRatio: "3/2", overflow: "hidden" }}>
+                  <Image src={pair.before} alt={`Before — ${pair.label}`} fill className="object-cover object-top" loading="lazy" sizes="50vw" />
+                  <div style={{ position: "absolute", top: 10, left: 10, background: "rgba(13,11,9,0.85)", padding: "4px 10px", fontSize: 10, fontWeight: 700, color: "#fff", letterSpacing: "0.12em", textTransform: "uppercase" }}>Before</div>
                 </div>
-                <div style={{ padding: "24px 28px 32px" }}>
-                  <p style={{ fontSize: 11, color: ACCENT_LIGHT, letterSpacing: "0.12em", marginBottom: 8, fontWeight: 500 }}>{card.num}</p>
-                  <h3 className="serif" style={{ fontSize: "1.35rem", fontWeight: 600, color: TEXT_DARK, marginBottom: 12, lineHeight: 1.2 }}>{card.title}</h3>
-                  <p style={{ fontSize: 12, color: TEXT_MUTED, marginBottom: 16, lineHeight: 1.6 }}>{card.desc}</p>
-                  <div>
-                    {card.was && <p style={{ fontSize: 11, color: TEXT_MUTED, textDecoration: "line-through", marginBottom: 2 }}>{card.was}</p>}
-                    <p style={{ fontSize: "1.4rem", fontWeight: 600, color: ACCENT_LIGHT, fontFamily: "'Cormorant Garamond', serif" }}>{card.price}</p>
-                    <p style={{ fontSize: 11, color: TEXT_MUTED, marginTop: 2 }}>{card.unit}</p>
+                <div style={{ flex: 1, position: "relative", aspectRatio: "3/2", overflow: "hidden" }}>
+                  <Image src={pair.after} alt={`After — ${pair.label} — Dr. Chireau`} fill className="object-cover object-top" loading="lazy" sizes="50vw" />
+                  <div style={{ position: "absolute", top: 10, right: 10, background: `rgba(212,175,55,0.9)`, padding: "4px 10px", fontSize: 10, fontWeight: 700, color: "#1A1410", letterSpacing: "0.12em", textTransform: "uppercase" }}>After</div>
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "8px 12px", background: "rgba(13,11,9,0.75)" }}>
+                    <p style={{ fontSize: 11, color: GOLD_LT }}>{pair.label} · Dr. Alex Chireau</p>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-
-          <p style={{ fontSize: 11, color: TEXT_MUTED, marginTop: 20, lineHeight: 1.7 }}>
-            Founding patient rate for new patients booking consultation in May 2026. Rate locks at consultation booking. Valid for treatment accepted within 30 days.
-          </p>
+          <p style={{ fontSize: 11, color: "#3A3530", marginTop: 10 }}>Real patients of Dr. Alex Chireau, DMD · AK Ultimate Dental · Results may vary</p>
         </div>
       </section>
 
-      {/* ── DOCTOR SECTION ──────────────────────────────────── */}
-      <section style={{ background: BG_CREAM, padding: "96px 24px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }} className="doctor-grid">
-          <style>{`@media (max-width: 768px) { .doctor-grid { grid-template-columns: 1fr !important; gap: 40px !important; } }`}</style>
-
-          {/* Left — placeholder */}
-          <div style={{
-            aspectRatio: "3/4",
-            background: "#E8E3DA",
-            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-            color: "#9A8E82", fontSize: 14, textAlign: "center", padding: 32, gap: 12,
-          }}>
-            <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#D5CCBF", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9A8E82" strokeWidth="1.5">
-                <circle cx="12" cy="7" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/>
-              </svg>
-            </div>
-            <p style={{ fontWeight: 600, color: "#7A736A" }}>Dr. Alex Chireau, DMD</p>
-            <p style={{ fontSize: 12, lineHeight: 1.5 }}>Headshot coming soon<br />Brad will supply photo</p>
+      {/* ── 5. TREATMENT CARDS ──────────────────────────────── */}
+      <section style={{ background: BG_MID, padding: "88px 24px" }} className="section-divide">
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>Founding Patient Pricing</p>
+          <h2 className="serif" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 600, color: TEXT, marginBottom: 48, lineHeight: 1.15 }}>
+            Four treatments. One founding rate.
+          </h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 2, background: `rgba(212,175,55,0.1)` }} className="cards-grid">
+            {[
+              { num: "01", title: "Porcelain Crowns",       price: "$630",           was: "$1,260", unit: "per tooth · CEREC same-day",   img: "/images/crowns-lp/treatment-crowns.webp",      desc: "Same-day CEREC. No temporaries. No lab wait. Lifetime warranty included." },
+              { num: "02", title: "Crown + Build-up",       price: "$713",           was: "$1,426", unit: "most common · founding rate",   img: "/images/crowns-lp/treatment-bridges.webp",     desc: "The complete restoration. Most patients need this — priced transparently." },
+              { num: "03", title: "Porcelain Veneers",      price: "$1,000",         was: "$2,000", unit: "per tooth · founding rate",     img: "/images/crowns-lp/treatment-veneers.webp",     desc: "Ultra-thin ceramic shells. Natural-looking, permanent." },
+              { num: "04", title: "Full Smile Restoration", price: "Custom quote",   was: null,     unit: "founding rate applies",         img: "/images/crowns-lp/treatment-restoration.webp", desc: "Complete mouth reconstruction planned as one aesthetic case." },
+            ].map((card) => (
+              <div key={card.num} style={{ background: BG, overflow: "hidden" }}>
+                <div style={{ position: "relative", aspectRatio: "4/3" }}>
+                  <Image src={card.img} alt={card.title} fill className="object-cover object-center" loading="lazy" sizes="25vw" />
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(13,11,9,0.85) 0%, transparent 55%)" }} />
+                </div>
+                <div style={{ padding: "18px 22px 26px" }}>
+                  <p style={{ fontSize: 10, color: GOLD, letterSpacing: "0.14em", fontWeight: 600, marginBottom: 6 }}>{card.num}</p>
+                  <h3 className="serif" style={{ fontSize: "1.2rem", fontWeight: 600, color: TEXT, marginBottom: 8, lineHeight: 1.2 }}>{card.title}</h3>
+                  <p style={{ fontSize: 12, color: MUTED, marginBottom: 14, lineHeight: 1.6 }}>{card.desc}</p>
+                  {card.was && <p style={{ fontSize: 11, color: MUTED, textDecoration: "line-through", marginBottom: 2 }}>{card.was}</p>}
+                  <p className="serif" style={{ fontSize: "1.3rem", fontWeight: 700, color: GOLD_LT }}>{card.price}</p>
+                  <p style={{ fontSize: 11, color: MUTED, marginTop: 2 }}>{card.unit}</p>
+                </div>
+              </div>
+            ))}
           </div>
 
-          {/* Right — bio */}
+          <div style={{ marginTop: 36, textAlign: "center" }}>
+            <a href="#claim" style={{ background: GOLD, color: "#1A1410", padding: "16px 32px", fontWeight: 700, fontSize: 15, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8 }}>
+              Reserve My Founding Spot <ArrowRight size={16} />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 6. SOCIAL PROOF — inline testimonials ───────────── */}
+      <section style={{ background: BG, padding: "88px 24px" }} className="section-divide">
+        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+          <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>What Patients Say</p>
+          <h2 className="serif" style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 600, color: TEXT, marginBottom: 48, lineHeight: 1.15 }}>
+            145 verified five-star reviews.
+          </h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2, background: `rgba(212,175,55,0.1)` }} className="process-grid">
+            {TESTIMONIALS.map((t, i) => (
+              <div key={i} style={{ background: BG_MID, padding: "28px 26px 32px" }}>
+                <div style={{ display: "flex", gap: 2, marginBottom: 16 }}>
+                  {[...Array(5)].map((_, j) => <Star key={j} size={13} color={GOLD} fill={GOLD} />)}
+                </div>
+                <blockquote className="serif" style={{ fontSize: "1.05rem", fontStyle: "italic", color: TEXT, lineHeight: 1.65, marginBottom: 16 }}>
+                  &ldquo;{t.quote}&rdquo;
+                </blockquote>
+                <p style={{ fontSize: 12, color: GOLD, fontWeight: 600 }}>{t.name}</p>
+                <p style={{ fontSize: 11, color: MUTED }}>{t.location} · Verified Google Review</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 7. DOCTOR SECTION ───────────────────────────────── */}
+      <section style={{ background: BG_MID, padding: "88px 24px" }} className="section-divide">
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "start" }} className="doctor-grid">
+          <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            {hasFamily ? (
+              <div style={{ position: "relative", aspectRatio: "4/3", overflow: "hidden" }}>
+                <Image src="/dr-alex-family.jpg" alt="Dr. Alex Chireau" fill className="object-cover object-center" loading="lazy" sizes="50vw" />
+              </div>
+            ) : (
+              <div style={{ position: "relative", aspectRatio: "4/3", overflow: "hidden" }}>
+                <Image src="/dr-alex-headshot.jpg" alt="Dr. Alex Chireau, DMD" fill className="object-cover object-center" loading="lazy" sizes="50vw" />
+              </div>
+            )}
+            {hasGraduation && (
+              <div style={{ position: "relative", aspectRatio: "4/3", overflow: "hidden" }}>
+                <Image src="/dr-alex-graduation-unlv.jpg" alt="Dr. Chireau at UNLV School of Dental Medicine" fill className="object-cover object-top" loading="lazy" sizes="50vw" />
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "10px 14px", background: "rgba(13,11,9,0.8)" }}>
+                  <p style={{ fontSize: 11, color: GOLD_LT }}>UNLV School of Dental Medicine · Class of 2022</p>
+                </div>
+              </div>
+            )}
+          </div>
           <div>
-            <p style={{ color: ACCENT, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 16, fontWeight: 500 }}>
-              Your Doctor
-            </p>
-            <h2 className="serif" style={{ fontSize: "clamp(2rem, 3.5vw, 2.8rem)", fontWeight: 600, color: "#1A1410", marginBottom: 20, lineHeight: 1.15 }}>
+            <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>Your Doctor</p>
+            <h2 className="serif" style={{ fontSize: "clamp(2rem, 3.5vw, 2.8rem)", fontWeight: 600, color: TEXT, marginBottom: 18, lineHeight: 1.15 }}>
               Dr. Alex Chireau, DMD
             </h2>
-            <p style={{ color: "#4A423A", fontSize: 15, lineHeight: 1.8, marginBottom: 24 }}>
-              Dr. Chireau trained at the UNLV School of Dental Medicine and has spent years building one of Las Vegas&apos;s most trusted cosmetic practices — one patient at a time. His approach is precise, unhurried, and deeply personal.
+            <p style={{ color: MUTED, fontSize: 15, lineHeight: 1.85, marginBottom: 24 }}>
+              Dr. Chireau trained at UNLV School of Dental Medicine and has spent years building one of Las Vegas&apos;s most trusted cosmetic practices — one patient at a time. His approach is precise, unhurried, and deeply personal.
             </p>
-
-            <ul style={{ listStyle: "none", marginBottom: 32, display: "flex", flexDirection: "column", gap: 10 }}>
+            <ul style={{ listStyle: "none", marginBottom: 28, display: "flex", flexDirection: "column", gap: 12 }}>
               {[
                 "Doctor of Dental Medicine — UNLV School of Dental Medicine",
                 "CEREC Certified — same-day ceramic restorations, in-office",
-                "128 verified five-star reviews",
-                "Every photo on this page is Dr. Chireau's own clinical work",
+                "145 verified five-star Google reviews",
+                "Every before/after on this page is Dr. Chireau's own clinical work",
               ].map((item) => (
                 <li key={item} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                  <span style={{ color: ACCENT, marginTop: 3, flexShrink: 0 }}>·</span>
-                  <span style={{ fontSize: 14, color: "#4A423A", lineHeight: 1.6 }}>{item}</span>
+                  <CheckCircle size={15} color={GOLD} style={{ flexShrink: 0, marginTop: 2 }} />
+                  <span style={{ fontSize: 14, color: MUTED, lineHeight: 1.6 }}>{item}</span>
                 </li>
               ))}
             </ul>
-
-            <blockquote style={{
-              borderLeft: `3px solid ${ACCENT}`,
-              paddingLeft: 20,
-              marginLeft: 0,
-            }}>
-              <p className="serif" style={{ fontSize: "1.15rem", fontStyle: "italic", color: "#2A2016", lineHeight: 1.65, marginBottom: 8 }}>
-                &ldquo;I&apos;ve always believed that the best dental work is the work nobody notices — except you, every time you smile.&rdquo;
+            <blockquote style={{ borderLeft: `3px solid ${GOLD}`, paddingLeft: 20, marginBottom: 28 }}>
+              <p className="serif" style={{ fontSize: "clamp(1.1rem, 2vw, 1.45rem)", fontStyle: "italic", color: TEXT, lineHeight: 1.5 }}>
+                &ldquo;This is how I like my crowns to fit — ALL THE TIME.&rdquo;
               </p>
-              <footer style={{ fontSize: 12, color: TEXT_MUTED }}>
-                — Dr. Alex Chireau, DMD
-                <span style={{ marginLeft: 8, fontSize: 11, fontStyle: "italic", color: "#9A8E82" }}>[NOTE FOR ALEX: Replace with your own words]</span>
-              </footer>
+              <p style={{ fontSize: 12, color: MUTED, marginTop: 6 }}>— Dr. Alex Chireau · @Dr.Chireu</p>
             </blockquote>
+            <a href="#claim" style={{ background: GOLD, color: "#1A1410", padding: "14px 24px", fontWeight: 700, fontSize: 14, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8 }}>
+              Schedule With Dr. Chireau <ArrowRight size={15} />
+            </a>
           </div>
         </div>
       </section>
 
-      {/* ── GALLERY ─────────────────────────────────────────── */}
-      <section style={{ background: BG_CREAM, padding: "0 24px 96px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <div style={{ borderTop: "1px solid rgba(139,111,71,0.2)", paddingTop: 80, marginBottom: 56 }}>
-            <p style={{ color: ACCENT, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 16, fontWeight: 500 }}>
-              Real Results
-            </p>
-            <h2 className="serif" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 600, color: "#1A1410", marginBottom: 16, lineHeight: 1.15 }}>
-              The work speaks for itself.
-            </h2>
-            <p style={{ fontSize: 15, color: "#4A423A", maxWidth: 580, lineHeight: 1.75 }}>
-              Every photograph is Dr. Chireau&apos;s own clinical work — shot in-office at AK Ultimate Dental, Las Vegas. Before and after. Zero editing. Zero stock imagery.
-            </p>
-          </div>
-
-          {/* 6-photo grid: 1 large + 5 equal */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "auto auto", gap: 3 }} className="gallery-grid">
-            <style>{`@media (max-width: 640px) { .gallery-grid { grid-template-columns: repeat(2, 1fr) !important; } .gallery-g1 { grid-column: span 2 !important; } }`}</style>
-
+      {/* ── 8. PROCESS — 3 steps ────────────────────────────── */}
+      <section style={{ background: BG, padding: "88px 24px" }} className="section-divide">
+        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+          <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>What to Expect</p>
+          <h2 className="serif" style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 600, color: TEXT, marginBottom: 48, lineHeight: 1.15 }}>
+            3 steps. One visit.
+          </h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2, background: `rgba(212,175,55,0.1)` }} className="process-grid">
             {[
-              { src: "/images/crowns-lp/gallery-g1.webp", alt: "Before and after full arch porcelain crowns by Dr. Alex Chireau, AK Ultimate Dental Las Vegas", span: true },
-              { src: "/images/crowns-lp/gallery-g2.webp", alt: "Close-up before and after porcelain veneers, Dr. Chireau Las Vegas", span: false },
-              { src: "/images/crowns-lp/gallery-g3.webp", alt: "Full smile crown restoration before and after, AK Ultimate Dental", span: false },
-              { src: "/images/crowns-lp/gallery-g4.webp", alt: "Custom porcelain crown detail showing natural translucency, Dr. Chireau", span: false },
-              { src: "/images/crowns-lp/gallery-g5.webp", alt: "Full upper and lower crown restoration, Las Vegas cosmetic dentist", span: false },
-              { src: "/images/crowns-lp/gallery-g6.webp", alt: "Single front tooth crown before and after, same-day CEREC", span: false },
-            ].map((img, i) => (
-              <div
-                key={i}
-                className={img.span ? "gallery-g1" : ""}
-                style={{ position: "relative", aspectRatio: "1/1", overflow: "hidden", gridColumn: img.span ? "span 2" : undefined }}
-              >
-                <Image src={img.src} alt={img.alt} fill className="object-cover" loading="lazy" sizes="(max-width: 640px) 100vw, 33vw" />
+              { num: "01", title: "Free Consultation",      desc: "Dr. Chireau examines your tooth, takes a CEREC scan, and walks you through exactly what he sees. No upsell. No pressure. Takes 20 minutes." },
+              { num: "02", title: "Same-Day Crown Milled",  desc: "The CEREC machine designs and mills your custom porcelain crown in-office. No temporary. No second visit. No lab wait. Done in the same appointment." },
+              { num: "03", title: "Leave Smiling",          desc: "Crown is placed, checked for fit and bite, and you walk out with a permanent restoration and a lifetime warranty in hand." },
+            ].map((step) => (
+              <div key={step.num} style={{ background: BG_MID, padding: "32px 28px 36px" }}>
+                <p className="serif" style={{ fontSize: "clamp(2.5rem, 4vw, 3.5rem)", fontWeight: 700, color: GOLD, opacity: 0.35, lineHeight: 1, marginBottom: 16 }}>{step.num}</p>
+                <h3 className="serif" style={{ fontSize: "1.2rem", fontWeight: 600, color: TEXT, marginBottom: 12, lineHeight: 1.3 }}>{step.title}</h3>
+                <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.75 }}>{step.desc}</p>
               </div>
             ))}
           </div>
-
-          <p style={{ fontSize: 11, color: TEXT_MUTED, marginTop: 16 }}>
-            All photographs are real patients of Dr. Alex Chireau, DMD. Results may vary by patient.
-          </p>
         </div>
       </section>
 
-      {/* ── PRICING TABLE ───────────────────────────────────── */}
-      <section style={{ background: BG_DARK, padding: "96px 24px" }}>
+      {/* ── 9. PRICING TABLE ────────────────────────────────── */}
+      <section style={{ background: BG_MID, padding: "88px 24px" }} className="section-divide">
         <div style={{ maxWidth: 780, margin: "0 auto" }}>
-          <p style={{ color: ACCENT_LIGHT, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 16, fontWeight: 500 }}>
-            Transparent Pricing
-          </p>
-          <h2 className="serif" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 600, color: TEXT_DARK, marginBottom: 16, lineHeight: 1.15 }}>
-            No surprises. No hidden fees.
+          <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>Transparent Pricing</p>
+          <h2 className="serif" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 600, color: TEXT, marginBottom: 6, lineHeight: 1.15 }}>
+            Las Vegas&apos;s most competitive crown pricing.
           </h2>
-          <p style={{ color: TEXT_MUTED, fontSize: 15, lineHeight: 1.75, marginBottom: 48 }}>
-            Your May consultation is complimentary. Your rate locks the day you book. No bait-and-switch additions.
-          </p>
+          <p style={{ color: GOLD_LT, fontSize: 15, fontWeight: 500, marginBottom: 28 }}>CEREC same-day. Lifetime warranty included. First 30 patients only.</p>
 
-          {/* Table */}
-          <div style={{ border: "1px solid rgba(196,168,130,0.15)", overflow: "hidden" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr auto auto", background: "rgba(139,111,71,0.15)", padding: "12px 24px", gap: 16 }}>
-              <p style={{ fontSize: 11, color: TEXT_MUTED, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>Service</p>
-              <p style={{ fontSize: 11, color: TEXT_MUTED, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textAlign: "right", whiteSpace: "nowrap" }}>Standard</p>
-              <p style={{ fontSize: 11, color: ACCENT_LIGHT, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textAlign: "right", whiteSpace: "nowrap", minWidth: 110 }}>May Rate</p>
+          <div style={{ background: `rgba(212,175,55,0.07)`, border: `1px solid rgba(212,175,55,0.2)`, padding: "16px 22px", marginBottom: 28, display: "flex", alignItems: "flex-start", gap: 14 }}>
+            <Shield size={22} color={GOLD_LT} style={{ flexShrink: 0, marginTop: 2 }} />
+            <div>
+              <p style={{ fontWeight: 700, color: TEXT, fontSize: 14, marginBottom: 3 }}>From $630 per crown — lower than any dental chain in Las Vegas.</p>
+              <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.7 }}>Lifetime warranty included. CEREC same-day. No lab wait. First 30 founding patients only.</p>
+            </div>
+          </div>
+
+          <div style={{ border: `1px solid rgba(212,175,55,0.2)`, overflow: "hidden", marginBottom: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr auto auto", background: `rgba(212,175,55,0.12)`, padding: "11px 22px", gap: 16 }}>
+              <p style={{ fontSize: 11, color: MUTED, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Service</p>
+              <p style={{ fontSize: 11, color: MUTED, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textAlign: "right", whiteSpace: "nowrap" }}>Standard</p>
+              <p style={{ fontSize: 11, color: GOLD_LT, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textAlign: "right", whiteSpace: "nowrap", minWidth: 110 }}>Founding Rate</p>
             </div>
             {[
-              { service: "Porcelain Crown (per tooth)", standard: "$3,000", may: "$1,500" },
-              { service: "Porcelain Veneers (per tooth)", standard: "$2,000", may: "$1,000" },
-              { service: "3-Unit Bridge", standard: "From $6,000", may: "From $3,000" },
-              { service: "Consultation & X-ray", standard: "$0", may: "$0" },
-              { service: "CEREC Digital Scan, Design & Milling", standard: "Included", may: "Included" },
-              { service: "0% Financing · Cherry, CareCredit, Sunbit", standard: "Available", may: "Available" },
+              { service: "Standard Crown (per tooth)",  standard: "$1,260",   rate: "$630",    strike: true },
+              { service: "Crown + Build-up",            standard: "$1,426",   rate: "$713",    strike: true },
+              { service: "Zirconia Premium Crown",      standard: "$1,711",   rate: "$855",    strike: true },
+              { service: "Consultation & X-ray",        standard: "$0",       rate: "$0",      strike: false },
+              { service: "CEREC Scan, Design & Mill",   standard: "Included", rate: "Included",strike: false },
+              { service: "Lifetime Warranty (Crowns)",  standard: "—",        rate: "Included",strike: false },
             ].map((row, i) => (
-              <div key={i} style={{
-                display: "grid", gridTemplateColumns: "1fr auto auto",
-                padding: "16px 24px", gap: 16,
-                borderTop: "1px solid rgba(196,168,130,0.08)",
-                background: i % 2 ? "rgba(255,255,255,0.02)" : "transparent",
-                alignItems: "center",
-              }}>
-                <p style={{ fontSize: 14, color: TEXT_DARK }}>{row.service}</p>
-                <p style={{ fontSize: 13, color: TEXT_MUTED, textDecoration: ["$3,000","$2,000","From $6,000"].includes(row.standard) ? "line-through" : "none", textAlign: "right", whiteSpace: "nowrap" }}>{row.standard}</p>
-                <p style={{ fontSize: 14, fontWeight: 600, color: ACCENT_LIGHT, textAlign: "right", whiteSpace: "nowrap", minWidth: 110 }}>{row.may}</p>
+              <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr auto auto", padding: "13px 22px", gap: 16, borderTop: `1px solid rgba(212,175,55,0.12)`, background: i % 2 ? "rgba(255,255,255,0.015)" : "transparent", alignItems: "center" }}>
+                <p style={{ fontSize: 14, color: TEXT }}>{row.service}</p>
+                <p style={{ fontSize: 13, color: MUTED, textDecoration: row.strike ? "line-through" : "none", textAlign: "right", whiteSpace: "nowrap" }}>{row.standard}</p>
+                <p style={{ fontSize: 14, fontWeight: 700, color: GOLD_LT, textAlign: "right", whiteSpace: "nowrap", minWidth: 110 }}>{row.rate}</p>
               </div>
             ))}
           </div>
 
-          <div style={{ background: "rgba(139,111,71,0.08)", border: "1px solid rgba(139,111,71,0.2)", padding: "20px 24px", marginTop: 16, marginBottom: 48 }}>
-            <p style={{ fontSize: 12, color: TEXT_MUTED, lineHeight: 1.75 }}>
-              Founding patient rate locks at consultation booking. Valid for treatment accepted within 30 days. New patients only. Cannot be combined with insurance or other offers. 30 slots total, May 2026 only.
-            </p>
-          </div>
+          <p style={{ fontSize: 11, color: "#4A423A", lineHeight: 1.75, marginBottom: 36 }}>
+            Founding patient rate locks at consultation booking. Valid for treatment accepted within 30 days. New patients only. Cannot be combined with insurance or other offers. First 30 slots only.
+          </p>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
-            <a href="#consultation-form" style={{ background: ACCENT, color: "#fff", padding: "16px 28px", fontWeight: 600, fontSize: 15, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8, letterSpacing: "0.02em" }}>
-              Book My Free Consultation <ArrowRight size={16} />
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-start" }}>
+            <a href="#claim" style={{ background: GOLD, color: "#1A1410", padding: "16px 28px", fontWeight: 700, fontSize: 15, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8 }}>
+              Lock In My Founding Rate <ArrowRight size={16} />
             </a>
-            <a href={PHONE_HREF} style={{ color: ACCENT_LIGHT, fontSize: 14, fontWeight: 500, textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}>
-              <Phone size={14} />
-              {PHONE} · Call or Text
+            <a href={PHONE_HREF} style={{ color: GOLD_LT, fontSize: 14, fontWeight: 500, textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}>
+              <Phone size={14} />Or call/text: {PHONE}
             </a>
           </div>
         </div>
       </section>
 
-      {/* ── 30 SLOTS ────────────────────────────────────────── */}
-      <section style={{ background: BG_CREAM, padding: "96px 24px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }} className="slots-grid">
-          <style>{`@media (max-width: 768px) { .slots-grid { grid-template-columns: 1fr !important; gap: 48px !important; } }`}</style>
-
-          {/* Slot grid visual */}
-          <div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 6, marginBottom: 20 }}>
-              {[...Array(30)].map((_, i) => (
-                <div key={i} style={{
-                  aspectRatio: "1/1",
-                  background: i < 7 ? ACCENT : "transparent",
-                  border: `1px solid ${i < 7 ? ACCENT : "rgba(139,111,71,0.3)"}`,
-                }} />
-              ))}
-            </div>
-            <div style={{ display: "flex", gap: 20 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <div style={{ width: 12, height: 12, background: ACCENT }} />
-                <span style={{ fontSize: 11, color: "#4A423A" }}>Consultation booked</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <div style={{ width: 12, height: 12, border: `1px solid rgba(139,111,71,0.4)` }} />
-                <span style={{ fontSize: 11, color: "#4A423A" }}>Available</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Text */}
-          <div>
-            <p className="serif" style={{ fontSize: "clamp(4rem, 8vw, 7rem)", fontWeight: 600, color: "#1A1410", lineHeight: 1, marginBottom: 4 }}>30</p>
-            <p style={{ fontSize: 14, color: ACCENT, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 24 }}>
-              Founding Patient Slots · May 2026
-            </p>
-            <p style={{ color: "#4A423A", fontSize: 15, lineHeight: 1.8, marginBottom: 32 }}>
-              Dr. Chireau is personally accepting 30 new cosmetic cases this month. When consultations are filled, the founding patient rate closes permanently. No waitlist, no extension, no exceptions after May 31.
-            </p>
-            <a href="#consultation-form" style={{ background: ACCENT, color: "#fff", padding: "16px 28px", fontWeight: 600, fontSize: 15, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8, letterSpacing: "0.02em" }}>
-              Request My Consultation <ArrowRight size={16} />
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ── FINAL CTA ───────────────────────────────────────── */}
-      <section style={{ background: ACCENT, padding: "96px 24px", textAlign: "center" }}>
-        <div style={{ maxWidth: 680, margin: "0 auto" }}>
-          <h2 className="serif" style={{ fontSize: "clamp(2.2rem, 4.5vw, 3.4rem)", fontWeight: 600, color: "#fff", lineHeight: 1.2, marginBottom: 20, letterSpacing: "-0.01em" }}>
-            Ready to see what Dr. Chireau can do?
+      {/* ── 10. FINANCING ───────────────────────────────────── */}
+      <section style={{ background: BG, padding: "72px 24px" }} className="section-divide">
+        <div style={{ maxWidth: 640, margin: "0 auto", textAlign: "center" }}>
+          <Clock size={24} color={GOLD} style={{ margin: "0 auto 16px" }} />
+          <h2 className="serif" style={{ fontSize: "clamp(1.6rem, 3vw, 2.2rem)", fontWeight: 600, color: TEXT, marginBottom: 12, lineHeight: 1.2 }}>
+            Flexible financing available.
           </h2>
-          <p style={{ fontSize: 16, color: "rgba(255,255,255,0.8)", lineHeight: 1.7, marginBottom: 40 }}>
-            Complimentary consultation. Rate locks when you book. Same-day crowns available.
+          <p style={{ color: MUTED, fontSize: 15, lineHeight: 1.85, marginBottom: 8 }}>
+            Don&apos;t let cost be the reason you wait. We offer flexible financing options so you can start treatment today and pay over time.
           </p>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>
-            <a href="#consultation-form" style={{
-              background: "#fff", color: ACCENT,
-              padding: "18px 36px", fontWeight: 700, fontSize: 16,
-              textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8, letterSpacing: "0.02em",
-            }}>
-              Request a Consultation <ArrowRight size={16} />
-            </a>
-            <a href={PHONE_HREF} style={{ color: "rgba(255,255,255,0.9)", fontSize: 15, fontWeight: 500, textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}>
-              <Phone size={15} />
-              {PHONE} · Call or Text
-            </a>
-          </div>
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", marginTop: 32, lineHeight: 1.6 }}>
-            AK Ultimate Dental · {ADDRESS} · {HOURS}
+          <p style={{ color: MUTED, fontSize: 14, lineHeight: 1.75 }}>
+            Ask our team about your options at your consultation — most patients are approved on the spot.
           </p>
         </div>
       </section>
 
-      {/* ── FOOTER ──────────────────────────────────────────── */}
-      <footer style={{ background: "#080706", padding: "40px 24px", borderTop: "1px solid rgba(196,168,130,0.1)" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: 24, marginBottom: 32 }}>
-            <div>
-              <p style={{ fontWeight: 600, color: TEXT_DARK, marginBottom: 6 }}>AK Ultimate Dental</p>
-              <p style={{ fontSize: 13, color: TEXT_MUTED, marginBottom: 4 }}>{ADDRESS}</p>
-              <p style={{ fontSize: 13, color: TEXT_MUTED, marginBottom: 4 }}>{HOURS}</p>
-              <a href={PHONE_HREF} style={{ fontSize: 13, color: ACCENT_LIGHT, textDecoration: "none" }}>{PHONE}</a>
+      {/* ── 11. VIDEO TESTIMONIAL ───────────────────────────── */}
+      {videoUrl && (
+        <section style={{ background: BG_MID, padding: "88px 24px" }} className="section-divide">
+          <div style={{ maxWidth: 900, margin: "0 auto" }}>
+            <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600, textAlign: "center" }}>In Their Own Words</p>
+            <h2 className="serif" style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 600, color: TEXT, marginBottom: 36, lineHeight: 1.15, textAlign: "center" }}>
+              What patients say.
+            </h2>
+            <video
+              controls
+              playsInline
+              style={{ width: "100%", display: "block", background: "#000" }}
+            >
+              <source src={videoUrl} type="video/mp4" />
+            </video>
+            <div style={{ marginTop: 24, padding: "20px 24px", background: BG, borderLeft: `3px solid ${GOLD}` }}>
+              <p className="serif" style={{ fontSize: "clamp(1.1rem, 2vw, 1.35rem)", fontStyle: "italic", color: TEXT, lineHeight: 1.6, marginBottom: 6 }}>
+                &ldquo;I just wish I was so much younger, doctor — because then I would have gotten it all capped.&rdquo;
+              </p>
+              <p style={{ fontSize: 12, color: MUTED }}>Real patient · AK Ultimate Dental · Las Vegas</p>
             </div>
-            <a href="https://akultimatedental.com" style={{ fontSize: 13, color: TEXT_MUTED, textDecoration: "none" }}>
-              Main Site →
+          </div>
+        </section>
+      )}
+
+      {/* ── 12. FAQ ─────────────────────────────────────────── */}
+      <section style={{ background: BG_CREAM, padding: "88px 24px" }} className="section-divide">
+        <div style={{ maxWidth: 780, margin: "0 auto" }}>
+          <p style={{ color: GOLD_DIM, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>Common Questions</p>
+          <h2 className="serif" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 600, color: "#1A1410", marginBottom: 36, lineHeight: 1.15 }}>
+            What patients ask first.
+          </h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            {[
+              { q: "How long does a same-day crown actually take?", a: "Most CEREC crown appointments run 90 minutes to 2 hours — including the scan, design, milling, and placement. You leave with a permanent crown the same day." },
+              { q: "Is a CEREC crown as strong as a traditional crown?", a: "Yes. CEREC uses the same high-strength porcelain as lab-made crowns. The material is milled from a single solid block, which is actually stronger than crowns built up in layers. Dr. Chireau backs every crown with a lifetime warranty." },
+              { q: "Does it hurt?", a: "No. The procedure is done under local anesthesia. Most patients report the consultation is the most anxiety-inducing part — the actual crown placement is comfortable. Any sensitivity after typically resolves within a few days." },
+              { q: "Why is the price so much lower than other Las Vegas dentists?", a: "The founding patient rate exists because Dr. Chireau is growing his cosmetic practice and wants to build long-term patient relationships. The clinical quality — materials, technology, technique — is identical to what he charges at full price." },
+              { q: "What does the lifetime warranty cover?", a: "The warranty covers crown failure or debonding due to clinical factors. Dr. Chireau will replace or rebond the crown at no charge. Exclusions: damage from trauma, grinding without a prescribed night guard, or failure to attend recommended follow-up care." },
+              { q: "Do I need to have insurance?", a: "No. The founding rate is for self-pay patients. The rate cannot be combined with insurance or other promotions. If you have insurance, Dr. Chireau's team will help you understand what your plan covers separately." },
+              { q: "How do I lock in the founding rate?", a: "Fill out the form below — Dr. Chireau's team will call you within one business day to confirm your spot and schedule your free consultation. The rate locks when you book." },
+            ].map((item, i) => (
+              <details key={i} style={{ background: "#EFEBE5", borderTop: `1px solid rgba(139,111,71,0.2)` }}>
+                <summary style={{ padding: "18px 22px", cursor: "pointer", fontWeight: 600, fontSize: 15, color: "#1A1410", listStyle: "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  {item.q}
+                  <span style={{ color: GOLD_DIM, fontSize: 20, fontWeight: 300, flexShrink: 0, marginLeft: 12 }}>+</span>
+                </summary>
+                <p style={{ padding: "0 22px 20px", fontSize: 14, color: "#4A3F35", lineHeight: 1.8 }}>{item.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 13. FINAL CTA — gold bg + inline form ───────────── */}
+      <section id="claim" style={{ background: GOLD, padding: "88px 24px" }} className="section-divide">
+        <div style={{ maxWidth: 680, margin: "0 auto", textAlign: "center" }}>
+          <Star size={22} color="rgba(26,20,16,0.5)" style={{ margin: "0 auto 20px" }} />
+          <h2 className="serif" style={{ fontSize: "clamp(2rem, 4.5vw, 3rem)", fontWeight: 700, color: "#1A1410", lineHeight: 1.2, marginBottom: 12, letterSpacing: "-0.01em" }}>
+            First 30 patients receive the founding rate.
+          </h2>
+          <p style={{ fontSize: 16, color: "rgba(26,20,16,0.7)", lineHeight: 1.7, marginBottom: 40 }}>
+            Don&apos;t miss it. Fill out the form — Dr. Chireau&apos;s team will call you within one business day to confirm your spot.
+          </p>
+          <LeadForm />
+        </div>
+      </section>
+
+      {/* ── 14. REVIEW TICKER ───────────────────────────────── */}
+      <section style={{ background: "#080706", padding: "20px 0", overflow: "hidden" }} className="section-divide">
+        <div style={{ display: "flex", animation: "ticker 50s linear infinite", width: "max-content", gap: 80 }}>
+          {[...TICKER, ...TICKER].map((t, i) => (
+            <span key={i} style={{ fontSize: 12, color: MUTED, whiteSpace: "nowrap", flexShrink: 0 }}>{t}</span>
+          ))}
+        </div>
+      </section>
+
+      {/* ── 15. FOOTER ──────────────────────────────────────── */}
+      <footer style={{ background: BG_CREAM, padding: "40px 24px 28px", borderTop: DIVIDER }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: 24 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <Image src="/ak-logo.png" alt="AK Ultimate Dental" width={140} height={44} style={{ objectFit: "contain", objectPosition: "left" }} />
+            <p style={{ fontSize: 13, color: "#6A5F54" }}>{ADDRESS}</p>
+            <a href={PHONE_HREF} style={{ fontSize: 13, color: GOLD_DIM, textDecoration: "none", fontWeight: 600 }}>{PHONE}</a>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-end" }}>
+            <a href="#claim" style={{ background: GOLD, color: "#1A1410", padding: "10px 20px", fontWeight: 700, fontSize: 13, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
+              Claim My Spot <ArrowRight size={13} />
             </a>
           </div>
-          <div style={{ borderTop: "1px solid rgba(196,168,130,0.08)", paddingTop: 24 }}>
-            <p style={{ fontSize: 11, color: "#3A3530", lineHeight: 1.8 }}>
-              Founding patient rate of 50% applies to new patients who schedule and attend a consultation at AK Ultimate Dental in May 2026. Applies to porcelain crowns, veneers, and bridge work only. Standard rates apply after May 31, 2026 or when 30 slots are filled, whichever occurs first. Rate locks at consultation booking, valid for treatment accepted within 30 days. Cannot be combined with insurance benefits or other promotional offers. 0% financing subject to third-party approval. Individual results may vary. All patient photographs are real clinical results by Dr. Alex Chireau, DMD. &copy; 2026 AK Ultimate Dental. All rights reserved.
-            </p>
-          </div>
+        </div>
+        <div style={{ maxWidth: 1100, margin: "24px auto 0", borderTop: `1px solid rgba(139,111,71,0.2)`, paddingTop: 16 }}>
+          <p style={{ fontSize: 11, color: "#9A8F7A", lineHeight: 1.85 }}>
+            Founding patient rate of 50% applies to new patients who schedule and attend a consultation at AK Ultimate Dental. First 30 slots only. Rate locks at consultation booking, valid for treatment accepted within 30 days. Cannot be combined with insurance benefits or other promotional offers. Flexible financing subject to third-party approval. Individual results may vary. All patient photographs are real clinical results by Dr. Alex Chireau, DMD.{" "}
+            Lifetime Warranty: Applies to crowns placed by Dr. Alex Chireau, DMD at AK Ultimate Dental. Covers crown failure or debonding due to clinical factors. Does not cover damage resulting from trauma, grinding without a prescribed night guard, or failure to attend recommended follow-up care.{" "}
+            © 2026 AK Ultimate Dental. All rights reserved.
+          </p>
         </div>
       </footer>
+
+      {/* ── MOBILE STICKY CTA BAR ───────────────────────────── */}
+      <div className="mobile-cta-bar" style={{
+        position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 200,
+        background: GOLD, color: "#1A1410",
+        height: 56, alignItems: "center", justifyContent: "center",
+        fontWeight: 700, fontSize: 15, gap: 8,
+        display: "none", // overridden by media query above
+      }}>
+        <a href={PHONE_HREF} style={{ display: "flex", alignItems: "center", gap: 8, color: "#1A1410", textDecoration: "none", fontWeight: 700, fontSize: 15 }}>
+          <Phone size={16} />📞 Only 30 Spots — Call Now
+        </a>
+      </div>
     </>
   );
 }
