@@ -76,7 +76,6 @@ export default function CrownsMayPage() {
   const videoUrl        = process.env.NEXT_PUBLIC_PATIENT_TESTIMONIAL_URL ?? "";
   const testimonial1Url = process.env.NEXT_PUBLIC_TESTIMONIAL_1_URL ?? "";
   const testimonial2Url = process.env.NEXT_PUBLIC_TESTIMONIAL_2_URL ?? "";
-  const alexWorkingUrl  = process.env.NEXT_PUBLIC_SHORT_VIDEO_URL ?? "";
 
   return (
     <>
@@ -535,7 +534,7 @@ export default function CrownsMayPage() {
       </section>
 
       {/* ── 11. VIDEOS — patient testimonials + Dr. Chireau at work ── */}
-      {(videoUrl || testimonial1Url || testimonial2Url || alexWorkingUrl) && (
+      {(videoUrl || testimonial1Url || testimonial2Url) && (
         <section style={{ background: BG_MID, padding: "88px 24px" }} className="section-divide">
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
             <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>In Their Own Words</p>
@@ -580,16 +579,6 @@ export default function CrownsMayPage() {
               </div>
             )}
 
-            {/* Dr. Chireau at work video */}
-            {alexWorkingUrl && (
-              <div>
-                <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>Dr. Chireau — At Work</p>
-                <video controls playsInline style={{ width: "100%", display: "block", background: "#000", maxHeight: 520 }}>
-                  <source src={alexWorkingUrl} type="video/mp4" />
-                </video>
-                <p style={{ fontSize: 12, color: MUTED, marginTop: 8, paddingLeft: 4 }}>Dr. Alex Chireau, DMD · AK Ultimate Dental · Las Vegas</p>
-              </div>
-            )}
           </div>
         </section>
       )}
