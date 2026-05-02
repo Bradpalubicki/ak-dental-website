@@ -63,3 +63,9 @@ public/videos/option-*
 
 # temp/misc
 nul
+
+# alex-media — all files uploaded to Vercel Blob, no need to commit 900MB
+public/images/alex-media/
+
+# blob upload manifest (contains public URLs, not secrets — but no need in git)
+blob-media-urls.json
