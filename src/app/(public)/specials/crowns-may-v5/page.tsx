@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ArrowRight, Phone, CheckCircle, Shield, Clock, Star } from "lucide-react";
+import { ArrowRight, Phone, Shield, Clock, Star } from "lucide-react";
 import { existsSync } from "fs";
 import path from "path";
 import FaqAccordion from "./FaqAccordion";
@@ -60,53 +60,45 @@ export default function CrownsMayV5Page() {
       `}</style>
 
       {/* ── STICKY TOP BAR ─────────────────────────────── */}
-      <div style={{ position: "sticky", top: 0, zIndex: 50, background: BG_DARK, borderBottom: DIVIDER, padding: "10px 24px", height: TOPBAR_H, display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: 12 }}>
+      <div style={{ position: "sticky", top: 0, zIndex: 50, background: BG_DARK, borderBottom: DIVIDER, padding: "10px 24px", height: TOPBAR_H, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href={PHONE_HREF} style={{ color: ACCENT_LIGHT, fontWeight: 500, fontSize: 14, textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
           <Phone size={14} />{PHONE} · Call or Text
         </a>
-        <div className="topbar-logo" style={{ display: "flex", justifyContent: "center" }}>
+        <div className="topbar-logo" style={{ position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
           <Image src="/ak-logo.png" alt="AK Ultimate Dental" width={140} height={44} style={{ objectFit: "contain", filter: "brightness(1.05)" }} priority />
         </div>
-        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-          <a href="#consult" style={{ background: ACCENT, color: "#fff", padding: "9px 20px", fontWeight: 600, fontSize: 13, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, letterSpacing: "0.03em" }}>
-            Claim My Slot <ArrowRight size={13} />
-          </a>
-        </div>
+        <a href="#consult" style={{ background: ACCENT, color: "#fff", padding: "9px 20px", fontWeight: 600, fontSize: 13, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, letterSpacing: "0.03em" }}>
+          Claim My Slot <ArrowRight size={13} />
+        </a>
       </div>
 
       {/* ── HERO — locked to 100svh minus topbar ──────── */}
       <section style={{ height: `calc(100svh - ${TOPBAR_H}px)`, display: "flex", flexDirection: "column", borderBottom: DIVIDER }}>
         <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: 0 }} className="hero-grid">
           {/* LEFT: text */}
-          <div style={{ padding: "48px 48px 28px", display: "flex", flexDirection: "column", justifyContent: "space-between", background: BG_DARK, borderRight: DIVIDER, overflow: "hidden" }} className="hero-text-col">
-            <div>
-              <p style={{ color: ACCENT_LIGHT, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 18, fontWeight: 500 }}>
-                May 2026 · First 20 Patients Only · Las Vegas
-              </p>
-              <h1 className="serif" style={{ fontSize: "clamp(2rem, 3.8vw, 3.4rem)", fontWeight: 600, lineHeight: 1.1, color: TEXT_DARK, marginBottom: 18, letterSpacing: "-0.01em" }}>
-                The smile you&apos;ve<br />considered.<br />
-                <em style={{ color: ACCENT_LIGHT }}>Finally done right.</em>
-              </h1>
-              <p style={{ color: TEXT_MUTED, fontSize: 14, lineHeight: 1.75, marginBottom: 24, maxWidth: 420 }}>
-                Dr. Alex Chireau is personally accepting 20 new cosmetic cases this May — crowns, bridges, veneers, and full smile restorations — at a founding patient rate that closes permanently when slots fill.
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
-                <a href="#consult" id="consult" style={{ background: ACCENT, color: "#fff", padding: "14px 24px", fontWeight: 600, fontSize: 14, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8, alignSelf: "flex-start", letterSpacing: "0.02em" }}>
-                  Claim My Founding Patient Rate <ArrowRight size={15} />
-                </a>
-                <a href={PHONE_HREF} style={{ color: ACCENT_LIGHT, fontSize: 13, fontWeight: 500, textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}>
-                  <Phone size={13} />{PHONE} · Call or Text Now
-                </a>
-              </div>
+          <div style={{ padding: "48px 48px 28px", display: "flex", flexDirection: "column", justifyContent: "center", background: BG_DARK, borderRight: DIVIDER, overflow: "hidden" }} className="hero-text-col">
+            {/* Offer price — first thing visitor reads */}
+            <div style={{ display: "inline-flex", alignItems: "baseline", gap: 10, marginBottom: 20 }}>
+              <span className="serif" style={{ fontSize: "clamp(2.8rem, 5vw, 4.5rem)", fontWeight: 700, color: ACCENT_LIGHT, lineHeight: 1 }}>$630</span>
+              <span style={{ fontSize: 13, color: TEXT_MUTED, fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase" }}>Same-Day Porcelain Crown</span>
             </div>
-            {/* Trust bullets — flush bottom */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 16px", paddingTop: 16, borderTop: DIVIDER }}>
-              {["145 Five-Star Reviews", "CEREC Same-Day Crown", "UNLV DMD Trained", "Lifetime Warranty Included"].map((t) => (
-                <div key={t} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <CheckCircle size={11} style={{ color: ACCENT, flexShrink: 0 }} />
-                  <span style={{ fontSize: 12, color: TEXT_MUTED, fontWeight: 500 }}>{t}</span>
-                </div>
-              ))}
+            <p style={{ color: TEXT_MUTED, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 16, fontWeight: 500 }}>
+              May 2026 · First 20 Patients Only · Las Vegas
+            </p>
+            <h1 className="serif" style={{ fontSize: "clamp(1.7rem, 3.2vw, 2.8rem)", fontWeight: 600, lineHeight: 1.15, color: TEXT_DARK, marginBottom: 16, letterSpacing: "-0.01em" }}>
+              One visit. No temporaries.<br />
+              <em style={{ color: ACCENT_LIGHT }}>Lifetime warranty included.</em>
+            </h1>
+            <p style={{ color: TEXT_MUTED, fontSize: 14, lineHeight: 1.75, marginBottom: 28, maxWidth: 420 }}>
+              Dr. Alex Chireau is personally accepting 20 new cosmetic cases this May — CEREC same-day crowns milled and placed in a single appointment — at a founding patient rate that closes permanently when slots fill.
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <a href="#consult" id="consult" style={{ background: ACCENT, color: "#fff", padding: "14px 24px", fontWeight: 600, fontSize: 14, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8, alignSelf: "flex-start", letterSpacing: "0.02em" }}>
+                Claim My Founding Patient Rate <ArrowRight size={15} />
+              </a>
+              <a href={PHONE_HREF} style={{ color: ACCENT_LIGHT, fontSize: 13, fontWeight: 500, textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}>
+                <Phone size={13} />{PHONE} · Call or Text Now
+              </a>
             </div>
           </div>
           {/* RIGHT: hero photo */}
