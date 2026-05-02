@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { X, ArrowRight, Star, SplitSquareHorizontal, ChevronRight, ChevronLeft } from "lucide-react";
+import { X, ArrowRight, Star, SplitSquareHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -27,6 +27,187 @@ interface Photo {
 interface Props {
   photos: Photo[];
 }
+
+// ─── Static gallery photos (Dr. Chireau patient results) ─────────────────────
+
+const STATIC_PHOTOS: Photo[] = [
+  {
+    id: "static-01",
+    blob_url: "/images/smile-gallery/gallery-01.webp",
+    service_category: "crowns_bonding",
+    before_or_after: "na",
+    pair_group_id: null,
+    caption: "Before and after full smile crown restoration on male patient — AK Ultimate Dental Las Vegas Dr. Alex Chireau DMD",
+    ai_description: null, ai_quality: null, is_featured: true,
+    story_headline: "Full Smile Crown Restoration",
+    story_body: null, story_caption: null, story_treatment_summary: "Full crown restoration",
+  },
+  {
+    id: "static-02",
+    blob_url: "/images/smile-gallery/gallery-02.webp",
+    service_category: "full_mouth_reconstruction",
+    before_or_after: "na",
+    pair_group_id: null,
+    caption: "Before and after full arch crown restoration black background — AK Ultimate Dental Las Vegas Dr. Alex Chireau DMD",
+    ai_description: null, ai_quality: null, is_featured: true,
+    story_headline: "Full Arch Crown Restoration",
+    story_body: null, story_caption: null, story_treatment_summary: "Full arch porcelain crowns",
+  },
+  {
+    id: "static-03",
+    blob_url: "/images/smile-gallery/gallery-03.webp",
+    service_category: "crowns_bonding",
+    before_or_after: "na",
+    pair_group_id: null,
+    caption: "Extreme close-up before and after front tooth crown — ceramic translucency detail, Dr. Alex Chireau DMD Las Vegas",
+    ai_description: null, ai_quality: null, is_featured: false,
+    story_headline: "Front Tooth Crown — Ceramic Detail",
+    story_body: null, story_caption: null, story_treatment_summary: "Single anterior crown",
+  },
+  {
+    id: "static-04",
+    blob_url: "/images/smile-gallery/gallery-04.webp",
+    service_category: "smile_makeover",
+    before_or_after: "na",
+    pair_group_id: null,
+    caption: "Before and after dramatic smile restoration — severe decay to full porcelain crown set, Dr. Alex Chireau DMD",
+    ai_description: null, ai_quality: null, is_featured: true,
+    story_headline: "Dramatic Smile Restoration",
+    story_body: null, story_caption: null, story_treatment_summary: "Full porcelain crown set",
+  },
+  {
+    id: "static-05",
+    blob_url: "/images/smile-gallery/gallery-05.webp",
+    service_category: "crowns_bonding",
+    before_or_after: "na",
+    pair_group_id: null,
+    caption: "Before and after single front tooth crown — upper central incisor restored, AK Ultimate Dental Las Vegas",
+    ai_description: null, ai_quality: null, is_featured: false,
+    story_headline: "Single Front Tooth Crown",
+    story_body: null, story_caption: null, story_treatment_summary: "Upper central incisor crown",
+  },
+  {
+    id: "static-06",
+    blob_url: "/images/smile-gallery/gallery-06.webp",
+    service_category: "full_mouth_reconstruction",
+    before_or_after: "na",
+    pair_group_id: null,
+    caption: "Before and after full mouth crown restoration — complete upper arch transformation, Dr. Alex Chireau DMD",
+    ai_description: null, ai_quality: null, is_featured: false,
+    story_headline: "Complete Upper Arch Transformation",
+    story_body: null, story_caption: null, story_treatment_summary: "Full mouth crown restoration",
+  },
+  {
+    id: "static-07",
+    blob_url: "/images/smile-gallery/gallery-07.webp",
+    service_category: "veneers",
+    before_or_after: "na",
+    pair_group_id: null,
+    caption: "Close-up macro of porcelain veneers on black background — ceramic detail by Dr. Alex Chireau DMD Las Vegas",
+    ai_description: null, ai_quality: null, is_featured: false,
+    story_headline: "Porcelain Veneer Detail",
+    story_body: null, story_caption: null, story_treatment_summary: "Porcelain veneers",
+  },
+  {
+    id: "static-08",
+    blob_url: "/images/smile-gallery/gallery-08.webp",
+    service_category: "full_mouth_reconstruction",
+    before_or_after: "na",
+    pair_group_id: null,
+    caption: "Before and after full upper and lower smile restoration — Dr. Alex Chireau DMD AK Ultimate Dental",
+    ai_description: null, ai_quality: null, is_featured: false,
+    story_headline: "Full Upper & Lower Restoration",
+    story_body: null, story_caption: null, story_treatment_summary: "Full smile restoration",
+  },
+  {
+    id: "static-09",
+    blob_url: "/images/smile-gallery/gallery-09.webp",
+    service_category: "crowns_bonding",
+    before_or_after: "na",
+    pair_group_id: null,
+    caption: "Before and after full arch crown restoration — worn teeth to new porcelain set, Dr. Alex Chireau DMD",
+    ai_description: null, ai_quality: null, is_featured: false,
+    story_headline: "Worn Teeth to New Porcelain",
+    story_body: null, story_caption: null, story_treatment_summary: "Full arch crown restoration",
+  },
+  {
+    id: "static-10",
+    blob_url: "/images/smile-gallery/gallery-10.webp",
+    service_category: "crowns_bonding",
+    before_or_after: "na",
+    pair_group_id: null,
+    caption: "Before and after front tooth crown — AK Ultimate Dental branded, Dr. Alex Chireau DMD Las Vegas",
+    ai_description: null, ai_quality: null, is_featured: false,
+    story_headline: "Front Tooth Crown Restoration",
+    story_body: null, story_caption: null, story_treatment_summary: "Anterior crown",
+  },
+  {
+    id: "static-11",
+    blob_url: "/images/smile-gallery/gallery-11.webp",
+    service_category: "crowns_bonding",
+    before_or_after: "na",
+    pair_group_id: null,
+    caption: "Full upper arch porcelain crown set on dental model — CEREC precision by Dr. Alex Chireau DMD",
+    ai_description: null, ai_quality: null, is_featured: false,
+    story_headline: "CEREC Full Arch Crown Set",
+    story_body: null, story_caption: null, story_treatment_summary: "CEREC porcelain crowns",
+  },
+  {
+    id: "static-12",
+    blob_url: "/images/smile-gallery/gallery-12.webp",
+    service_category: "veneers",
+    before_or_after: "na",
+    pair_group_id: null,
+    caption: "Lower arch porcelain veneer set profile view — ultra-thin ceramic craftsmanship, Dr. Alex Chireau DMD",
+    ai_description: null, ai_quality: null, is_featured: false,
+    story_headline: "Ultra-Thin Porcelain Veneers",
+    story_body: null, story_caption: null, story_treatment_summary: "Lower arch veneers",
+  },
+  {
+    id: "static-13",
+    blob_url: "/images/smile-gallery/gallery-13.webp",
+    service_category: "veneers",
+    before_or_after: "na",
+    pair_group_id: null,
+    caption: "Before and after full smile veneer transformation — Dr. Alex Chireau DMD AK Ultimate Dental Las Vegas",
+    ai_description: null, ai_quality: null, is_featured: false,
+    story_headline: "Full Smile Veneer Transformation",
+    story_body: null, story_caption: null, story_treatment_summary: "Full veneer transformation",
+  },
+  {
+    id: "static-14",
+    blob_url: "/images/smile-gallery/gallery-14.webp",
+    service_category: "crowns_bonding",
+    before_or_after: "na",
+    pair_group_id: null,
+    caption: "Before and after molar crown placement CEREC same-day — Dr. Alex Chireau DMD Las Vegas",
+    ai_description: null, ai_quality: null, is_featured: false,
+    story_headline: "CEREC Same-Day Molar Crown",
+    story_body: null, story_caption: null, story_treatment_summary: "Same-day CEREC crown",
+  },
+  {
+    id: "static-15",
+    blob_url: "/images/smile-gallery/gallery-15.webp",
+    service_category: "crowns_bonding",
+    before_or_after: "na",
+    pair_group_id: null,
+    caption: "Before and after molar crown replacement — aging crown to CEREC porcelain, Dr. Alex Chireau DMD",
+    ai_description: null, ai_quality: null, is_featured: false,
+    story_headline: "Molar Crown Replacement",
+    story_body: null, story_caption: null, story_treatment_summary: "Crown replacement",
+  },
+  {
+    id: "static-16",
+    blob_url: "/images/smile-gallery/gallery-16.webp",
+    service_category: "crowns_bonding",
+    before_or_after: "na",
+    pair_group_id: null,
+    caption: "Before and after front tooth crown — chipped teeth restored, Dr. Alex Chireau DMD Las Vegas",
+    ai_description: null, ai_quality: null, is_featured: false,
+    story_headline: "Chipped Teeth Restored",
+    story_body: null, story_caption: null, story_treatment_summary: "Front tooth crown",
+  },
+];
 
 // ─── Category taxonomy (matches upload interview) ─────────────────────────────
 
@@ -247,21 +428,28 @@ export function GalleryClient({ photos }: Props) {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [lightboxPhoto, setLightboxPhoto] = useState<Photo | null>(null);
 
+  // Merge DB photos (featured first) with static photos (appended after)
+  const allPhotos = useMemo(() => {
+    const dbIds = new Set(photos.map((p) => p.id));
+    const staticToAdd = STATIC_PHOTOS.filter((p) => !dbIds.has(p.id));
+    return [...photos, ...staticToAdd];
+  }, [photos]);
+
   // Only show categories that have at least one photo
   const categoriesWithPhotos = useMemo(() => {
     const counts: Record<string, number> = {};
-    photos.forEach((p) => {
+    allPhotos.forEach((p) => {
       const key = matchCategory(p.service_category);
       counts[key] = (counts[key] ?? 0) + 1;
     });
     return CATEGORIES.filter((c) => c.key === "all" || (counts[c.key] ?? 0) > 0);
-  }, [photos]);
+  }, [allPhotos]);
 
   // Build paired before/after groups from pair_group_id
-  const { pairs, singles } = useMemo(() => {
+  const { pairs } = useMemo(() => {
     const grouped: Record<string, Photo[]> = {};
     const ungrouped: Photo[] = [];
-    photos.forEach((p) => {
+    allPhotos.forEach((p) => {
       if (p.pair_group_id) {
         grouped[p.pair_group_id] = grouped[p.pair_group_id] ?? [];
         grouped[p.pair_group_id].push(p);
@@ -275,33 +463,20 @@ export function GalleryClient({ photos }: Props) {
       return before && after ? { before, after } : null;
     }).filter(Boolean) as { before: Photo; after: Photo }[];
     return { pairs: pairList, singles: ungrouped };
-  }, [photos]);
+  }, [allPhotos]);
 
   const filtered = useMemo(() => {
-    let list = photos;
+    let list = allPhotos;
     if (activeCategory !== "all") {
       list = list.filter((p) => matchCategory(p.service_category) === activeCategory);
     }
     return list;
-  }, [photos, activeCategory]);
+  }, [allPhotos, activeCategory]);
 
   const filteredPairs = useMemo(() => {
     if (activeCategory === "all") return pairs;
     return pairs.filter((pair) => matchCategory(pair.after.service_category) === activeCategory || matchCategory(pair.before.service_category) === activeCategory);
   }, [pairs, activeCategory]);
-
-  if (photos.length === 0) {
-    return (
-      <section className="py-20 bg-gray-50 text-center">
-        <div className="container mx-auto px-4">
-          <p className="text-gray-500 text-lg">Patient photos coming soon — check back shortly.</p>
-          <Button asChild className="mt-6">
-            <Link href="/appointment">Book a Free Consultation</Link>
-          </Button>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <>

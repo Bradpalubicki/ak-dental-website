@@ -203,21 +203,21 @@ export function getServicePromotion(slug: string): ServicePromotion | undefined 
 export const serviceImages: Record<string, string> = {
   // Core services — each image specifically matches the treatment type
   "cleanings-prevention": "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=800&h=600&fit=crop&q=80",
-  "cosmetic-dentistry": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop&q=80",
+  "cosmetic-dentistry": "/images/homepage/service-cosmetic.webp",
   "dental-implants": "https://images.unsplash.com/photo-1468493858157-0da44aaf1d13?w=800&h=600&fit=crop&q=80",
-  "crowns-bridges": "/images/crowns-bridges/crown-model-upper-arch.jpg",
+  "crowns-bridges": "/images/homepage/service-crowns.webp",
   "root-canal": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&h=600&fit=crop&q=80",
   "oral-surgery": "https://images.unsplash.com/photo-1588776813677-77aaf5595b83?w=800&h=600&fit=crop&q=80",
   "periodontics": "https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?w=800&h=600&fit=crop&q=80",
   "orthodontics": "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=800&h=600&fit=crop&q=80",
   "pediatric-dentistry": "https://images.unsplash.com/photo-1619236233405-bb5d430f0620?w=800&h=600&fit=crop&q=80",
   // Standalone procedure pages — distinct images per procedure
-  "porcelain-veneers": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&h=600&fit=crop&q=80",
+  "porcelain-veneers": "/images/services/veneers-hero.webp",
   "dental-crowns": "/images/crowns-bridges/cerec-crown-model-frontal.jpg",
   "dental-bridges": "/images/crowns-bridges/bridge-model-upper-arch.jpg",
   // Location variants share parent hero image
-  "porcelain-veneers-las-vegas": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&h=600&fit=crop&q=80",
-  "porcelain-veneers-henderson": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&h=600&fit=crop&q=80",
+  "porcelain-veneers-las-vegas": "/images/services/veneers-hero.webp",
+  "porcelain-veneers-henderson": "/images/services/veneers-hero.webp",
   "dental-crowns-las-vegas": "/images/crowns-bridges/cerec-crown-model-frontal.jpg",
   "dental-crowns-henderson": "/images/crowns-bridges/cerec-crown-model-frontal.jpg",
   "dental-bridges-las-vegas": "/images/crowns-bridges/bridge-model-upper-arch.jpg",
@@ -227,19 +227,19 @@ export const serviceImages: Record<string, string> = {
 
 /** Secondary images displayed inline within service page content */
 export const serviceContentImages: Record<string, string> = {
-  "porcelain-veneers": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=500&fit=crop&q=80",
+  "porcelain-veneers": "/images/services/veneers-case-1.webp",
   "dental-crowns": "/images/crowns-bridges/crown-model-lower-frontal.jpg",
   "dental-bridges": "/images/crowns-bridges/ba-full-arch-worn-to-crowns.jpg",
-  "porcelain-veneers-las-vegas": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=500&fit=crop&q=80",
-  "porcelain-veneers-henderson": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=500&fit=crop&q=80",
+  "porcelain-veneers-las-vegas": "/images/services/veneers-case-1.webp",
+  "porcelain-veneers-henderson": "/images/services/veneers-case-1.webp",
   "dental-crowns-las-vegas": "/images/crowns-bridges/crown-model-lower-frontal.jpg",
   "dental-crowns-henderson": "/images/crowns-bridges/crown-model-lower-frontal.jpg",
   "dental-bridges-las-vegas": "/images/crowns-bridges/ba-full-arch-worn-to-crowns.jpg",
   "dental-bridges-henderson": "/images/crowns-bridges/ba-full-arch-worn-to-crowns.jpg",
   "same-day-dentistry": "https://images.unsplash.com/photo-1600170311833-c2cf5280ce49?w=800&h=500&fit=crop&q=80",
-  "crowns-bridges": "/images/crowns-bridges/bridge-model-upper-arch.jpg",
+  "crowns-bridges": "/images/services/crowns-hero.webp",
   "cleanings-prevention": "https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?w=800&h=500&fit=crop&q=80",
-  "cosmetic-dentistry": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&h=500&fit=crop&q=80",
+  "cosmetic-dentistry": "/images/homepage/service-cosmetic.webp",
   "dental-implants": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&h=500&fit=crop&q=80",
   "root-canal": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&h=500&fit=crop&q=80",
   "oral-surgery": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&h=500&fit=crop&q=80",
@@ -251,12 +251,21 @@ export const serviceContentImages: Record<string, string> = {
 /** Before/after gallery images per service slug — shown as a client results grid */
 export const serviceGalleryImages: Record<string, Array<{ src: string; alt: string }>> = {
   "crowns-bridges": [
+    { src: "/images/services/crowns-case-1.webp",                        alt: "Before and after single front tooth crown — upper central incisor restored, AK Ultimate Dental Las Vegas" },
+    { src: "/images/services/crowns-case-2.webp",                        alt: "Before and after dramatic smile restoration — severe decay to full porcelain crown set, Dr. Alex Chireau DMD" },
+    { src: "/images/services/crowns-case-3.webp",                        alt: "Before and after full smile crown restoration on male patient — AK Ultimate Dental Las Vegas" },
     { src: "/images/crowns-bridges/ba-full-smile-male-crowns.jpg",       alt: "Before and after — full smile restored with porcelain crowns" },
     { src: "/images/crowns-bridges/ba-upper-arch-full-crowns.jpg",       alt: "Before and after — full upper arch porcelain crowns" },
     { src: "/images/crowns-bridges/ba-anterior-crowns-akdental.jpg",     alt: "Before and after — anterior crown restoration" },
-    { src: "/images/crowns-bridges/ba-full-arch-worn-to-crowns.jpg",     alt: "Before and after — severely worn teeth replaced with crowns" },
-    { src: "/images/crowns-bridges/ba-upper-anterior-crowns-1.jpg",      alt: "Before and after — upper anterior crown restoration" },
-    { src: "/images/crowns-bridges/ba-anterior-crowns-closeup.jpg",      alt: "Before and after — anterior porcelain crown closeup" },
+  ],
+  "porcelain-veneers": [
+    { src: "/images/services/veneers-case-1.webp",                       alt: "Before and after full smile veneer transformation — Dr. Alex Chireau DMD AK Ultimate Dental Las Vegas" },
+    { src: "/images/services/veneers-case-2.webp",                       alt: "Lower arch porcelain veneer set profile view — ultra-thin ceramic craftsmanship, Dr. Alex Chireau DMD" },
+    { src: "/images/smile-gallery/gallery-07.webp",                      alt: "Close-up macro of porcelain veneers — ceramic detail by Dr. Alex Chireau DMD Las Vegas" },
+  ],
+  "porcelain-veneers-las-vegas": [
+    { src: "/images/services/veneers-case-1.webp",                       alt: "Before and after full smile veneer transformation — Dr. Alex Chireau DMD AK Ultimate Dental Las Vegas" },
+    { src: "/images/services/veneers-case-2.webp",                       alt: "Lower arch porcelain veneer set profile view — ultra-thin ceramic craftsmanship, Dr. Alex Chireau DMD" },
   ],
   "dental-crowns": [
     { src: "/images/crowns-bridges/ba-molar-crown-procedure.jpg",        alt: "Before and after — molar ceramic crown placement" },

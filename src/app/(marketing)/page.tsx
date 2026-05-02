@@ -299,6 +299,49 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Real Results Teaser */}
+      <section className="py-16 bg-white border-t">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-10">
+              <span className="inline-block text-cyan-600 font-semibold text-sm uppercase tracking-wider mb-3">
+                Patient Results
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+                Real patients. Real results.
+              </h2>
+            </div>
+            <div className="grid grid-cols-3 gap-3 md:gap-5">
+              {[
+                { src: "/images/homepage/teaser-1.webp", alt: "Before and after full smile crown restoration — AK Ultimate Dental Las Vegas Dr. Alex Chireau DMD" },
+                { src: "/images/homepage/teaser-2.webp", alt: "Before and after full arch crown restoration — AK Ultimate Dental Las Vegas Dr. Alex Chireau DMD" },
+                { src: "/images/homepage/teaser-3.webp", alt: "Before and after dramatic smile restoration — Dr. Alex Chireau DMD AK Ultimate Dental Las Vegas" },
+              ].map((img, i) => (
+                <Link key={i} href="/smile-gallery" className="group relative aspect-[3/4] overflow-hidden rounded-xl shadow-md hover:shadow-xl transition-shadow">
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    sizes="(max-width: 768px) 33vw, 20vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Link>
+              ))}
+            </div>
+            <div className="text-center mt-8">
+              <Link
+                href="/smile-gallery"
+                className="inline-flex items-center gap-2 text-cyan-600 font-semibold hover:text-cyan-800 transition-colors text-lg"
+              >
+                View the full gallery
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Why Choose Us - Split Section */}
       <section className="py-20 md:py-32 bg-white overflow-hidden">
         <div className="container mx-auto px-4">
