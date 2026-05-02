@@ -229,11 +229,11 @@ export default function CrownsMayPage() {
 
           {/* RIGHT: hero photo */}
           <div className="hero-img" style={{ position: "relative", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", background: BG }}>
-            <div style={{ position: "relative", width: "100%", maxWidth: 520, height: "100%", maxHeight: "88%" }}>
+            <div style={{ position: "relative", width: "100%", maxWidth: 460, aspectRatio: "1/1" }}>
               <Image
                 src="/images/crowns-lp/hero-main.webp"
                 alt="Before and after full arch porcelain crown restoration by Dr. Alex Chireau, AK Ultimate Dental Las Vegas"
-                fill className="object-cover object-center" priority sizes="(max-width: 768px) 100vw, 45vw"
+                fill className="object-contain" priority sizes="(max-width: 768px) 100vw, 45vw"
               />
             </div>
           </div>
