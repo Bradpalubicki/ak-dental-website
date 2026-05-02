@@ -301,7 +301,7 @@ export default function CrownsMayPage() {
         {/* Uniform 4-col grid — 2 rows of 4 */}
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 4 }} className="gallery-grid">
           {GALLERY.map((photo, i) => (
-            <div key={i} className="gc" style={{ aspectRatio: "1/1" }}>
+            <div key={i} className="gc" style={{ aspectRatio: "4/3" }}>
               <Image
                 src={photo.src}
                 alt={photo.tag}
