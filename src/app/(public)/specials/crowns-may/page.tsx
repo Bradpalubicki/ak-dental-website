@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { ArrowRight, Phone, Star, Shield, Clock, CheckCircle } from "lucide-react";
+import { ArrowRight, Phone, Shield, Clock, CheckCircle, Star } from "lucide-react";
 import { existsSync } from "fs";
 import path from "path";
 import LeadForm from "./LeadForm";
@@ -64,17 +64,19 @@ const TICKER = [
   `★★★★★  "Precise, professional, and genuinely cared about my result."  — Verified Google Review`,
 ];
 
-// ── Before/after pairs ─────────────────────────────────────
+// ── Before/after pairs — only confirmed matching pairs ─────
 const BA_PAIRS = [
-  { before: "/images/crowns-lp/ba-before.webp",   after: "/images/crowns-lp/ba-after.webp",    label: "Full arch restoration" },
-  { before: "/images/crowns-lp/ba-extra-1.webp",  after: "/images/crowns-lp/ba-extra-2.webp",  label: "Single crown · front tooth" },
-  { before: "/images/crowns-lp/ba-extra-3.webp",  after: "/images/crowns-lp/ba-extra-4.webp",  label: "Smile transformation" },
+  { before: "/images/crowns-lp/ba-before.webp",  after: "/images/crowns-lp/ba-after.webp",   label: "Full arch restoration" },
+  { before: "/images/crowns-lp/ba-extra-1.webp", after: "/images/crowns-lp/ba-extra-2.webp", label: "Crown restoration" },
 ];
 
 export default function CrownsMayPage() {
-  const hasFamily     = existsSync(path.join(process.cwd(), "public", "dr-alex-family.jpg"));
-  const hasGraduation = existsSync(path.join(process.cwd(), "public", "dr-alex-graduation-unlv.jpg"));
-  const videoUrl      = process.env.NEXT_PUBLIC_PATIENT_TESTIMONIAL_URL ?? "";
+  const hasFamily       = existsSync(path.join(process.cwd(), "public", "dr-alex-family.jpg"));
+  const hasGraduation   = existsSync(path.join(process.cwd(), "public", "dr-alex-graduation-unlv.jpg"));
+  const videoUrl        = process.env.NEXT_PUBLIC_PATIENT_TESTIMONIAL_URL ?? "";
+  const testimonial1Url = process.env.NEXT_PUBLIC_TESTIMONIAL_1_URL ?? "";
+  const testimonial2Url = process.env.NEXT_PUBLIC_TESTIMONIAL_2_URL ?? "";
+  const alexWorkingUrl  = process.env.NEXT_PUBLIC_SHORT_VIDEO_URL ?? "";
 
   return (
     <>
@@ -299,32 +301,86 @@ export default function CrownsMayPage() {
 
           <div style={{ marginTop: 36, textAlign: "center" }}>
             <a href="#claim" style={{ background: GOLD, color: "#1A1410", padding: "16px 32px", fontWeight: 700, fontSize: 15, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8 }}>
-              Reserve My Founding Spot <ArrowRight size={16} />
+              Book My Free Consultation <ArrowRight size={16} />
             </a>
           </div>
         </div>
       </section>
 
-      {/* ── 6. SOCIAL PROOF — inline testimonials ───────────── */}
+      {/* ── 6. SOCIAL PROOF — Google-style review cards ─────── */}
       <section style={{ background: BG, padding: "88px 24px" }} className="section-divide">
-        <div style={{ maxWidth: 900, margin: "0 auto" }}>
-          <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>What Patients Say</p>
-          <h2 className="serif" style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 600, color: TEXT, marginBottom: 48, lineHeight: 1.15 }}>
-            145 verified five-star reviews.
-          </h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2, background: `rgba(212,175,55,0.1)` }} className="process-grid">
-            {TESTIMONIALS.map((t, i) => (
-              <div key={i} style={{ background: BG_MID, padding: "28px 26px 32px" }}>
-                <div style={{ display: "flex", gap: 2, marginBottom: 16 }}>
-                  {[...Array(5)].map((_, j) => <Star key={j} size={13} color={GOLD} fill={GOLD} />)}
+        <div style={{ maxWidth: 960, margin: "0 auto" }}>
+          {/* Google badge header */}
+          <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 12 }}>
+            {/* Google G logo */}
+            <svg width="32" height="32" viewBox="0 0 24 24">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            <div>
+              <p style={{ color: TEXT, fontWeight: 700, fontSize: 15 }}>Google Reviews</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ color: "#FBBC05", fontWeight: 700, fontSize: 14 }}>4.9</span>
+                <div style={{ display: "flex", gap: 1 }}>
+                  {[...Array(5)].map((_, i) => (
+                    <svg key={i} width="14" height="14" viewBox="0 0 24 24" fill="#FBBC05"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                  ))}
                 </div>
-                <blockquote className="serif" style={{ fontSize: "1.05rem", fontStyle: "italic", color: TEXT, lineHeight: 1.65, marginBottom: 16 }}>
+                <span style={{ color: MUTED, fontSize: 13 }}>· 145 reviews</span>
+              </div>
+            </div>
+          </div>
+          <h2 className="serif" style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 600, color: TEXT, marginBottom: 36, lineHeight: 1.15 }}>
+            What patients are saying.
+          </h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }} className="process-grid">
+            {TESTIMONIALS.map((t, i) => (
+              <div key={i} style={{
+                background: "#1C1C1E",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 12,
+                padding: "20px 20px 24px",
+                display: "flex", flexDirection: "column", gap: 12,
+              }}>
+                {/* Google review card header */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: "50%", background: `hsl(${i * 120}, 55%, 38%)`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 15, color: "#fff" }}>
+                      {t.name[0]}
+                    </div>
+                    <div>
+                      <p style={{ fontWeight: 600, fontSize: 13, color: TEXT }}>{t.name}</p>
+                      <p style={{ fontSize: 11, color: MUTED }}>{t.location}</p>
+                    </div>
+                  </div>
+                  {/* Google G icon small */}
+                  <svg width="18" height="18" viewBox="0 0 24 24">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                  </svg>
+                </div>
+                {/* Stars */}
+                <div style={{ display: "flex", gap: 2 }}>
+                  {[...Array(5)].map((_, j) => (
+                    <svg key={j} width="14" height="14" viewBox="0 0 24 24" fill="#FBBC05"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                  ))}
+                </div>
+                {/* Quote */}
+                <p style={{ fontSize: 13, color: "rgba(245,240,232,0.85)", lineHeight: 1.7 }}>
                   &ldquo;{t.quote}&rdquo;
-                </blockquote>
-                <p style={{ fontSize: 12, color: GOLD, fontWeight: 600 }}>{t.name}</p>
-                <p style={{ fontSize: 11, color: MUTED }}>{t.location} · Verified Google Review</p>
+                </p>
+                <p style={{ fontSize: 11, color: MUTED }}>Posted on Google</p>
               </div>
             ))}
+          </div>
+          <div style={{ marginTop: 24, textAlign: "center" }}>
+            <a href="https://share.google/y4QOijKzxJN97403L" target="_blank" rel="noopener noreferrer" style={{ color: GOLD_LT, fontSize: 13, fontWeight: 500, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
+              See all 145 Google reviews →
+            </a>
           </div>
         </div>
       </section>
@@ -478,27 +534,62 @@ export default function CrownsMayPage() {
         </div>
       </section>
 
-      {/* ── 11. VIDEO TESTIMONIAL ───────────────────────────── */}
-      {videoUrl && (
+      {/* ── 11. VIDEOS — patient testimonials + Dr. Chireau at work ── */}
+      {(videoUrl || testimonial1Url || testimonial2Url || alexWorkingUrl) && (
         <section style={{ background: BG_MID, padding: "88px 24px" }} className="section-divide">
-          <div style={{ maxWidth: 900, margin: "0 auto" }}>
-            <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600, textAlign: "center" }}>In Their Own Words</p>
-            <h2 className="serif" style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 600, color: TEXT, marginBottom: 36, lineHeight: 1.15, textAlign: "center" }}>
-              What patients say.
+          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+            <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>In Their Own Words</p>
+            <h2 className="serif" style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 600, color: TEXT, marginBottom: 48, lineHeight: 1.15 }}>
+              Watch. Real patients. Real results.
             </h2>
-            <video
-              controls
-              playsInline
-              style={{ width: "100%", display: "block", background: "#000" }}
-            >
-              <source src={videoUrl} type="video/mp4" />
-            </video>
-            <div style={{ marginTop: 24, padding: "20px 24px", background: BG, borderLeft: `3px solid ${GOLD}` }}>
-              <p className="serif" style={{ fontSize: "clamp(1.1rem, 2vw, 1.35rem)", fontStyle: "italic", color: TEXT, lineHeight: 1.6, marginBottom: 6 }}>
-                &ldquo;I just wish I was so much younger, doctor — because then I would have gotten it all capped.&rdquo;
-              </p>
-              <p style={{ fontSize: 12, color: MUTED }}>Real patient · AK Ultimate Dental · Las Vegas</p>
-            </div>
+
+            {/* Main patient testimonial video */}
+            {videoUrl && (
+              <div style={{ marginBottom: 48 }}>
+                <video controls playsInline style={{ width: "100%", display: "block", background: "#000", maxHeight: 520 }}>
+                  <source src={videoUrl} type="video/mp4" />
+                </video>
+                <div style={{ marginTop: 16, padding: "18px 22px", background: BG, borderLeft: `3px solid ${GOLD}` }}>
+                  <p className="serif" style={{ fontSize: "clamp(1rem, 1.8vw, 1.3rem)", fontStyle: "italic", color: TEXT, lineHeight: 1.6, marginBottom: 6 }}>
+                    &ldquo;I just wish I was so much younger, doctor — because then I would have gotten it all capped.&rdquo;
+                  </p>
+                  <p style={{ fontSize: 12, color: MUTED }}>Real patient · AK Ultimate Dental · Las Vegas</p>
+                </div>
+              </div>
+            )}
+
+            {/* Two side-by-side patient testimonial videos */}
+            {(testimonial1Url || testimonial2Url) && (
+              <div style={{ display: "grid", gridTemplateColumns: testimonial1Url && testimonial2Url ? "1fr 1fr" : "1fr", gap: 16, marginBottom: 48 }} className="ba-row">
+                {testimonial1Url && (
+                  <div>
+                    <video controls playsInline style={{ width: "100%", display: "block", background: "#000" }}>
+                      <source src={testimonial1Url} type="video/mp4" />
+                    </video>
+                    <p style={{ fontSize: 12, color: MUTED, marginTop: 8, paddingLeft: 4 }}>Patient testimonial · AK Ultimate Dental</p>
+                  </div>
+                )}
+                {testimonial2Url && (
+                  <div>
+                    <video controls playsInline style={{ width: "100%", display: "block", background: "#000" }}>
+                      <source src={testimonial2Url} type="video/mp4" />
+                    </video>
+                    <p style={{ fontSize: 12, color: MUTED, marginTop: 8, paddingLeft: 4 }}>Patient testimonial · AK Ultimate Dental</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Dr. Chireau at work video */}
+            {alexWorkingUrl && (
+              <div>
+                <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>Dr. Chireau — At Work</p>
+                <video controls playsInline style={{ width: "100%", display: "block", background: "#000", maxHeight: 520 }}>
+                  <source src={alexWorkingUrl} type="video/mp4" />
+                </video>
+                <p style={{ fontSize: 12, color: MUTED, marginTop: 8, paddingLeft: 4 }}>Dr. Alex Chireau, DMD · AK Ultimate Dental · Las Vegas</p>
+              </div>
+            )}
           </div>
         </section>
       )}
