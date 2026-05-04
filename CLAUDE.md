@@ -261,3 +261,73 @@ Every marketing page / homepage MUST have a hero section with:
 | Equipment rental | Same-Day — Delivery available | No Deposit — Credit card hold | Local Fleet — [City] area | 24/7 — Emergency line |
 | Counseling/therapy | Private — HIPAA compliant | Same-Week — New patient slots | Sliding Scale — Available | Telehealth — All Nevada |
 | SaaS/tech | Free Trial — 14 days | No Card — Required to start | Cancel — Anytime | Live Support — Real humans |
+
+---
+
+## SESSION ASSUMPTIONS
+
+At the start of every CC session on this engine, CC must confirm the Prerequisite State
+before writing any code or running any migrations.
+
+**Required checks before build starts:**
+1. Read the Prerequisite State section in the current D3 Brief
+2. Confirm every listed service, table, or env var is accessible and ready
+3. If any item is NOT confirmed → file BLOCKED to Agent Inbox with:
+   - Which prerequisite failed
+   - What CC needs to proceed
+   - Exact state at halt (last confirmed migration, last successful deploy)
+4. Do NOT build around a missing prerequisite. Halt is correct. Fabrication is the failure mode.
+
+**Session start checklist:**
+- [ ] Agent Inbox read (new CC tasks? BLOCKED responses from prior sessions?)
+- [ ] Prerequisite State for current D3 Brief confirmed
+- [ ] Git status clean (or stash documented)
+- [ ] Vercel project ID confirmed (use Brad Agent MCP, not memory)
+
+---
+
+## D3 BRIEF STANDARD — 8 Elements (CO-BLUEPRINT-01)
+
+Every CA → CC handoff must include all 8 elements:
+1. Task title + priority (P0/P1/P2)
+2. Repo path (absolute, e.g., `C:/Users/bradp/dev/ak-dental-website`)
+3. Files to touch (or "unknown — CC investigates")
+4. Definition of done (specific, verifiable, observable)
+5. Known blockers (or "none known")
+6. Spend-gate status (CONFIRMED / NOT REQUIRED / PENDING)
+7. EVAL GATE CHECKLIST (every line has a named verification tool)
+8. Prerequisite State — list every upstream service CC must confirm ready before starting.
+   If any prereq not met → file BLOCKED to Agent Inbox. Do not build around it.
+
+## EVAL GATE CHECKLIST
+
+Every D3 Brief task requires all applicable lines to pass before CLAIMED_DONE.
+
+- [ ] FILE_EXISTS: src/app/api/[route]/route.ts
+- [ ] HTTP_200: health_check(https://ak-dental-website.vercel.app/api/[route]) expect { pass: true }
+- [ ] DEPLOY_READY: vercel_deployment_status(prj_97XbZizPQPmKmGM0rmxmd9x1y7Qy) expect { pass: true }
+- [ ] SMOKE_PASS: [Brad Agent MCP tool] expect { pass: true }
+- [ ] TWILIO_SMS: twilio_check_recent_sms(+1XXX, withinMinutes=10) expect { pass: true }
+- [ ] RESEND_EMAIL: resend_check_recent_email(user@email.com, withinMinutes=10) expect { pass: true }
+- [ ] DB_WRITE: supabase_row_count([table], last_5min) expect > 0
+- [ ] SCREENSHOT: https://[url] data-testid="[id]" expect_text="[text]"
+
+**Rules:**
+- Background processes use DB_WRITE not HTTP_200
+- Screenshot checks use `data-testid` — never CSS selectors or class names
+- If the element has no data-testid → add it before running the EVAL GATE
+- CLAIMED_DONE is blocked if any applicable EVAL GATE line fails
+
+---
+
+## KNOWN REGRESSIONS
+
+Bugs or broken states known at build time. Documented so CC does not silently carry them
+or mark features CLAIMED_DONE when a known issue is present.
+
+| Bug | Affected feature | Discovered | Status | Workaround |
+|-----|-----------------|------------|--------|------------|
+| (none at this time) | — | — | — | — |
+
+**Rule:** If CC discovers a regression mid-build → add a row here before filing CLAIMED_DONE.
+Do not bury it in a commit message.
