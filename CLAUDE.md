@@ -45,7 +45,7 @@ ENGINE_NAME=ak-dental
 DOPPLER_PROJECT=ak-dental
 GLOBAL_HUB_PAGE_ID=338663704e40814aaa92fd7293923e4f
 LAST_UPDATED=2026-04-16
-RUN_QUESTIONS_VERSION=v4.8
+RUN_QUESTIONS_VERSION=v5.0
 
 ## SESSION START PROTOCOL
 1. Read this file top to bottom.
@@ -125,8 +125,8 @@ Color system for Accrefi/NuStack work:
 ---
 
 ## RUN QUESTIONS
-Run Questions: https://www.notion.so/338663704e4081e3939de2f3b7b6c4d3 (v4.3 OPERATIVE — reference only, do not copy)
-Trigger: Brad says "run the questions" or "/run-questions" — Two-Pass default
+Run Questions: https://www.notion.so/35d663704e4081fba33ad0f8c6b27536 (v5.0 OPERATIVE)
+Trigger: Brad says "run the questions" or "/run-questions" — 10-stage sequence
 Single-pass: Brad says "quick pass" or "CC only"
 
 ---
