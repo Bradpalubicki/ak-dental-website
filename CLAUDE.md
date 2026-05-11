@@ -1,14 +1,16 @@
+# See Skill M v2.0 for pre-build gates: 35d663704e4081a78514c99bb6716c54
+
 ## REPO IDENTITY
 ENGINE_NAME=ak-dental
 DOPPLER_PROJECT=ak-dental
 GLOBAL_HUB_PAGE_ID=338663704e40814aaa92fd7293923e4f
 LAST_UPDATED=2026-04-16
-RUN_QUESTIONS_VERSION=v4.3
+RUN_QUESTIONS_VERSION=v4.8
 
 ## SESSION START PROTOCOL
 1. Read this file top to bottom.
 2. Extract GLOBAL_HUB_PAGE_ID from REPO IDENTITY block above.
-3. Fetch that Notion page in one API call. Read it. Internalize it. Do not summarize aloud.
+3. Fetch that Notion page in one API call. Read it. Internalize it. Display key state to Brad before doing any work.
 4. You now have full fleet context. Begin work.
 5. Check Agent Inbox (32f663704e4081f3ac93e81a3782412a). Read open tasks. Begin the top task.
 6. Do not ask Brad what the system state is. The hub tells you.
