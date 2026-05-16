@@ -362,6 +362,12 @@ Every D3 Brief task requires all applicable lines to pass before CLAIMED_DONE.
 
 ---
 
+## HALT TRIGGER INTERPRETATION — Halt Rule v1.0 (narrowed 2026-05-15)
+Canonical: Notion `360663704e408124af87efc2a6967062`.
+**Scope:** in-flight CC execution of CA-authored dispatches with literal halt triggers only. Does NOT apply to routine Brad asks. **Brad's literal words override process scaffolding.** When a halt trigger DOES fire mid-dispatch: halt-and-stop (read-only investigation, file ONE halt page, close session). Opt-out: CA must include literal `halt-and-resolve-inline-if-mechanical` + enumerated resolution path.
+
+---
+
 ## KNOWN REGRESSIONS
 
 Bugs or broken states known at build time. Documented so CC does not silently carry them
