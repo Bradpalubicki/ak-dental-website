@@ -12,7 +12,7 @@
     "health-check": "npx ts-node scripts/site-health-check.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.72.1",
+    "@anthropic-ai/sdk": "^0.78.0",
     "@clerk/nextjs": "^6.37.1",
     "@hookform/resolvers": "^5.2.2",
     "@infisical/sdk": "^4.0.6",
